@@ -2,7 +2,21 @@
 
 [中文](README.md) | **English**
 
-An AI emotion ball: 32 expressive states rendered in pure SVG + vanilla JavaScript — no frameworks, no image assets. Your AI only needs to output a single `emotionId` and the ball switches to the matching expression. Ships with a complete gallery site: a wireframe hero opening, wall / album view modes, bilingual UI and dark / light themes.
+An AI emotion ball: 32 expressive states rendered in pure SVG + vanilla JavaScript — no frameworks, no image assets. Your AI only needs to output a single `emotionId` and the ball switches to the matching expression; it also works as the expression engine for a desktop pet / floating assistant. Ships with a complete gallery site: a wireframe hero opening, wall / album view modes, bilingual UI and dark / light themes.
+
+**Live demo: [emotion-balls.vercel.app](https://emotion-balls.vercel.app/)**
+
+## Preview
+
+| Hero (dark) | Light theme · English |
+| :---: | :---: |
+| ![Hero](assets/screenshots/eb-hero-dark.png) | ![Light theme](assets/screenshots/eb-hero-light-en.png) |
+
+| Wall mode | Stage lightbox |
+| :---: | :---: |
+| ![Wall](assets/screenshots/eb-wall-dark.png) | ![Lightbox](assets/screenshots/eb-stage-modal.png) |
+
+![Album mode with the thinking halo ribbon](assets/screenshots/eb-album-dark.png)
 
 ## Features
 
@@ -38,7 +52,10 @@ emotion-ball/
 │   ├── ball.js         # render layer: SVG, spherical projection, ribbons, confetti
 │   ├── engine.js       # engine layer: state machine, springs, expression pool, SDK
 │   └── app.js          # interaction layer: the gallery site shell
-└── assets/img/         # hero backdrops (dark & light) and favicon
+├── assets/
+│   ├── img/            # hero backdrops (dark & light) and favicon
+│   └── screenshots/    # README preview screenshots
+└── .cursor/skills/     # AI collaboration skills: emotion design + integration
 ```
 
 ## SDK usage
@@ -86,4 +103,4 @@ EmotionBall.config.exportConfig(); // export all emotions as JSON
 
 ## License
 
-MIT
+This project is provided **for learning and technical exchange only — any commercial use is prohibited** (selling, paid licensing, integration into commercial products or services, etc.). Please credit the source when sharing non-commercially. See [LICENSE](LICENSE); contact the author for commercial licensing.

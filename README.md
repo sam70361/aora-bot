@@ -2,7 +2,21 @@
 
 **中文** | [English](README.en.md)
 
-AI 表情小球:32 种状态表情,纯 SVG + 原生 JavaScript 实时驱动,零框架、零图片资源。AI 只需输出一个 `emotionId`,小球即可切换到对应表情。自带一个完整的「表情展示馆」站点:开屏线稿 Hero、陈列墙 / 画册双模式、中英双语、明暗双主题。
+AI 表情小球:32 种状态表情,纯 SVG + 原生 JavaScript 实时驱动,零框架、零图片资源。AI 只需输出一个 `emotionId`,小球即可切换到对应表情,也可以作为桌面宠物 / 悬浮助手的表情引擎。自带一个完整的「表情展示馆」站点:开屏线稿 Hero、陈列墙 / 画册双模式、中英双语、明暗双主题。
+
+**在线预览:[emotion-balls.vercel.app](https://emotion-balls.vercel.app/)**
+
+## 预览
+
+| 开屏 Hero(暗黑) | 明亮主题 · English |
+| :---: | :---: |
+| ![开屏 Hero](assets/screenshots/eb-hero-dark.png) | ![明亮主题](assets/screenshots/eb-hero-light-en.png) |
+
+| 陈列墙 | 大图弹窗 |
+| :---: | :---: |
+| ![陈列墙](assets/screenshots/eb-wall-dark.png) | ![大图弹窗](assets/screenshots/eb-stage-modal.png) |
+
+![画册模式 · 思考中环带](assets/screenshots/eb-album-dark.png)
 
 ## 特性
 
@@ -38,7 +52,10 @@ emotion-ball/
 │   ├── ball.js         # 渲染层:SVG 绘制、球面投影、彩带、撒花
 │   ├── engine.js       # 驱动层:状态机、弹簧动画、表情池、对外 SDK
 │   └── app.js          # 交互层:展示馆站点外壳
-└── assets/img/         # Hero 氛围幕布(明暗双版)与站点图标
+├── assets/
+│   ├── img/            # Hero 氛围幕布(明暗双版)与站点图标
+│   └── screenshots/    # README 预览截图
+└── .cursor/skills/     # AI 协作 Skills:表情设计规范 + 集成实践
 ```
 
 ## SDK 用法
@@ -84,6 +101,6 @@ EmotionBall.config.exportConfig(); // 导出全部表情 JSON
 }
 ```
 
-## License
+## 许可
 
-MIT
+本项目**仅供学习与技术交流使用,禁止任何商业用途**(售卖、付费授权、集成到商业产品或服务等)。非商业分享请注明出处。详见 [LICENSE](LICENSE),商业授权请联系作者。
