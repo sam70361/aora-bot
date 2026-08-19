@@ -10,7 +10,7 @@ window.EB_I18N = (function () {
   var STRINGS = {
     zh: {
       docTitle: 'Emotion Ball 表情馆',
-      brandBadge: '表情馆',
+      brandName: '表情馆',
       navWall: '陈列墙',
       navAlbum: '画册',
       langBtn: 'EN',
@@ -69,7 +69,7 @@ window.EB_I18N = (function () {
 
     en: {
       docTitle: 'Emotion Ball Gallery',
-      brandBadge: 'Gallery',
+      brandName: 'Emotion Ball',
       navWall: 'Wall',
       navAlbum: 'Album',
       langBtn: '中',

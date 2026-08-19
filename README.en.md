@@ -53,7 +53,7 @@ emotion-ball/
 │   ├── engine.js       # engine layer: state machine, springs, expression pool, SDK
 │   └── app.js          # interaction layer: the gallery site shell
 ├── assets/
-│   ├── img/            # hero backdrops (dark & light) and favicon
+│   ├── img/            # favicon (hero ambience is now pure CSS light beams)
 │   └── screenshots/    # README preview screenshots
 └── .cursor/skills/     # AI collaboration skills: emotion design + integration
 ```

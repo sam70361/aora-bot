@@ -579,6 +579,19 @@
     });
   }
 
+  /* ---------------- 品牌 LOGO 小球:顶栏迷你实例,注视鼠标,点击甩彩带 ---------------- */
+  function buildBrand() {
+    var elBrand = $('brandBall');
+    var brand = EB.create(elBrand, {
+      emotion: '02',
+      lite: true,
+      eyeScale: 1.7,
+      label: 'Emotion Ball'
+    });
+    watchGaze(brand, elBrand);
+    elBrand.addEventListener('click', function () { brand.spin(1); });
+  }
+
   /* ---------------- 开屏 Hero:半遮罩线稿 bot ---------------- */
   function buildHero() {
     hero = EB.create($('heroBot'), {
@@ -625,6 +638,7 @@
 
   createMain(prefs.shape);
   buildBabies();
+  buildBrand();
   buildHero();
   applyI18n();   /* 内部完成 buildTabs + relabel;首帧前先建缩略图 */
   buildThumbs();

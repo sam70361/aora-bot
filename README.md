@@ -53,7 +53,7 @@ emotion-ball/
 │   ├── engine.js       # 驱动层:状态机、弹簧动画、表情池、对外 SDK
 │   └── app.js          # 交互层:展示馆站点外壳
 ├── assets/
-│   ├── img/            # Hero 氛围幕布(明暗双版)与站点图标
+│   ├── img/            # 站点图标(Hero 氛围光效已改为纯 CSS 实现)
 │   └── screenshots/    # README 预览截图
 └── .cursor/skills/     # AI 协作 Skills:表情设计规范 + 集成实践
 ```
