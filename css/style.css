@@ -38,21 +38,21 @@ html[data-theme="dark"] {
   --accent: #916dff;
   --accent-deep: #7140d7;
   --accent-soft: rgba(145, 109, 255, 0.16);
-  --ok: #72C29C;
-  --danger: #E06B5E;
+  --ok: #72c29c;
+  --danger: #e06b5e;
   --shadow: rgba(0, 0, 0, 0.5);
   --glow: rgba(255, 255, 255, 0.06);
-  /* CTA 按钮面:白色渐变 */
+  /* CTA 按钮面:白色渐变(与暗底形成最强对比层级) */
   --btn-face: linear-gradient(180deg, #ffffff 0%, #d6d6d6 100%);
   --btn-face-text: #17191c;
   --btn-face-border: #e0e0e0;
-  /* 首屏光效:冷调薰衣草白光束 */
-  --beam-a: rgba(238, 234, 255, 0.28);
-  --beam-b: rgba(214, 201, 255, 0.24);
-  --beam-c: rgba(242, 238, 255, 0.30);
-  --beam-d: rgba(204, 190, 255, 0.23);
-  --glow-core: rgba(224, 216, 255, 0.28);
-  --glow-mid: rgba(139, 92, 246, 0.12);
+  /* 首屏光效:紫罗兰体积光束,与品牌紫同色相,screen 叠加发光 */
+  --beam-a: rgba(190, 173, 255, 0.30);
+  --beam-b: rgba(166, 138, 252, 0.25);
+  --beam-c: rgba(214, 203, 255, 0.35);
+  --beam-d: rgba(148, 113, 247, 0.23);
+  --glow-core: rgba(196, 182, 255, 0.40);
+  --glow-mid: rgba(139, 92, 246, 0.19);
 }
 
 html[data-theme="light"] {
@@ -72,7 +72,7 @@ html[data-theme="light"] {
   --accent-deep: #5a18a3;
   --accent-soft: rgba(110, 33, 196, 0.10);
   --ok: #3f8f68;
-  --danger: #C4504A;
+  --danger: #c4504a;
   --shadow: rgba(24, 24, 27, 0.16);
   --glow: rgba(24, 24, 27, 0.05);
   /* CTA 按钮面:明亮模式反转为墨色渐变 */
@@ -107,6 +107,9 @@ body {
 body.stage-open { overflow: hidden; }
 
 button, input, select { font: inherit; color: inherit; }
+
+/* 键盘焦点环:仅 :focus-visible 触发,不干扰鼠标操作 */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* ================= 顶栏 ================= */
 
@@ -855,8 +858,9 @@ body.mode-album .gallery { --stage-size: min(480px, 46vh); }
 }
 .btn.ghost:hover { color: var(--text); }
 
-/* 下拉框:去原生外观,自绘箭头,悬停/聚焦态与其他控件一致 */
-.select {
+/* 下拉控件(原生 select 兜底样式与自定义触发器共用):去原生外观,自绘箭头 */
+.select,
+.dd-trigger {
   appearance: none;
   -webkit-appearance: none;
   height: 34px;
@@ -873,7 +877,7 @@ body.mode-album .gallery { --stage-size: min(480px, 46vh); }
   cursor: pointer;
   transition: border-color 0.2s, background-color 0.2s;
 }
-.select:hover { border-color: var(--muted); background-color: var(--card-2); }
+.select:hover, .dd-trigger:hover { border-color: var(--muted); background-color: var(--card-2); }
 .select:focus { outline: none; border-color: var(--accent); }
 .select option {
   background-color: var(--card);
@@ -883,24 +887,7 @@ body.mode-album .gallery { --stage-size: min(480px, 46vh); }
 /* ---- 自定义下拉:原生 select 隐藏保留,浮层完全主题化 ---- */
 .dd { position: relative; flex: none; }
 .dd > .select { display: none; }
-
-.dd-trigger {
-  height: 34px;
-  min-width: 96px;
-  padding: 0 32px 0 12px;
-  border: 1px solid var(--line-strong);
-  border-radius: 10px;
-  background-color: var(--bg-soft);
-  background-image: var(--chevron);
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 14px;
-  color: var(--text);
-  text-align: left;
-  cursor: pointer;
-  transition: border-color 0.2s, background-color 0.2s;
-}
-.dd-trigger:hover { border-color: var(--muted); background-color: var(--card-2); }
+.dd-trigger { text-align: left; }
 .dd.open .dd-trigger { border-color: var(--accent); }
 
 .dd-pop {
