@@ -231,9 +231,101 @@
     if (e.key === 'ArrowLeft') { step(-1); e.preventDefault(); }
     else if (e.key === 'ArrowRight') { step(1); e.preventDefault(); }
     else if (e.key === 'Escape') {
+      if (closeAllDD()) return;
       if (elDrawer.classList.contains('open')) closeDrawer();
       else closeStage();
     }
+  });
+
+  /* ---------------- 自定义下拉:原生 select 隐藏保留(值与 change 事件不变),
+   * 浮层负责展示,保证下拉面板完全跟随主题 ---------------- */
+  var ddList = [];
+
+  function enhanceSelect(sel) {
+    var dd = document.createElement('div');
+    dd.className = 'dd';
+    sel.parentNode.insertBefore(dd, sel);
+    dd.appendChild(sel);
+
+    var trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'dd-trigger';
+    trigger.setAttribute('aria-haspopup', 'listbox');
+    trigger.setAttribute('aria-expanded', 'false');
+    var pop = document.createElement('div');
+    pop.className = 'dd-pop';
+    pop.setAttribute('role', 'listbox');
+    dd.appendChild(trigger);
+    dd.appendChild(pop);
+
+    /* 按原生 option 重建浮层选项与触发器文案(语言切换 / 程序改值后调用) */
+    function rebuild() {
+      pop.innerHTML = '';
+      Array.prototype.forEach.call(sel.options, function (opt) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'dd-item' + (opt.value === sel.value ? ' selected' : '');
+        btn.setAttribute('role', 'option');
+        btn.setAttribute('aria-selected', opt.value === sel.value ? 'true' : 'false');
+        var label = document.createElement('span');
+        label.textContent = opt.textContent;
+        btn.appendChild(label);
+        var check = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        check.setAttribute('class', 'dd-check');
+        check.setAttribute('viewBox', '0 0 24 24');
+        check.setAttribute('width', '14');
+        check.setAttribute('height', '14');
+        check.innerHTML = '<path d="M20 6L9 17l-5-5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>';
+        btn.appendChild(check);
+        btn.addEventListener('click', function () {
+          close();
+          if (sel.value !== opt.value) {
+            sel.value = opt.value;
+            sel.dispatchEvent(new Event('change'));
+          }
+          rebuild();
+        });
+        pop.appendChild(btn);
+      });
+      var cur = sel.options[sel.selectedIndex];
+      trigger.textContent = cur ? cur.textContent : '';
+    }
+
+    function close() {
+      dd.classList.remove('open');
+      trigger.setAttribute('aria-expanded', 'false');
+    }
+    function open() {
+      closeAllDD();
+      rebuild();
+      dd.classList.add('open');
+      trigger.setAttribute('aria-expanded', 'true');
+    }
+    trigger.addEventListener('click', function (e) {
+      e.stopPropagation();
+      if (dd.classList.contains('open')) close(); else open();
+    });
+    /* 程序改值(初始化 / 导入配置)后同步触发器 */
+    sel.addEventListener('change', rebuild);
+
+    ddList.push({ dd: dd, rebuild: rebuild, close: close });
+    rebuild();
+  }
+
+  function closeAllDD() {
+    var any = false;
+    ddList.forEach(function (i) {
+      if (i.dd.classList.contains('open')) { any = true; i.close(); }
+    });
+    return any;
+  }
+  function refreshDD() {
+    ddList.forEach(function (i) { i.rebuild(); });
+  }
+  document.addEventListener('click', function (e) {
+    ddList.forEach(function (i) {
+      if (!i.dd.contains(e.target)) i.close();
+    });
   });
 
   /* ---------------- 分组 Tab ---------------- */
@@ -417,6 +509,7 @@
       var def = EB.config.get(b.emotion);
       b.btn.title = b.role + ' · ' + (def ? dispName(def) : b.emotion) + '(' + I.t('babyClick') + ')';
     });
+    refreshDD();   /* 下拉浮层文案跟随语言 */
   }
   elLangToggle.addEventListener('click', function () {
     prefs.lang = prefs.lang === 'zh' ? 'en' : 'zh';
@@ -433,6 +526,7 @@
     requestAnimationFrame(function () { elDrawerMask.classList.add('show'); });
   }
   function closeDrawer() {
+    closeAllDD();
     elDrawer.classList.remove('open');
     elDrawer.setAttribute('aria-hidden', 'true');
     elDrawerMask.classList.remove('show');
@@ -635,6 +729,8 @@
   elSketchToggle.checked = !!prefs.sketch;
   elTourInterval.value = String(prefs.tourMs);
   if (!elTourInterval.value) { elTourInterval.value = '2500'; prefs.tourMs = 2500; }
+  enhanceSelect(elShapeSelect);
+  enhanceSelect(elTourInterval);
 
   createMain(prefs.shape);
   buildBabies();

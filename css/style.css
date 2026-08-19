@@ -880,6 +880,73 @@ body.mode-album .gallery { --stage-size: min(480px, 46vh); }
   color: var(--text);
 }
 
+/* ---- 自定义下拉:原生 select 隐藏保留,浮层完全主题化 ---- */
+.dd { position: relative; flex: none; }
+.dd > .select { display: none; }
+
+.dd-trigger {
+  height: 34px;
+  min-width: 96px;
+  padding: 0 32px 0 12px;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background-color: var(--bg-soft);
+  background-image: var(--chevron);
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 14px;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+.dd-trigger:hover { border-color: var(--muted); background-color: var(--card-2); }
+.dd.open .dd-trigger { border-color: var(--accent); }
+
+.dd-pop {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 100%;
+  z-index: 95;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  box-shadow: 0 12px 34px var(--shadow);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity 0.18s, transform 0.18s, visibility 0.18s;
+}
+.dd.open .dd-pop { opacity: 1; visibility: visible; transform: translateY(0); }
+
+.dd-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  height: 32px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+.dd-item:hover { background: var(--bg-soft); }
+.dd-item.selected {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 500;
+}
+.dd-item .dd-check { opacity: 0; flex: none; }
+.dd-item.selected .dd-check { opacity: 1; }
+
 /* 开关 */
 .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex: none; }
 .switch input { opacity: 0; width: 0; height: 0; }
