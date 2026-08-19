@@ -21,6 +21,7 @@ An AI emotion ball: 32 expressive states rendered in pure SVG + vanilla JavaScri
 ## Features
 
 - **32 emotions** across three groups — Lifecycle (sleeping / waking / idle…), Emotions (happy / shy / angry / surprised…) and Agent States (thinking / searching / error / done…) — all config-driven
+- **Segmented emotionId scheme**: the tens digit is the group prefix — `00-09` Lifecycle, `10-29` Emotions, `30-49` Agent States, `50+` Custom; gaps between groups are reserved slots for future emotions and existing IDs are never renumbered, so integrations can hard-code them safely
 - **Contour-ring eye system**: 25 sets of 48-point eye contours, point-by-point spring morphing, expression-pool rotation and overshooting blink keyframes
 - **Spherical projection**: eyes follow the body silhouette with longitude mapping + cosine compression, hide automatically when spun to the back; blob / wedge / gem body shapes
 - **Ribbons & confetti**: spin-triggered 3D orbital ribbon trails with 5-stop hue gradients, a persistent halo ribbon for the thinking state, and physics-based confetti bursts
