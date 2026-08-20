@@ -1,10 +1,23 @@
+<div align="center">
+
 # Emotion Ball 表情馆
+
+**AI 表情小球 — 32 种表情 · 纯 SVG + 原生 JavaScript · 零依赖**
+
+[![在线预览](https://img.shields.io/badge/demo-emotion--balls.vercel.app-8A63F4?logo=vercel&logoColor=white)](https://emotion-balls.vercel.app/)
+[![许可](https://img.shields.io/badge/license-dual--license-blue)](LICENSE)
+[![零依赖](https://img.shields.io/badge/dependencies-zero-brightgreen)](#)
+[![技术栈](https://img.shields.io/badge/made%20with-vanilla%20JS%20%2B%20SVG-F7DF1E?logo=javascript&logoColor=black)](#)
 
 **中文** | [English](README.en.md)
 
-AI 表情小球:32 种状态表情,纯 SVG + 原生 JavaScript 实时驱动,零框架、零图片资源。AI 只需输出一个 `emotionId`,小球即可切换到对应表情,也可以作为桌面宠物 / 悬浮助手的表情引擎。自带一个完整的「表情展示馆」站点:开屏线稿 Hero、陈列墙 / 画册双模式、中英双语、明暗双主题。
+[在线预览](https://emotion-balls.vercel.app/) · [特性](#特性) · [快速开始](#快速开始) · [SDK 用法](#sdk-用法) · [许可](#许可)
 
-**在线预览:[emotion-balls.vercel.app](https://emotion-balls.vercel.app/)**
+</div>
+
+---
+
+AI 表情小球:32 种状态表情,纯 SVG + 原生 JavaScript 实时驱动,零框架、零图片资源。AI 只需输出一个 `emotionId`,小球即可切换到对应表情,也可以作为桌面宠物 / 悬浮助手的表情引擎。自带一个完整的「表情展示馆」站点:开屏线稿 Hero、陈列墙 / 画册双模式、中英双语、明暗双主题。
 
 ## 预览
 
@@ -104,4 +117,9 @@ EmotionBall.config.exportConfig(); // 导出全部表情 JSON
 
 ## 许可
 
-本项目**仅供学习与技术交流使用,禁止任何商业用途**(售卖、付费授权、集成到商业产品或服务等)。非商业分享请注明出处。详见 [LICENSE](LICENSE),商业授权请联系作者。
+本项目采用**双许可(Dual License)**:
+
+- **社区许可(默认)**:仅供个人学习、研究与技术交流,**禁止任何商业用途**,非商业分享请注明出处。详见 [LICENSE](LICENSE)。
+- **商业许可**:如需商业使用(集成到商业产品或服务、闭源二次开发、付费交付等),请购买商业授权。通用条款见 [LICENSE-COMMERCIAL.md](LICENSE-COMMERCIAL.md),适用场景与购买流程见 [docs/LICENSING.md](docs/LICENSING.md)。
+
+商业授权与合作,请邮件联系:**1251579308@qq.com**

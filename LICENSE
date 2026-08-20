@@ -14,7 +14,9 @@ Copyright (c) 2026 sam70361
 4. 分发本项目或其衍生作品时,须保留本许可声明与版权信息。
 5. 本项目按"现状"提供,不附带任何明示或默示的担保;因使用本项目产生的
    任何风险与责任由使用者自行承担。
-6. 如需商业授权,请联系版权所有者另行取得书面许可。
+6. 如需商业授权(集成到商业产品或服务、闭源二次开发、售卖等),请邮件
+   联系版权所有者:1251579308@qq.com;商业许可通用条款见仓库根目录
+   LICENSE-COMMERCIAL.md。
 
 [English]
 
@@ -32,5 +34,7 @@ Copyright (c) 2026 sam70361
 5. The project is provided "AS IS", without warranty of any kind, express or
    implied. All risks and liabilities arising from its use are borne by the
    user.
-6. For commercial licensing, please contact the copyright holder for separate
-   written permission.
+6. For commercial licensing (integration into commercial products or services,
+   closed-source derivative development, selling, etc.), please contact the
+   copyright holder at 1251579308@qq.com. See LICENSE-COMMERCIAL.md in the
+   repository root for the general commercial license terms.

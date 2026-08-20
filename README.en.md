@@ -1,10 +1,23 @@
+<div align="center">
+
 # Emotion Ball Gallery
+
+**An AI emotion ball — 32 expressions · pure SVG + vanilla JavaScript · zero dependencies**
+
+[![Live Demo](https://img.shields.io/badge/demo-emotion--balls.vercel.app-8A63F4?logo=vercel&logoColor=white)](https://emotion-balls.vercel.app/)
+[![License](https://img.shields.io/badge/license-dual--license-blue)](LICENSE)
+[![Zero Dependencies](https://img.shields.io/badge/dependencies-zero-brightgreen)](#)
+[![Made With](https://img.shields.io/badge/made%20with-vanilla%20JS%20%2B%20SVG-F7DF1E?logo=javascript&logoColor=black)](#)
 
 [中文](README.md) | **English**
 
-An AI emotion ball: 32 expressive states rendered in pure SVG + vanilla JavaScript — no frameworks, no image assets. Your AI only needs to output a single `emotionId` and the ball switches to the matching expression; it also works as the expression engine for a desktop pet / floating assistant. Ships with a complete gallery site: a wireframe hero opening, wall / album view modes, bilingual UI and dark / light themes.
+[Live demo](https://emotion-balls.vercel.app/) · [Features](#features) · [Quick start](#quick-start) · [SDK usage](#sdk-usage) · [License](#license)
 
-**Live demo: [emotion-balls.vercel.app](https://emotion-balls.vercel.app/)**
+</div>
+
+---
+
+An AI emotion ball: 32 expressive states rendered in pure SVG + vanilla JavaScript — no frameworks, no image assets. Your AI only needs to output a single `emotionId` and the ball switches to the matching expression; it also works as the expression engine for a desktop pet / floating assistant. Ships with a complete gallery site: a wireframe hero opening, wall / album view modes, bilingual UI and dark / light themes.
 
 ## Preview
 
@@ -104,4 +117,9 @@ EmotionBall.config.exportConfig(); // export all emotions as JSON
 
 ## License
 
-This project is provided **for learning and technical exchange only — any commercial use is prohibited** (selling, paid licensing, integration into commercial products or services, etc.). Please credit the source when sharing non-commercially. See [LICENSE](LICENSE); contact the author for commercial licensing.
+This project is **dual-licensed**:
+
+- **Community license (default)**: for personal learning, research and technical exchange only — **any commercial use is prohibited**. Please credit the source when sharing non-commercially. See [LICENSE](LICENSE).
+- **Commercial license**: required for any commercial use (integration into commercial products or services, closed-source derivative development, paid delivery, etc.). See [LICENSE-COMMERCIAL.md](LICENSE-COMMERCIAL.md) for the general terms and [docs/LICENSING.md](docs/LICENSING.md) for use cases and how to purchase.
+
+For commercial licensing and partnerships, email: **1251579308@qq.com**
