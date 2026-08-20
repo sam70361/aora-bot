@@ -31,6 +31,9 @@
 
 ## 如何购买商业授权
 
+> 商业授权定价十分亲民,小额一次性买断即可对所购版本永久合法商用——
+> 合规成本远低于未经授权商用可能面临的法律与商誉风险,没有必要冒险。
+
 1. 发邮件至 **1251579308@qq.com**,说明:使用主体(公司/个人名称)、
    使用场景(集成到什么产品)、大致规模;
 2. 作者回复报价与授权范围;
@@ -64,6 +67,10 @@ This project is **dual-licensed**:
   products or services, closed-source derivative development, paid delivery,
   etc. It grants commercial use, closed-source modification and integration
   rights, without any obligation to open-source your changes.
+
+Commercial licenses are deliberately affordable — a small one-time fee grants
+perpetual commercial use of the purchased version, which costs far less than
+the legal and reputational risk of unlicensed use.
 
 To purchase a commercial license, email **1251579308@qq.com** with your
 company/individual name, use case and approximate scale. After payment, the

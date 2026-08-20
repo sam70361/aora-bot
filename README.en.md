@@ -2,7 +2,7 @@
 
 # Emotion Ball Gallery
 
-**An AI emotion ball — 32 expressions · pure SVG + vanilla JavaScript · zero dependencies**
+**An expressive emotion ball for AI assistants — 32 states · pure SVG + vanilla JavaScript · zero dependencies**
 
 [![Live Demo](https://img.shields.io/badge/demo-emotion--balls.vercel.app-8A63F4?logo=vercel&logoColor=white)](https://emotion-balls.vercel.app/)
 [![License](https://img.shields.io/badge/license-dual--license-blue)](LICENSE)
@@ -17,7 +17,9 @@
 
 ---
 
-An AI emotion ball: 32 expressive states rendered in pure SVG + vanilla JavaScript — no frameworks, no image assets. Your AI only needs to output a single `emotionId` and the ball switches to the matching expression; it also works as the expression engine for a desktop pet / floating assistant. Ships with a complete gallery site: a wireframe hero opening, wall / album view modes, bilingual UI and dark / light themes.
+Emotion Ball is an expression engine for AI assistants: 32 emotion states rendered entirely in pure SVG and vanilla JavaScript — no frameworks, no image assets. Your AI only needs to output a single `emotionId` and the ball switches to the matching expression, making it a drop-in emotion layer for chatbots, desktop pets and floating assistants.
+
+The repository also ships with a complete gallery site: a wireframe hero opening, wall and album browsing modes, a bilingual UI and dark / light themes.
 
 ## Preview
 
@@ -33,10 +35,10 @@ An AI emotion ball: 32 expressive states rendered in pure SVG + vanilla JavaScri
 
 ## Features
 
-- **32 emotions** across three groups — Lifecycle (sleeping / waking / idle…), Emotions (happy / shy / angry / surprised…) and Agent States (thinking / searching / error / done…) — all config-driven
+- **32 emotion states** across three groups — Lifecycle (sleeping / waking / idle…), Emotions (happy / shy / angry / surprised…) and Agent States (thinking / searching / error / done…) — all config-driven
 - **Segmented emotionId scheme**: the tens digit is the group prefix — `00-09` Lifecycle, `10-29` Emotions, `30-49` Agent States, `50+` Custom; gaps between groups are reserved slots for future emotions and existing IDs are never renumbered, so integrations can hard-code them safely
 - **Contour-ring eye system**: 25 sets of 48-point eye contours, point-by-point spring morphing, expression-pool rotation and overshooting blink keyframes
-- **Spherical projection**: eyes follow the body silhouette with longitude mapping + cosine compression, hide automatically when spun to the back; blob / wedge / gem body shapes
+- **Spherical projection**: eyes follow the body silhouette with longitude mapping and cosine compression, hiding automatically when spun to the back; blob, wedge and gem body shapes
 - **Ribbons & confetti**: spin-triggered 3D orbital ribbon trails with 5-stop hue gradients, a persistent halo ribbon for the thinking state, and physics-based confetti bursts
 - **Mouse gaze**: page-wide gaze tracking with frame-rate-independent smoothing, plus constant subtle eye wander
 - **Gallery site**: wall mode (grid + click-to-open lightbox) and album mode (horizontal strip + big stage with paging), settings drawer, auto tour, Chinese / English, dark / light themes, all preferences persisted in localStorage
@@ -119,7 +121,12 @@ EmotionBall.config.exportConfig(); // export all emotions as JSON
 
 This project is **dual-licensed**:
 
-- **Community license (default)**: for personal learning, research and technical exchange only — **any commercial use is prohibited**. Please credit the source when sharing non-commercially. See [LICENSE](LICENSE).
-- **Commercial license**: required for any commercial use (integration into commercial products or services, closed-source derivative development, paid delivery, etc.). See [LICENSE-COMMERCIAL.md](LICENSE-COMMERCIAL.md) for the general terms and [docs/LICENSING.md](docs/LICENSING.md) for use cases and how to purchase.
+| | Community license (default) | Commercial license |
+| --- | --- | --- |
+| File | [LICENSE](LICENSE) | [LICENSE-COMMERCIAL.md](LICENSE-COMMERCIAL.md) |
+| Fee | Free | Small one-time fee |
+| Scope | Personal learning, research and technical exchange; non-commercial sharing with attribution | Any commercial use — integration into commercial products or services, closed-source derivative development, paid delivery, etc. |
+
+> Commercial licenses are deliberately affordable: a small one-time fee grants perpetual, fully compliant commercial use — far cheaper than the legal and reputational risk of unlicensed use. There is simply no reason to take that risk. See [docs/LICENSING.md](docs/LICENSING.md) for use cases and how to purchase.
 
 For commercial licensing and partnerships, email: **1251579308@qq.com**
