@@ -35,15 +35,19 @@ The repository also ships with a complete gallery site: a wireframe hero opening
 
 ## Preview
 
-| Hero (dark) | Light theme · English |
-| :---: | :---: |
-| ![Hero](emotion-ball/assets/screenshots/eb-hero-dark.png) | ![Light theme](emotion-ball/assets/screenshots/eb-hero-light-en.png) |
+![Gallery hero](emotion-ball/assets/screenshots/total.png)
 
-| Wall mode | Stage lightbox |
+| Emotion Ball · Dark | Emotion Ball · Light |
 | :---: | :---: |
-| ![Wall](emotion-ball/assets/screenshots/eb-wall-dark.png) | ![Lightbox](emotion-ball/assets/screenshots/eb-stage-modal.png) |
+| ![Emotion Ball dark](emotion-ball/assets/screenshots/qiuqiu.png) | ![Emotion Ball light](emotion-ball/assets/screenshots/qiuqiu-mingliang.png) |
 
-![Album mode with the thinking halo ribbon](emotion-ball/assets/screenshots/eb-album-dark.png)
+| Nimbo · Dark | Nimbo · Light |
+| :---: | :---: |
+| ![Nimbo dark](emotion-ball/assets/screenshots/yunbao.png) | ![Nimbo light](emotion-ball/assets/screenshots/yunbao-mingliang.png) |
+
+| Twinkle · Dark | Twinkle · Light |
+| :---: | :---: |
+| ![Twinkle dark](emotion-ball/assets/screenshots/liangliang.png) | ![Twinkle light](emotion-ball/assets/screenshots/liangliang-mingliang.png) |
 
 ## Features
 

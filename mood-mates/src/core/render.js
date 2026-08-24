@@ -414,7 +414,25 @@
       stops[1].setAttribute('stop-color', shade(color, 0.14));
       stops[2].setAttribute('stop-color', color);
       stops[3].setAttribute('stop-color', shade(color, -0.22));
-      if (curSketch > 0.5) head.setAttribute('stroke', shade(color, -0.6));
+    }
+
+    function applySketchChrome(on, color) {
+      svg.classList.toggle('is-sketch', on);
+      if (on) {
+        head.setAttribute('fill', 'none');
+        head.setAttribute('stroke', 'none');
+        head.style.stroke = 'var(--sketch-ink, ' + shade(color, -0.6) + ')';
+        head.setAttribute('stroke-opacity', '0.85');
+        if (gloss) gloss.style.display = 'none';
+        ao.style.display = 'none';
+      } else {
+        head.setAttribute('fill', 'url(#' + id + 'g)');
+        head.setAttribute('stroke', 'none');
+        head.style.stroke = '';
+        head.removeAttribute('stroke-opacity');
+        if (gloss) gloss.style.display = '';
+        ao.style.display = '';
+      }
     }
 
     /* ---- 眼睛：轮廓环形变 + 球面投影 + 分层眼球 ---- */
@@ -648,23 +666,11 @@
           ' translate(' + (-C) + ' ' + (-shadowCy) + ')');
       }
 
-      if (sketch !== curSketch) {
-        curSketch = sketch;
-        svg.classList.toggle('is-sketch', sketch > 0.5);
-        if (sketch > 0.5) {
-          /* 线稿描边优先取页面主题墨色 --sketch-ink（暗色页浅墨、亮色页深墨），
-           * 无主题变量时回退体色加深 */
-          head.setAttribute('fill', 'none');
-          head.style.stroke = 'var(--sketch-ink, ' + shade(b.color, -0.6) + ')';
-          head.setAttribute('stroke-opacity', '0.85');
-          if (gloss) gloss.style.display = 'none';
-          ao.style.display = 'none';
-        } else {
-          head.setAttribute('fill', 'url(#' + id + 'g)');
-          head.style.stroke = '';
-          if (gloss) gloss.style.display = '';
-          ao.style.display = '';
-        }
+      /* 线稿是展示开关：按阈值切换，离开时清掉属性描边，避免庆祝改色后描边残留在实体上 */
+      var sketchOn = sketch > 0.5;
+      if (sketchOn !== (curSketch > 0.5)) {
+        curSketch = sketchOn ? 1 : 0;
+        applySketchChrome(sketchOn, b.color);
       }
 
       var yaw = b.yaw || 0;

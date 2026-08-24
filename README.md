@@ -35,15 +35,19 @@ Emotion Ball 是一套面向 AI 助手的表情引擎:32 种状态表情全部�
 
 ## 预览
 
-| 开屏 Hero(暗黑) | 明亮主题 · English |
-| :---: | :---: |
-| ![开屏 Hero](emotion-ball/assets/screenshots/eb-hero-dark.png) | ![明亮主题](emotion-ball/assets/screenshots/eb-hero-light-en.png) |
+![总馆开屏](emotion-ball/assets/screenshots/total.png)
 
-| 陈列墙 | 大图弹窗 |
+| 球球 · 暗黑 | 球球 · 明亮 |
 | :---: | :---: |
-| ![陈列墙](emotion-ball/assets/screenshots/eb-wall-dark.png) | ![大图弹窗](emotion-ball/assets/screenshots/eb-stage-modal.png) |
+| ![球球暗黑](emotion-ball/assets/screenshots/qiuqiu.png) | ![球球明亮](emotion-ball/assets/screenshots/qiuqiu-mingliang.png) |
 
-![画册模式 · 思考中环带](emotion-ball/assets/screenshots/eb-album-dark.png)
+| 云宝 · 暗黑 | 云宝 · 明亮 |
+| :---: | :---: |
+| ![云宝暗黑](emotion-ball/assets/screenshots/yunbao.png) | ![云宝明亮](emotion-ball/assets/screenshots/yunbao-mingliang.png) |
+
+| 亮亮 · 暗黑 | 亮亮 · 明亮 |
+| :---: | :---: |
+| ![亮亮暗黑](emotion-ball/assets/screenshots/liangliang.png) | ![亮亮明亮](emotion-ball/assets/screenshots/liangliang-mingliang.png) |
 
 ## 特性
 

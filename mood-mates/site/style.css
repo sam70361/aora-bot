@@ -61,6 +61,7 @@ html[data-theme="dark"] {
   --mm-bubble-fill: #C6D6F5;
   --mm-bubble-stroke: #E8EEF8;
   --mm-bubble-sheen: rgba(255, 255, 255, 0.34);
+  --mm-bubble-sw: 1.2;
   --mm-speck: #C6D6F5;
 }
 
@@ -100,10 +101,11 @@ html[data-theme="light"] {
   --gallery-wash-a: rgba(110, 33, 196, 0.08);
   --gallery-wash-b: rgba(145, 109, 255, 0.055);
   --gallery-wash-c: rgba(110, 33, 196, 0.04);
-  --mm-bubble-fill: #7E94BC;
-  --mm-bubble-stroke: #3D4C6A;
-  --mm-bubble-sheen: rgba(255, 255, 255, 0.55);
-  --mm-speck: #5C7196;
+  --mm-bubble-fill: #D8E4F7;
+  --mm-bubble-stroke: #C5D3EC;
+  --mm-bubble-sheen: rgba(255, 255, 255, 0.86);
+  --mm-bubble-sw: 0.9;
+  --mm-speck: #C9D6EE;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -520,7 +522,7 @@ body.mode-album .gallery {
 body.mode-wall .thumb-zone {
   overflow-y: auto;
   scrollbar-gutter: stable;
-  padding: 12px 6px 6px 2px;
+  padding: 12px 8px 8px;
 }
 body.mode-wall .thumb-flow {
   display: grid;
@@ -532,7 +534,8 @@ body.mode-wall .thumb-flow {
 body.mode-album .thumb-zone {
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 12px 2px;
+  padding: 10px 0 12px;
+  scroll-padding-inline: 16px;
   cursor: grab;
 }
 body.mode-album .thumb-zone.dragging { cursor: grabbing; }
@@ -541,7 +544,7 @@ body.mode-album .thumb-flow {
   display: flex;
   gap: 10px;
   width: max-content;
-  padding: 0 4px;
+  padding: 0 16px;
 }
 body.mode-album .cell { width: 104px; flex: none; }
 
@@ -574,7 +577,15 @@ body.mode-album .cell { width: 104px; flex: none; }
   border-color: var(--line-strong);
   box-shadow: 0 10px 26px var(--shadow);
 }
-.cell.selected { outline-color: var(--ink); }
+.cell.selected {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent);
+  background: var(--accent-soft);
+}
+.cell.selected:hover {
+  box-shadow: 0 0 0 2px var(--accent), 0 10px 26px var(--shadow);
+}
 
 .thumb { width: 100%; aspect-ratio: 1; padding: 12%; }
 
@@ -743,7 +754,7 @@ body.mode-album .gallery { --stage-size: min(480px, 46vh); }
 .mm-bubble {
   fill: var(--mm-bubble-fill, #C6D6F5);
   stroke: var(--mm-bubble-stroke, #E8EEF8);
-  stroke-width: 1.2;
+  stroke-width: var(--mm-bubble-sw, 1.2);
 }
 .mm-sheen { fill: var(--mm-bubble-sheen, rgba(255, 255, 255, 0.34)); }
 .mm-speck { fill: var(--mm-speck, #C6D6F5); }

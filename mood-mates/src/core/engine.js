@@ -1094,8 +1094,8 @@
         var mixed = this._applyClickBeat(pose, now);
         if (mixed) pose = mixed;
       }
-      /* 线稿在点击庆祝叠脸 / 过渡插值之后再写回，避免被关键帧盖掉 */
-      pose.body.sketch = Math.max(pose.body.sketch || 0, this._style.sketch || 0);
+      /* 线稿是展示开关，不是表情关键帧。叠脸 / 过渡之后覆盖写入，避免 lerp 残留 */
+      pose.body.sketch = this._style.sketch ? 1 : 0;
       return pose;
     },
 

@@ -190,20 +190,22 @@
     if (e.target === e.currentTarget) closeStage();
   });
 
-  /* 选中缩略图滚动居中(画册横向 / 陈列墙纵向),只滚内部容器不带动页面 */
+  /* 选中缩略图滚动居中:用视口矩形算位移,避免 offsetParent 把左边距吃掉 */
   function centerSelected() {
     var cell = cellById.get(selectedId);
     if (!cell) return;
+    var zr = elThumbZone.getBoundingClientRect();
+    var cr = cell.getBoundingClientRect();
     if (document.body.classList.contains('mode-album')) {
       elThumbZone.scrollTo({
-        left: cell.offsetLeft - (elThumbZone.clientWidth - cell.offsetWidth) / 2,
+        left: elThumbZone.scrollLeft + (cr.left + cr.width / 2) - (zr.left + zr.width / 2),
         behavior: 'smooth'
       });
     } else {
-      var top = cell.offsetTop - elThumbZone.offsetTop;
-      if (top < elThumbZone.scrollTop || top + cell.offsetHeight > elThumbZone.scrollTop + elThumbZone.clientHeight) {
+      var nextTop = elThumbZone.scrollTop + (cr.top + cr.height / 2) - (zr.top + zr.height / 2);
+      if (cr.top < zr.top || cr.bottom > zr.bottom) {
         elThumbZone.scrollTo({
-          top: top - (elThumbZone.clientHeight - cell.offsetHeight) / 2,
+          top: nextTop,
           behavior: 'smooth'
         });
       }
