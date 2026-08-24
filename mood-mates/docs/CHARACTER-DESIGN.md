@@ -90,7 +90,7 @@ window.MoodMates.characters.register({
   },
 
   /* 6. 特效皮肤(含签名动作):
-   * cloudpuff 云絮·身体四周噗噗绽开一圈小云朵 / stardust 星尘·星星爆闪+思考铅笔轨道。
+   * cloudpuff 云泡·一口远近不一的小云泡，连点换扇区 / stardust 星尘·星星爆闪+思考铅笔轨道。
    * 皮肤可设 signatureMouth：签名触发时嘴形临时覆盖，到期弹回当前表情嘴形 */
   fxSkin: 'cloudpuff',
 
@@ -164,7 +164,7 @@ window.MoodMates.characters.register({
 - **沉稳**（金融）：`antics: false`、`poolMs` 拉长、动画 `amp` 减半、`period` 加长；
 - **躁动**（游戏）：`poolMs` 缩短、`amp` 加大、常驻眉毛；
 - **慢性子**：待机 glance `period` 加到 6000+；
-- **庆祝风格**：`'33': { body: { spinFx, confetti } }` —— 有签名动作的皮肤会用自己的风格庆祝（云絮绽放 / 星星爆闪），`spinFx` 只在皮肤无签名时回退为自旋；
+- **庆祝风格**：点击走 `celebrate()`（云宝吹云泡且不叠自旋撒花；亮亮仍是签名 + 肢体 + 撒花）。图鉴 `'33'` 的 `spinFx` / `confetti` 只作用于进入该表情时，不是点击庆祝。
 - **专属表情长相**：`pool` / `mouth` 引用 `eyeShapes` / `mouthShapes` 自定义轮廓，让关键表情有独一无二的五官。
 
 ## 六、上线检查清单

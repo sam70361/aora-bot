@@ -70,7 +70,8 @@ mate.on('error',  e => {});         // 协议错误 { message, ... }
 mate.setEmotion('21');              // 直接切换
 mate.setGaze(nx, ny);               // 归一化注视 [-1,1];宿主监听 pointermove
 mate.setStyle({ sketch: 1 });       // 线稿模式
-mate.signature();                   // 角色签名动作(云宝云絮绽放 / 亮亮星星爆闪)
+mate.celebrate();                   // 点击庆祝：云宝吹云泡；亮亮签名+肢体+撒花
+mate.signature();                   // 仅签名动作(云宝云泡 / 亮亮星星爆闪)
                                     // 返回 false 表示该角色皮肤无签名动作
 mate.spin(3);                       // 自旋并甩出特效粒子(通用)
 mate.burst(24);                     // 撒花

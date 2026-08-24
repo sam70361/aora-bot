@@ -775,7 +775,7 @@
 
   /* ---------------- 舞台交互 ---------------- */
   elStage.addEventListener('click', function () {
-    /* MoodMates 角色走庆祝组合（签名 + 肢体 + 撒花）；球球保持签名/自旋 */
+    /* 云宝：点击celebrate 吹云泡（不切表情）；亮亮：签名 + 肢体 + 撒花；球球：签名/自旋 */
     if (main.celebrate) main.celebrate(1);
     else if (!main.signature || !main.signature(1)) main.spin(1);
   });

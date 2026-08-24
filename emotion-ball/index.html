@@ -32,7 +32,9 @@
 
     <!-- 开屏:大字标题 + 底边半遮罩线稿 bot -->
     <section class="hero" id="hero">
-      <div class="hero-backdrop" aria-hidden="true"></div>
+      <div class="hero-backdrop" aria-hidden="true">
+        <canvas id="heroParticles" class="hero-particles"></canvas>
+      </div>
       <div class="hero-copy">
         <p class="hero-eyebrow" data-i18n="heroEyebrow">EMOTION GALLERY</p>
         <h1 class="hero-title" data-i18n="heroTitle">一颗会表达情绪的小球</h1>
@@ -171,6 +173,7 @@
   <div id="toast" class="toast" role="status"></div>
 
   <!-- 加载顺序:几何数据 → 表情数据 → 文案字典 → 渲染层 → 驱动层 → 交互层 -->
+  <script src="js/hero-particles.js"></script>
   <script src="js/rings.js"></script>
   <script src="js/emotions.js"></script>
   <script src="js/i18n.js"></script>

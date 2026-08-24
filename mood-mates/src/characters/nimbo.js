@@ -3,15 +3,15 @@
  *   概念定稿：assets/concepts/concept-nimbo.png 方案 A（雾蓝薰衣草）
  *   剪影：七瓣扇贝波浪边，底部收平像坐在地上的云
  *   气质：慢半拍的松弛系伙伴，适合陪伴 / 冥想 / 天气类场景
- *   签名动作：嘴巴收口吸进彩色光点，再吐出一道六色拱虹
+ *   点击庆祝（不是图鉴表情）：一口吹出远近不一的小云泡；连点换扇区，近的先破、远的后破
  *   设计参数记录：docs/DESIGN-PROVENANCE.md
  * ============================================================ */
 window.MoodMates.characters.register({
   id: 'nimbo',
   name: '云宝',
-  en: { name: 'Nimbo', desc: 'A puffy scallop-edged cloud that drifts half a beat behind the world and blooms a ring of fluffy baby clouds when pleased' },
+  en: { name: 'Nimbo', desc: 'A puffy scallop-edged cloud that drifts half a beat behind the world and blows cloud bubbles when pleased' },
   industry: 'general',
-  desc: '雾蓝薰衣草色的蓬松云朵，波浪扇贝边，高兴时身边会噗噗绽开一圈小云絮',
+  desc: '雾蓝薰衣草色的蓬松云朵，波浪扇贝边，点一下会吹出远近不一的小云泡',
 
   body: { type: 'cloud', r: 0.94, lobes: 7, amp: 0.08, flat: 0.12 },
   face: { x: 0, y: 2, sx: 1, sy: 1, eye: 1 },
@@ -47,6 +47,18 @@ window.MoodMates.characters.register({
 
   fxSkin: 'cloudpuff',
 
+  /* 仅点击 celebrate() 使用，不进图鉴 */
+  celebrateBeat: {
+    expr: 'happy',
+    mouth: 'o',
+    fade: 240,
+    frames: [
+      { at: 0,   eyes: { both: { open: 0.95, lookX: 3, lookY: -2 } }, face: { blush: 0.25, mouthSY: 1.08 }, body: { x: 1, y: 1 } },
+      { at: 220, eyes: { both: { lookX: 4, lookY: -5 } }, face: { blush: 0.4, mouthSY: 1.1 }, body: { x: 1, y: -1 } },
+      { at: 560, eyes: { both: { lookX: 1, lookY: -3, scaleX: 1.06, scaleY: 0.92, y: -2 } }, face: { blush: 0.45, mouthSY: 1 }, body: { x: 0, y: -2, scale: 1.02, color: '@soft' } }
+    ]
+  },
+
   /* 云朵的性子更慢：待机轮换与呼吸都放缓 */
   emotions: {
     '02': { poolMs: [12000, 20000], anims: [
@@ -56,6 +68,15 @@ window.MoodMates.characters.register({
     '10': { anims: [
       { target: 'eyes', prop: 'lookY', type: 'glance', amp: 5, period: 3800 },
       { target: 'body', prop: 'y', type: 'sine', amp: 1.8, period: 2000 }
-    ] }
+    ] },
+    '33': {
+      desc: '笑眼轻轻眯起，腮红浅浅浮上来',
+      en: { name: 'Done', desc: 'A quiet smile and a light blush' },
+      pool: ['happy', 'happy2'],
+      mouth: 'grin',
+      body: { y: -2, spinFx: 0, confetti: 0 },
+      eyes: { both: { y: -3 } },
+      face: { blush: 0.4 }
+    }
   }
 });

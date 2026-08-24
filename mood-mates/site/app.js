@@ -818,7 +818,7 @@
 
   /* ---------------- 舞台交互 ---------------- */
   elStage.addEventListener('click', function () {
-    /* 庆祝组合：签名动作 + 随机肢体动作 + 撒花 */
+    /* 云宝：点击 celebrate 吹云泡（不切表情）；亮亮：签名 + 肢体 + 撒花 */
     if (main.celebrate) main.celebrate(1);
     else if (!main.signature || !main.signature(1)) main.spin(1);
   });

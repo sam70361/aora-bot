@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="site/style.css">
+  <link rel="stylesheet" href="site/style.css?v=20a">
 </head>
 <body class="mode-wall">
 
@@ -32,7 +32,9 @@
 
     <!-- 开屏:大字标题 + 底边半遮罩线稿角色 -->
     <section class="hero" id="hero">
-      <div class="hero-backdrop" aria-hidden="true"></div>
+      <div class="hero-backdrop" aria-hidden="true">
+        <canvas id="heroParticles" class="hero-particles"></canvas>
+      </div>
       <div class="hero-copy">
         <h1 class="hero-title" data-i18n="heroTitle">三个会表达情绪的伙伴,同台开演</h1>
         <p class="hero-sub" data-i18n="heroSub">球球 × 云宝 × 亮亮 · 32 种状态表情 · SVG 实时驱动</p>
@@ -129,17 +131,18 @@
 
   <!-- 加载顺序:两套引擎(MoodMates + EmotionBall)→ 文案 → 交互层 -->
   <script src="mood-mates/src/core/geometry.js"></script>
-  <script src="mood-mates/src/core/render.js"></script>
+  <script src="mood-mates/src/core/render.js?v=20a"></script>
   <script src="mood-mates/src/core/features.js"></script>
-  <script src="mood-mates/src/core/fx.js"></script>
-  <script src="mood-mates/src/data/emotions.js"></script>
-  <script src="mood-mates/src/core/engine.js"></script>
-  <script src="mood-mates/src/characters/nimbo.js"></script>
+  <script src="mood-mates/src/core/fx.js?v=21a"></script>
+  <script src="mood-mates/src/data/emotions.js?v=18a"></script>
+  <script src="mood-mates/src/core/engine.js?v=20d"></script>
+  <script src="mood-mates/src/characters/nimbo.js?v=21a"></script>
   <script src="mood-mates/src/characters/twinkle.js"></script>
   <script src="emotion-ball/js/rings.js"></script>
   <script src="emotion-ball/js/emotions.js"></script>
   <script src="emotion-ball/js/ball.js"></script>
   <script src="emotion-ball/js/engine.js"></script>
+  <script src="emotion-ball/js/hero-particles.js"></script>
   <script src="site/i18n.js"></script>
   <script src="site/app.js"></script>
 </body>

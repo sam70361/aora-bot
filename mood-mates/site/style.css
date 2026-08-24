@@ -55,6 +55,13 @@ html[data-theme="dark"] {
   --beam-d: rgba(148, 113, 247, 0.23);
   --glow-core: rgba(196, 182, 255, 0.40);
   --glow-mid: rgba(139, 92, 246, 0.19);
+  --gallery-wash-a: rgba(145, 109, 255, 0.16);
+  --gallery-wash-b: rgba(80, 120, 200, 0.08);
+  --gallery-wash-c: rgba(145, 109, 255, 0.07);
+  --mm-bubble-fill: #C6D6F5;
+  --mm-bubble-stroke: #E8EEF8;
+  --mm-bubble-sheen: rgba(255, 255, 255, 0.34);
+  --mm-speck: #C6D6F5;
 }
 
 html[data-theme="light"] {
@@ -90,6 +97,13 @@ html[data-theme="light"] {
   --beam-d: rgba(110, 33, 196, 0.08);
   --glow-core: rgba(145, 109, 255, 0.20);
   --glow-mid: rgba(110, 33, 196, 0.08);
+  --gallery-wash-a: rgba(110, 33, 196, 0.08);
+  --gallery-wash-b: rgba(145, 109, 255, 0.055);
+  --gallery-wash-c: rgba(110, 33, 196, 0.04);
+  --mm-bubble-fill: #7E94BC;
+  --mm-bubble-stroke: #3D4C6A;
+  --mm-bubble-sheen: rgba(255, 255, 255, 0.55);
+  --mm-speck: #5C7196;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -418,6 +432,12 @@ html[data-theme="dark"] .hero-backdrop { mix-blend-mode: screen; }
   padding: var(--nav-offset) var(--content-pad) 26px;
   gap: 4px 28px;
   scroll-margin-top: 0;
+  background:
+    radial-gradient(ellipse 54% 42% at 44% 48%, var(--gallery-wash-a) 0%, transparent 70%),
+    radial-gradient(ellipse 38% 62% at 64% 40%, var(--gallery-wash-b) 0%, transparent 66%),
+    radial-gradient(ellipse 46% 28% at 32% 62%, var(--gallery-wash-c) 0%, transparent 62%),
+    radial-gradient(ellipse 22% 48% at 70% 68%, var(--gallery-wash-b) 0%, transparent 58%),
+    radial-gradient(ellipse 30% 24% at 52% 72%, var(--gallery-wash-c) 0%, transparent 60%);
 }
 
 /* --- 陈列墙:角色选段在最上方(tab 之上),整面缩略网格,大图舞台由弹窗承载 --- */
@@ -655,6 +675,7 @@ body.mode-wall .stage-close {
   flex-direction: column;
   align-items: center;
   min-width: 0;
+  overflow: visible;
 }
 
 /* tips 气泡:固定槽位 */
@@ -713,7 +734,36 @@ body.mode-album .gallery { --stage-size: min(480px, 46vh); }
   opacity: 0.55;
   pointer-events: none;
 }
-.stage svg { filter: drop-shadow(0 16px 26px var(--shadow)); }
+.stage { overflow: visible; }
+/* 阴影只打在身体上：整颗 SVG 套 filter 会裁掉出框的泡泡 / 星芒 */
+.stage svg { overflow: visible; }
+.stage svg .mm-body { filter: drop-shadow(0 16px 26px var(--shadow)); }
+.stage svg:not(.mm-svg) { filter: drop-shadow(0 16px 26px var(--shadow)); }
+
+.mm-bubble {
+  fill: var(--mm-bubble-fill, #C6D6F5);
+  stroke: var(--mm-bubble-stroke, #E8EEF8);
+  stroke-width: 1.2;
+}
+.mm-sheen { fill: var(--mm-bubble-sheen, rgba(255, 255, 255, 0.34)); }
+.mm-speck { fill: var(--mm-speck, #C6D6F5); }
+
+svg.is-sketch .mm-bubble {
+  fill: none;
+  stroke: var(--sketch-ink);
+  stroke-width: 2.4;
+}
+svg.is-sketch .mm-sheen { display: none; }
+svg.is-sketch .mm-speck {
+  fill: none;
+  stroke: var(--sketch-ink);
+  stroke-width: 1.1;
+}
+svg.is-sketch .mm-spark {
+  fill: none;
+  stroke: var(--sketch-ink);
+  stroke-width: 1.25;
+}
 
 /* 元信息:固定槽位 */
 .emo-meta {

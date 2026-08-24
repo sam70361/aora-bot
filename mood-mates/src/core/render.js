@@ -162,6 +162,7 @@
       viewBox: '0 0 240 240',
       width: '100%',
       height: '100%',
+      class: 'mm-svg',
       role: 'img',
       'aria-label': opts.label || ch.name || 'Mood Mates 角色'
     });
@@ -221,7 +222,7 @@
     var fxBack = el('g', { 'pointer-events': 'none' });
     svg.appendChild(fxBack);
 
-    var bodyG = el('g', {});
+    var bodyG = el('g', { class: 'mm-body' });
 
     /* 背层配饰（帽子 / 提手等从身体后面探出的部分） */
     var featureCtx = {
@@ -649,6 +650,7 @@
 
       if (sketch !== curSketch) {
         curSketch = sketch;
+        svg.classList.toggle('is-sketch', sketch > 0.5);
         if (sketch > 0.5) {
           /* 线稿描边优先取页面主题墨色 --sketch-ink（暗色页浅墨、亮色页深墨），
            * 无主题变量时回退体色加深 */
@@ -713,7 +715,7 @@
     function burst(count) {
       if (fx) fx.burst(count);
     }
-    /* 签名动作（云絮绽放 / 星星爆闪），返回 false 表示该皮肤无签名 */
+    /* 签名动作（云泡 / 星星爆闪），返回 false 表示该皮肤无签名 */
     function signature(strength) {
       return fx && fx.signature ? fx.signature(strength) : false;
     }
@@ -724,7 +726,8 @@
     }
 
     return { svg: svg, applyPose: applyPose, burst: burst, signature: signature, destroy: destroy,
-      signatureMouth: fx && fx.signatureMouth, signatureMouthMs: fx && fx.signatureMouthMs };
+      signatureMouth: fx && fx.signatureMouth, signatureMouthMs: fx && fx.signatureMouthMs,
+      signatureComplete: !!(fx && fx.signatureComplete) };
   }
 
   MM.createBall = createBall;

@@ -16,7 +16,7 @@ Mood Mates is a character emotion engine for AI assistants, customer-service bot
 
 | Character | Vertical | Silhouette | Eyes | Signature move |
 | --- | --- | --- | --- | --- |
-| **Nimbo** | General (default) | Cloud | Bean eyes | Cloud fluff bloom |
+| **Nimbo** | General (default) | Cloud | Bean eyes | Cloud bubbles |
 | **Twinkle** | General | Rounded star | Iris eyes + glasses | Star burst · orbiting pencil |
 
 Every visual asset is generated at runtime by parametric geometry functions (`src/core/geometry.js`). The design process and parameters are documented in [docs/DESIGN-PROVENANCE.md](docs/DESIGN-PROVENANCE.md).
@@ -27,7 +27,7 @@ Every visual asset is generated at runtime by parametric geometry functions (`sr
 - **Premium rendering**: multi-stop volumetric gradients, glazed highlight, bottom ambient occlusion, and a soft ground shadow that shrinks as the character bounces;
 - **Physically correct eyes**: iris eyes are layered under an eyelid clipPath (sclera / iris / pupil / light-fixed catchlights); closing, blinking, or arch-smiling automatically switches to a dark lash line — pupils can never float over closed lids; the eyeball slides inside the socket when gazing;
 - **Accessory rig**: glasses auto-fit to the actual eye positions, trail the gaze, slide on blinks, and get a periodic lens glint;
-- **Signature moves**: celebrations and idle antics are never a generic spin — the cloud blooms a ring of fluffy baby clouds, the star bursts starlight; clicking the stage fires a full celebration combo (signature move + a random spin or bounce + confetti);
+- **Signature moves**: celebrations and idle antics are never a generic spin — Nimbo blows near-and-far cloud bubbles, Twinkle bursts starlight; a stage click calls `celebrate()` (bubbles only for Nimbo; Twinkle still adds a limb beat and confetti);
 - **Characters are data**: one character = one self-contained data file — copy it, tweak the parameters, and you have a new character without touching engine code;
 - **Semantic slots + per-emotion contours**: the shared emotion base references semantic eye/mouth slots; characters can define bespoke contours per emotion via `eyeShapes` / `mouthShapes`;
 - **AI protocol**: wire up with one call — `handleAIMessage({ emotionId, tips })`; unknown IDs fall back to idle, never a blank screen;

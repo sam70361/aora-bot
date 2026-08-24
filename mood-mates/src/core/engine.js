@@ -130,6 +130,7 @@
       defaultEyeRing: family.calm,
       features: raw.features || {},
       fxSkin: raw.fxSkin || 'cloudpuff',
+      celebrateBeat: raw.celebrateBeat || null,
       emotions: raw.emotions || null,
       raw: raw
     };
@@ -251,6 +252,20 @@
       }
     });
     return out;
+  }
+
+  function sampleFrameList(frames, t) {
+    if (!frames.length) return null;
+    if (t <= frames[0].at) return clonePose(frames[0].pose);
+    var last = frames[frames.length - 1];
+    if (t >= last.at) return clonePose(last.pose);
+    for (var i = 0; i < frames.length - 1; i++) {
+      var a = frames[i], b = frames[i + 1];
+      if (t >= a.at && t < b.at) {
+        return lerpPose(a.pose, b.pose, easeInOutCubic((t - a.at) / (b.at - a.at)));
+      }
+    }
+    return clonePose(last.pose);
   }
 
   /* ---------------- 动画原语 ---------------- */
@@ -550,6 +565,7 @@
     this._transDur = 0;
     this._emoStart = 0;
     this._seq = null;
+    this._clickSeq = null;
     this._active = false;
     this._touring = false;
     this._tourTimer = 0;
@@ -619,6 +635,7 @@
         if (!def) return false;
       }
       var now = performance.now();
+      this._clickSeq = null;
       var prevId = this._def ? this._def.id : null;
       this._prevPose = this._lastPose ? clonePose(this._lastPose) : null;
       this._def = def;
@@ -640,15 +657,17 @@
       this._anticNext = now + rand(2500, 5000);
 
       this._emit('change', { id: def.id, def: def, auto: !!o.auto });
-      /* spinFx / confetti 是进入表情时的一次性事件；
-       * 有签名动作的角色用自己的风格庆祝（云絮绽放 / 星星爆闪），
-       * 没有签名动作的皮肤才回退到通用自旋 */
+      /* spinFx / confetti 是进入表情时的一次性事件。
+       * 完整签名（云宝云泡）本身就是一幕，不再叠撒花；
+       * 亮亮等仍走签名 + 撒花，无签名才回退自旋 */
       if (this._active) {
         var fx = def.base.body;
-        if (fx.spinFx > 0 && !this.signature(fx.spinFx >= 1 ? 1 : 0.7)) {
-          this.spin(fx.spinFx >= 1 ? 2 : 1);
+        var signed = false;
+        if (fx.spinFx > 0) {
+          signed = this.signature(fx.spinFx >= 1 ? 1 : 0.7);
+          if (!signed) this.spin(fx.spinFx >= 1 ? 2 : 1);
         }
-        if (fx.confetti > 0) this.burst(20);
+        if (fx.confetti > 0 && !(signed && this.ball.signatureComplete)) this.burst(20);
       }
       if (!this._active) this.renderStatic();
       return true;
@@ -725,7 +744,7 @@
       if (this.ball.burst) this.ball.burst(count);
       return this;
     },
-    /* 签名动作：角色专属交互（云絮绽放 / 星星爆闪）
+    /* 签名动作：角色专属交互（云泡 / 星星爆闪）
      * 返回 false 表示该角色皮肤没有签名动作 */
     signature: function (strength) {
       var ok = this.ball.signature ? !!this.ball.signature(strength) : false;
@@ -736,16 +755,58 @@
       }
       return ok;
     },
-    /* 庆祝组合（舞台点击交互）：签名动作 + 随机肢体动作 + 撒花，
-     * 让点击反馈与球球的"甩带 + 烟花"同量级，而非只有单一签名动作 */
+    /* 点击庆祝：不切换图鉴表情。有 celebrateBeat 的角色叠一小节脸；
+     * 完整签名不再叠自旋 / 撒花，其余仍为签名 + 随机肢体 + 撒花 */
     celebrate: function (strength) {
       var s = strength == null ? 1 : strength;
-      this.signature(s);
+      this._playCelebrateBeat();
+      var signed = this.signature(s);
+      if (signed && this.ball.signatureComplete) return this;
       var r = Math.random();
       if (r < 0.5) this.spin(1);
       else if (r < 0.85) this.bounce();
       this.burst(Math.round(10 + 8 * s));
       return this;
+    },
+    /* 点击庆祝脸：临时姿态，播完弹回当前表情，不改 emotionId */
+    _playCelebrateBeat: function () {
+      var beat = this.character && this.character.celebrateBeat;
+      if (!beat || !beat.frames || !beat.frames.length) return;
+      var ch = this.character;
+      var frames = beat.frames.map(function (f) {
+        return { at: f.at || 0, pose: resolvePoseColors(applySpec(defaultPose(), f), ch) };
+      }).sort(function (x, y) { return x.at - y.at; });
+      var now = performance.now();
+      this._clickSeq = { start: now, frames: frames, fade: beat.fade != null ? beat.fade : 280 };
+      var expr = beat.expr && ch.eyeFamily[beat.expr] ? beat.expr : 'happy';
+      var mouth = beat.mouth && ch.mouthShapes[beat.mouth] ? beat.mouth : 'grin';
+      this._setExpr(expr, 10);
+      this._setMouth(mouth, 10);
+      this._mouthHoldUntil = now + frames[frames.length - 1].at + this._clickSeq.fade;
+    },
+    _applyClickBeat: function (basePose, now) {
+      var seq = this._clickSeq;
+      if (!seq) return null;
+      var t = now - seq.start;
+      var frames = seq.frames;
+      var last = frames[frames.length - 1];
+      var fade = seq.fade;
+      if (t >= last.at + fade) {
+        this._clickSeq = null;
+        if (this._def) {
+          this._setMouth(this._def.mouth, 8);
+          this._setExpr(this._def.pool[this._poolPos] || this._def.pool[0], 8);
+        }
+        return null;
+      }
+      var beat = t >= last.at ? last.pose : sampleFrameList(frames, t);
+      var out = t >= last.at
+        ? lerpPose(beat, basePose, easeInOutCubic((t - last.at) / fade))
+        : beat;
+      out.left.ring = basePose.left.ring;
+      out.right.ring = basePose.right.ring;
+      out.face.mouthRing = basePose.face.mouthRing;
+      return out;
     },
     /* 弹跳（4 段递减抛物线） */
     bounce: function () {
@@ -877,8 +938,6 @@
       }
 
       for (var i = 0; i < def.anims.length; i++) applyAnim(pose, def.anims[i], t, this);
-
-      pose.body.sketch = Math.max(pose.body.sketch || 0, this._style.sketch || 0);
 
       var dt = this._dt || 1 / 60;
 
@@ -1031,6 +1090,12 @@
         pose.left.ring = this._ringCur[0];
         pose.right.ring = this._ringCur[1];
       }
+      if (this._clickSeq) {
+        var mixed = this._applyClickBeat(pose, now);
+        if (mixed) pose = mixed;
+      }
+      /* 线稿在点击庆祝叠脸 / 过渡插值之后再写回，避免被关键帧盖掉 */
+      pose.body.sketch = Math.max(pose.body.sketch || 0, this._style.sketch || 0);
       return pose;
     },
 

@@ -7,7 +7,7 @@
  *   发射粒子 emit ：签名动作专属 —— 每种皮肤有自己的发射锚点与行为脚本
  *
  * 签名动作（signature，替代千篇一律的"转圈甩粒子"）：
- *   cloudpuff 云絮绽放：身体四周噗噗冒出一圈蓬松小云朵，摇曳上飘后消散
+ *   cloudpuff 云泡：一口一扇区，远近不一；连点换方向。近泡先破、远泡后破
  *   stardust 星星爆闪：环身星芒逐个弹出闪烁；思考轨道混入旋转铅笔
  *
  * 深度处理：轨道粒子按 z 值在 front / back 两层切换，
@@ -22,12 +22,47 @@
 
   function rand(a, b) { return a + Math.random() * (b - a); }
   function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
+  function r2(v) { return Math.round(v * 100) / 100; }
+
+  function ringD(ring) {
+    var s = 'M';
+    for (var i = 0; i < ring.length; i++) {
+      s += (i ? 'L' : '') + r2(ring[i][0]) + ' ' + r2(ring[i][1]);
+    }
+    return s + 'Z';
+  }
+
+  /* 与主体同生成器的迷你云剪影，原点居中，无高光点 */
+  function cloudSilhouette() {
+    if (!MM.geo || !MM.geo.buildBody) return 'M-1 0.2 A1 0.7 0 1 1 1 0.2 A1 0.7 0 1 1 -1 0.2Z';
+    return ringD(MM.geo.buildBody({ type: 'cloud', r: 0.2, lobes: 7, amp: 0.08, flat: 0.12, cx: 0, cy: 0 }));
+  }
 
   function el(tag, attrs) {
     var node = document.createElementNS(SVGNS, tag);
     for (var k in attrs) node.setAttribute(k, attrs[k]);
     return node;
   }
+
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = (Math.random() * (i + 1)) | 0;
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  /* 一口一个扇区；连点轮换，点得快会铺到左右和头顶 */
+  var PUFF_SECTORS = [
+    { mid: -0.28, spread: 0.50 },
+    { mid: -1.05, spread: 0.48 },
+    { mid: -1.85, spread: 0.50 },
+    { mid:  0.22, spread: 0.36 },
+    { mid: -2.45, spread: 0.40 },
+    { mid: -1.45, spread: 0.36 }
+  ];
+  var puffMem = { lastAt: 0, queue: [] };
 
   /* ---------------- 通用小形状 ---------------- */
 
@@ -54,114 +89,153 @@
    * signature(api, strength)  签名动作：用 api.emit 发射行为粒子 */
   var SKINS = {
 
-    /* ===== 云絮（云宝 · 通用）===== */
+    /* ===== 云泡（云宝 · 通用）===== */
     cloudpuff: {
       colors: ['#C3D4F2', '#9FB3D6', '#F5D889', '#9A8AE8'],
       orbitSize: [2.8, 4.4],
       burstSize: [3, 5.4],
-      makeOrbitNode: function (c) { return el('circle', { r: 1, fill: c, opacity: 0.9 }); },
+      makeOrbitNode: function (c) { return el('circle', { r: 1, fill: c, opacity: 0.9, class: 'mm-spark' }); },
       makeBurstNode: function (c) {
         return Math.random() < 0.3
-          ? el('path', { d: SPARK_PATH, fill: c })
-          : el('circle', { r: 1, fill: c, opacity: 0.9 });
+          ? el('path', { d: SPARK_PATH, fill: c, class: 'mm-spark' })
+          : el('circle', { r: 1, fill: c, opacity: 0.9, class: 'mm-spark' });
       },
-      /* 云絮绽放：身体四周噗噗冒出一圈蓬松小云朵——带过冲的弹性弹出、
-       * 摇曳上飘、末段收缩淡出；每朵出生时伴一圈"噗"的空气涟漪，
-       * 云朵之间点缀微光四芒星。小云朵为多圆拼合的迷你云剪影
-       * （组透明度整体淡入淡出，拼接处无叠色缝），左上叠受光提亮，
-       * 与主体"左上光源"一致。全部锚定身体中心 + 实时身体位移 */
+      /* 签名即完整一幕：点击庆祝不再叠自旋 / 撒花 */
+      signatureComplete: true,
+      /* 云泡：一口一个扇区。先出口气最远，后出口气更近；近的先破、远的后破。
+       * 连点换扇区，点得够快会铺到左右和头顶。 */
       signature: function (api, strength) {
-        var n = Math.round(6 + 4 * strength);
+        var full = strength >= 0.78;
+        var C = api.C;
+        var cloudD = cloudSilhouette();
+        var mouth = api.anchors && api.anchors.mouth;
+        var x0 = mouth ? mouth.x + 6 : C + 10;
+        var y0 = mouth ? mouth.y : C + 32;
         var halfW = (api.anchors && api.anchors.halfW) || 104;
+        var topSpan = api.anchors && api.anchors.top ? (C - api.anchors.top.y) : 104;
+        var bodyR = Math.max(halfW, topSpan);
+        var now = performance.now();
 
-        /* 迷你云剪影：底部扁圆 + 三团圆弧，单位尺寸，transform 缩放 */
-        function puffNode(base) {
+        function easeOut(t) { return 1 - Math.pow(1 - t, 4); }
+
+        function emitPop(delay, x, y) {
+          var ang = rand(-2.2, 0.4);
+          api.emit(el('circle', { r: 1, class: 'mm-speck' }), {
+            delay: delay, x: x, y: y, max: 0.24,
+            step: function (p, dt, u) {
+              var e = 1 - Math.pow(1 - u, 3);
+              var px = x + api.state.bodyX + Math.cos(ang) * 8 * e;
+              var py = y + api.state.bodyY + Math.sin(ang) * 8 * e - 6 * u;
+              p.node.setAttribute('opacity', ((1 - u) * 0.55).toFixed(3));
+              p.node.setAttribute('transform',
+                'translate(' + px.toFixed(2) + ' ' + py.toFixed(2) + ') scale(' + (1.6 * (1 - 0.4 * u)).toFixed(2) + ')');
+            }
+          });
+        }
+
+        function emitBubble(opt) {
+          var destX = C + Math.cos(opt.ang) * (bodyR + opt.clear);
+          var destY = C + Math.sin(opt.ang) * (bodyR + opt.clear);
+          var travel = opt.travel;
+          var hang = opt.hang;
+          var pop = 0.26;
+          var life = travel + hang + pop;
+          var drift = opt.drift;
+          var wx = opt.wx, wy = opt.wy, wp = opt.wp;
           var g = el('g', {});
-          g.appendChild(el('ellipse', { cx: 0, cy: 0.32, rx: 1.02, ry: 0.5, fill: base }));
-          g.appendChild(el('circle', { cx: -0.58, cy: 0.06, r: 0.56, fill: base }));
-          g.appendChild(el('circle', { cx: 0.04, cy: -0.26, r: 0.64, fill: base }));
-          g.appendChild(el('circle', { cx: 0.62, cy: 0.1, r: 0.5, fill: base }));
-          g.appendChild(el('circle', { cx: -0.2, cy: -0.34, r: 0.34, fill: '#FFFFFF', opacity: 0.55 }));
-          g.appendChild(el('circle', { cx: 0.3, cy: -0.12, r: 0.22, fill: '#FFFFFF', opacity: 0.35 }));
-          return g;
+          g.appendChild(el('path', { d: cloudD, class: 'mm-bubble' }));
+          g.appendChild(el('ellipse', {
+            cx: -5.2, cy: -7.4, rx: 3.1, ry: 2.1, class: 'mm-sheen'
+          }));
+          api.emit(g, {
+            delay: opt.delay, x: x0, y: y0, max: life,
+            step: function (p, dt, u) {
+              var t = u * life;
+              var x, y, s, op;
+              if (t < travel) {
+                var k = easeOut(t / travel);
+                x = x0 + (destX - x0) * k;
+                y = y0 + (destY - y0) * k;
+                var grow = Math.min(1, t / 0.1);
+                s = 0.18 + 0.82 * grow;
+                op = 0.82 * grow;
+              } else if (t < travel + hang) {
+                var h = (t - travel) / hang;
+                x = destX + Math.sin(t * wx + wp) * 2.4;
+                y = destY - h * drift + Math.sin(t * wy + wp) * 1.6;
+                s = 1 + 0.04 * Math.sin(t * 7 + wp);
+                op = 0.82;
+              } else {
+                var pk = (t - travel - hang) / pop;
+                x = destX + Math.sin((travel + hang) * wx + wp) * 2.4;
+                y = destY - drift + Math.sin((travel + hang) * wy + wp) * 1.6;
+                s = pk < 0.34 ? 1 + 0.4 * (pk / 0.34) : 1.4 * Math.max(0, 1 - (pk - 0.34) / 0.66);
+                op = pk < 0.22 ? 0.82 : 0.82 * Math.max(0, 1 - (pk - 0.22) / 0.78);
+              }
+              x += api.state.bodyX;
+              y += api.state.bodyY;
+              p.node.setAttribute('opacity', op.toFixed(3));
+              p.node.setAttribute('transform',
+                'translate(' + x.toFixed(2) + ' ' + y.toFixed(2) + ') scale(' + (opt.size * s).toFixed(3) + ')');
+            }
+          });
+          emitPop(opt.delay + (travel + hang) * 1000, destX, destY - drift * 0.65);
         }
 
-        for (var i = 0; i < n; i++) {
-          (function (i) {
-            var ang = TAU * i / n + rand(-0.25, 0.25);
-            var rr = halfW * rand(0.98, 1.24);
-            var x0 = api.C + Math.cos(ang) * rr;
-            var y0 = api.C + Math.sin(ang) * rr * 0.9;
-            var size = rand(7, 12);
-            var sway = rand(2.5, 5) * (Math.random() < 0.5 ? -1 : 1);
-            var phase = rand(0, TAU);
-            var rise = rand(26, 46);
-            var tilt = rand(4, 10) * (Math.random() < 0.5 ? -1 : 1);
-            /* 云絮底色取比本体略深的雾蓝，深浅主题下都可辨 */
-            var base = Math.random() < 0.55 ? '#CBD9F4' : '#AFC4EC';
-            var delay = i * 70;
-
-            /* "噗"——出生点的空气涟漪，快速扩散淡出 */
-            api.emit(el('circle', { fill: 'none', stroke: '#9FB3D6', 'stroke-width': 1.2 }), {
-              delay: delay, x: x0, y: y0,
-              max: 0.42,
-              step: function (p, dt, u) {
-                var x = x0 + api.state.bodyX, y = y0 + api.state.bodyY;
-                p.node.setAttribute('cx', x.toFixed(2));
-                p.node.setAttribute('cy', y.toFixed(2));
-                p.node.setAttribute('r', (size * (0.4 + 1.5 * u)).toFixed(2));
-                p.node.setAttribute('opacity', (0.45 * (1 - u)).toFixed(3));
-              }
+        /* 一口气息：先出的最远、后出的更近；破泡反过来，近的先破 */
+        function emitBreath(sec, n) {
+          var slots = n >= 4
+            ? ['far', 'mid', 'far', 'near']
+            : n === 3 ? ['far', 'mid', 'near'] : ['mid', 'near'];
+          var delays = n >= 4
+            ? [0, rand(42, 78), rand(105, 160), rand(180, 255)]
+            : n === 3 ? [0, rand(50, 90), rand(130, 200)] : [0, rand(60, 110)];
+          for (var i = 0; i < n; i++) {
+            var kind = slots[i];
+            var clear, travel, hang, size;
+            if (kind === 'far') {
+              clear = rand(52, 72);
+              travel = rand(0.48, 0.62);
+              hang = rand(0.68, 0.92);
+              size = rand(0.42, 0.54);
+            } else if (kind === 'mid') {
+              clear = rand(32, 46);
+              travel = rand(0.30, 0.40);
+              hang = rand(0.42, 0.60);
+              size = rand(0.50, 0.62);
+            } else {
+              clear = rand(18, 28);
+              travel = rand(0.18, 0.26);
+              hang = rand(0.22, 0.36);
+              size = rand(0.58, 0.72);
+            }
+            var bias = (i / Math.max(1, n - 1) - 0.5) * 1.15;
+            emitBubble({
+              delay: delays[i],
+              ang: sec.mid + bias * sec.spread + rand(-0.08, 0.08),
+              clear: clear,
+              travel: travel,
+              hang: hang,
+              size: size,
+              drift: kind === 'far' ? rand(10, 18) : kind === 'mid' ? rand(6, 11) : rand(3, 7),
+              wx: rand(4.2, 7.5),
+              wy: rand(3.4, 6.2),
+              wp: rand(0, 6.3)
             });
-
-            /* 小云朵本体：过冲弹出 → 缓升摇曳 → 收缩淡出 */
-            api.emit(puffNode(base), {
-              delay: delay, x: x0, y: y0,
-              max: rand(1.1, 1.5),
-              step: function (p, dt, u) {
-                var s;
-                if (u < 0.18) { var k = u / 0.18; s = 1.18 * (1 - Math.pow(1 - k, 3)); }
-                else if (u < 0.34) { s = 1.18 - 0.18 * (u - 0.18) / 0.16; }
-                else { s = 1; }
-                if (u > 0.72) { s *= 1 - 0.5 * (u - 0.72) / 0.28; }
-                var x = x0 + api.state.bodyX + Math.sin(phase + u * 5.2) * sway;
-                var y = y0 + api.state.bodyY - rise * u;
-                var rot = tilt * Math.sin(phase + u * 3.4);
-                var op = u > 0.72 ? (1 - u) / 0.28 : 1;
-                p.node.setAttribute('opacity', (op * 0.95).toFixed(3));
-                p.node.setAttribute('transform',
-                  'translate(' + x.toFixed(2) + ' ' + y.toFixed(2) + ') rotate(' + rot.toFixed(1) + ') scale(' + (size * s).toFixed(3) + ')');
-              }
-            });
-          })(i);
+          }
         }
 
-        /* 云隙微光：少量四芒星在云朵间隙弹入闪烁 */
-        var nSpark = Math.round(3 + 2 * strength);
-        for (var k = 0; k < nSpark; k++) {
-          (function (k) {
-            var ang = TAU * (k + 0.5) / nSpark + rand(-0.3, 0.3);
-            var rr = halfW * rand(1.05, 1.35);
-            var x0 = api.C + Math.cos(ang) * rr;
-            var y0 = api.C + Math.sin(ang) * rr * 0.9;
-            var size = rand(2, 3.6);
-            var spin = rand(-140, 140);
-            api.emit(el('path', { d: SPARK_PATH, fill: k % 2 ? '#9A8AE8' : '#F5D889' }), {
-              delay: 240 + k * 130,
-              x: x0, y: y0,
-              max: rand(0.5, 0.85),
-              step: function (p, dt, u) {
-                var x = x0 + api.state.bodyX;
-                var y = y0 + api.state.bodyY - 16 * u;
-                var s = u < 0.25 ? size * (u / 0.25) : size * (1 - 0.3 * (u - 0.25) / 0.75);
-                var tw = 0.7 + 0.3 * Math.sin(u * 24 + k);
-                p.node.setAttribute('opacity', ((1 - Math.pow(u, 2.2)) * tw).toFixed(3));
-                p.node.setAttribute('transform',
-                  'translate(' + x.toFixed(2) + ' ' + y.toFixed(2) + ') rotate(' + (spin * u).toFixed(1) + ') scale(' + s.toFixed(3) + ')');
-              }
-            });
-          })(k);
+        if (!full) {
+          emitBreath(PUFF_SECTORS[(Math.random() * 3) | 0], 2);
+          return true;
         }
+
+        if (now - puffMem.lastAt > 1200) puffMem.queue = [];
+        puffMem.lastAt = now;
+        if (!puffMem.queue.length) {
+          puffMem.queue = [PUFF_SECTORS[0]].concat(shuffle(PUFF_SECTORS.slice(1)));
+        }
+        emitBreath(puffMem.queue.shift(), 4);
         return true;
       }
     },
@@ -171,11 +245,11 @@
       colors: ['#F5B840', '#F7D07A', '#F09A4E', '#FBE3A8'],
       orbitSize: [3.4, 5.6],
       burstSize: [3, 6.4],
-      makeOrbitNode: function (c) { return el('path', { d: SPARK_PATH, fill: c }); },
+      makeOrbitNode: function (c) { return el('path', { d: SPARK_PATH, fill: c, class: 'mm-spark' }); },
       makeBurstNode: function (c) {
         return Math.random() < 0.4
-          ? el('path', { d: STAR_PATH, fill: c })
-          : el('path', { d: SPARK_PATH, fill: c });
+          ? el('path', { d: STAR_PATH, fill: c, class: 'mm-spark' })
+          : el('path', { d: SPARK_PATH, fill: c, class: 'mm-spark' });
       },
       /* 思考轨道里偶尔混入一支旋转铅笔 */
       orbitSpecial: {
@@ -199,7 +273,7 @@
             var size = rand(3.4, 6.2);
             var spin = rand(-140, 140);
             var big = Math.random() < 0.45;
-            api.emit(el('path', { d: big ? STAR_PATH : SPARK_PATH, fill: api.pick() }), {
+            api.emit(el('path', { d: big ? STAR_PATH : SPARK_PATH, fill: api.pick(), class: 'mm-spark' }), {
               delay: i * 55,
               x: x0, y: y0,
               max: rand(0.75, 1.15),
@@ -249,7 +323,8 @@
       return {
         x: C + hx * ca - hy * sa,
         y: C + hx * sa + hy * ca,
-        z: Math.cos(lam) * Math.cos(o.tilt)
+        z: Math.cos(lam) * Math.cos(o.tilt),
+        l: lam
       };
     }
 
@@ -322,11 +397,13 @@
     /* ---- 签名动作发射 ---- */
     var emitApi = {
       C: C,
+      defs: ctx.defs,
       anchors: anchors,
       state: lastState,
       pick: function () { return pick(); },
+      orbitPoint: function (o, lam) { return orbitPoint(o, lam); },
       emit: function (node, cfg) {
-        if (emits.length > 44) { return; }
+        if (emits.length > 80) { return; }
         node.setAttribute('opacity', '0');
         front.appendChild(node);
         emits.push({
@@ -334,7 +411,8 @@
           x: cfg.x, y: cfg.y,
           born: performance.now() + (cfg.delay || 0),
           life: 0, max: cfg.max || 1,
-          step: cfg.step
+          step: cfg.step,
+          cleanup: cfg.cleanup
         });
       }
     };
@@ -452,6 +530,7 @@
         em.life += dt;
         if (em.life >= em.max) {
           em.node.remove();
+          if (em.cleanup) em.cleanup();
           emits.splice(ei, 1);
           continue;
         }
@@ -462,7 +541,7 @@
     function destroy() {
       orbiters.forEach(function (o) { o.node.remove(); });
       pieces.forEach(function (p) { p.el.remove(); });
-      emits.forEach(function (e) { e.node.remove(); });
+      emits.forEach(function (e) { e.node.remove(); if (e.cleanup) e.cleanup(); });
       orbiters.length = 0;
       pieces.length = 0;
       emits.length = 0;
@@ -470,7 +549,8 @@
 
     return { update: update, burst: burst, signature: signature, destroy: destroy,
       signatureMouth: skin.signatureMouth || null,
-      signatureMouthMs: skin.signatureMouthMs || 0 };
+      signatureMouthMs: skin.signatureMouthMs || 0,
+      signatureComplete: !!skin.signatureComplete };
   }
 
   createFx.registerSkin = function (name, def) { SKINS[name] = def; };
