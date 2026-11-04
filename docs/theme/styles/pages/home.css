@@ -710,28 +710,77 @@
     }
   }
 
-  /* The one-line tag. Its box is fixed; a long tag is cut with an ellipsis, never wrapped. */
+  /*
+   * The format switch and the one-line copy button in one box. The box is fixed;
+   * a long line is cut with an ellipsis, never wrapped. The switch sits as far
+   * from the left edge as the copy icon does from the right.
+   */
   .site-home__chip {
+    --_inset: calc((var(--aora-control-h-lg) - 2rem) / 2);
     display: flex;
     flex: 1 1 18rem;
     align-items: center;
     gap: var(--aora-space-2);
+    min-width: 0;
     max-width: 32rem;
     height: var(--aora-control-h-lg);
-    /* The icon's own margin on the right: as far from the edge as from the top and bottom. */
-    padding: 0 calc((var(--aora-control-h-lg) - 2rem) / 2) 0 var(--aora-space-4);
-    border: 0;
+    padding: 0 var(--_inset);
     border-radius: var(--aora-radius-md);
     background: var(--aora-surface-sunken);
     box-shadow: var(--site-ring);
     color: var(--aora-text);
-    text-align: start;
-    cursor: pointer;
     transition: background-color var(--aora-duration-fast) var(--aora-ease-standard);
 
-    &:hover {
+    &:has(.site-home__copy:hover) {
       background: var(--aora-fill);
     }
+  }
+
+  .site-home__formats {
+    display: flex;
+    flex: none;
+    gap: 0.125rem;
+  }
+
+  .site-home__format {
+    height: 1.75rem;
+    padding: 0 var(--aora-space-2);
+    border: 0;
+    border-radius: var(--aora-radius-pill);
+    background: transparent;
+    color: var(--aora-text-muted);
+    font: inherit;
+    font-size: var(--aora-text-xs);
+    cursor: pointer;
+    transition:
+      background-color var(--aora-duration-fast) var(--aora-ease-standard),
+      color var(--aora-duration-fast) var(--aora-ease-standard);
+
+    &:hover {
+      color: var(--aora-text);
+    }
+
+    &[aria-checked='true'] {
+      background: var(--aora-surface);
+      box-shadow: var(--site-ring);
+      color: var(--aora-text);
+    }
+  }
+
+  .site-home__copy {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: var(--aora-space-2);
+    min-width: 0;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
 
     & code {
       flex: 1;
@@ -805,6 +854,17 @@
     &[data-active] {
       box-shadow: 0 0 0 2px var(--site-swatch, var(--aora-accent));
       color: var(--site-swatch, var(--aora-accent));
+    }
+
+    /* Nothing to tune: present, so the row does not shift, but inert. */
+    &[aria-disabled] {
+      opacity: 0.45;
+      cursor: default;
+
+      &:hover {
+        background: var(--aora-surface);
+        transform: none;
+      }
     }
   }
 
@@ -960,11 +1020,6 @@
     &:checked::after {
       transform: translateX(1rem);
     }
-  }
-
-  .site-home__tuneNone {
-    margin: 0;
-    color: var(--aora-text-muted);
   }
 
   /* ---- narrow: the capsules lie down ----------------------------------------- */

@@ -2,6 +2,10 @@
 
 一个免费的接口，能把任意字符串变成一个角色。把地址放进 `<img>`，就得到一个确定的 Aora Bot 头像：同一个 id 永远返回同一个角色，不用安装、不用存储、也不用注册。
 
+:::warning 中国大陆暂不可用
+接口部署在 `aora-bot.vercel.app`，这个域名在中国大陆通常无法访问，大陆用户看到的头像可能显示不出来。面向大陆用户的访问方案已在计划中。
+:::
+
 ## 使用
 
 ```html
@@ -20,12 +24,15 @@ id 可以是任意不超过 128 个字符的 URL 安全字符串：用户名、�
 
 所有参数都是可选的，写在查询字符串里。
 
-| 参数      | 取值                                                           | 默认     | 作用                                           |
-| --------- | -------------------------------------------------------------- | -------- | ---------------------------------------------- |
-| `style`   | `vector`、`pixel`、`kaomoji`                                   | `vector` | 角色使用的[画风系列](/design/styles/vector)    |
-| `variant` | 所选画风的变体，见下方列表                                     | 画风自带 | 画风内的上色变体                               |
-| `state`   | 任意[状态](/design/states)，如 `happy`、`thinking`、`sleeping` | 静息表情 | 角色的表情与姿态                               |
-| `size`    | `16` 到 `1024` 的整数                                          | `128`    | SVG 的宽高，单位像素；超出范围会被限制在区间内 |
+| 参数      | 取值                                                           | 默认       | 作用                                           |
+| --------- | -------------------------------------------------------------- | ---------- | ---------------------------------------------- |
+| `style`   | `vector`、`pixel`、`kaomoji`                                   | `vector`   | 角色使用的[画风系列](/design/styles/vector)    |
+| `variant` | 所选画风的变体，见下方列表                                     | 画风自带   | 画风内的上色变体                               |
+| `state`   | 任意[状态](/design/states)，如 `happy`、`thinking`、`sleeping` | 静息表情   | 角色的表情与姿态                               |
+| `shape`   | 任意[形状](/design/shapes) id，如 `mochi`、`hex`               | 由 id 决定 | 替换角色的身体                                 |
+| `color`   | [配色](/design/palette)里的任意色相，如 `blue`、`pink`         | 由 id 决定 | 替换角色的颜色                                 |
+| `face`    | `cute`、`eyes` 或 `line`，见[五官](/design/face)               | `cute`     | 脸的样式                                       |
+| `size`    | `16` 到 `1024` 的整数                                          | `128`      | SVG 的宽高，单位像素；超出范围会被限制在区间内 |
 
 各画风的变体：
 
@@ -33,16 +40,22 @@ id 可以是任意不超过 128 个字符的 URL 安全字符串：用户名、�
 - `pixel`：`crisp`（默认）、`dot`、`block`
 - `kaomoji`：`plain`（默认）、`bubble`
 
+所选画风的每个参数也都可以作为查询参数，例如 `vector` 的 `strokeWidth` 或 `paperOffset`，`pixel` 的 `grid` 或 `outline`，`kaomoji` 的 `weight` 或 `tail`。数字直接写数字，布尔值写 `true` 或 `false`（也接受 `1` 和 `0`）。取值范围见各画风页面：[vector](/design/styles/vector)、[pixel](/design/styles/pixel)、[kaomoji](/design/styles/kaomoji)。
+
 ```text
 https://aora-bot.vercel.app/avatar/alice.svg?style=pixel&variant=block&size=96
 https://aora-bot.vercel.app/avatar/alice.svg?state=happy
+https://aora-bot.vercel.app/avatar/mochi-blue.svg?shape=mochi&color=blue&state=happy
+https://aora-bot.vercel.app/avatar/alice.svg?variant=paper&paperOffset=12
 ```
 
-取值不在上述范围内，例如 `style=oil` 或 `size=big`，会返回 HTTP 400 和一行纯文本原因。接口不认识的查询参数会被忽略。背景是透明的。
+首页的[控制台](/)可以替你生成这样的地址：在代码条上选择头像格式，就能复制你搭好的角色的链接。
+
+取值不在上述范围内，例如 `style=oil`、`color=plaid`、`size=big`，或超出范围的画风参数，会返回 HTTP 400 和一行纯文本原因。接口不认识的查询参数会被忽略。背景是透明的。
 
 ## 你会得到哪个角色
 
-如果 id 恰好是[阵容](/design/cast)里的角色 id，就得到那个角色：`/avatar/luna.svg` 就是露娜。其他 id 会被哈希到 46 位阵容成员中的一位，结果稳定，分布也均匀。阵容只有 46 位，所以不同的 id 可能落到同一个角色上；请把它当作一个友好的默认头像，而不是唯一的身份标识。
+如果 id 恰好是[阵容](/design/cast)里的角色 id，就得到那个角色：`/avatar/luna.svg` 就是露娜。其他 id 会被哈希到 46 位阵容成员中的一位，结果稳定，分布也均匀。`shape`、`color` 和 `face` 会替换由 id 选出的内容，所以三者都写上时，id 只是一个文件名。阵容只有 46 位，所以不同的 id 可能落到同一个角色上；请把它当作一个友好的默认头像，而不是唯一的身份标识。
 
 对同一个引擎版本，结果是固定的。如果某次发布重画了角色或调整了阵容，同一个 id 的样子可能随之改变。
 

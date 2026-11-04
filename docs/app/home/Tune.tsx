@@ -39,6 +39,13 @@ export function TuneButton({
   const set = (key: string, value: ParamValue) =>
     onChange(cleanParams(preset.style, { ...preset.params, [key]: value }));
   const changed = Object.keys(preset.params).length > 0;
+  const none = params.length === 0;
+
+  // Moving to a variant with nothing to tune must not leave an empty panel open.
+  useEffect(() => {
+    const el = panel.current;
+    if (none && el?.matches(':popover-open')) el.hidePopover();
+  }, [none]);
 
   // Opened above the button, centred on it and kept on screen. It is measured as it opens, so a resize closes it rather than leave it adrift.
   useEffect(() => {
@@ -70,9 +77,10 @@ export function TuneButton({
         ref={button}
         type="button"
         className="site-home__tool"
-        popoverTarget={id}
+        popoverTarget={none ? undefined : id}
         aria-label={t('home.tune')}
-        title={t('home.tune')}
+        aria-disabled={none || undefined}
+        title={none ? t('home.tune.none') : t('home.tune')}
         data-active={changed || undefined}
       >
         <TuneIcon />
@@ -92,19 +100,15 @@ export function TuneButton({
             {t('home.tune.reset')}
           </button>
         </div>
-        {params.length === 0 ? (
-          <p className="site-home__tuneNone">{t('home.tune.none')}</p>
-        ) : (
-          params.map(([key, spec]) => (
-            <Control
-              key={`${preset.style}:${key}`}
-              name={label.param(series.id, key, spec.label ?? key)}
-              spec={spec}
-              value={valueOf(key)}
-              onChange={(value) => set(key, value)}
-            />
-          ))
-        )}
+        {params.map(([key, spec]) => (
+          <Control
+            key={`${preset.style}:${key}`}
+            name={label.param(series.id, key, spec.label ?? key)}
+            spec={spec}
+            value={valueOf(key)}
+            onChange={(value) => set(key, value)}
+          />
+        ))}
       </div>
     </>
   );

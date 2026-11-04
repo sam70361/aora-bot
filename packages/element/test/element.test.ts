@@ -148,6 +148,39 @@ describe('<aora-bot>', () => {
     );
   });
 
+  it('passes style-options to the engine as series parameters', () => {
+    const el = mount({ variant: 'paper', 'style-options': '{"paperOffset":12}' });
+    const plain = mount({ variant: 'paper' });
+    const update = vi.spyOn(el.controller!, 'update');
+
+    expect(markup(el)).not.toBe(markup(plain));
+
+    el.setAttribute('style-options', '{"paperOffset":4}');
+    expect(update).toHaveBeenLastCalledWith(expect.objectContaining({ styleOptions: { paperOffset: 4 } }));
+    expect(markup(el)).not.toBe(markup(plain));
+    expect(el.styleOptions).toBe('{"paperOffset":4}');
+  });
+
+  it.each(['{paperOffset: 12', 'paperOffset', '[12]', 'null', '12', '"paperOffset"', ''])(
+    'ignores style-options %j',
+    (value) => {
+      const el = mount({ variant: 'paper', 'style-options': value });
+
+      expect(markup(el)).toBe(markup(mount({ variant: 'paper' })));
+      expect(() => el.setAttribute('style-options', value)).not.toThrow();
+    },
+  );
+
+  it('returns to the series defaults when style-options is removed', () => {
+    const el = mount({ variant: 'paper', 'style-options': '{"paperOffset":12}' });
+    const update = vi.spyOn(el.controller!, 'update');
+
+    el.removeAttribute('style-options');
+
+    expect(update).toHaveBeenLastCalledWith(expect.objectContaining({ styleOptions: {} }));
+    expect(markup(el)).toBe(markup(mount({ variant: 'paper' })));
+  });
+
   it('paints the colour through custom properties and clears the old ones', () => {
     const el = mount({ color: 'black' });
     expect(mark(el).style.getPropertyValue('--aora-face-soft')).not.toBe('');

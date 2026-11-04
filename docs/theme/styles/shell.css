@@ -142,6 +142,32 @@
     pointer-events: none;
   }
 
+  /* ---- footer ---------------------------------------------------------------- */
+
+  .site-footer {
+    padding: var(--aora-space-6) var(--site-page-pad);
+    text-align: center;
+  }
+
+  .site-footer__text {
+    margin: 0;
+    font-size: var(--aora-text-xs);
+    line-height: 1.6;
+    color: var(--aora-text-muted);
+    text-wrap: balance;
+  }
+
+  .site-footer__link {
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+      color: var(--aora-accent);
+      text-decoration: underline;
+      text-underline-offset: 0.2em;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .site-backdrop__fallback {
       animation: none;

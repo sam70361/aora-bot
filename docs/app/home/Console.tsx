@@ -12,9 +12,10 @@ import { COPIED_RESET_MS, copyText } from '../shared/clipboard.js';
 import { useI18n } from '../shared/i18n.js';
 import { useLocalePath } from '../shared/locale-path.js';
 import { DEFAULT_FACE, shareUrl, type Preset } from '../shared/share.js';
-import { snippetFor, tagFor } from '../shared/snippet.js';
+import { SNIPPET_FORMATS, copyFor, lineFor, type SnippetFormat } from '../shared/snippet.js';
 import { StateDock } from './Dock.js';
 import { ArrowIcon, CheckIcon, CopyIcon, DiceIcon, LinkIcon } from './icons.js';
+import { Radio, RadioGroup } from './Radio.js';
 import { ColorRail, ShapeStrip, StyleRail } from './Rails.js';
 import type { Registry, StyleChoice } from './registry.js';
 import { TuneButton } from './Tune.js';
@@ -166,29 +167,56 @@ function useCopied(): [boolean, (text: string) => Promise<void>] {
   return [copied, async (text) => setCopied(await copyText(text))];
 }
 
-/** The character's own markup on one line; copying gives the whole snippet, imports included. */
+/**
+ * The character in one of three formats on one line, and a button that copies
+ * it: the snippet with its imports or script, or the avatar link. The format
+ * switch and the copy button are siblings in the chip, so neither sits inside
+ * the other.
+ */
 function CodeChip({ preset }: { preset: Preset }) {
   const t = useI18n();
   const [copied, copy] = useCopied();
-  const tag = tagFor(preset);
+  const [format, setFormat] = useState<SnippetFormat>('react');
+  const line = lineFor(format, preset);
+  const names: Record<SnippetFormat, string> = {
+    react: 'React',
+    html: 'HTML',
+    avatar: t('home.format.avatar'),
+  };
 
   return (
-    <button
-      type="button"
-      className="site-home__chip"
-      aria-label={t('home.copyCode')}
-      title={tag}
-      onClick={() => copy(snippetFor(preset))}
-    >
-      <code>{tag}</code>
-      <span className="site-home__chipIcon" data-copied={copied || undefined}>
-        <CopyIcon />
-        <CheckIcon />
-      </span>
-      <span className="site-home__sr" aria-live="polite">
-        {copied ? t('home.copied') : ''}
-      </span>
-    </button>
+    <div className="site-home__chip">
+      <RadioGroup label={t('home.format')} className="site-home__formats">
+        {SNIPPET_FORMATS.map((id) => (
+          <Radio
+            key={id}
+            value={id}
+            className="site-home__format"
+            checked={id === format}
+            label={names[id]}
+            onSelect={() => setFormat(id)}
+          >
+            {names[id]}
+          </Radio>
+        ))}
+      </RadioGroup>
+      <button
+        type="button"
+        className="site-home__copy"
+        aria-label={format === 'avatar' ? t('home.copyLink') : t('home.copyCode')}
+        title={line}
+        onClick={() => copy(copyFor(format, preset))}
+      >
+        <code>{line}</code>
+        <span className="site-home__chipIcon" data-copied={copied || undefined}>
+          <CopyIcon />
+          <CheckIcon />
+        </span>
+        <span className="site-home__sr" aria-live="polite">
+          {copied ? t('home.copied') : ''}
+        </span>
+      </button>
+    </div>
   );
 }
 

@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.1.2
+
+Only `@aora-bot/element` is released at this version; the other packages stay at 0.1.1.
+
+### `@aora-bot/element`
+
+- `style-options`, a JSON object of the style series' parameters, such as `style-options='{"paperOffset":12}'`. Text that is not a JSON object is ignored, and removing the attribute restores the defaults.
+
+### Avatar endpoint
+
+- `shape`, `color` and `face` replace what the id picks, and each parameter of the chosen style series can be given by name, such as `paperOffset=12` or `outline=false`. Values out of range return HTTP 400.
+
+### Docs
+
+- The console's code chip copies the character in three formats: React, an `<aora-bot>` tag with its script, or an avatar link.
+- The style parameters button is dimmed when the chosen style has nothing to tune.
+- Page addresses no longer end in `.html`.
+
 ## 0.1.1
 
 First release. Four packages, a documentation site and an avatar endpoint.

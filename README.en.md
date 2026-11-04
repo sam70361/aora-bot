@@ -90,6 +90,8 @@ When all you need is an avatar image, put an [avatar API](https://aora-bot.verce
 <img src="https://aora-bot.vercel.app/avatar/alice.svg" width="64" height="64" alt="alice" />
 ```
 
+> The CDN script and the avatar endpoint are not yet available in mainland China; installing from npm and bundling is not affected. Access for users in mainland China is planned.
+
 ## Packages
 
 | Package              | What it does                                                                                                                                                                                                   |

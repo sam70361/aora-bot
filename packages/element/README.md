@@ -38,32 +38,40 @@ automatically. To ship the single bundled file from your own host, import
 Every attribute is optional. A value the engine does not know falls back to the default, or to
 the cast member's choice, and never throws.
 
-| Attribute        | Values                                                       | Default                         |
-| ---------------- | ------------------------------------------------------------ | ------------------------------- |
-| `character`      | A cast id such as `mochi`, `byte` or `luna`                  | None                            |
-| `shape`          | One of the roster's shapes                                   | The cast member's, else `mochi` |
-| `color`          | One hue of the palette                                       | The cast member's, else `black` |
-| `face`           | `cute`, `eyes` or `line`                                     | The cast member's, else `cute`  |
-| `nose`           | A nose id, or `none`                                         | Derived from `seed`             |
-| `state`          | One of the animation states                                  | `idle`                          |
-| `style-id`       | `vector`, `pixel` or `kaomoji`                               | `vector`                        |
-| `variant`        | A variant of the chosen style, such as `outline` or `dot`    | The style's own default         |
-| `seed`           | Any string; makes blinks and idle motion differ per instance | `shape:color`                   |
-| `size`           | A CSS length, or a number of pixels                          | `28px`                          |
-| `eye-color`      | Any CSS colour for the eye cut-outs                          | The page background             |
-| `badge-color`    | Any CSS colour for the `notifying` badge                     | `var(--aora-accent)`            |
-| `eye-scale`      | A positive number                                            | `1`                             |
-| `line-weight`    | A number from 0.8 to 1.25                                    | `1`                             |
-| `reduced-motion` | Boolean; draw one still frame instead of animating           | Follows the OS setting          |
-| `paused`         | Boolean; hold the current frame                              | Off                             |
-| `emphasis`       | Boolean; enlarge and converge the eyes                       | Off                             |
-| `antics`         | Boolean; hop or spin now and then while idle                 | Off                             |
-| `auto-pause`     | Boolean; stop while hidden or scrolled out of view           | Off                             |
+| Attribute        | Values                                                                | Default                         |
+| ---------------- | --------------------------------------------------------------------- | ------------------------------- |
+| `character`      | A cast id such as `mochi`, `byte` or `luna`                           | None                            |
+| `shape`          | One of the roster's shapes                                            | The cast member's, else `mochi` |
+| `color`          | One hue of the palette                                                | The cast member's, else `black` |
+| `face`           | `cute`, `eyes` or `line`                                              | The cast member's, else `cute`  |
+| `nose`           | A nose id, or `none`                                                  | Derived from `seed`             |
+| `state`          | One of the animation states                                           | `idle`                          |
+| `style-id`       | `vector`, `pixel` or `kaomoji`                                        | `vector`                        |
+| `variant`        | A variant of the chosen style, such as `outline` or `dot`             | The style's own default         |
+| `style-options`  | A JSON object of the style's parameters, such as `{"paperOffset":12}` | The style's own defaults        |
+| `seed`           | Any string; makes blinks and idle motion differ per instance          | `shape:color`                   |
+| `size`           | A CSS length, or a number of pixels                                   | `28px`                          |
+| `eye-color`      | Any CSS colour for the eye cut-outs                                   | The page background             |
+| `badge-color`    | Any CSS colour for the `notifying` badge                              | `var(--aora-accent)`            |
+| `eye-scale`      | A positive number                                                     | `1`                             |
+| `line-weight`    | A number from 0.8 to 1.25                                             | `1`                             |
+| `reduced-motion` | Boolean; draw one still frame instead of animating                    | Follows the OS setting          |
+| `paused`         | Boolean; hold the current frame                                       | Off                             |
+| `emphasis`       | Boolean; enlarge and converge the eyes                                | Off                             |
+| `antics`         | Boolean; hop or spin now and then while idle                          | Off                             |
+| `auto-pause`     | Boolean; stop while hidden or scrolled out of view                    | Off                             |
 
 `style` is already the inline CSS attribute, so the style series is `style-id`. Changing an
 attribute updates the running character; only `seed`, `reduced-motion` and `auto-pause` are read
 once and build a new one. Each attribute is also a property in camel case, so
 `el.state = 'happy'` and `el.styleId = 'pixel'` work.
+
+`style-options` carries the parameters the style series declares, written as JSON in a
+single-quoted attribute. A value that is not a JSON object is ignored.
+
+```html
+<aora-bot shape="mochi" color="blue" variant="paper" style-options='{"paperOffset":12}'></aora-bot>
+```
 
 The element is `role="img"` and labelled with the cast member's name, in Chinese when the nearest
 `lang` is `zh`. Set your own `aria-label` or `role` and they are left alone.

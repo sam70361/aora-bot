@@ -74,6 +74,70 @@ describe('avatarFromUrl', () => {
     expect(svgFor('id=a&state=sad')).not.toBe(svgFor('id=a'));
   });
 
+  it('lets shape, color and face override the cast member', () => {
+    const luna = castMember('luna')!;
+    const shaped = svgFor('id=luna&shape=blob&color=pink&face=eyes');
+    expect(shaped).toBe(renderStaticSvg({ shape: 'blob', color: 'pink', face: 'eyes', sizePx: 128 }));
+    expect(shaped).not.toBe(svgFor('id=luna'));
+    expect(svgFor('id=luna&color=pink')).toBe(
+      renderStaticSvg({ shape: luna.shape, color: 'pink', sizePx: 128 }),
+    );
+    expect(svgFor('id=luna&face=line')).toBe(
+      renderStaticSvg({ shape: luna.shape, color: luna.color, face: 'line', sizePx: 128 }),
+    );
+  });
+
+  it('derives the nose from the overridden shape and colour', () => {
+    const derived = svgFor('id=luna&shape=blob&color=pink&face=line');
+    expect(derived).toBe(renderStaticSvg({ shape: 'blob', color: 'pink', face: 'line', sizePx: 128 }));
+    expect(derived).not.toBe(
+      renderStaticSvg({ shape: 'blob', color: 'pink', face: 'line', nose: null, sizePx: 128 }),
+    );
+  });
+
+  it('reads style parameters by their declared type', () => {
+    const luna = castMember('luna')!;
+    const pixel = (query: string) => svgFor(`id=luna&style=pixel&${query}`);
+    expect(pixel('grid=16')).toBe(
+      renderStaticSvg({
+        shape: luna.shape,
+        color: luna.color,
+        style: 'pixel',
+        styleOptions: { grid: 16 },
+        sizePx: 128,
+      }),
+    );
+    expect(pixel('grid=16')).not.toBe(pixel(''));
+    expect(pixel('outline=false')).not.toBe(pixel(''));
+    expect(pixel('outline=0')).toBe(pixel('outline=false'));
+    expect(pixel('outline=1')).toBe(pixel('outline=true'));
+    expect(svgFor('id=a&variant=paper&paperOffset=12')).not.toBe(svgFor('id=a&variant=paper'));
+    expect(svgFor('id=a&style=kaomoji&weight=700')).not.toBe(svgFor('id=a&style=kaomoji'));
+  });
+
+  it.each([
+    'shape=nope',
+    'shape=',
+    'color=nope',
+    'face=nope',
+    'style=pixel&grid=abc',
+    'style=pixel&grid=',
+    'style=pixel&grid=999',
+    'style=pixel&outline=maybe',
+    'paperOffset=999',
+    'strokeWidth=NaN',
+    'style=kaomoji&tail=2',
+  ])('rejects %s', (query) => {
+    const result = at(`id=a&${query}`);
+    expect(result.ok).toBe(false);
+    if (!result.ok) expect(result.message.length).toBeGreaterThan(0);
+  });
+
+  it('names the parameter that failed', () => {
+    const result = at('id=a&style=pixel&grid=999');
+    expect(result).toEqual({ ok: false, message: expect.stringContaining('grid: ') });
+  });
+
   it.each([
     'style=nope',
     'style=',
@@ -100,6 +164,7 @@ describe('avatarFromUrl', () => {
 
   it('ignores parameters it does not know', () => {
     expect(svgFor('id=a&v=2')).toBe(svgFor('id=a'));
+    expect(svgFor('id=a&style=kaomoji&grid=16')).toBe(svgFor('id=a&style=kaomoji'));
   });
 
   it('is a standalone SVG: namespace present, no script, no external references', () => {
