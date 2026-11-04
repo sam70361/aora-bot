@@ -1,0 +1,85 @@
+import { StateMatrix } from '@theme';
+
+# 角色设置
+
+用户挑选自己智能体外观的那些界面。
+
+## 先看效果
+
+一个设置面板。暂存式选择器在确认时只交出一个值；触发按钮显示对话框将要编辑的东西；滑块在引擎允许的 `0.8`–`1.25` 范围内移动线条粗细，所以一个智能体不可能用和邻居不同的笔画出来。
+
+```tsx preview
+import { useState } from 'react';
+import { AgentAvatar, AgentCharacterPicker, AvatarTrigger, type CharacterChoice } from '@aora-bot/react';
+
+export default function Demo() {
+  const [choice, setChoice] = useState<CharacterChoice>({
+    shape: 'pear',
+    color: 'green',
+    face: 'line',
+    nose: 'slant',
+  });
+  const [lineWeight, setLineWeight] = useState(1);
+
+  return (
+    <div className="site-demo site-demo--column">
+      <div className="site-demo__row">
+        <AvatarTrigger value={choice} onCommit={setChoice} lineWeight={lineWeight} sizePx={64} />
+        <AgentAvatar agent={{ id: 'me', ...choice }} sizePx={28} />
+        <label className="site-field">
+          线条粗细 {lineWeight.toFixed(2)}
+          <input
+            type="range"
+            min={0.8}
+            max={1.25}
+            step={0.05}
+            value={lineWeight}
+            onChange={(event) => setLineWeight(Number(event.target.value))}
+          />
+        </label>
+      </div>
+      <AgentCharacterPicker value={choice} onCommit={setChoice} lineWeight={lineWeight} layout="row" />
+    </div>
+  );
+}
+```
+
+右侧的小头像就是产品其余部分会显示的样子。它接收选择器产出的同一个对象，所以名册、对话行和这一页对智能体长什么样不会有分歧。
+
+## 什么时候用
+
+用户决定自己的智能体长什么样的设置页，以及给模板取名字的对话框。角色就是被编辑的对象，所以它必须在每一个选择做出的当下就显示出来——形状、墨色、脸型、鼻子、线条粗细——同时在变化中始终还是同一个角色。这里没有任何占位符：一个从未配置过的智能体已经有一张由 id 推导出来的脸。
+
+## 用到的组件
+
+- [`CharacterPicker`](/components/character-picker)——受控的网格。传入 `face` 会出现 `eyes | line` 切换，线条模式下再多一排鼻子。
+- [`AgentCharacterPicker`](/components/agent-character-picker)——同一个网格，但把修改先暂存到确认为止，给需要"取消"有意义的对话框。
+- [`CompactCharacterPicker`](/components/compact-character-picker)——一小撮形状和墨色，放在注册表单旁边。
+- [`AvatarEditor`](/components/avatar-editor)、`AvatarTrigger` 与 `EditableAvatar`——带角色、生成、上传三个标签页的对话框，以及两种打开它的按钮。
+- [`TemplateDialog`](/components/template-dialog)——名称、说明、可见性，角色站在表单旁边。
+
+## 状态怎么走
+
+| 从          | 到          | 时机                               |
+| ----------- | ----------- | ---------------------------------- |
+| —           | `idle`      | 选择器里的预览，用 `paused` 定住   |
+| `idle`      | `curious`   | 指针悬停在 `AvatarTrigger` 上      |
+| —           | `happy`     | 编辑器自己的预览                   |
+| `idle`      | `working`   | 模板保存请求在途                   |
+| `working`   | `celebrate` | 保存成功——撒一次花，然后休息       |
+| `celebrate` | `idle`      | 1.6 秒后，由 `usePublishMark` 负责 |
+| —           | `proud`     | 分享卡片                           |
+
+保存失败回到 `idle`，而不是一张难过的脸——理由见 [`usePublishMark`](/components/use-publish-mark)。
+
+## 每个状态的样子
+
+<StateMatrix states={['idle', 'curious', 'happy', 'working', 'celebrate', 'proud']} />
+
+这些状态都不用腰带：选择器是唯一必须让轮廓保持完整的地方，因为轮廓正是被挑选的对象。切换上方的脸型可以看到每个状态戴的嘴——线条脸正是 `lineWeight` 所缩放的部分。
+
+## 接下来
+
+- [CharacterPicker](/components/character-picker)——受控的选择网格
+- [AvatarEditor](/components/avatar-editor)——角色、生成、上传三个标签页
+- [TemplateDialog](/components/template-dialog)——名称、说明与可见性

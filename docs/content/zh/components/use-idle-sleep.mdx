@@ -1,0 +1,91 @@
+# useIdleSleep
+
+访客走神时一起打盹的角色。
+
+```tsx preview
+import { useIdleSleep, CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  const idle = useIdleSleep({ drowsyAfterMs: 3000, sleepAfterMs: 6000 });
+  return (
+    <div className="site-demo site-demo--column" style={{ alignItems: 'center' }}>
+      <CharacterMark shape="blob" color="violet" state={idle.state ?? 'idle'} sizePx={150} />
+      <p style={{ margin: 0, fontSize: 13 }}>
+        phase: <code>{idle.phase}</code>, state: <code>{idle.state ?? 'null（你的）'}</code>
+      </p>
+      <button className="site-btn" onClick={idle.wake}>
+        wake()
+      </button>
+    </div>
+  );
+}
+```
+
+停下指针。三秒后角色开始垂头；六秒后睡着。碰任何东西它就跳起来醒来，然后把状态交回给你。
+
+## 契约
+
+访客活跃时 hook 返回 `state: null`。这就是全部设计：它不知道你的角色该做什么，所以在没有东西可补充之前什么都不说，并以回退的方式组合。
+
+```tsx
+const idle = useIdleSleep();
+const { state } = useAgentState();
+
+<CharacterMark state={idle.state ?? state} />;
+```
+
+阶段和各自给出的值：
+
+| 阶段     | 时机                                                    | `state`    |
+| -------- | ------------------------------------------------------- | ---------- |
+| `awake`  | 任何输入                                                | `null`     |
+| `drowsy` | 无输入超过 `drowsyAfterMs`（45 秒）                     | `drowsy`   |
+| `asleep` | 无输入超过 `sleepAfterMs`（120 秒）                     | `sleeping` |
+| `waking` | drowsy/asleep 之后的第一次输入，持续 `wakeMs`（1.2 秒） | `waking`   |
+
+`waking` 的存在是为了让醒来的一跳有时间落定，再让宿主自己的状态接管；没有它，角色会从睡着直接跳到「检索中」，没有过渡。
+
+## 什么算活动
+
+文档上的 `pointerdown`、`pointermove`、`keydown`、`wheel` 和 `touchstart`，全部 passive。传 `events` 可以改列表——自助终端可能只听 `click`。
+
+隐藏的标签页算作不活跃：在 `visibilitychange` 时角色直接被送去睡觉，标签页回来时醒来。因此留在后台标签页的角色在访客回来时是睡着的，读起来像是一直在等，而不是被冻住了。
+
+## 主动唤醒
+
+`wake()` 在没有任何输入的情况下强制走醒来序列——消息到达时调用它，这样在显示回复之前角色已经起来了。
+
+```tsx
+useEffect(() => {
+  if (incoming) idle.wake();
+}, [incoming, idle]);
+```
+
+## 什么时候不用
+
+二十个智能体列表里的头像不该各自打盹；列表不是关于访客的。把它用在那一个面向眼前这个人代表产品的角色上——侧边栏伙伴、浮动助手——被忽视时睡着是礼貌的做法。
+
+在 `prefers-reduced-motion` 下状态照样变化；只是渲染为各自的减少动效姿态。
+
+## 选项
+
+```ts
+interface UseIdleSleepOptions {
+  drowsyAfterMs?: number; // 45_000
+  sleepAfterMs?: number; // 120_000
+  wakeMs?: number; // 1200
+  events?: readonly (keyof DocumentEventMap)[];
+  enabled?: boolean; // true
+}
+
+interface IdleSleep {
+  phase: 'awake' | 'drowsy' | 'asleep' | 'waking';
+  state: CharacterState | null;
+  wake(): void;
+}
+```
+
+## 接下来
+
+- [桌面伙伴](/scenarios/desktop-companion)——活几个小时又不吵
+- [useMarkCommands](/components/mark-commands)——hold / release / poke / spin

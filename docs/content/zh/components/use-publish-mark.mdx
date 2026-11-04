@@ -1,0 +1,72 @@
+# usePublishMark
+
+表单里唯一值得做动画的那一刻，用三个状态表达。
+
+> 属于 `@aora-bot/surfaces`，不在 `@aora-bot/react` 里：`pnpm add @aora-bot/surfaces @aora-bot/react`，并在 React 样式之后引入 `@aora-bot/surfaces/styles.css`。
+
+```tsx preview
+import { useRef } from 'react';
+import { CharacterMark, ConfettiLayer, type ConfettiHandle } from '@aora-bot/react';
+import { usePublishMark } from '@aora-bot/surfaces';
+
+export default function Demo() {
+  const confetti = useRef<ConfettiHandle>(null);
+  const publish = usePublishMark({ confetti, celebrateMs: 1600 });
+
+  const save = async (ok: boolean) => {
+    publish.begin();
+    await new Promise((r) => setTimeout(r, 900));
+    if (ok) publish.succeed();
+    else publish.fail();
+  };
+
+  return (
+    <div className="site-demo site-demo--column">
+      <div style={{ position: 'relative', display: 'inline-flex' }}>
+        <CharacterMark shape="star" color="orange" state={publish.characterState} sizePx={80} />
+        <ConfettiLayer ref={confetti} />
+      </div>
+      <span className="site-demo__label">{publish.state}</span>
+      <div className="site-controls">
+        <button className="site-btn" disabled={publish.state === 'publishing'} onClick={() => save(true)}>
+          发布
+        </button>
+        <button className="site-btn" disabled={publish.state === 'publishing'} onClick={() => save(false)}>
+          发布，然后失败
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+## 为什么只在这里
+
+发布是角色难得能证明自己价值的交互：有一段真实的等待、一个真实的结果，而且结果是好消息。所以角色在请求未返回时*工作*，落地时*庆祝*，然后自己收场——需要人手动关掉的庆祝就不再是庆祝了。
+
+失败直接回到静息，而不是换一张难过的脸。表单马上要显示出错信息，旁边再有个角色摆表情，看起来就像这个库在替你发表意见。
+
+## 约定
+
+`usePublishMark(options)` 返回一个 `PublishMark`：
+
+| 字段             | 含义                                             |
+| ---------------- | ------------------------------------------------ |
+| `state`          | `idle`、`publishing` 或 `celebrate`。            |
+| `characterState` | 对应的引擎状态：`idle`、`working`、`celebrate`。 |
+| `begin()`        | 请求发出去了。                                   |
+| `succeed()`      | 落地了。撒彩纸并启动庆祝计时。                   |
+| `fail()`         | 没成。立刻回到 `idle`。                          |
+
+选项：
+
+- `confetti`——指向 [`ConfettiLayer`](/components/confetti-layer) 的 ref。成功时 hook 会触发 `burst`（默认 20 片），宿主不必自己盯着那一刻。它由调用方提供而不是由 hook 返回：ref 属于它挂着的那个元素，hook 往外递 ref 会诱使人在渲染期间读 `.current`。
+- `celebrateMs`——庆祝持续多久（默认 1600 毫秒）。
+- `onSettled`——庆祝结束时调用。适合在这里关闭对话框。
+
+组件卸载时进行中的庆祝会被取消，不会向已经不存在的组件发状态更新。[`TemplateDialog`](/components/template-dialog) 的保存按钮用的就是这个 hook。
+
+## 接下来
+
+- [ConfettiLayer](/components/confetti-layer)——盖在任何东西上的纸屑
+- [庆祝](/scenarios/celebration)——干活、庆祝、收起来

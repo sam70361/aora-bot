@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# A new push to the same branch or PR supersedes the run in flight.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Version comes from `packageManager` in package.json.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # The React and surfaces packages and the docs resolve their workspace
+      # dependencies through the built `dist/`, so the libraries must exist before
+      # anything typechecks or tests against them.
+      - name: Build libraries
+        run: pnpm run build:lib
+
+      - name: Lint
+        run: pnpm run lint
+
+      - name: Formatting
+        run: pnpm run format:check
+
+      - name: Types
+        run: pnpm run typecheck
+
+      - name: Tests
+        run: pnpm run test
+
+      - name: Build documentation
+        run: pnpm --filter @aora-bot/docs build
+
+      - name: Bundle size
+        run: |
+          echo "### Bundle size" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          du -h packages/engine/dist/*.js packages/element/dist/*.js packages/react/dist/*.js packages/react/dist/*.css packages/surfaces/dist/*.js packages/surfaces/dist/*.css >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Assert the extracted reference material is not committed
+        run: |
+          if git ls-files --error-unmatch reference 2>/dev/null; then
+            echo "reference/ must never be committed"
+            exit 1
+          fi
+          echo "reference/ is absent from the index, as required"

@@ -1,0 +1,190 @@
+# Mark commands
+
+Tell every mark of one agent what it is doing, from anywhere on the page.
+
+```tsx preview
+import { useState } from 'react';
+import {
+  ActivityMark,
+  AgentAvatar,
+  MarkStageProvider,
+  useMarkCommand,
+  useMarkCommands,
+} from '@aora-bot/react';
+
+const nova = { id: 'nova', name: 'Nova' };
+
+function Controls() {
+  const commands = useMarkCommands();
+  const snapshot = useMarkCommand('nova', 'chat');
+  const [release, setRelease] = useState<(() => void) | null>(null);
+
+  return (
+    <div className="site-controls">
+      <button
+        className="site-btn"
+        onClick={() => commands.holdFacts('nova', { running: true, activity: 'searching' })}
+      >
+        running, searching
+      </button>
+      <button className="site-btn" onClick={() => commands.holdFacts('nova', { composing: true })}>
+        composing
+      </button>
+      <button className="site-btn" onClick={() => commands.releaseFacts('nova')}>
+        release facts
+      </button>
+      <button
+        className="site-btn"
+        data-active={release != null}
+        onClick={() => {
+          if (release) {
+            release();
+            setRelease(null);
+          } else {
+            setRelease(() => commands.holdState('nova', 'alerting', { priority: 5 }));
+          }
+        }}
+      >
+        hold alerting
+      </button>
+      <button className="site-btn" onClick={() => commands.holdState('nova', 'celebrate', { ttlMs: 1500 })}>
+        celebrate for 1.5 s
+      </button>
+      <button className="site-btn" onClick={() => commands.poke('nova')}>
+        poke
+      </button>
+      <span className="site-demo__label">
+        {snapshot.state}
+        {snapshot.held ? ' (held)' : ''}
+      </span>
+    </div>
+  );
+}
+
+function Header() {
+  const snapshot = useMarkCommand('nova', 'avatar');
+  return <AgentAvatar agent={nova} state={snapshot.state} size="lg" />;
+}
+
+export default function Demo() {
+  return (
+    <MarkStageProvider>
+      <div className="site-demo site-demo--column">
+        <div className="site-demo">
+          <Header />
+          <ActivityMark agent={nova} activityMode="facts" surface="chat" bubble />
+        </div>
+        <Controls />
+      </div>
+    </MarkStageProvider>
+  );
+}
+```
+
+## Two registries, one provider
+
+[`MarkStageProvider`](/components/mark-stage) already keeps an appearance-keyed registry: how many engines run, and which marks mirror which. The command registry is its agent-keyed half. It records what each agent is _doing_ — the thing an application actually has an opinion about — and every mark subscribed to that agent follows. A roster row, a chat header and a hover card can all talk about the same agent from different corners of the tree without lifting anything into shared React state, and without the re-render storm that would come with it.
+
+`useMarkCommands()` returns the write side. It works without a provider too: the fallback registry simply has no subscribers other than the marks in the same tree.
+
+## Facts and holds
+
+Two kinds of write, with different weight:
+
+- `holdFacts(agentId, facts)` publishes what is known — `running`, `composing`, `activity`. The state is _derived_ from the facts at read time by [`characterStateForRoster`](/guide/agent-integration#activity-verbs-and-roster-facts), so the same facts mean `composing` in a chat and `idle` in an avatar. A second call replaces the first — facts are compared by value, so an identical object from a re-render notifies nobody. Returns a release function that only clears the facts it set; `releaseFacts` drops whatever is there.
+- `holdState(agentId, state, { priority, ttlMs })` pins a state over whatever the facts would say. The highest priority wins, ties go to the most recent hold, and a `ttlMs` drops the hold on its own — the right shape for a celebration that must not outstay its welcome. Returns a release function; `releaseState` drops every hold on the agent.
+
+Reads go through `useMarkCommand(agentId, surface)`, which subscribes one component to one agent and returns a `MarkCommandSnapshot`: the resolved `state`, the winning `held` state (or `null` when the state came from facts), the raw `facts`, the `emphasis` flag and a `pokeSeq` counter that increments on every `poke` so a host reacts to the change rather than the value.
+
+## Hooks that keep motion honest
+
+Three small hooks the components use, exported for hosts building their own.
+
+```tsx preview
+import { useRef, useState } from 'react';
+import {
+  CharacterMark,
+  useDeadline,
+  useMarkSettle,
+  usePokeCycle,
+  type CharacterHandle,
+} from '@aora-bot/react';
+import type { CharacterState } from '@aora-bot/react';
+
+const CHURN: CharacterState[] = ['searching', 'reading', 'writing', 'working'];
+
+export default function Demo() {
+  const [raw, setRaw] = useState<CharacterState>('working');
+  const settled = useMarkSettle(raw, { settleMs: 1400 });
+  const ref = useRef<CharacterHandle>(null);
+  const poke = usePokeCycle(ref);
+  const [token, setToken] = useState(0);
+  const arrived = useDeadline(1200, [token]);
+
+  return (
+    <div className="site-demo site-demo--column">
+      <div className="site-demo">
+        <div className="site-demo__cell">
+          <CharacterMark shape="blob" color="cyan" state={settled} sizePx={64} />
+          <span className="site-demo__label">
+            raw {raw} → shown {settled}
+          </span>
+        </div>
+        <div className="site-demo__cell">
+          <CharacterMark ref={ref} shape="pebble" color="violet" state="happy" sizePx={64} />
+          <span className="site-demo__label">poke me</span>
+        </div>
+        <div className="site-demo__cell">
+          <CharacterMark shape="star" color="orange" state={arrived ? 'idle' : 'spawning'} sizePx={64} />
+          <span className="site-demo__label">{arrived ? 'arrived' : 'arriving…'}</span>
+        </div>
+      </div>
+      <div className="site-controls">
+        <button className="site-btn" onClick={() => setRaw(CHURN[(CHURN.indexOf(raw) + 1) % CHURN.length])}>
+          churn state
+        </button>
+        <button className="site-btn" onClick={() => poke()}>
+          poke
+        </button>
+        <button className="site-btn" onClick={() => setToken((n) => n + 1)}>
+          restart arrival
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+- `useMarkSettle(state, { settleMs })` holds the last state until the input has stopped changing for `settleMs` (`SETTLE_MS`, 1400 ms by default; `0` disables). Facts churn — a tool starts, returns in 80 ms, another starts — and rendering each one is a roster of faces flicking, which reads as a fault.
+- `usePokeCycle(ref)` returns a function that runs the next flourish on the handle each call: spin, hop, confetti, spin again. Always spinning stops being fun on the second click. Pokes inside `POKE_COOLDOWN_MS` (340 ms) are ignored, and the function returns `false` when the ref has no engine — a mirrored [`StagedMark`](/components/mark-stage) shares its animation and cannot move alone, so the caller can hop the wrapper instead.
+- `useDeadline(ms, deps)` is `false` until `ms` has passed since the dependencies last changed, then `true`. It saves an arrival animation its own `setTimeout` and ref.
+
+## API
+
+### useMarkCommands
+
+Returns `MarkCommands`:
+
+| Method                             | Effect                                                             |
+| ---------------------------------- | ------------------------------------------------------------------ |
+| `holdFacts(agentId, facts)`        | Publish facts for the agent, replacing the last. Returns release.  |
+| `releaseFacts(agentId)`            | Drop all facts.                                                    |
+| `holdState(agentId, state, opts?)` | Pin a state with `priority` and optional `ttlMs`. Returns release. |
+| `releaseState(agentId)`            | Drop every hold.                                                   |
+| `setEmphasis(agentId, on)`         | Emphasise every mark of the agent, for hover.                      |
+| `poke(agentId)`                    | Bump `pokeSeq`.                                                    |
+| `subscribe(agentId, listener)`     | Low-level subscription. Prefer `useMarkCommand`.                   |
+| `read(agentId, surface?)`          | Current `MarkCommandSnapshot`.                                     |
+
+### useMarkCommand
+
+`useMarkCommand(agentId, surface = 'list')` — subscribe to one agent and get its `MarkCommandSnapshot`.
+
+### useMarkSettle, usePokeCycle, useDeadline
+
+See above. `createMarkCommandRegistry()` builds a standalone registry for tests or for a host that provides `MarkCommandContext` itself.
+
+## Next
+
+- [MarkStageProvider](/components/mark-stage) — share engines by appearance
+- [Desktop companion](/scenarios/desktop-companion) — alive for hours without being noisy

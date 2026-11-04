@@ -1,0 +1,153 @@
+import { TokenTable } from '@theme';
+
+# Theming
+
+Two CSS custom properties decide how a character is painted; everything else is a token you can override.
+
+## The variables that draw a character
+
+A character's colours come down to a few CSS custom properties.
+
+| Variable              | Role                                                                                                  |
+| --------------------- | ----------------------------------------------------------------------------------------------------- |
+| `--aora-fg`           | The ink. Set per instance from the `color` prop.                                                      |
+| `--aora-face`         | The colour of the `cute` face, white. Not written for `black`, which falls back to a cut-out.         |
+| `--aora-face-soft`    | The dark face of the `soft` variant, written for `black` only.                                        |
+| `--aora-face-sticker` | The `sticker` variant's face, written for `black` only: it turns black with the white dark-mode body. |
+| `--aora-hair-shade`   | The shade laid over hair on a filled body, `#000000` by default. Written for `black` only.            |
+| `--aora-ink2`         | The second ink of the `riso` variant, written for `pink` only.                                        |
+| `--aora-bg`           | The eye cut-outs of the `eyes` and `line` faces. Defaults to `--aora-bg-base`.                        |
+
+The component sets the first few for you, from the engine's `getInkVars(color)`. `--aora-bg-base` is the one you may need to change.
+
+## Light and dark
+
+The ink is written as a [`light-dark()`](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value/light-dark) pair:
+
+```css
+--aora-fg: light-dark(#2a92fe, #0e74e0);
+```
+
+This is why the engine never subscribes to a theme change. The value is written once, and the browser re-resolves it when `color-scheme` flips. A thousand characters re-theme with no JavaScript, no re-render, and no flash.
+
+:::warning Do not pin `color-scheme` to one value
+The stylesheet sets `color-scheme: light dark` on `:root`, so the page follows the system. If your application pins it to `light`, every `light-dark()` value freezes to its light variant and dark mode stops working for characters even though the rest of the page switches. Let the page own the scheme.
+:::
+
+Every colour token is a `light-dark()` pair, and the page picks the half with `color-scheme`. That is the only dark-mode mechanism: there are no per-theme copies of the tokens. These selectors pin the scheme on any element, so one subtree can differ from the rest of the page:
+
+```css
+.dark,
+[data-theme='dark'],
+.rp-dark {
+  color-scheme: dark;
+}
+.light,
+[data-theme='light'] {
+  color-scheme: light;
+}
+```
+
+Several class names are supported because application shells and documentation frameworks disagree about which to use.
+
+## Eye cut-outs
+
+The default `cute` face is painted white and does not depend on the background. The eyes of the `eyes` and `line` faces are holes: filled with `--aora-bg` and clipped to the body, so they read as transparent on any surface, and so is the `cute` face of the `black` ink. That only holds while `--aora-bg-base` matches what is actually behind the character.
+
+Override it on any ancestor and the whole subtree follows:
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+const surfaces = ['#0b1220', '#2b1a3d', '#12281f'];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {surfaces.map((bg) => (
+        <div
+          key={bg}
+          style={{
+            padding: 18,
+            borderRadius: 14,
+            background: bg,
+            ['--aora-bg-base' as string]: bg,
+          }}
+        >
+          <CharacterMark shape="tofu" color="yellow" face="eyes" sizePx={72} />
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+If you need the eyes to be a solid colour rather than a hole, pass `eyeColor`.
+
+## Cascade layers
+
+The stylesheet puts its rules in three layers, from lowest to highest priority: `aora.tokens`, `aora.base` and `aora.components`.
+
+One consequence is worth knowing. Any rule you write _outside_ a layer beats every rule inside one, regardless of specificity — so overriding a component style never needs `!important`.
+
+```css
+/* Wins, despite being a single class against a single class. */
+.aora-badge {
+  border-radius: 4px;
+}
+```
+
+## Tokens
+
+Click any token to copy its name.
+
+<TokenTable />
+
+## Palette
+
+The inks are data, not CSS. Each carries three layers, because a 20px picker chip and a large filled silhouette have opposite requirements: the chip needs to be told apart from its neighbours, the body needs to stay legible on both a white and a near-black page.
+
+```tsx preview
+import { COLOR_SWATCHES, getSwatchHex, getInkColor } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>chip</th>
+          <th>ink (light)</th>
+          <th>ink (dark)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {COLOR_SWATCHES.map((s) => (
+          <tr key={s.id}>
+            <td>
+              <code>{s.id}</code>
+            </td>
+            <td>
+              <code>{getSwatchHex(s.id)}</code>
+            </td>
+            <td>
+              <code>{getInkColor(s.id, 'light')}</code>
+            </td>
+            <td>
+              <code>{getInkColor(s.id, 'dark')}</code>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+```
+
+`black` is the one special case: its dark-mode ink is white, so the neutral character is always the one with the most contrast whichever way the page is themed.
+
+## Next
+
+- [Custom shapes](/guide/custom-shapes) — register a generator of your own
+- [Palette](/design/palette) — every hue in three layers
+- [Rendering structure](/internals/rendering) — one SVG, every attribute written by hand

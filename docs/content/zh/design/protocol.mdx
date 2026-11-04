@@ -1,0 +1,93 @@
+import { ProtocolTable } from '@theme';
+
+# 情绪协议
+
+智能体不说状态名。它们说两位数字编号。
+
+```json
+{ "session_id": "s1", "aoraBotId": "34", "tips": "Build failed" }
+```
+
+一个 shell 钩子可以发出 `34`，而不必知道另一端的角色把「出错」叫什么；状态名可以改，而不会弄坏按编号写的中继脚本。数字按十位分段，所以一个从未见过某编号的接收方，仍然能知道它大概是哪类东西。
+
+## 编号表
+
+<ProtocolTable />
+
+每一段里带下划线的编号是该区间内未知编号的回退目标。标为*事件*的行描述的是一个瞬间，而不是一种状况；见[事件与条件](#事件与条件)。
+
+## 分段
+
+| 区间    | 分段     | 回退 | 这里有什么                   |
+| ------- | -------- | ---- | ---------------------------- |
+| `00–09` | 生命周期 | `02` | 睡眠、唤醒、待机、加载、关机 |
+| `10–29` | 情绪     | `02` | 从开心到弹跳的各种心情       |
+| `30–49` | 代理工作 | `32` | 思考、检索、回复、完成、出错 |
+| `50–59` | 提示     | `50` | 面向用户的警示与通知         |
+
+落在所有分段之外的编号解析为待机。任何情况都不会抛出：通道由别人的脚本喂入，一个笔误必须优雅降级，而不是让角色停摆。
+
+```ts
+stateForEmotion('34'); // 'alerting'
+stateForEmotion('47'); // 'progress'
+stateForEmotion('29'); // 'idle'      —— 未分配的情绪编号 → 分段回退
+stateForEmotion('99'); // 'idle'      —— 所有分段之外
+stateForEmotion(3); //    'curious'   —— 数字和单个数位会被归一化
+```
+
+## 编号永不重排
+
+编号的数字和含义一经确定就永远不变，因为外面的脚本已经在发送它们。每个十位段的空位里放着 `03` 好奇、`09` 拖拽、`26` 弹跳、`27` 哼歌、`38` 拒绝和 `42`–`49` 更细粒度的工具状态——所以两位数的预算从不超出，也没有任何数字改变含义。`09` 归在生命周期段，因为被拿起来移动是发生*在*角色身上的事，不是一种心情；`27` 是一种情绪，某件事自顾自运转着时那点小小的满足。
+
+若干编号共用一个状态：`15` *疲惫*和 `06` *休眠*都是困倦，`30` *思考中*在代理工作段里没有特别的对应物。这是有意的。编号记录的是发送方的本意；状态是这个库选择的呈现方式。`emotionIdForState` 返回某状态的最小编号，也就是库这一侧的宿主应该发出的那个。
+
+## 事件与条件
+
+大多数编号描述一种**条件**：智能体*正在*思考、*正在*检索。少数描述一个**事件**：它*完成了*、它*出错了*、它*被吓到了*。[仲裁器](/guide/agent-integration#仲裁)对两者的处理不同——事件被排队并一定播放，条件在其停留时间结束时重新解析，因为局面可能已经变了。
+
+## 两种寻址方式
+
+所有接受编号的地方也接受状态名，解析器接受裸字符串或对象里的任一形式：
+
+```ts
+parseAgentMessage('34'); //                     { emotionId: '34', state: 'alerting' }
+parseAgentMessage('thinking'); //               { emotionId: '30', state: 'thinking' }
+parseAgentMessage({ aoraBotId: 33, tips: 'ok' }); // { emotionId: '33', state: 'celebrate', tips: 'ok' }
+parseAgentMessage('{"emotionId":"40"}'); //     { emotionId: '40', state: 'searching' }
+parseAgentMessage('nope'); //                   null
+```
+
+React 组件接受 `emotionId` 作为 `state` 的替代：
+
+```tsx
+<CharacterMark emotionId="30" />
+<SpriteMark src="/sprites/bao/manifest.json" emotionId="33" />
+```
+
+## HUD
+
+一条消息可以带第三个可选字段：一个画在身体外那圈环上的表盘。
+
+```json
+{
+  "session_id": "s1",
+  "aoraBotId": "32",
+  "tips": "Indexing 3 of 5",
+  "hud": { "kind": "progress", "value": 0.6 }
+}
+```
+
+`hud` 是一个 `HudSpec`——`{ kind, ...fields }`，`kind` 取 `HUD_KINDS` 之一，其余字段是该种类需要的：`progress` 要 `0..1` 的 `value`，`timer` 要 `remainingMs` 和 `totalMs`，`context` 要 `used` 和 `total`，`voice` 要 `level`。完整清单在 [HudPlate](/components/hud-plate) 页。
+
+畸形的 `hud` 会被丢弃，消息的其余部分照常投递：一条同时说了状态的消息，没有表盘也值得送达；而一个半对的规格——没有 value 的 `{ "kind": "progress" }`——会画出一个空环，看起来像卡住的任务而不是一个 bug。`isHudSpec` 就是解析器用的守卫，宿主也可以自己调用。
+
+[仲裁器](/guide/agent-integration#仲裁)在结果上把 `hud` 与 `tips` 并排携带，所以表盘跟随的是和脸相同的那个会话。
+
+## 精灵图说同一种协议
+
+[`SpriteMark`](/components/sprite-mark) 的清单用这些编号索引帧，缺失的编号走同一套分段回退。宿主可以把程序化角色换成手绘角色，而完全不碰状态逻辑。
+
+## 接下来
+
+- [智能体集成](/guide/agent-integration)——把智能体接到一张脸上
+- [AgentStateProvider](/components/agent-state)——把多个会话仲裁成一张脸

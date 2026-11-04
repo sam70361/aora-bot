@@ -1,0 +1,154 @@
+# Springs and states
+
+Every continuous quantity in the character is a damped spring. Nothing is tweened, and there are no keyframes.
+
+## The integrator
+
+```ts
+const accel = -ω * ω * (value - target) - 2 * ζ * ω * velocity;
+velocity += accel * h;
+value += velocity * h;
+```
+
+Semi-implicit Euler at a fixed substep of 1/120 second. Semi-implicit is stable at these frequencies and costs a third of what RK4 does, which matters when several hundred springs tick per frame.
+
+## Why a fixed substep
+
+Integrating with the frame delta directly makes the simulation frame-rate dependent: the same spring settles faster on a 144 Hz display than on a 60 Hz one, and stutters visibly when the frame rate is uneven.
+
+Accumulating fixed substeps instead means a 144 Hz monitor and a 60 Hz monitor converge to the same value at the same wall-clock time.
+
+```tsx preview
+import { spring, stepSpring } from '@aora-bot/react';
+
+export default function Demo() {
+  const at60 = spring(0, 6, 1);
+  const at144 = spring(0, 6, 1);
+  at60.target = 1;
+  at144.target = 1;
+  for (let i = 0; i < 60; i++) stepSpring(at60, 1 / 60);
+  for (let i = 0; i < 144; i++) stepSpring(at144, 1 / 144);
+
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>rate</th>
+          <th>value after 1s</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>60 Hz</td>
+          <td>{at60.value.toFixed(6)}</td>
+        </tr>
+        <tr>
+          <td>144 Hz</td>
+          <td>{at144.value.toFixed(6)}</td>
+        </tr>
+      </tbody>
+    </table>
+  );
+}
+```
+
+## Damping
+
+`ζ = 1` is critically damped: the fastest approach with no overshoot. Below one the spring overshoots and rings, which is what gives `squash` its rubberiness and the notification badge its pop.
+
+```tsx preview
+import { useEffect, useRef } from 'react';
+import { spring, stepSpring } from '@aora-bot/react';
+
+export default function Demo() {
+  const canvas = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const ctx = canvas.current?.getContext('2d');
+    if (!ctx) return;
+    const W = 560,
+      H = 180;
+    ctx.clearRect(0, 0, W, H);
+    ctx.strokeStyle = 'rgba(128,128,140,.35)';
+    ctx.beginPath();
+    ctx.moveTo(0, H * 0.3);
+    ctx.lineTo(W, H * 0.3);
+    ctx.stroke();
+
+    const curves = [
+      { zeta: 1, colour: '#1084FE', label: 'ζ = 1' },
+      { zeta: 0.6, colour: '#30A46C', label: 'ζ = 0.6' },
+      { zeta: 0.3, colour: '#E5484D', label: 'ζ = 0.3' },
+    ];
+
+    curves.forEach(({ zeta, colour }) => {
+      const s = spring(0, 10, zeta);
+      s.target = 1;
+      ctx.beginPath();
+      ctx.strokeStyle = colour;
+      ctx.lineWidth = 2;
+      for (let i = 0; i < W; i++) {
+        stepSpring(s, 1 / 120);
+        const y = H * 0.9 - s.value * H * 0.6;
+        i === 0 ? ctx.moveTo(i, y) : ctx.lineTo(i, y);
+      }
+      ctx.stroke();
+    });
+  }, []);
+
+  return (
+    <div className="site-demo site-demo--column">
+      <canvas ref={canvas} width={560} height={180} style={{ maxWidth: '100%' }} />
+      <span className="site-demo__label">blue ζ=1, green ζ=0.6, red ζ=0.3, all ω=10</span>
+    </div>
+  );
+}
+```
+
+## Impulses
+
+Some motion is better expressed as a kick than as a curve. Instead of moving a target, add directly to velocity:
+
+```ts
+springs.y.velocity += 70;
+```
+
+The spring absorbs it and settles on its own. `angry` does this every 1.8 to 3.2 seconds, which produces a recoil that would be tedious to author as an explicit animation and which never looks mechanically identical twice.
+
+## Behaviours
+
+A behaviour returns four targets per frame. `idle` is three sine waves at unrelated frequencies:
+
+```ts
+tilt: sin(t * 0.5) * 1.5 + sin(t * 0.17) * 0.6,
+x:    sin(t * 0.27),
+y:    sin(t * 0.85) * 1.2,
+squash: 1 + sin(t * 0.85) * 0.007,
+```
+
+Because 0.5, 0.17, 0.27 and 0.85 share no common period, the combined motion does not repeat on any human timescale. That is the difference between a character that feels alive in a sidebar and one that is visibly a loop.
+
+## Exporting a spring to CSS
+
+Some motion has to run as a CSS transition rather than on the JS ticker. `springToLinearEasing` samples a spring into a `linear()` easing function so the curve matches:
+
+```tsx preview
+import { springToLinearEasing } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <pre style={{ whiteSpace: 'pre-wrap', fontSize: 12 }}>
+      <code>{springToLinearEasing(6, 0.7, 12)}</code>
+    </pre>
+  );
+}
+```
+
+## Reduced motion
+
+When the reader prefers reduced motion, springs are settled to their targets instead of stepped, one frame is drawn, and no loop starts. The character is correct and static rather than absent.
+
+## Next
+
+- [Belts and particles](/internals/belts) — how belt states are drawn
+- [States](/design/states) — every animation state, grouped

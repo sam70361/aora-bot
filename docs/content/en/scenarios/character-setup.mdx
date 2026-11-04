@@ -1,0 +1,85 @@
+import { StateMatrix } from '@theme';
+
+# Character setup
+
+The screens where someone chooses what their agent looks like.
+
+## See it
+
+A settings panel. The staged picker hands over one value when confirmed; the trigger shows what the dialog would edit; the slider moves the line weight inside the range the engine allows, `0.8`–`1.25`, so one agent cannot be drawn with a different pen from its neighbours.
+
+```tsx preview
+import { useState } from 'react';
+import { AgentAvatar, AgentCharacterPicker, AvatarTrigger, type CharacterChoice } from '@aora-bot/react';
+
+export default function Demo() {
+  const [choice, setChoice] = useState<CharacterChoice>({
+    shape: 'pear',
+    color: 'green',
+    face: 'line',
+    nose: 'slant',
+  });
+  const [lineWeight, setLineWeight] = useState(1);
+
+  return (
+    <div className="site-demo site-demo--column">
+      <div className="site-demo__row">
+        <AvatarTrigger value={choice} onCommit={setChoice} lineWeight={lineWeight} sizePx={64} />
+        <AgentAvatar agent={{ id: 'me', ...choice }} sizePx={28} />
+        <label className="site-field">
+          line weight {lineWeight.toFixed(2)}
+          <input
+            type="range"
+            min={0.8}
+            max={1.25}
+            step={0.05}
+            value={lineWeight}
+            onChange={(event) => setLineWeight(Number(event.target.value))}
+          />
+        </label>
+      </div>
+      <AgentCharacterPicker value={choice} onCommit={setChoice} lineWeight={lineWeight} layout="row" />
+    </div>
+  );
+}
+```
+
+The small avatar on the right is what the rest of the product will show. It takes the same object the picker produced, so a roster, a chat row and this page cannot disagree about what the agent looks like.
+
+## When to use it
+
+The settings page where someone decides what their agent looks like, and the dialog where a template gets a name. The character is the thing being edited, so it has to show every choice as it is made — shape, ink, face, nose, line weight — and stay recognisable as the same character while it changes. Nothing here is a placeholder: an agent that has never been configured already has a face derived from its id.
+
+## Components
+
+- [`CharacterPicker`](/components/character-picker) — the controlled grid. Pass `face` to get the `eyes | line` toggle and, in line mode, a row of noses.
+- [`AgentCharacterPicker`](/components/agent-character-picker) — the same grid holding its edits until they are confirmed, for a dialog where Cancel has to mean something.
+- [`CompactCharacterPicker`](/components/compact-character-picker) — a handful of shapes and inks, for a sign-up form.
+- [`AvatarEditor`](/components/avatar-editor), `AvatarTrigger` and `EditableAvatar` — the dialog with character, generate and upload tabs, and two buttons that open it.
+- [`TemplateDialog`](/components/template-dialog) — name, instructions, visibility, with the character beside the form.
+
+## How the states move
+
+| From        | To          | When                                         |
+| ----------- | ----------- | -------------------------------------------- |
+| —           | `idle`      | picker previews, held still with `paused`    |
+| `idle`      | `curious`   | pointer over an `AvatarTrigger`              |
+| —           | `happy`     | the editor's own preview                     |
+| `idle`      | `working`   | a template save is in flight                 |
+| `working`   | `celebrate` | the save resolved — one burst, then it rests |
+| `celebrate` | `idle`      | 1.6 s later, from `usePublishMark`           |
+| —           | `proud`     | the share card                               |
+
+A failed save goes back to `idle` rather than to a sad face, for the reason [`usePublishMark`](/components/use-publish-mark) gives.
+
+## What each state looks like
+
+<StateMatrix states={['idle', 'curious', 'happy', 'working', 'celebrate', 'proud']} />
+
+None of these use a belt: a picker is the one place the silhouette has to stay whole, because the silhouette is what is being chosen. Toggle the face above to see the mouth each state wears — the line face is what `lineWeight` scales.
+
+## Next
+
+- [CharacterPicker](/components/character-picker) — the controlled grid
+- [AvatarEditor](/components/avatar-editor) — character, generate and upload tabs
+- [TemplateDialog](/components/template-dialog) — name, instructions, visibility

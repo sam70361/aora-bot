@@ -1,0 +1,85 @@
+# Internationalisation
+
+Every label the components draw comes from one locale table, swapped by a single provider.
+
+## One provider, not a prop per component
+
+```tsx preview
+import { LocaleProvider, ActivityMark, CharacterPicker } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo site-demo--column">
+      <LocaleProvider locale="zh-CN">
+        <ActivityMark agent={{ id: 'nova' }} tool="search" />
+        <CharacterPicker shape="blob" color="blue" shapes={['blob', 'hex', 'cloud']} layout="row" />
+      </LocaleProvider>
+    </div>
+  );
+}
+```
+
+Language is not a prop on each component. A per-component prop has to be threaded through every level by hand and gets applied inconsistently — some components accept it, some ignore it, and nothing prevents two components in the same dialog from disagreeing.
+
+## Built-in locales
+
+`en-US` and `zh-CN`. English is the default and the fallback: any key missing from another locale resolves to its English string rather than rendering the raw key.
+
+## Overriding individual strings
+
+```tsx
+<LocaleProvider locale="en-US" overrides={{ 'activity.working': 'Crunching' }}>
+  {children}
+</LocaleProvider>
+```
+
+## Copy for the product surfaces
+
+`@aora-bot/surfaces` keeps its own table (`template.*`, `walkthrough.*`, `restricted.*` and so on); those keys are not part of `@aora-bot/react`. The language still comes from the one `LocaleProvider`, so a surface and the primitives inside it cannot disagree. Only overrides go through `SurfaceLocaleProvider`, because the React provider's `overrides` are typed to its own keys.
+
+```tsx
+import { SurfaceLocaleProvider } from '@aora-bot/surfaces';
+
+<SurfaceLocaleProvider overrides={{ 'template.title': 'New template' }}>{children}</SurfaceLocaleProvider>;
+```
+
+## Adding a locale
+
+The English table is the source of truth for the key set, so a new locale is a `Record` over the same keys. TypeScript enforces completeness.
+
+```ts
+import { enUS, type Locale } from '@aora-bot/react';
+
+const frFR: Locale = {
+  ...enUS,
+  'picker.shape': 'Forme',
+  'picker.color': 'Couleur',
+  // …
+};
+
+<LocaleProvider locale="en-US" overrides={frFR}>{children}</LocaleProvider>;
+```
+
+## Reading strings yourself
+
+```tsx
+import { useLocale } from '@aora-bot/react';
+
+function Label() {
+  const { t, id } = useLocale();
+  return <span lang={id}>{t('activity.thinking')}</span>;
+}
+```
+
+`useLocale` works outside a provider and falls back to English, so a component using it never needs a null check.
+
+## What is not translated
+
+Shape, ink and state identifiers are stable English strings and are part of the API — `'blob'`, `'blue'`, `'thinking'`. They are identifiers, not copy; translating them would make every application's saved data locale-dependent.
+
+When you do need to show one, `useLabel()` returns the display name for the current locale — `label.shape('blob')`, `label.state('thinking')`, `label.hud('progress')` — so the identifier stays in your data and the word stays in the locale table. See [LocaleProvider](/components/locale-provider).
+
+## Next
+
+- [Accessibility](/guide/accessibility) — what to write next to a character
+- [LocaleProvider](/components/locale-provider) — one provider for every label

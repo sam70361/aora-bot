@@ -1,0 +1,88 @@
+# 服务端渲染
+
+哪些东西不需要 DOM 就能渲染，以及角色怎样在任何 JavaScript 之前就进入 HTML。
+
+## 两个入口
+
+| 导入                     | 包含            | 没有 DOM 也安全 |
+| ------------------------ | --------------- | --------------- |
+| `@aora-bot/react`        | 全部组件与 hook | 否              |
+| `@aora-bot/react/static` | 渲染函数与哈希  | 是              |
+
+静态入口故意排除了动画运行时。它导出的任何东西都不碰 `window`、`document` 或 `requestAnimationFrame`，所以可以在 React Server Component、静态生成或 worker 里使用。
+
+```ts
+import { renderAvatarDataUrl } from '@aora-bot/react/static';
+
+export default async function Page() {
+  return <img src={renderAvatarDataUrl('ada@example.com')} width={40} height={40} alt="" />;
+}
+```
+
+## Next.js App Router
+
+组件包带有 `'use client'` 标记，从服务端组件导入是安全的——边界已经声明过了。
+
+```tsx
+// app/page.tsx — 服务端组件
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Page() {
+  return <CharacterMark shape="blob" color="blue" />;
+}
+```
+
+在根 layout 里引入一次样式表：
+
+```tsx
+// app/layout.tsx
+import '@aora-bot/react/styles.css';
+```
+
+### 能用静态入口就用静态入口
+
+长列表、邮件或元数据里的角色不需要动画。使用静态入口可以把动画运行时完全排除在客户端包之外。
+
+## 服务端渲染产出什么
+
+组件渲染的是未施加动画的标记。角色以静止姿态出现，水合后引擎接管。因此没有布局偏移：服务端 SVG 占据的盒子，就是动画角色将要占据的盒子。
+
+```tsx preview
+import { renderStaticSvg } from '@aora-bot/react';
+
+export default function Demo() {
+  const svg = renderStaticSvg({ shape: 'hex', color: 'green', expression: 'happy' });
+  return (
+    <div className="site-demo site-demo--column">
+      <div dangerouslySetInnerHTML={{ __html: svg }} style={{ width: 90 }} />
+      <pre style={{ maxHeight: 180, overflow: 'auto', fontSize: 12 }}>
+        <code>{svg.slice(0, 400)}…</code>
+      </pre>
+    </div>
+  );
+}
+```
+
+## 深浅色墨水
+
+静态 SVG 在 CSS 上是独立文档，读不到应用的主题 class。所以 `renderStaticSvg` 会把调色板墨水的浅色值和深色值都写进去，由 `colorScheme` 决定用什么来切换：
+
+| `colorScheme`      | 机制                                           | 用在哪里                                                |
+| ------------------ | ---------------------------------------------- | ------------------------------------------------------- |
+| `'system'`（默认） | SVG 内部的 `prefers-color-scheme` 媒体查询     | `<img src="data:…">`、文件、邮件：图像与页面隔离        |
+| `'page'`           | `light-dark()`，由继承来的 `color-scheme` 解析 | 内联进有自己主题开关的页面（`dangerouslySetInnerHTML`） |
+
+`system` 跟随操作系统，这正是隔离的图像能看到的东西。把它内联进读者可以切换主题的页面时，它会跟着系统而不是页面：系统是深色、站点是浅色，黑色墨水就会在浅色卡片上变成近白色。`page` 与你其余的 UI 一样跟随 `color-scheme`。默认输出不变。两种模式使用不同的类名，可以出现在同一个文档里。
+
+```tsx
+renderStaticSvg({ shape: 'hex', color: 'black', colorScheme: 'page' });
+```
+
+## Data URL
+
+`renderStaticSvgDataUrl` 用百分号编码而不是 base64。输出更小，在开发者工具里也仍然可读。它替你处理的一个细节：SVG data URL 里的裸 `#` 会把它截成片段——这是内联 SVG 静默坏掉的经典原因。
+
+## 接下来
+
+- [国际化](/guide/internationalisation)——一个 provider 管所有文案
+- [API 索引](/components/api-index)——所有导出集中一处

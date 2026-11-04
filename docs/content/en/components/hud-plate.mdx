@@ -1,0 +1,99 @@
+import { API } from '@theme';
+
+# HudPlate
+
+The words around a dial.
+
+```tsx preview
+import { useEffect, useState } from 'react';
+import { CharacterMark, HudPlate, useHudSpec } from '@aora-bot/react';
+
+export default function Demo() {
+  const [used, setUsed] = useState(9_000);
+  useEffect(() => {
+    const timer = setInterval(() => setUsed((v) => (v >= 15_000 ? 3_000 : v + 500)), 600);
+    return () => clearInterval(timer);
+  }, []);
+
+  const hud = useHudSpec('context', { used, total: 15_000 });
+  const pct = Math.round((used / 15_000) * 100);
+
+  return (
+    <div className="site-demo site-demo--center">
+      <HudPlate
+        title="Context"
+        value={pct}
+        unit="%"
+        lines={[`${(used / 1000).toFixed(1)}k of 15k tokens`]}
+        level={pct > 85 ? 'alert' : pct > 70 ? 'warn' : 'info'}
+      >
+        <CharacterMark shape="hex" color="blue" state="progress" hud={hud} sizePx={72} />
+      </HudPlate>
+    </div>
+  );
+}
+```
+
+## Why a plate
+
+A dial drawn in the ring outside the character is a shape: a ring four-fifths full, a needle two-thirds round. It cannot say _83%_ or _four minutes_, and it should not try — text at that size inside an SVG is unreadable. So the character keeps the geometry and the plate carries the words: a title, a figure, a unit, and any supporting lines underneath.
+
+The plate does no rounding or formatting. `value` is shown as given, so the host decides what precision is honest for the figure.
+
+## Placement and level
+
+`placement` puts the text below, above or to the right of the character. `level` colours the plate — `info`, `ok`, `warn`, `alert` — and is meant to be rare: a plate that changes tone on every state flickers through four colours in a single turn.
+
+```tsx preview
+import { CharacterMark, HudPlate } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      <HudPlate title="Sync" value="Done" level="ok" placement="top">
+        <CharacterMark shape="tofu" color="green" state="happy" hud={{ kind: 'sync', state: 'done' }} />
+      </HudPlate>
+      <HudPlate title="Timer" value="0:42" level="warn" placement="right" lines={['Waiting for approval']}>
+        <CharacterMark
+          shape="pill"
+          color="orange"
+          state="waiting"
+          hud={{ kind: 'timer', remainingMs: 42_000, totalMs: 120_000 }}
+        />
+      </HudPlate>
+      <HudPlate title="Balance" value={3} unit="credits" level="alert">
+        <CharacterMark
+          shape="hex"
+          color="red"
+          state="alerting"
+          hud={{ kind: 'balance', value: 3, low: true }}
+        />
+      </HudPlate>
+    </div>
+  );
+}
+```
+
+## useHudSpec
+
+Hosts assemble a dial out of whatever they have: a fraction that is still `undefined` on the first render, a token count that arrives as a string. Handing that straight to `hud` would either draw a wrong dial or throw. `useHudSpec` takes the kind and the raw values, runs them through the protocol's `isHudSpec` check, and returns a spec or `null` — and `null` simply means no dial, which is the right thing to draw while data is on its way.
+
+```ts
+const hud = useHudSpec('progress', { value: fraction }); // null until `fraction` is a number
+const clock = useHudSpec('clock'); // kinds without required fields need no values
+```
+
+The full set of kinds is `HUD_KINDS`; the shape of each is the `HudSpec` union, described on the [protocol page](/design/protocol#hud).
+
+## Accessibility
+
+The plate is a polite `role="status"` region, so a screen reader hears the figure change without being interrupted by it. The dial itself is decorative and hidden from the accessibility tree.
+
+## API
+
+<API component="HudPlate" />
+
+## Next
+
+- [AgentHud](/components/agent-hud) — character, dial and caption together
+- [Progress HUD](/scenarios/progress-hud) — the body works, the ring counts

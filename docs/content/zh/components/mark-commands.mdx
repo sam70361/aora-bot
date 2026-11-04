@@ -1,0 +1,190 @@
+# 角色指令
+
+从页面任何角落，告诉同一个智能体的所有角色它正在做什么。
+
+```tsx preview
+import { useState } from 'react';
+import {
+  ActivityMark,
+  AgentAvatar,
+  MarkStageProvider,
+  useMarkCommand,
+  useMarkCommands,
+} from '@aora-bot/react';
+
+const nova = { id: 'nova', name: 'Nova' };
+
+function Controls() {
+  const commands = useMarkCommands();
+  const snapshot = useMarkCommand('nova', 'chat');
+  const [release, setRelease] = useState<(() => void) | null>(null);
+
+  return (
+    <div className="site-controls">
+      <button
+        className="site-btn"
+        onClick={() => commands.holdFacts('nova', { running: true, activity: 'searching' })}
+      >
+        running, searching
+      </button>
+      <button className="site-btn" onClick={() => commands.holdFacts('nova', { composing: true })}>
+        composing
+      </button>
+      <button className="site-btn" onClick={() => commands.releaseFacts('nova')}>
+        释放事实
+      </button>
+      <button
+        className="site-btn"
+        data-active={release != null}
+        onClick={() => {
+          if (release) {
+            release();
+            setRelease(null);
+          } else {
+            setRelease(() => commands.holdState('nova', 'alerting', { priority: 5 }));
+          }
+        }}
+      >
+        钉住 alerting
+      </button>
+      <button className="site-btn" onClick={() => commands.holdState('nova', 'celebrate', { ttlMs: 1500 })}>
+        庆祝 1.5 秒
+      </button>
+      <button className="site-btn" onClick={() => commands.poke('nova')}>
+        戳一下
+      </button>
+      <span className="site-demo__label">
+        {snapshot.state}
+        {snapshot.held ? '（钉住）' : ''}
+      </span>
+    </div>
+  );
+}
+
+function Header() {
+  const snapshot = useMarkCommand('nova', 'avatar');
+  return <AgentAvatar agent={nova} state={snapshot.state} size="lg" />;
+}
+
+export default function Demo() {
+  return (
+    <MarkStageProvider>
+      <div className="site-demo site-demo--column">
+        <div className="site-demo">
+          <Header />
+          <ActivityMark agent={nova} activityMode="facts" surface="chat" bubble />
+        </div>
+        <Controls />
+      </div>
+    </MarkStageProvider>
+  );
+}
+```
+
+## 两张登记表，一个 Provider
+
+[`MarkStageProvider`](/components/mark-stage) 已经维护一张按外观索引的登记表：跑多少个引擎、哪些角色镜像哪一个。指令登记表是它按智能体索引的另一半。它记录每个智能体*正在做什么*——这才是应用真正关心的事——订阅了该智能体的每个角色都会跟着变。名册行、聊天页头、悬浮卡片可以在树的不同角落谈论同一个智能体，既不必把状态提升到共享的 React state 里，也不会引来随之而来的重渲染风暴。
+
+`useMarkCommands()` 返回写入端。没有 Provider 也能用：回退登记表只是没有本树之外的订阅者。
+
+## 事实与钉住
+
+两种写入，分量不同：
+
+- `holdFacts(agentId, facts)` 发布已知的事实——`running`、`composing`、`activity`。状态是在读取时由 [`characterStateForRoster`](/guide/agent-integration#活动动词与名册事实) 从事实*推导*出来的，所以同一组事实在聊天里是 `composing`，在头像上是 `idle`。第二次调用会替换第一次——事实按值比较，重渲染传来的同样内容不会通知任何人。返回的释放函数只清掉自己设下的事实；`releaseFacts` 则不管是谁设的都清掉。
+- `holdState(agentId, state, { priority, ttlMs })` 把一个状态钉在事实之上。优先级最高者胜出，平手时最近的钉住赢，`ttlMs` 到时自动松开——正适合一场不该赖着不走的庆祝。返回一个释放函数；`releaseState` 清掉该智能体的所有钉住。
+
+读取走 `useMarkCommand(agentId, surface)`，它让一个组件订阅一个智能体，返回 `MarkCommandSnapshot`：解析后的 `state`、胜出的 `held` 状态（状态来自事实时为 `null`）、原始 `facts`、`emphasis` 标志，以及每次 `poke` 都递增的 `pokeSeq` 计数——宿主响应它的变化，而不是它的值。
+
+## 让动作诚实的几个 hook
+
+组件内部用到的三个小 hook，导出给自己搭界面的宿主。
+
+```tsx preview
+import { useRef, useState } from 'react';
+import {
+  CharacterMark,
+  useDeadline,
+  useMarkSettle,
+  usePokeCycle,
+  type CharacterHandle,
+} from '@aora-bot/react';
+import type { CharacterState } from '@aora-bot/react';
+
+const CHURN: CharacterState[] = ['searching', 'reading', 'writing', 'working'];
+
+export default function Demo() {
+  const [raw, setRaw] = useState<CharacterState>('working');
+  const settled = useMarkSettle(raw, { settleMs: 1400 });
+  const ref = useRef<CharacterHandle>(null);
+  const poke = usePokeCycle(ref);
+  const [token, setToken] = useState(0);
+  const arrived = useDeadline(1200, [token]);
+
+  return (
+    <div className="site-demo site-demo--column">
+      <div className="site-demo">
+        <div className="site-demo__cell">
+          <CharacterMark shape="blob" color="cyan" state={settled} sizePx={64} />
+          <span className="site-demo__label">
+            原始 {raw} → 显示 {settled}
+          </span>
+        </div>
+        <div className="site-demo__cell">
+          <CharacterMark ref={ref} shape="pebble" color="violet" state="happy" sizePx={64} />
+          <span className="site-demo__label">戳我</span>
+        </div>
+        <div className="site-demo__cell">
+          <CharacterMark shape="star" color="orange" state={arrived ? 'idle' : 'spawning'} sizePx={64} />
+          <span className="site-demo__label">{arrived ? '已到场' : '入场中…'}</span>
+        </div>
+      </div>
+      <div className="site-controls">
+        <button className="site-btn" onClick={() => setRaw(CHURN[(CHURN.indexOf(raw) + 1) % CHURN.length])}>
+          切换状态
+        </button>
+        <button className="site-btn" onClick={() => poke()}>
+          戳一下
+        </button>
+        <button className="site-btn" onClick={() => setToken((n) => n + 1)}>
+          重新入场
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+- `useMarkSettle(state, { settleMs })` 在输入停止变化满 `settleMs` 之前一直保持上一个状态（默认 `SETTLE_MS`，1400 毫秒；`0` 关闭）。事实抖动很常见——工具启动、80 毫秒后返回、又一个启动——每一次都渲染，就是一排脸在闪，看起来像出了故障。
+- `usePokeCycle(ref)` 返回一个函数，每次调用在句柄上跑下一个花样：转圈、跳一下、彩纸、再转圈。永远转圈到第二次点击就不好玩了。`POKE_COOLDOWN_MS`（340 毫秒）内的重复戳会被忽略；ref 上没有引擎时返回 `false`——镜像的 [`StagedMark`](/components/mark-stage) 与别人共享动画，不能独自动，调用方可以改为让外层容器跳一下。
+- `useDeadline(ms, deps)` 在依赖上次变化后满 `ms` 之前是 `false`，之后是 `true`。它省去了入场动画自带的 `setTimeout` 加 ref。
+
+## API
+
+### useMarkCommands
+
+返回 `MarkCommands`：
+
+| 方法                               | 作用                                                        |
+| ---------------------------------- | ----------------------------------------------------------- |
+| `holdFacts(agentId, facts)`        | 为该智能体发布事实，替换上一份。返回释放函数。              |
+| `releaseFacts(agentId)`            | 清掉全部事实。                                              |
+| `holdState(agentId, state, opts?)` | 以 `priority` 和可选的 `ttlMs` 钉住一个状态。返回释放函数。 |
+| `releaseState(agentId)`            | 清掉全部钉住。                                              |
+| `setEmphasis(agentId, on)`         | 强调该智能体的所有角色，用于悬停。                          |
+| `poke(agentId)`                    | 递增 `pokeSeq`。                                            |
+| `subscribe(agentId, listener)`     | 底层订阅。优先用 `useMarkCommand`。                         |
+| `read(agentId, surface?)`          | 当前的 `MarkCommandSnapshot`。                              |
+
+### useMarkCommand
+
+`useMarkCommand(agentId, surface = 'list')`——订阅一个智能体，拿到它的 `MarkCommandSnapshot`。
+
+### useMarkSettle、usePokeCycle、useDeadline
+
+见上文。`createMarkCommandRegistry()` 构造一张独立登记表，供测试或自己提供 `MarkCommandContext` 的宿主使用。
+
+## 接下来
+
+- [MarkStageProvider](/components/mark-stage)——按外观共享引擎
+- [桌面伙伴](/scenarios/desktop-companion)——活几个小时又不吵

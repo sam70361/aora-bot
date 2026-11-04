@@ -1,0 +1,76 @@
+import { API } from '@theme';
+
+# OccupancyList
+
+Which agents are on which resource.
+
+> Part of `@aora-bot/surfaces`, not `@aora-bot/react`: `pnpm add @aora-bot/surfaces @aora-bot/react`, and import `@aora-bot/surfaces/styles.css` after the React stylesheet.
+
+```tsx preview
+import { useState } from 'react';
+import { MarkStageProvider } from '@aora-bot/react';
+import { OccupancyList, type OccupancyRow } from '@aora-bot/surfaces';
+
+const rows: OccupancyRow[] = [
+  {
+    id: 'repo',
+    label: 'Repository, main',
+    agents: [
+      { id: 'ada', name: 'Ada' },
+      { id: 'grace', name: 'Grace' },
+      { id: 'alan', name: 'Alan' },
+    ],
+  },
+  {
+    id: 'browser',
+    label: 'Browser session',
+    agents: [{ id: 'grace', name: 'Grace' }],
+    state: 'searching',
+  },
+  {
+    id: 'db',
+    label: 'Staging database',
+    agents: Array.from({ length: 7 }, (_, i) => ({ id: `worker-${i}`, name: `Worker ${i + 1}` })),
+  },
+  { id: 'mic', label: 'Microphone', agents: [] },
+];
+
+export default function Demo() {
+  const [picked, setPicked] = useState<string | null>(null);
+  return (
+    <MarkStageProvider>
+      <div className="site-demo site-demo--column">
+        <OccupancyList rows={rows} onSelect={(agent, row) => setPicked(`${agent.name} on ${row.label}`)} />
+        <span className="site-demo__label">{picked ?? 'click a face'}</span>
+      </div>
+    </MarkStageProvider>
+  );
+}
+```
+
+## Faces, not names
+
+The question this list answers is "is anything touching that right now", and a row of characters answers it at a glance where a column of names has to be read. Names are still there — on hover and to a screen reader — so the marks are a summary, not a replacement. An empty row renders as "not in use" rather than as a gap, because a gap looks like a loading failure.
+
+Overflow is a count rather than a scroll. Four faces and "+7" is a true statement about a busy resource; a row that grows with its occupants makes the list jump every time one arrives. `maxVisible` sets the cut.
+
+## One engine for forty rows
+
+Every `OccupancyMark` is a [`StagedMark`](/components/mark-stage), so the list needs a `MarkStageProvider` above it. A resource list is exactly the page that has forty marks on it, most in the same state at the same time, and that is the case the stage collapses to a single animation. `lineWeight` is the one prop that opts a mark out of sharing: the weight is baked into the source geometry, so a mirror cannot vary it.
+
+## Each row's state
+
+`state` on a row applies to its marks — `working` unless the host knows better. A browser session is `searching`; a voice channel is `dictating`. The row-level default keeps a list of otherwise identical resources reading as one kind of activity.
+
+## API
+
+<API component="OccupancyList" />
+
+### OccupancyMark
+
+<API component="OccupancyMark" />
+
+## Next
+
+- [Voice](/scenarios/voice) — proof that the microphone is open
+- [HudPlate](/components/hud-plate) — a figure beside the dial

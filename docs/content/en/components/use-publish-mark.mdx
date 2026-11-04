@@ -1,0 +1,72 @@
+# usePublishMark
+
+Three states for the one moment a form is worth animating.
+
+> Part of `@aora-bot/surfaces`, not `@aora-bot/react`: `pnpm add @aora-bot/surfaces @aora-bot/react`, and import `@aora-bot/surfaces/styles.css` after the React stylesheet.
+
+```tsx preview
+import { useRef } from 'react';
+import { CharacterMark, ConfettiLayer, type ConfettiHandle } from '@aora-bot/react';
+import { usePublishMark } from '@aora-bot/surfaces';
+
+export default function Demo() {
+  const confetti = useRef<ConfettiHandle>(null);
+  const publish = usePublishMark({ confetti, celebrateMs: 1600 });
+
+  const save = async (ok: boolean) => {
+    publish.begin();
+    await new Promise((r) => setTimeout(r, 900));
+    if (ok) publish.succeed();
+    else publish.fail();
+  };
+
+  return (
+    <div className="site-demo site-demo--column">
+      <div style={{ position: 'relative', display: 'inline-flex' }}>
+        <CharacterMark shape="star" color="orange" state={publish.characterState} sizePx={80} />
+        <ConfettiLayer ref={confetti} />
+      </div>
+      <span className="site-demo__label">{publish.state}</span>
+      <div className="site-controls">
+        <button className="site-btn" disabled={publish.state === 'publishing'} onClick={() => save(true)}>
+          publish
+        </button>
+        <button className="site-btn" disabled={publish.state === 'publishing'} onClick={() => save(false)}>
+          publish, then fail
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+## Why only here
+
+Publishing is the rare interaction where a character earns its keep: there is a real wait, a real outcome, and the outcome is good news. So the mark _works_ while the request is out, _celebrates_ when it lands, then puts itself away — a celebration that has to be dismissed stops being one.
+
+Failure returns straight to rest rather than to a sad face. The form is about to show a message saying what went wrong, and a character pulling an expression next to it reads as the library editorialising.
+
+## The contract
+
+`usePublishMark(options)` returns a `PublishMark`:
+
+| Field            | Meaning                                                         |
+| ---------------- | --------------------------------------------------------------- |
+| `state`          | `idle`, `publishing` or `celebrate`.                            |
+| `characterState` | The matching engine state: `idle`, `working`, `celebrate`.      |
+| `begin()`        | The request went out.                                           |
+| `succeed()`      | It landed. Fires the confetti and starts the celebration timer. |
+| `fail()`         | It did not. Back to `idle` immediately.                         |
+
+Options:
+
+- `confetti` — a ref to a [`ConfettiLayer`](/components/confetti-layer). The hook fires `burst` (20 pieces by default) on success so the host never has to notice the moment itself. It is supplied by the caller rather than returned from the hook: the ref belongs to the element it is attached to, and a hook handing one out invites reading `.current` during render.
+- `celebrateMs` — how long the celebration holds (1600 ms by default).
+- `onSettled` — called when the celebration has finished. A good place to close a dialog.
+
+A celebration in flight when the component unmounts is cancelled, so nothing fires a state update into a component that has gone. [`TemplateDialog`](/components/template-dialog) uses this hook for its Save button.
+
+## Next
+
+- [ConfettiLayer](/components/confetti-layer) — paper over anything
+- [Celebration](/scenarios/celebration) — work, celebrate, put itself away

@@ -1,0 +1,68 @@
+import { CastGrid } from '@theme';
+
+# Cast
+
+The named characters, one per shape. Each is a shape, an ink and a little personality — nothing a `{ shape, color }` pair could not reproduce, given a name so a product can offer "pick a character" instead of "pick a shape and an ink". The cast matches the [shapes](/design/shapes) one to one: a shape the engine adds must come with its name.
+
+<CastGrid />
+
+_Tour_ walks a card through every [protocol id](/design/protocol) in turn.
+
+## Using a preset
+
+```tsx
+<CharacterMark preset="bao" state="happy" />
+<StagedMark preset="dew" />
+<AgentAvatar agent={{ id: 'u-1', preset: 'nimbo' }} />
+```
+
+A preset supplies `shape` and `color` when they are not given, and nothing else: passing `shape` alongside `preset` overrides the preset's shape. It is a convenience layer over the primitives, not a new axis.
+
+```tsx preview
+import { CharacterMark, castMember } from '@aora-bot/react';
+
+export default function Demo() {
+  const bao = castMember('bao');
+  return (
+    <div className="site-demo">
+      <CharacterMark preset="bao" state="happy" sizePx={96} />
+      <CharacterMark preset="bao" color="violet" state="happy" sizePx={96} />
+      <CharacterMark preset="bao" shape="cloud" state="happy" sizePx={96} />
+      <pre style={{ margin: 0, fontSize: 12 }}>{JSON.stringify(bao, null, 2)}</pre>
+    </div>
+  );
+}
+```
+
+## What a preset carries
+
+```ts
+interface CharacterPreset {
+  id: CastId;
+  name: { en: string; zh: string };
+  desc: { en: string; zh: string };
+  shape: ShapeId;
+  color: ColorId;
+  accent: string; // the hex the character was designed in
+  face?: FaceStyle; // for presets drawn as line faces
+  nose?: NoseId;
+}
+```
+
+`color` is the nearest palette entry and is what renders. `accent` is the exact hue the character was drawn in; it is kept for documentation swatches and for hosts with their own palette. No shipped member sets `face` or `nose` — the cast keeps the default face — but a host's own presets can, and every picker honours them.
+
+## Looking one up
+
+```ts
+castMember('mochi'); // CharacterPreset
+castMember('nobody'); // null — a stored preference can go stale safely
+isCastId('byte'); // true
+CAST_IDS; // ['mochi', 'dot', 'pip', 'byte', …]
+```
+
+`castMember` returns `null` rather than throwing for an unknown id, so a stored preference that names an unknown id degrades to the default character instead of crashing the page.
+
+## Next
+
+- [Shapes](/design/shapes) — the drawing behind each character
+- [CastStage](/components/cast-stage) — several characters entering in turn

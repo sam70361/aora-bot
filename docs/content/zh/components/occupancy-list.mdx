@@ -1,0 +1,76 @@
+import { API } from '@theme';
+
+# OccupancyList
+
+哪些智能体正在占用哪些资源。
+
+> 属于 `@aora-bot/surfaces`，不在 `@aora-bot/react` 里：`pnpm add @aora-bot/surfaces @aora-bot/react`，并在 React 样式之后引入 `@aora-bot/surfaces/styles.css`。
+
+```tsx preview
+import { useState } from 'react';
+import { MarkStageProvider } from '@aora-bot/react';
+import { OccupancyList, type OccupancyRow } from '@aora-bot/surfaces';
+
+const rows: OccupancyRow[] = [
+  {
+    id: 'repo',
+    label: '代码库，main',
+    agents: [
+      { id: 'ada', name: 'Ada' },
+      { id: 'grace', name: 'Grace' },
+      { id: 'alan', name: 'Alan' },
+    ],
+  },
+  {
+    id: 'browser',
+    label: '浏览器会话',
+    agents: [{ id: 'grace', name: 'Grace' }],
+    state: 'searching',
+  },
+  {
+    id: 'db',
+    label: '预发数据库',
+    agents: Array.from({ length: 7 }, (_, i) => ({ id: `worker-${i}`, name: `Worker ${i + 1}` })),
+  },
+  { id: 'mic', label: '麦克风', agents: [] },
+];
+
+export default function Demo() {
+  const [picked, setPicked] = useState<string | null>(null);
+  return (
+    <MarkStageProvider>
+      <div className="site-demo site-demo--column">
+        <OccupancyList rows={rows} onSelect={(agent, row) => setPicked(`${agent.name} 在 ${row.label}`)} />
+        <span className="site-demo__label">{picked ?? '点一张脸'}</span>
+      </div>
+    </MarkStageProvider>
+  );
+}
+```
+
+## 用脸，不用名字
+
+这个列表回答的问题是「现在有没有人在碰那个东西」，一排角色一眼就能回答，一列名字却得逐个读。名字仍然在——悬停时显示，屏幕阅读器也能读到——所以角色是摘要，不是替代。空行渲染为「未使用」而不是留白，因为留白看起来像加载失败。
+
+溢出用计数而不是滚动。四张脸加「+7」是对一个繁忙资源的真实陈述；随占用者增长的行会让列表在每次有人到来时跳动。`maxVisible` 决定在哪里截断。
+
+## 四十行共用一个引擎
+
+每个 `OccupancyMark` 都是 [`StagedMark`](/components/mark-stage)，所以列表上方需要一个 `MarkStageProvider`。资源列表恰恰是那种放着四十个角色、其中大多数同时处于同一状态的页面，而这正是舞台能压缩成一份动画的场合。`lineWeight` 是唯一会让角色退出共享的 prop：线条粗细烙在源几何里，镜像无法各自不同。
+
+## 每一行的状态
+
+行上的 `state` 作用于它的角色——宿主没有更好的信息时就是 `working`。浏览器会话是 `searching`；语音通道是 `dictating`。行级默认值让一列本来相同的资源读起来是同一种活动。
+
+## API
+
+<API component="OccupancyList" />
+
+### OccupancyMark
+
+<API component="OccupancyMark" />
+
+## 接下来
+
+- [语音](/scenarios/voice)——麦克风开着的证据
+- [HudPlate](/components/hud-plate)——表盘旁边的一个数字

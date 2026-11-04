@@ -1,0 +1,121 @@
+import { API } from '@theme';
+
+# AvatarStack
+
+Overlapping cluster of group members.
+
+```tsx preview
+import { AvatarStack } from '@aora-bot/react';
+
+const members = [{ id: 'a' }, { id: 'b' }, { id: 'c' }, { id: 'd' }, { id: 'e' }, { id: 'f' }];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {[2, 3, 4, 6].map((n) => (
+        <div className="site-demo__cell" key={n}>
+          <AvatarStack members={members.slice(0, n)} sizePx={34} />
+          <span className="site-demo__label">{n} members</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## The gap is shaped, not circular
+
+Each disc punches a hole in the one behind it using the neighbour's **own silhouette** as a mask, not a circle.
+
+A circular cut-out looks correct only when the shape in front is round. Against a hexagon it bites into one side and leaves a wedge on the other, and the gap appears to vary in width as you look around the edge. Using the real outline keeps the separation even for every shape.
+
+```tsx preview
+import { AvatarStack } from '@aora-bot/react';
+
+const shaped = [
+  { id: 'a', shape: 'hex' as const },
+  { id: 'b', shape: 'onigiri' as const },
+  { id: 'c', shape: 'drop' as const },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      <AvatarStack members={shaped} sizePx={48} />
+      <AvatarStack members={shaped} sizePx={48} overlap={0.5} />
+    </div>
+  );
+}
+```
+
+## Overflow
+
+Members past `maxVisible` collapse into a `+N` chip.
+
+```tsx preview
+import { AvatarStack } from '@aora-bot/react';
+
+const many = Array.from({ length: 12 }, (_, i) => ({ id: `m-${i}` }));
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      <AvatarStack members={many} sizePx={32} />
+      <AvatarStack members={many} sizePx={32} maxVisible={5} />
+      <AvatarStack members={many} sizePx={32} showOverflow={false} />
+    </div>
+  );
+}
+```
+
+## The arithmetic, without the component
+
+Three helpers carry the cluster's numbers to places that are not rendering it: a popover that has to line up with the third face, a row that needs the width before it lays out, a test that checks the maths without a DOM.
+
+- `layoutAvatarStack(count, sizePx, { overlap, withOverflow })` returns the left `offsets` of each disc in draw order, the `overlap` actually used and the total `width`, including the overflow slot when reserved. The last disc contributes its whole width; every earlier one only the part its neighbour does not hide.
+- `stackMetrics(size)` gives sensible proportions for each avatar size — `sizePx`, `overlap` and `maxVisible`. Small clusters overlap harder and show fewer faces: at `xs`, three discs at the usual overlap are a smear, and two at a tighter one still read as "a group", which is all the size can carry.
+- `participantsFromMembers(members, max)` splits a membership list into the `visible` faces and a `hidden` count for the chip. `max` defaults to `STACK_MAX_VISIBLE` (3); `STACK_OVERLAP` (0.36) is the default overlap.
+
+```tsx preview
+import { AvatarStack, layoutAvatarStack, participantsFromMembers, stackMetrics } from '@aora-bot/react';
+
+const members = Array.from({ length: 7 }, (_, i) => ({ id: `p-${i}` }));
+
+export default function Demo() {
+  const metrics = stackMetrics('lg');
+  const { visible, hidden } = participantsFromMembers(members, metrics.maxVisible);
+  const layout = layoutAvatarStack(visible.length, metrics.sizePx, {
+    overlap: metrics.overlap,
+    withOverflow: hidden > 0,
+  });
+  return (
+    <div className="site-demo site-demo--column">
+      <AvatarStack
+        members={members}
+        sizePx={metrics.sizePx}
+        overlap={metrics.overlap}
+        maxVisible={metrics.maxVisible}
+      />
+      <span className="site-demo__label">
+        lg → {metrics.sizePx}px, overlap {metrics.overlap}, {visible.length} shown + {hidden} hidden, width{' '}
+        {Math.round(layout.width)}px, offsets {layout.offsets.map((o) => Math.round(o)).join(' / ')}
+      </span>
+    </div>
+  );
+}
+```
+
+## API
+
+<API component="AvatarStack" />
+
+### GroupAvatar
+
+Convenience wrapper that reads `members` off a group record.
+
+<API component="GroupAvatar" />
+
+## Next
+
+- [Badges and status](/components/avatar-chrome) — unread counts and status dots
+- [Agent roster](/scenarios/agent-roster) — twenty faces down the side

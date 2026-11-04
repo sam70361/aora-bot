@@ -1,0 +1,461 @@
+/*
+ * Controls and demo blocks.
+ *
+ * The small set of pieces every page and every documentation demo is built
+ * from: the button, the labelled field, the dropdown menu, the slider, the
+ * swatch grid, and the block a demo sits in. They read the kit's tokens, so a
+ * change to `--aora-radius-sm` or `--aora-accent` reaches all of them.
+ *
+ * The site has one selected state — ink. A chosen button, menu option, swatch,
+ * timeline clip or tour pick is filled with the text colour, so "this one"
+ * looks the same wherever it appears.
+ */
+
+@layer site.components {
+  /* ---- demo blocks ----------------------------------------------------------- */
+
+  /*
+   * The edge is an inset hairline rather than a border: a demo sits inside the
+   * prose, and one more 1px box around a box is what the page had too many of.
+   * The characters inside read `--aora-bg-base` from the root, which is the
+   * page; the fill here is the page at 88%, so the eye cut-outs match it.
+   */
+  .site-demo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--aora-space-5);
+    padding: 1.75rem var(--aora-space-6);
+    border-radius: var(--aora-radius-lg);
+    background: color-mix(in oklab, var(--aora-bg-base) 88%, transparent);
+    box-shadow: var(--aora-shadow-line);
+  }
+
+  /* On a phone the doc column is under 360px, and 24px a side leaves a demo little more than 220. */
+  @media (width < 480px) {
+    .site-demo {
+      padding-inline: var(--aora-space-4);
+    }
+  }
+
+  .site-demo--center {
+    justify-content: center;
+  }
+
+  /*
+   * `nowrap` matters here. The base `.site-demo` wraps, which is right for a row
+   * of characters, but a *column* that wraps starts laying its children out in
+   * side-by-side columns and resolves to a height taken from the stretched
+   * tracks — the shape grid ended up with 780px rows and one visible row of
+   * swatches floating in the void.
+   */
+  .site-demo--column {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+  }
+
+  /* A column whose children centre, for one character with its controls beneath. */
+  .site-demo--stack {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+
+  /* A character and what goes with it, wrapping on a phone rather than overflowing. */
+  .site-demo__wide {
+    align-self: stretch;
+    max-width: 24rem;
+    width: 100%;
+    margin-inline: auto;
+  }
+
+  .site-demo__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--aora-space-3);
+  }
+
+  /* An avatar with chrome in its corners: `__dot` at the bottom, `__count` at the top. */
+  .site-demo__avatar {
+    position: relative;
+    display: inline-flex;
+  }
+
+  /* A name that keeps its column, so the buttons beside a list of rows line up. */
+  .site-demo__who {
+    min-width: 3.5rem;
+  }
+
+  /* Where a scene puts its destination slot: centred, a little above the floor. */
+  .site-demo__slot {
+    position: absolute;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .site-demo__dot {
+    position: absolute;
+    bottom: 0;
+    inset-inline-end: 0;
+  }
+
+  .site-demo__count {
+    position: absolute;
+    top: -4px;
+    inset-inline-end: -8px;
+  }
+
+  .site-demo--bare {
+    padding: 0;
+    background: none;
+    box-shadow: none;
+  }
+
+  .site-demo__cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--aora-space-2);
+    min-width: 4.5rem;
+  }
+
+  /*
+   * `--aora-text-xs` (12px) is the floor for an identifier.
+   *
+   * These labels are things you type — `powering-down`, `neutralSoft` — not
+   * captions, so they have to survive being read character by character.
+   */
+  .site-demo__label {
+    font-family: var(--aora-font-mono);
+    font-size: var(--aora-text-xs);
+    font-variant-numeric: tabular-nums;
+    line-height: var(--aora-leading-snug);
+    color: var(--aora-text-muted);
+    text-align: center;
+    overflow-wrap: anywhere;
+  }
+
+  .site-demo__label[data-active='true'] {
+    color: var(--aora-accent);
+  }
+
+  .site-demo__name {
+    font-size: var(--aora-text-sm);
+    line-height: var(--aora-leading-snug);
+    color: var(--aora-text);
+    text-align: center;
+  }
+
+  /* ---- swatch grids ---------------------------------------------------------- */
+
+  /*
+   * A grid rather than a wrapping flex row. Every swatch gets the same column,
+   * so names of different lengths cannot stagger the rows — which is what made
+   * the shape and state grids read as a scattered pile.
+   */
+  .site-swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(5.75rem, 1fr));
+    gap: var(--aora-space-2);
+    margin-block: var(--aora-space-4);
+  }
+
+  .site-swatch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--aora-space-1);
+    padding: var(--aora-space-3) var(--aora-space-1);
+    border: 0;
+    border-radius: var(--aora-radius-md);
+    background: none;
+    color: inherit;
+    font: inherit;
+  }
+
+  button.site-swatch {
+    cursor: pointer;
+    transition: background-color var(--aora-duration-fast) var(--aora-ease-standard);
+
+    &:hover {
+      background: var(--aora-fill);
+    }
+
+    /*
+     * Chosen is ink. The cut-out eyes read `--aora-bg-base`, so the fill has
+     * to be handed to them too, or the character on the chosen swatch looks
+     * out through two page-coloured holes.
+     */
+    &[aria-pressed='true'] {
+      --aora-bg-base: var(--aora-text);
+      background: var(--aora-text);
+      color: var(--site-paper);
+
+      & :is(.site-demo__label, .site-demo__name) {
+        color: inherit;
+      }
+    }
+  }
+
+  /* ---- buttons ----------------------------------------------------------------- */
+
+  .site-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--aora-space-2);
+  }
+
+  /*
+   * One button.
+   *
+   * Borderless, because a row of outlined buttons is a row of boxes and the
+   * page is already made of them: the word is the control and the surface only
+   * appears under the pointer. Chosen is an ink fill.
+   */
+  .site-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--aora-space-1);
+    height: var(--aora-control-h);
+    padding: 0 var(--aora-space-3);
+    border: 0;
+    border-radius: var(--aora-radius-sm);
+    background: none;
+    color: var(--aora-text);
+    font-family: inherit;
+    font-size: var(--aora-text-sm);
+    font-weight: var(--aora-weight-medium);
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color var(--aora-duration-fast) var(--aora-ease-standard),
+      color var(--aora-duration-fast) var(--aora-ease-standard);
+
+    &:hover:not(:disabled) {
+      background: var(--aora-fill);
+    }
+
+    &:active:not(:disabled) {
+      background: var(--aora-fill-hover);
+    }
+
+    &[data-active='true'] {
+      background: var(--aora-text);
+      color: var(--site-paper);
+    }
+
+    /* Borderless means a disabled button has no box to go grey; the text does. */
+    &:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+  }
+
+  /* ---- fields and sliders -------------------------------------------------------- */
+
+  /* A label wrapping a control. */
+  .site-field {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--aora-space-2);
+    font-size: var(--aora-text-sm);
+    color: var(--aora-text-muted);
+  }
+
+  /*
+   * A thin track and a round thumb. The track is neutral and the thumb carries
+   * the edge: a filled track would need a second element, and the neutral one
+   * reads as a slider next to a character without competing with it.
+   */
+  input[type='range'] {
+    appearance: none;
+    height: 1.25rem;
+    background: transparent;
+    accent-color: var(--aora-accent);
+    cursor: pointer;
+
+    &::-webkit-slider-runnable-track {
+      height: 4px;
+      border-radius: var(--aora-radius-pill);
+      background: var(--aora-fill-hover);
+    }
+
+    &::-moz-range-track {
+      height: 4px;
+      border-radius: var(--aora-radius-pill);
+      background: var(--aora-fill-hover);
+    }
+
+    &::-webkit-slider-thumb {
+      appearance: none;
+      width: 1rem;
+      height: 1rem;
+      margin-top: -6px;
+      border: 0;
+      border-radius: 50%;
+      background: var(--aora-surface-raised);
+      box-shadow:
+        0 0 0 1px var(--aora-line-strong),
+        var(--aora-shadow-sm);
+      transition: transform var(--aora-duration-fast) var(--aora-ease-standard);
+    }
+
+    &::-moz-range-thumb {
+      width: 1rem;
+      height: 1rem;
+      border: 0;
+      border-radius: 50%;
+      background: var(--aora-surface-raised);
+      box-shadow:
+        0 0 0 1px var(--aora-line-strong),
+        var(--aora-shadow-sm);
+    }
+
+    &:hover::-webkit-slider-thumb,
+    &:active::-webkit-slider-thumb {
+      transform: scale(1.12);
+    }
+  }
+
+  @media (forced-colors: active) {
+    input[type='range'] {
+      appearance: auto;
+    }
+  }
+
+  /* ---- dropdown menu ---------------------------------------------------------------- */
+
+  /*
+   * Native `<select>` is an OS widget: it cannot take the site's ink fill,
+   * cannot group options, and cannot open as a panel. Prefer `.site-menu`
+   * wherever a list of choices is shown next to a character.
+   */
+  .site-menu {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--aora-space-2);
+  }
+
+  .site-menu__label {
+    font-size: var(--aora-text-sm);
+    color: var(--aora-text-muted);
+  }
+
+  .site-menu__trigger {
+    max-width: 22rem;
+  }
+
+  .site-menu__value {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .site-menu__trigger code {
+    font-size: var(--aora-text-xs);
+    color: var(--aora-text-muted);
+  }
+
+  .site-menu__caret {
+    flex: none;
+    width: 8px;
+    height: 5px;
+    margin-inline-start: var(--aora-space-1);
+    background: currentColor;
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    opacity: 0.55;
+  }
+
+  .site-menu__panel {
+    position: absolute;
+    z-index: var(--aora-z-dropdown);
+    top: calc(100% + var(--aora-space-1));
+    inset-inline-start: 0;
+    display: flex;
+    flex-direction: column;
+    min-width: max(100%, 16rem);
+    max-width: min(36rem, 92vw);
+    max-height: min(22rem, 60vh);
+    padding: var(--aora-space-1);
+    overflow: auto;
+    border-radius: var(--aora-radius-md);
+    background: var(--aora-surface-raised);
+    box-shadow: var(--aora-shadow-line), var(--aora-shadow-lg);
+  }
+
+  .site-menu__panel[data-columns='2'],
+  .site-menu__panel[data-columns='3'] {
+    display: grid;
+    grid-template-columns: repeat(var(--site-menu-cols, 2), minmax(0, 1fr));
+    gap: var(--aora-space-0-5);
+  }
+
+  .site-menu__panel[data-columns='3'] {
+    --site-menu-cols: 3;
+    min-width: 22rem;
+  }
+
+  .site-menu__group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--aora-space-0-5);
+    padding-block: var(--aora-space-1);
+
+    & + & {
+      border-top: 1px solid var(--aora-line);
+    }
+  }
+
+  .site-menu__groupName {
+    margin: 0;
+    padding: var(--aora-space-2) var(--aora-space-3) var(--aora-space-1);
+    font-size: var(--aora-text-sm);
+    font-weight: var(--aora-weight-semibold);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--aora-text-faint);
+  }
+
+  .site-menu__option {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--aora-space-3);
+    width: 100%;
+    padding: 0.4375rem var(--aora-space-3);
+    border: 0;
+    border-radius: var(--aora-radius-sm);
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: var(--aora-text-sm);
+    text-align: start;
+    cursor: pointer;
+
+    & code {
+      font-size: var(--aora-text-xs);
+      color: var(--aora-text-muted);
+    }
+
+    &:hover,
+    &[data-active='true'] {
+      background: var(--aora-fill);
+    }
+
+    &[aria-selected='true'] {
+      background: var(--aora-text);
+      color: var(--site-paper);
+      font-weight: var(--aora-weight-semibold);
+
+      & code {
+        color: inherit;
+        opacity: 0.7;
+      }
+    }
+  }
+}

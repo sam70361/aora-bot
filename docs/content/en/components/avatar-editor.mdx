@@ -1,0 +1,82 @@
+import { API } from '@theme';
+
+# AvatarEditor
+
+Pick a character, generate a picture, or upload one — behind one dialog.
+
+```tsx preview
+import { useState } from 'react';
+import { EditableAvatar, type AvatarDraft } from '@aora-bot/react';
+
+export default function Demo() {
+  const [avatar, setAvatar] = useState<AvatarDraft>({ shape: 'hex', color: 'blue', pictureUrl: null });
+  return (
+    <div className="site-demo site-demo--column">
+      <EditableAvatar value={avatar} onCommit={setAvatar} />
+      <span className="site-demo__label">
+        {avatar.pictureUrl ? 'picture' : `${avatar.shape}, ${avatar.color}`}
+      </span>
+    </div>
+  );
+}
+```
+
+Click the avatar. The editor opens in place with the character tab first; the upload tab takes a dropped image through a square crop. There is no generate tab here because the demo passes no `generateImage`.
+
+## Three ways in
+
+`EditableAvatar` is the avatar with a pencil on it, for a profile card. `AvatarTrigger` is a plain button showing a live `CharacterMark` of the current choice, for a form row. Both open `AvatarEditor` and forward the same props; use the editor directly when the host owns the dialog's placement.
+
+The pencil is drawn from the engine's own `pencilGlyphPath` — the same outline the `writing` state orbits a character with — rather than from an icon set. There is one pencil in this library, and a second one from elsewhere would sit at a different weight next to a character already carrying the first.
+
+## How it closes
+
+`onClose` reports `save`, `cancel` or `dismiss` (Escape, or a click outside), and the two staged things behave differently on a dismissal:
+
+- A staged **character** survives it. Shapes and inks are cheap and reversible — every one of them is a valid avatar, and someone who clicked a hexagon and then pressed Escape meant to keep the hexagon. Asking them to find Save for a two-click decision is the wrong ceremony, so `onCommit` fires with the staged character.
+- A staged **picture** does not. It is a crop nobody has looked at from the outside yet, and replacing a face with a badly framed photo is exactly the change someone would want to think about. Only Save applies it.
+
+## Tabs
+
+`characterTab={false}` hides the character tab — a group avatar has no character to choose. The generate tab appears only when `generateImage` is supplied; it receives the prompt and an `AbortSignal`, and should resolve to an image URL or data URL. `initialTab` picks the opening tab; by default an avatar that already has a picture opens on upload.
+
+```tsx
+<AvatarTrigger
+  value={avatar}
+  onCommit={save}
+  generateImage={(prompt, signal) => api.generateAvatar(prompt, { signal })}
+/>
+```
+
+## Crop helpers
+
+The upload tab is built from exported functions, so a host with its own crop UI can reuse the arithmetic and the export.
+
+| Export                                  | Purpose                                                                                                                                                                                               |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `readImageFile(file)`                   | Validate and read a dropped, pasted or chosen file. Resolves `{ ok, dataUrl }` or `{ ok: false, reason }` with `too-large` / `not-an-image` — a wrong file is something the person did, not an error. |
+| `loadImage(dataUrl)`                    | Decode and downsample to `MAX_SOURCE_PX` (1024) on the way in, so dragging a 6000px photo stays smooth.                                                                                               |
+| `fitImage(width, height, max?)`         | The size to decode a source at.                                                                                                                                                                       |
+| `coverScale(view)`, `clampZoom(zoom)`   | Scale that fills the crop window at a zoom between `ZOOM_MIN` (1) and `ZOOM_MAX` (5).                                                                                                                 |
+| `panLimit(view)`, `clampPan(pan, view)` | How far the image may travel before an edge enters the window, and a pan held inside that.                                                                                                            |
+| `exportPlacement(request)`              | Where the source lands on the exported square.                                                                                                                                                        |
+| `cropToDataUrl(image, request)`         | Render the crop to a PNG data URL of `EXPORT_PX` (256) — four times the `CROP_STAGE_PX` (96) stage, so a retina avatar stays sharp.                                                                   |
+
+Limits are exported too: `MAX_UPLOAD_BYTES` (25 MB), `ZOOM_STEP`.
+
+## API
+
+<API component="AvatarEditor" />
+
+### AvatarTrigger
+
+<API component="AvatarTrigger" />
+
+### EditableAvatar
+
+<API component="EditableAvatar" />
+
+## Next
+
+- [TemplateDialog](/components/template-dialog) — name, instructions, visibility
+- [Character setup](/scenarios/character-setup) — choosing what an agent looks like

@@ -1,0 +1,174 @@
+import { StateGrid, FxGrid, StateMatrix } from '@theme';
+
+# 状态
+
+状态分四组，下面全部是实时运行的，共用同一个舞台。在默认的 `cute` 脸下，每个状态有自己的眼型、嘴型和腮红，部分还带着特效（见[表情](/design/expressions)）；在[线条脸](/design/face)模式下，每个状态会戴上 `STATE_MOUTH` 里对应的嘴形。
+
+<StateGrid />
+
+## 一个状态定义了什么
+
+| 表                     | 作用                             |
+| ---------------------- | -------------------------------- |
+| `STATE_CUTE_EYES`      | `cute` 脸要轮播的眼型序列        |
+| `STATE_CUTE_MOUTH`     | `cute` 脸的嘴形                  |
+| `STATE_BLUSH`          | `cute` 脸的腮红强度              |
+| `STATE_FX`             | 身体之外的情绪或活动特效         |
+| `STATE_EYE_TOPOLOGIES` | `eyes` / `line` 脸的表情序列     |
+| `STATE_EYE_SWITCH_MS`  | 两次切换之间的随机间隔           |
+| `STATE_BLINK_MS`       | 眨眼间隔，`null` 表示不眨        |
+| `STATE_FACE_TUNE`      | 叠加在默认值上的面部微调         |
+| `STATE_GAZE`           | 凝视漂移的幅度与重新取点的频率   |
+| `STATE_BELT`           | `eyes` / `line` 脸的腰带覆盖动效 |
+| `STATE_MOUTH`          | 线条脸模式下戴的嘴形             |
+| `STATE_ENTRY_EFFECTS`  | 进入时的一次旋转、弹跳或撒花     |
+| behaviour              | 每帧返回身体目标值的函数         |
+
+## 身体运动
+
+一个 behaviour 每帧返回四个数——tilt、x、y、squash——由弹簧去追。因为平滑交给弹簧处理，behaviour 可以让目标值直接跳变而不会产生可见的突兀。
+
+`idle` 最值得读：
+
+```ts
+({ clock }) => ({
+  tilt: Math.sin(clock * 0.5) * 1.5 + Math.sin(clock * 0.17) * 0.6,
+  x: Math.sin(clock * 0.27),
+  y: Math.sin(clock * 0.85) * 1.2,
+  squash: 1 + Math.sin(clock * 0.85) * 0.007,
+});
+```
+
+三个频率互不相关的正弦波。由于周期永远对不齐，这段运动不存在可感知的循环——这正是一个角色在侧边栏里待十分钟仍然像活的、而不像一段循环 GIF 的原因。
+
+## 脉冲
+
+有些状态需要的是离散事件而非连续曲线。`angry` 每 1.8 到 3.2 秒踢一次竖直方向的弹簧，`listening` 会点头。它们直接给速度加值，而不是移动目标：
+
+```ts
+impulse(70); // 加到 y 弹簧的速度上
+```
+
+弹簧吸收这一下并自行收敛，产生的回弹感如果要用曲线手写会非常繁琐。
+
+## 弹簧通道
+
+所有连续量都是阻尼弹簧，以固定 120 Hz 子步积分，与显示器刷新率无关。
+
+| 通道              | ω   | ζ    | 驱动                        |
+| ----------------- | --- | ---- | --------------------------- |
+| `tilt`            | 5   | 0.9  | 身体旋转，乘以 `tiltScale`  |
+| `x`               | 3.5 | 1    | 水平漂移                    |
+| `y`               | 4   | 1    | 垂直漂移与脉冲              |
+| `squash`          | 10  | 0.8  | 垂直缩放                    |
+| `blink`           | 26  | 1    | 眼睛开合                    |
+| `eyeScale`        | 9   | 0.85 | 强调                        |
+| `gazeX` / `gazeY` | 13  | 1    | 凝视偏移                    |
+| `eyeMorph`        | 8   | 1    | 表情过渡                    |
+| `spin`            | 6.2 | 1    | 命令式转身，绕竖直轴        |
+| `cuteBlend`       | 10  | 1    | `cute` 脸与其他脸之间的过渡 |
+| `blush`           | 8   | 1    | 腮红强度                    |
+| `fx`              | 7   | 1    | 特效淡入                    |
+| `beltBlend`       | 14  | 1    | 身体到腰带的过渡            |
+| `beltFade`        | 11  | 1    | 两种腰带之间的交叉淡化      |
+| `hudBlend`        | 12  | 1    | HUD 表盘的淡入淡出          |
+| `badge`           | 9   | 0.55 | 通知点                      |
+
+固定子步正是 144 Hz 与 60 Hz 显示器收敛到同一结果的原因。若直接用帧间隔积分，角色在高刷屏上会收敛得更快。
+
+## 腰带状态在 cute 脸下的样子
+
+在 `eyes` 和 `line` 脸下，有 16 个状态把身体交给腰带覆盖动效（`STATE_BELT`）：身体先形变成圆，再收缩成核心，含义由围绕它运动的元素来说。在默认的 `cute` 脸下这样做会丢掉脸，所以它们**不收缩身体**：整个角色连同脸都留着，同样的含义改由身旁的特效来说（`STATE_FX`）——`thinking` 是升起的点，`progress` 是右上角逐渐填满的小进度条，`writing` 是一支铅笔。`powering-down` 让身体变暗，`bouncing` 让身体自己弹跳。
+
+<FxGrid />
+
+特效和情绪特效一样是时间的纯函数，随快照的 `fx` 字段交给渲染器，向量、像素、颜文字三个系列自动一致。`cute` 脸下 `snapshot.belt` 恒为 `null`。
+
+## 腰带
+
+`eyes` 和 `line` 脸用腰带画这些状态：身体被收成核心，腰带接管。过渡如何发生、每条腰带如何绘制，见[腰带与粒子](/internals/belts)。下面的演示用 `face="eyes"` 让腰带本身可见。
+
+```tsx preview
+import { MarkStageProvider, StagedMark, STATE_BELT } from '@aora-bot/react';
+
+export default function Demo() {
+  const entries = Object.entries(STATE_BELT) as [string, string][];
+  return (
+    <MarkStageProvider maxSources={entries.length}>
+      <div className="site-demo">
+        {entries.map(([state, belt]) => (
+          <div className="site-demo__cell" key={state}>
+            <StagedMark shape="mochi" state={state as never} color="blue" face="eyes" sizePx={62} />
+            <span className="site-demo__label">{belt}</span>
+            <span className="site-demo__label" style={{ opacity: 0.6 }}>
+              {state}
+            </span>
+          </div>
+        ))}
+      </div>
+    </MarkStageProvider>
+  );
+}
+```
+
+腰带是时间的纯函数，内部不累积任何状态，因此可以在任意时刻暂停、拖动、恢复而依然正确——这正是能冻结上百个角色、恢复时又不失同步的原因。
+
+## 总表
+
+所有状态放在一张表里：轮播的眼型序列、嘴形、特效（`cute` 脸）或交出身体的腰带（`eyes` / `line` 脸）、能到达它的协议编号，以及一个通常与之搭配的 HUD 表盘。除最后一列外，每一列都在渲染时从引擎的表里读出；HUD 一列只是建议——表盘是宿主手里的数据，状态是智能体正在做的事，引擎有意让两者彼此独立。
+
+<StateMatrix groups />
+
+## 映射应用状态
+
+大多数应用不会用这些词思考。两个辅助函数负责翻译。
+
+```tsx preview
+import { characterStateForAgent, activityFromTool, TOOL_ACTIVITIES } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>工具</th>
+          <th>状态</th>
+        </tr>
+      </thead>
+      <tbody>
+        {Object.keys(TOOL_ACTIVITIES).map((tool) => (
+          <tr key={tool}>
+            <td>
+              <code>{tool}</code>
+            </td>
+            <td>
+              <code>{activityFromTool(tool).state}</code>
+            </td>
+          </tr>
+        ))}
+        <tr>
+          <td>
+            <code>{'{ awaitingUser: true }'}</code>
+          </td>
+          <td>
+            <code>{characterStateForAgent({ awaitingUser: true })}</code>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <code>{'{ running: true }'}</code>
+          </td>
+          <td>
+            <code>{characterStateForAgent({ running: true })}</code>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  );
+}
+```
+
+## 接下来
+
+- [弹簧与状态机](/internals/springs)——通道、脉冲与收敛
+- [腰带与粒子](/internals/belts)——`eyes` / `line` 脸下身体交给腰带的过程

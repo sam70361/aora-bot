@@ -1,0 +1,146 @@
+import { API } from '@theme';
+
+# CharacterPicker
+
+形状与墨色选择器。
+
+```tsx preview
+import { useState } from 'react';
+import { CharacterPicker, CharacterMark, type FaceStyle } from '@aora-bot/react';
+
+export default function Demo() {
+  const [shape, setShape] = useState('blob' as const);
+  const [color, setColor] = useState('blue' as const);
+
+  return (
+    <div className="site-demo">
+      <CharacterMark shape={shape} color={color} state="happy" sizePx={120} />
+      <CharacterPicker
+        shape={shape}
+        color={color}
+        onSelectShape={setShape as never}
+        onSelectColor={setColor as never}
+      />
+    </div>
+  );
+}
+```
+
+## 选中环跟随形状
+
+高亮用被选形状自己的轮廓画，而不是一个通用圆——六边形得到六边形环。它是由画出身体的同一函数生成的 CSS 蒙版，所以用 `defineShape` 注册的形状不需要额外工作就能得到正确的环。
+
+## 布局
+
+```tsx preview
+import { CharacterPicker } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo site-demo--column">
+      <CharacterPicker
+        shape="hex"
+        color="green"
+        layout="row"
+        shapes={['blob', 'hex', 'onigiri', 'cloud', 'leaf']}
+      />
+    </div>
+  );
+}
+```
+
+## 脸型与鼻子
+
+传入 `face` 会加上一个 `cute | eyes | line` 切换。选中线条脸时会跟着出现一行六种鼻子，而且每个形状预览都按所选脸型绘制，读者看到的就是将得到的。
+
+```tsx preview
+import { useState } from 'react';
+import { CharacterPicker, CharacterMark, type FaceStyle } from '@aora-bot/react';
+
+export default function Demo() {
+  const [shape, setShape] = useState('pear' as const);
+  const [color, setColor] = useState('green' as const);
+  const [face, setFace] = useState<FaceStyle>('line');
+  const [nose, setNose] = useState('slant' as const);
+
+  return (
+    <div className="site-demo">
+      <CharacterMark shape={shape} color={color} state="happy" sizePx={120} face={face} nose={nose} />
+      <CharacterPicker
+        shape={shape}
+        color={color}
+        face={face}
+        nose={nose}
+        shapes={['pear', 'blob', 'bun', 'ghost', 'egg', 'tofu']}
+        colors={['green', 'blue', 'orange']}
+        onSelectShape={setShape as never}
+        onSelectColor={setColor as never}
+        onSelectFace={setFace}
+        onSelectNose={setNose as never}
+      />
+    </div>
+  );
+}
+```
+
+省略 `face`，选择器就仍然只是形状与墨色选择器。
+
+## 限制选项
+
+```tsx preview
+import { CharacterPicker } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <CharacterPicker
+      shape="pill"
+      color="magenta"
+      shapes={['pill', 'tofu', 'ghost', 'bell']}
+      colors={['magenta', 'violet', 'cyan']}
+    />
+  );
+}
+```
+
+## 预览尺寸
+
+`sizePx` 设定每个形状预览的大小；脸型和鼻子预览随之缩放。默认是 `PICKER_MARK_PX`（36）。`lineWeight` 会传给预览，让选择器与它所编辑的角色一致。
+
+```tsx preview
+import { CharacterPicker } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <CharacterPicker
+      shape="star"
+      color="yellow"
+      layout="row"
+      sizePx={24}
+      shapes={['star', 'hex', 'flower', 'flame', 'bell']}
+      colors={['yellow', 'orange', 'red']}
+    />
+  );
+}
+```
+
+## `onSelectColor`
+
+墨色回调是 `onSelectColor`，拼写与 `color` prop 和它交回的 `ColorId` 类型一致。
+
+## 另外两个选择器
+
+[`AgentCharacterPicker`](/components/agent-character-picker) 把修改暂存到确认时才生效，给点击只是提议、取消必须有意义的对话框用。[`CompactCharacterPicker`](/components/compact-character-picker) 只留一小撮形状和墨色，放在注册表单旁边。
+
+## 键盘与辅助技术
+
+每一行一个单选组——形状、墨色，以及启用时的脸型和鼻子——各有可访问名称。每个选项都有 `role="radio"` 和 `aria-checked`，焦点可见。`Tab` 在组之间移动，方向键在组内移动，这正是单选组应有的行为。
+
+## API
+
+<API component="CharacterPicker" />
+
+## 接下来
+
+- [AgentCharacterPicker](/components/agent-character-picker)——修改暂存到确认才生效
+- [AvatarEditor](/components/avatar-editor)——角色、生成、上传三个标签页
+- [角色设置](/scenarios/character-setup)——挑选智能体的外观

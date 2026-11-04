@@ -1,0 +1,206 @@
+Aora Bot License 1.0
+Aora Bot 许可协议 1.0
+
+Copyright (c) 2026 sam70361
+商业授权联系 / Commercial licensing: 1251579308@qq.com
+
+本协议以中文版本为准，英文版本仅供参考。
+The Chinese version prevails; the English version is provided for reference.
+
+【中文】
+
+1. 定义
+
+   1.1 「本软件」：Aora Bot 仓库主分支及 @aora-bot/* npm 包中的全部内容，
+       包括源代码、角色设计（角色造型、配色、五官、动画状态及其数据）、
+       文档、图片与示例。
+       仓库 emotion-ball 分支中的 Emotion Ball 表情馆经典版不适用本协议，
+       以该分支内的许可文件为准。
+
+   1.2 「你」：使用本软件的个人或组织。组织的人数，与控制它、受它控制
+       或与它受同一方控制的关联组织合并计算。
+
+   1.3 「免费使用者」：符合以下任一条件的你——
+       (a) 以个人身份使用的个人，包括独立开发者为自己的产品使用；
+       (b) 学生、教师与教育机构，用于教学、学习与研究；
+       (c) 非营利组织；
+       (d) 以开源许可公开全部源代码、且不以营利为目的的开源项目；
+       (e) 全职、兼职及长期外包人员合计不超过 3 人的营利组织。
+
+   1.4 为他人开发产品时（例如外包或受雇开发），以最终拥有或运营该
+       产品的一方判断是否属于免费使用者。
+
+2. 免费使用者的授权
+
+   在遵守本协议的前提下，免费使用者可以免费、非独占、在全球范围内
+   使用、复制、修改本软件，将其集成到自己的网站、应用、游戏、硬件
+   设备及其他产品或服务中（包括商业用途），并随该产品或服务分发。
+
+3. 其他组织
+
+   3.1 不属于免费使用者的组织，在已上线的产品、服务或任何商业用途中
+       使用本软件，须事先取得商业授权。通用条款见仓库根目录的
+       LICENSE-COMMERCIAL.md：
+       https://github.com/sam70361/aora-bot/blob/main/LICENSE-COMMERCIAL.md
+
+   3.2 在取得商业授权之前，这类组织可以免费将本软件用于评估、内部测试
+       与原型开发，但不得用于已上线的产品或服务。
+
+4. 所有人都不得从事的行为
+
+   以下行为适用于所有人，包括已取得商业授权的被许可方，除非与著作权人
+   另行书面约定：
+
+   (a) 将本软件或其修改版本作为主体单独出售、出租或付费分发，例如以
+       组件库、模板、UI 套件、源码包、SDK 或插件的形式；
+   (b) 提供以本软件为主要价值的托管服务或接口，例如角色生成、头像生成
+       或表情动画服务；
+   (c) 将角色形象单独制成商品出售，包括贴纸、表情包、周边、印刷品与
+       数字藏品，或单独出售导出的图片、动画与素材包；
+   (d) 将角色名称或形象申请注册为商标，或声称拥有其著作权；
+   (e) 使用本软件的角色设计训练或微调用于生成角色形象的 AI 模型；
+   (f) 删除或修改本软件中的版权与许可声明。
+
+   在自己的产品中把角色用作头像、助手形象或吉祥物，不属于上述行为。
+
+5. 声明保留
+
+   分发本软件或其修改版本的源代码时，须完整保留本协议与版权声明。
+   在产品界面中无须展示署名。
+
+6. 修改与贡献
+
+   6.1 你对本软件所做的修改由你享有，但修改后的版本仍受本协议约束。
+
+   6.2 你向本仓库提交的贡献（例如 Pull Request），即视为你同意著作权人
+       可以按本协议及商业授权条款使用、修改与分发该贡献。
+
+7. 终止
+
+   违反本协议的，本协议授予你的权利自动终止。你在收到著作权人书面
+   （含邮件）通知后 30 日内纠正违约行为的，授权恢复；再次违约的，
+   不再恢复。
+
+8. 无担保与责任限制
+
+   本软件按「现状」提供，不附带任何明示或默示的担保，包括但不限于
+   适销性、特定用途适用性及不侵权担保。在适用法律允许的最大范围内，
+   著作权人不对因使用本软件产生的任何损失承担责任。
+
+9. 法律适用与争议解决
+
+   本协议适用中华人民共和国法律。因本协议产生的争议，双方应友好协商
+   解决；协商不成的，任何一方可向著作权人所在地有管辖权的人民法院
+   提起诉讼。
+
+[English]
+
+1. Definitions
+
+   1.1 "The Software" means everything in the main branch of the Aora Bot
+       repository and in the @aora-bot/* npm packages, including the source
+       code, the character designs (shapes, colours, faces, animation states
+       and their data), documentation, images and examples. The classic
+       Emotion Ball edition in the repository's emotion-ball branch is not
+       covered by this license and is governed by the license files in that
+       branch.
+
+   1.2 "You" means the individual or organisation using the Software. An
+       organisation's headcount includes every organisation that controls
+       it, is controlled by it, or is under common control with it.
+
+   1.3 "Free User" means you, if any of the following applies:
+       (a) you are an individual using the Software in your own name,
+           including an independent developer using it in your own products;
+       (b) you are a student, teacher or educational institution using it
+           for teaching, learning or research;
+       (c) you are a non-profit organisation;
+       (d) you are an open-source project that publishes all of its source
+           code under an open-source license and does not operate for
+           profit;
+       (e) you are a for-profit organisation with no more than 3 people in
+           total, counting full-time, part-time and long-term contracted
+           staff.
+
+   1.4 When you build a product for someone else (for example as a
+       contractor or employee), whether the use is free is decided by the
+       party that ultimately owns or operates that product.
+
+2. Grant to Free Users
+
+   Subject to this license, Free Users may use, copy and modify the
+   Software free of charge, on a non-exclusive and worldwide basis,
+   integrate it into their own websites, apps, games, hardware devices and
+   other products or services (including for commercial purposes), and
+   distribute it as part of those products or services.
+
+3. Other organisations
+
+   3.1 An organisation that is not a Free User needs a commercial license
+       before using the Software in a live product or service, or for any
+       other commercial purpose. The general terms are in
+       LICENSE-COMMERCIAL.md at the repository root:
+       https://github.com/sam70361/aora-bot/blob/main/LICENSE-COMMERCIAL.md
+
+   3.2 Until it obtains a commercial license, such an organisation may use
+       the Software free of charge for evaluation, internal testing and
+       prototyping, but not in a live product or service.
+
+4. Restrictions for everyone
+
+   The following apply to everyone, including commercial licensees, unless
+   otherwise agreed in writing with the copyright holder. You may not:
+
+   (a) sell, rent or distribute for a fee the Software or a modified version
+       of it as a product in its own right, for example as a component
+       library, template, UI kit, source bundle, SDK or plugin;
+   (b) offer a hosted service or API whose main value is the Software, for
+       example a character, avatar or animated-expression service;
+   (c) sell the characters as goods in their own right, including stickers,
+       sticker packs, merchandise, prints and digital collectibles, or sell
+       exported images, animations or asset packs on their own;
+   (d) register a character's name or appearance as a trademark, or claim
+       copyright in it;
+   (e) use the Software's character designs to train or fine-tune AI models
+       that generate character designs;
+   (f) remove or alter the copyright and license notices in the Software.
+
+   Using a character as an avatar, assistant or mascot in your own product
+   is not one of the above.
+
+5. Notices
+
+   When you distribute the source code of the Software or of a modified
+   version, you must keep this license and the copyright notice intact.
+   No attribution is required in your product's interface.
+
+6. Modifications and contributions
+
+   6.1 You own the modifications you make, but the modified version remains
+       subject to this license.
+
+   6.2 By submitting a contribution to this repository (for example a pull
+       request), you agree that the copyright holder may use, modify and
+       distribute it under this license and under commercial license terms.
+
+7. Termination
+
+   If you breach this license, the rights it grants you end automatically.
+   If you cure the breach within 30 days of written notice (including email)
+   from the copyright holder, your rights are reinstated; they are not
+   reinstated after a second breach.
+
+8. No warranty and limitation of liability
+
+   The Software is provided "as is", without warranty of any kind, express
+   or implied, including merchantability, fitness for a particular purpose
+   and non-infringement. To the fullest extent permitted by law, the
+   copyright holder is not liable for any loss arising from use of the
+   Software.
+
+9. Governing law and disputes
+
+   This license is governed by the laws of the People's Republic of China.
+   Disputes shall first be settled through friendly negotiation; failing
+   that, either party may bring the dispute before the competent people's
+   court where the copyright holder is located.

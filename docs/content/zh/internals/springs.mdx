@@ -1,0 +1,154 @@
+# 弹簧与状态机
+
+角色里每一个连续量都是阻尼弹簧。没有补间，也没有关键帧。
+
+## 积分器
+
+```ts
+const accel = -ω * ω * (value - target) - 2 * ζ * ω * velocity;
+velocity += accel * h;
+value += velocity * h;
+```
+
+半隐式欧拉，固定子步 1/120 秒。在这些频率下半隐式是稳定的，代价只有 RK4 的三分之一，当每帧有几百根弹簧在走时这很重要。
+
+## 为什么要固定子步
+
+直接用帧间隔积分会让模拟依赖帧率：同一根弹簧在 144 Hz 显示器上比在 60 Hz 上收敛更快，帧率不稳时还会明显抖动。
+
+累积固定子步则意味着 144 Hz 和 60 Hz 显示器在同一墙钟时刻收敛到同一值。
+
+```tsx preview
+import { spring, stepSpring } from '@aora-bot/react';
+
+export default function Demo() {
+  const at60 = spring(0, 6, 1);
+  const at144 = spring(0, 6, 1);
+  at60.target = 1;
+  at144.target = 1;
+  for (let i = 0; i < 60; i++) stepSpring(at60, 1 / 60);
+  for (let i = 0; i < 144; i++) stepSpring(at144, 1 / 144);
+
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>rate</th>
+          <th>value after 1s</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>60 Hz</td>
+          <td>{at60.value.toFixed(6)}</td>
+        </tr>
+        <tr>
+          <td>144 Hz</td>
+          <td>{at144.value.toFixed(6)}</td>
+        </tr>
+      </tbody>
+    </table>
+  );
+}
+```
+
+## 阻尼
+
+`ζ = 1` 是临界阻尼：最快接近且不超调。低于 1 弹簧会超调并振荡，这就是 `squash` 有橡胶感、通知徽标有弹出感的原因。
+
+```tsx preview
+import { useEffect, useRef } from 'react';
+import { spring, stepSpring } from '@aora-bot/react';
+
+export default function Demo() {
+  const canvas = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const ctx = canvas.current?.getContext('2d');
+    if (!ctx) return;
+    const W = 560,
+      H = 180;
+    ctx.clearRect(0, 0, W, H);
+    ctx.strokeStyle = 'rgba(128,128,140,.35)';
+    ctx.beginPath();
+    ctx.moveTo(0, H * 0.3);
+    ctx.lineTo(W, H * 0.3);
+    ctx.stroke();
+
+    const curves = [
+      { zeta: 1, colour: '#1084FE', label: 'ζ = 1' },
+      { zeta: 0.6, colour: '#30A46C', label: 'ζ = 0.6' },
+      { zeta: 0.3, colour: '#E5484D', label: 'ζ = 0.3' },
+    ];
+
+    curves.forEach(({ zeta, colour }) => {
+      const s = spring(0, 10, zeta);
+      s.target = 1;
+      ctx.beginPath();
+      ctx.strokeStyle = colour;
+      ctx.lineWidth = 2;
+      for (let i = 0; i < W; i++) {
+        stepSpring(s, 1 / 120);
+        const y = H * 0.9 - s.value * H * 0.6;
+        i === 0 ? ctx.moveTo(i, y) : ctx.lineTo(i, y);
+      }
+      ctx.stroke();
+    });
+  }, []);
+
+  return (
+    <div className="site-demo site-demo--column">
+      <canvas ref={canvas} width={560} height={180} style={{ maxWidth: '100%' }} />
+      <span className="site-demo__label">blue ζ=1, green ζ=0.6, red ζ=0.3, all ω=10</span>
+    </div>
+  );
+}
+```
+
+## 脉冲
+
+有些运动更适合表达成一脚，而不是一条曲线。不要移动目标，直接给速度加值：
+
+```ts
+springs.y.velocity += 70;
+```
+
+弹簧吸收这一下并自行收敛。`angry` 每 1.8 到 3.2 秒做一次，产生的回弹感如果要写成显式动画会非常繁琐，而且两次看起来永远不会机械地相同。
+
+## Behaviour
+
+一个 behaviour 每帧返回四个目标。`idle` 是三个频率互不相关的正弦波：
+
+```ts
+tilt: sin(t * 0.5) * 1.5 + sin(t * 0.17) * 0.6,
+x:    sin(t * 0.27),
+y:    sin(t * 0.85) * 1.2,
+squash: 1 + sin(t * 0.85) * 0.007,
+```
+
+因为 0.5、0.17、0.27 和 0.85 没有公约周期，合成运动在人类时间尺度上不会重复。这就是侧边栏里待着的角色像活的、而不是一段循环的区别。
+
+## 把弹簧导出成 CSS
+
+有些运动必须作为 CSS 过渡运行，而不是走 JS ticker。`springToLinearEasing` 把弹簧采样成 `linear()` 缓动，让曲线对上：
+
+```tsx preview
+import { springToLinearEasing } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <pre style={{ whiteSpace: 'pre-wrap', fontSize: 12 }}>
+      <code>{springToLinearEasing(6, 0.7, 12)}</code>
+    </pre>
+  );
+}
+```
+
+## 减少动态效果
+
+当读者偏好减少动态效果时，弹簧被直接落到目标，而不是步进；只画一帧，不启动循环。角色是正确且静止的，而不是缺席的。
+
+## 接下来
+
+- [腰带与粒子](/internals/belts)——腰带状态怎样画出来
+- [状态](/design/states)——全部动画状态，分组列出

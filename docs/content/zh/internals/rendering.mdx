@@ -1,0 +1,113 @@
+# 渲染结构
+
+:::tip 关于这一节
+这些页面记录 Aora Bot 的程序化角色系统是怎么工作的。
+:::
+
+## 一个 SVG，所有属性手写
+
+一个角色是单个 `<svg>`，`viewBox` 为 `-24 -24 277 277`。形状空间是 229 单位见方、中心在 114.5；四周各留 24 单位，动画就发生在这圈余量里。`bounce` 把身体抬起 20 单位，`excited` 把它压扁 6%，两者都留在 SVG 自己的盒子内——这很要紧，否则第一个 `overflow: hidden` 的祖先就会把每次跳跃的顶部切掉。
+
+没有任何东西由 CSS 动画驱动。一个 `requestAnimationFrame` 循环用 `setAttribute` 直接写 `transform`、`d` 和 `opacity`。
+
+## 层级顺序
+
+自下而上：
+
+```
+<svg viewBox="-24 -24 277 277">
+  <g id={sourceId} transform="缩放到该形状自己的比例">
+    <defs>
+      <clipPath>        身体轮廓，脸不能越出
+    <g>                 身体后面的彩带
+    <g>                 腰带的环（eyes / line 脸）
+    <g>                 soft 变体的地面阴影
+    <g>                 ← 身体组，由弹簧驱动
+      <g>               sticker 变体的白边与阴影
+      <path>            身体，连同身体后方、前方的配件
+      <g clip-path>     脸：眼睛，以及嘴、腮红或鼻子
+      <g>               贴在脸上的特效（泪滴）
+      <circle>          通知徽标
+    <g>                 腰带的点与字形
+    <g>                 场景特效（爱心、星光、Zz、感叹号……）
+    <g>                 HUD
+    <g>                 身体前面的彩带
+    <g>                 彩纸
+```
+
+尾迹就是快速自旋甩出的彩带。每条彩带按每个点的深度拆成身体后方与前方的几段。正是这一点让彩带看起来是绕过角色，而不是从它表面滑过去。
+
+让角色转起来，看彩带从身体后面穿过去，再从前面回来：
+
+```tsx preview
+import { useRef } from 'react';
+import { CharacterMark, type CharacterHandle } from '@aora-bot/react';
+
+export default function Demo() {
+  const ref = useRef<CharacterHandle>(null);
+  return (
+    <div className="site-demo site-demo--center">
+      <CharacterMark ref={ref} shape="blob" color="violet" state="happy" sizePx={140} />
+      <div className="site-controls">
+        <button className="site-btn" onClick={() => ref.current?.spin(2)}>
+          spin(2)
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+## 眼睛是孔，或者是白的
+
+这是整个渲染器里最吃重的一个决定。
+
+`eyes` 和 `line` 脸的眼睛用页面背景色填充，并裁剪在身体路径内。它们不是画*在*角色上，而是从角色身上挖*出来*的。因此角色无需知道自己坐在什么表面上，就能在任何背景下正确显示。默认的 `cute` 脸不靠这一招：它的脸是画上去的白色（`--aora-face`），本来就在任何墨色上读得出；只有 `black` 墨色不写这个变量，脸回落成挖空。空心的变体（`outline`、`glass`）和 `sticker` 的脸分别改用墨色和纸色，原因是挖空在它们身上要么看不见，要么露出页面。
+
+```
+<path d={body} fill="var(--aora-fg)"/>
+<g clip-path="url(#body)">
+  <path d={leftEye} fill="var(--aora-bg)"/>
+  <path d={rightEye} fill="var(--aora-bg)"/>
+</g>
+```
+
+代价是 `--aora-bg` 必须与背后真实的颜色一致。不一致时，孔就会显示成浅色的斑块。
+
+## 墨色是几个变量
+
+```css
+--aora-fg: light-dark(#2a92fe, #0e74e0);
+--aora-face: #fff;
+--aora-bg: var(--aora-bg-base);
+```
+
+挂载时写入一次。`color-scheme` 变化时浏览器会重新解析 `light-dark()`，所以主题切换不涉及 JavaScript、不需要监听、也不会闪——无论是一个角色还是一千个。
+
+## 镜像
+
+根分组带有一个 id，页面上任何别的 SVG 都能用 `<use href="#id">` 再画一次同一个角色，浏览器复用源这一帧渲染出的内容。
+
+由于 `--aora-fg` 是可继承的自定义属性，它在 `<use>` 所在处解析而非定义处，所以镜像各自可以是不同墨色，却共享同一份动画。这正是共享舞台得以成立的基础。
+
+## 为什么帧循环不走 React
+
+React 挂载一个空的宿主元素，然后把它交给引擎。此后 DOM 由引擎拥有。
+
+一帧要写大约五十个属性。让这些走 reconciler——构造元素、比对 props、提交——每秒六十次，代价远高于计算动画本身。组件只在 prop 变化时重渲染，而且即使那时也是把变化命令式地推给控制器，而不是重渲染 SVG。
+
+## 粒子池
+
+粒子数量每帧都在变。渲染器不重建元素，而是维护一个池，只增删差额：
+
+```ts
+while (group.childElementCount > count) group.lastElementChild.remove();
+while (group.childElementCount < count) group.appendChild(create(tag));
+```
+
+稳态下这不产生任何分配。
+
+## 接下来
+
+- [形状推导](/internals/shape-derivation)——从轮廓到面部盒
+- [主题](/guide/theming)——画出角色的变量

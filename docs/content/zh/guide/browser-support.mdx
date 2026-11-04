@@ -1,0 +1,86 @@
+# 浏览器支持
+
+Aora Bot 面向大约 2024 年中期之后发布的浏览器。硬约束是 `light-dark()`，整套墨色系统都建立在它上面。
+
+| 浏览器        | 最低版本 |
+| ------------- | -------- |
+| Chrome / Edge | 123      |
+| Safari        | 17.5     |
+| Firefox       | 128      |
+
+下面三种上色方式正在你阅读本页的这个浏览器里运行——普通 SVG，每个角色一种 `light-dark()` 墨色，没有 canvas，也没有 WebGL。
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+const variants = ['solid', 'outline', 'glass'] as const;
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {variants.map((variant) => (
+        <div className="site-demo__cell" key={variant}>
+          <CharacterMark shape="tofu" color="cyan" state="happy" variant={variant} sizePx={96} />
+          <span className="site-demo__label">{variant}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## 每个特性用在哪里
+
+### `light-dark()` — 必需
+
+每一种墨色都是一对 `light-dark()`。这就是角色换主题不需要 JavaScript、也不需要重渲染的原因。
+
+低于最低版本时，`--aora-fg` 解析失败，角色回退到 `currentColor`。它们仍然会渲染、仍然会动，只是失去墨色。如果必须支持更老的浏览器，自己设置墨色：
+
+```css
+.aora-mark {
+  --aora-fg: #2a92fe;
+}
+:root.dark .aora-mark {
+  --aora-fg: #0e74e0;
+}
+```
+
+### `@property` — 优雅降级
+
+三个自定义属性被注册，以便墨色能在两种墨色之间过渡。没有注册时属性仍然持有值；过渡会跳变而不是插值。
+
+### CSS mask — 两个组件必需
+
+`AvatarStack` 用前方圆盘从后方抠洞，`CharacterPicker` 用 `mask-image` 画选中环。两者都同时提供了 `-webkit-` 前缀属性。
+
+没有 mask 支持时堆叠仍然会渲染，只是圆盘重叠而没有可见缝隙。
+
+### 层叠层 — 优雅降级
+
+用来让样式表无需 `!important` 就能被覆盖。在没有 `@layer` 的浏览器里，这些规则会被完全忽略而不是以错误的优先级生效，所以你需要自己引入 CSS。
+
+### 容器查询 — 优雅降级
+
+网格布局的 `CharacterPicker` 按自身宽度决定列数，`AvatarEditor` 和 `TemplateDialog` 变窄时会重新排布。没有容器查询时，选择器保持六列，另外两个保持默认排布。
+
+### `:has()` — 优雅降级
+
+`AvatarEditor` 的拖放区在内部文件输入获得键盘焦点时画出焦点环。没有 `:has()` 时，拖放区不显示自己的焦点环。
+
+## 没有使用什么
+
+没有 View Transitions，没有 Houdini worklet，没有 WebGL。角色是由 `setAttribute` 驱动的普通 SVG，凡是 SVG 能用的地方它都能用。
+
+文档站点的背景使用了 WebGL，但那是站点而不是库，并且会回退到 CSS 渐变。
+
+## 运行时检测
+
+```ts
+const supportsLightDark = CSS.supports('color', 'light-dark(#000, #fff)');
+```
+
+## 接下来
+
+- [主题](/guide/theming)——画出角色的两个变量
+- [性能](/guide/performance)——怎样渲染上百个角色

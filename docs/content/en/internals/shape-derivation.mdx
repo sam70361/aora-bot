@@ -1,0 +1,98 @@
+# Shape derivation
+
+A shape generator returns points. Everything else is measured from them.
+
+## Normalisation
+
+The outline is scaled so its larger axis is 228.44 units and re-centred on the middle of shape space. Generators therefore only have to get proportions right, not absolute size — which is why the parameters in each generator read as round numbers rather than tuned constants.
+
+## The span table
+
+For 160 evenly spaced vertical positions, the renderer records the leftmost and rightmost crossing of the outline. Queries interpolate between rows.
+
+This is what keeps eyes inside the body. An eye's anchor is clamped to the span at its own height, so a face never escapes a narrow silhouette even when gaze drift pushes it sideways.
+
+```tsx preview
+import { getShape, SHAPE_IDS } from '@aora-bot/react';
+
+export default function Demo() {
+  const shape = getShape('drop');
+  const rows = [0.15, 0.3, 0.5, 0.7, 0.9];
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>height</th>
+          <th>left</th>
+          <th>right</th>
+          <th>width</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((f) => {
+          const y = shape.top + (shape.bottom - shape.top) * f;
+          const [lo, hi] = shape.spanAt(y);
+          return (
+            <tr key={f}>
+              <td>{Math.round(f * 100)}%</td>
+              <td>{lo.toFixed(1)}</td>
+              <td>{hi.toFixed(1)}</td>
+              <td>{(hi - lo).toFixed(1)}</td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+}
+```
+
+## Tilt allowance
+
+```ts
+const near = spanAt(bottom - 1);
+const above = spanAt(bottom - 9);
+const ratio = (near[1] - near[0]) / (above[1] - above[0]);
+tiltScale = clamp(1 - 1.9 * (ratio - 0.36), 0.15, 1);
+```
+
+A flat base produces a ratio near one, because the outline is almost as wide just above the base as it is at it. A round base produces a much smaller ratio.
+
+The reason to care is that a flat-bottomed shape looks wrong when it tips — the base lifts off and the sense of weight goes with it. Measuring the base means no shape needs a hand-written tilt value, including shapes that do not exist yet.
+
+Measured values: `tofu`, `cloud`, `star`, `bell` and `bot` at 0.15, `ghost` around 0.17, `pill` around 0.36, `pebble` around 0.88, and every round-bottomed shape at 1.
+
+## The polar ring
+
+The outline is resampled into 96 points at fixed angles by casting a ray from the centre and taking the farthest crossing. Fixed angles mean two different shapes have corresponding points, so morphing between them — or collapsing a body into a circle for a belt — is a straight interpolation of radii.
+
+## Belt radius
+
+The particle orbit uses the widest horizontal half-extent rather than the outer radius. Orbiting at the outer radius makes satellites appear to drift away from a shape with corners, because the corner distance is not where the body visually ends.
+
+## Face fitting
+
+The face is found, not placed. A two-level grid search looks for the largest comfortable ellipse inside the outline:
+
+1. Coarse pass on an 8-unit grid across x ∈ [−16, 16] and y ∈ [−56, 56]
+2. Refinement at 2 units around the winner
+3. Seven aspect ratios tried at each position, from 1:1.45 to 1.45:1
+
+Scoring rewards clearance from the outline and the tightest point on the ellipse perimeter, and penalises drifting from the centre so that a shape with two equally roomy spots picks the one that looks deliberate.
+
+The payoff is that a triangle ends up with a low face and a capsule a tall one without either being special-cased — and a shape you invent tomorrow gets a sensible face for free.
+
+### The fitted ellipse is not the face
+
+This is worth stating because it is an easy mistake. The fitter returns the _largest inscribed ellipse_, which for a round body is nearly the whole silhouette. Using it directly as the face box puts the eyes near the outline and far apart.
+
+Three constants turn available room into an actual face: the face occupies 58% of the fitted ellipse, sits 26% of its height above the fitted centre, and the eyes are separated by half the face half-width. Eyes anchored at the fitted centre land at the body's waist and read as a torso rather than a head.
+
+## Laziness
+
+Shapes are derived on first use. Face fitting is a grid search with a point-to-outline distance query at each candidate, and building all of them eagerly would cost far more than any page needs.
+
+## Next
+
+- [Face and pose](/internals/face-and-pose) — how the head turns
+- [Shapes](/design/shapes) — every built-in character

@@ -1,0 +1,149 @@
+# 性能
+
+一个角色不是免费的。它每帧都要跑一次物理积分，并写入几十个 SVG 属性。一个无所谓；两百个如果照直做，任何机器都会掉帧。这一页说明 Aora Bot 为此做了什么，以及你需要做什么。
+
+## 一个循环，而不是每个角色一个
+
+所有角色都订阅同一个共享的 `requestAnimationFrame` 循环。
+
+```ts
+import { ticker } from '@aora-bot/engine';
+
+const stop = ticker.add((dt, now) => {
+  // 每帧调用一次，在所有角色更新之后。
+});
+```
+
+给每个角色各排一个回调是最直觉的写法，但扩展性很差：每个回调都要维护自己的时间戳，浏览器每帧还要遍历更长的回调列表。一个循环向订阅者分发，开销和单个角色差不多，并且保证屏幕上所有角色都按同一个时间戳求值，动画因此不会相位漂移。
+
+最后一个角色卸载时，循环完全停止。
+
+## 让外观相同的角色共享动画
+
+更大的收益是不要把同一个动画跑两遍。`MarkStageProvider` 为每一种不同的**外观**托管一个隐藏角色，所有可见实例都变成指向它的 `<use href>`。
+
+```tsx preview
+import { MarkStageProvider, StagedMark } from '@aora-bot/react';
+
+const COLOURS = ['blue', 'green', 'violet', 'orange', 'magenta', 'cyan'] as const;
+
+export default function Demo() {
+  // 60 个标记，2 种外观，2 个运行中的引擎。
+  return (
+    <MarkStageProvider>
+      <div className="site-demo">
+        {Array.from({ length: 60 }, (_, i) => (
+          <StagedMark
+            key={i}
+            shape="blob"
+            state={i % 2 ? 'thinking' : 'happy'}
+            color={COLOURS[i % COLOURS.length]}
+            sizePx={30}
+          />
+        ))}
+      </div>
+    </MarkStageProvider>
+  );
+}
+```
+
+### 什么算同一种外观
+
+形状、状态和脸型——墨色与尺寸被排除在外，所以 60 个都是 idle blob 的 agent 即便每个墨色不同，也只要一个引擎。索引键的构成、以及为什么不该按 agent id 建索引，见 [`MarkStageProvider`](/components/mark-stage)。
+
+### 上限
+
+`maxSources` 限制同时运行的引擎数，默认 36。超出之后，页面的退化方式是让一部分角色静止，而不是让所有角色都变慢。
+
+```tsx
+<MarkStageProvider maxSources={16}>{children}</MarkStageProvider>
+```
+
+## 暂停看不见的角色
+
+`autoPause` 会同时监听页面可见性、视口交叉和 `prefers-reduced-motion`，并替你调用 `pause()` / `resume()`。滚出屏幕再滚回来的角色看起来像是一直在等，而不是重新开始——`pause()` 冻结当前帧，不会重置姿态。
+
+```tsx
+<CharacterMark shape="blob" autoPause />
+```
+
+也可以传入选项，关掉某一路信号或加大交叉边距：
+
+```tsx
+<CharacterMark shape="blob" autoPause={{ rootMargin: '120px', reducedMotion: false }} />
+```
+
+已经有自己观察器的宿主仍可用 `paused`。两者叠加：任意一个为真都会停循环。
+
+## 退回静态图
+
+对于非常大的集合，干脆不要动画。`renderAvatarDataUrl` 产出静态 SVG，运行时开销为零：
+
+```tsx preview
+import { renderAvatarDataUrl } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {Array.from({ length: 24 }, (_, i) => (
+        <img key={i} src={renderAvatarDataUrl(`user-${i}`)} width={36} height={36} alt="" />
+      ))}
+    </div>
+  );
+}
+```
+
+静态渲染接受表情与状态，所以静止的角色依然能表达它在做什么：
+
+```tsx preview
+import { renderStaticSvgDataUrl } from '@aora-bot/react';
+
+const states = ['idle', 'sleeping', 'happy', 'angry', 'surprised', 'thinking'] as const;
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {states.map((state) => (
+        <div className="site-demo__cell" key={state}>
+          <img
+            src={renderStaticSvgDataUrl({ shape: 'blob', color: 'green', state })}
+            width={52}
+            height={52}
+            alt=""
+          />
+          <span className="site-demo__label">{state}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+这一点比看上去重要。一个只会画中性表情的静态渲染器根本无法表达状态列表——每个格子都会显示同一张脸，不管标签写的是什么。
+
+## 减少动态效果
+
+引擎在启动前会检查 `prefers-reduced-motion`。一旦设置，弹簧立即收敛到目标值，只绘制一帧，不启动循环，也不发射粒子。你不需要自己处理，但可以查询它：
+
+```ts
+import { prefersReducedMotion, onReducedMotionChange } from '@aora-bot/engine';
+```
+
+## 预算
+
+中端笔记本、60 Hz 下的大致参考：
+
+| 并发引擎数 | 结果                               |
+| ---------- | ---------------------------------- |
+| 1–12       | 开销可忽略                         |
+| 12–36      | 舒适；默认上限                     |
+| 36–60      | 能跑，但给页面其余部分留的余量不多 |
+| 60+        | 改用镜像、暂停或静态图             |
+
+真正重要的数字是**引擎数**，不是角色数。镜像近乎免费，所以页面可以显示几百个角色而仍然停留在表格的第一行。
+
+## 接下来
+
+- [服务端渲染](/guide/server-rendering)——Next.js 与静态生成
+- [MarkStageProvider](/components/mark-stage)——按外观共享引擎
+- [渲染结构](/internals/rendering)——一个 SVG，所有属性手写

@@ -1,0 +1,92 @@
+import { StateMatrix } from '@theme';
+
+# Celebration
+
+What to do at the one moment a form has good news.
+
+## See it
+
+A publish button with a character that works, celebrates and hands over a share card. The confetti layer sits over the mark and is fired by the hook on success.
+
+```tsx preview
+import { useRef, useState } from 'react';
+import { CharacterMark, ConfettiLayer, type ConfettiHandle } from '@aora-bot/react';
+import { ShareCard, usePublishMark } from '@aora-bot/surfaces';
+
+export default function Demo() {
+  const confetti = useRef<ConfettiHandle>(null);
+  const [shared, setShared] = useState(false);
+  const publish = usePublishMark({ confetti, onSettled: () => setShared(true) });
+
+  return (
+    <div className="site-demo site-demo--stack">
+      <span className="site-demo__avatar">
+        <CharacterMark shape="star" color="yellow" state={publish.characterState} sizePx={88} />
+        <ConfettiLayer ref={confetti} />
+      </span>
+      <div className="site-controls">
+        <button
+          className="site-btn"
+          disabled={publish.state !== 'idle'}
+          onClick={() => {
+            setShared(false);
+            publish.begin();
+          }}
+        >
+          publish
+        </button>
+        <button className="site-btn" disabled={publish.state !== 'publishing'} onClick={publish.succeed}>
+          succeed
+        </button>
+        <button className="site-btn" disabled={publish.state !== 'publishing'} onClick={publish.fail}>
+          fail
+        </button>
+      </div>
+      {shared && (
+        <div className="site-demo__wide">
+          <ShareCard name="Nova" url="https://example.com/t/nova" shape="star" color="yellow" />
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+`usePublishMark` takes the confetti ref rather than returning one: the ref belongs to the element it is attached to, and a hook handing one out invites reading `.current` during render. The layer rides the shared ticker and subscribes only while pieces are in flight, so an idle celebration costs the page no frame loop.
+
+## When to use it
+
+The one moment a form is worth animating: something was published, a run finished, an upload landed. There is a real wait, a real outcome, and the outcome is good news. The character works while the request is out, celebrates once when it lands, and puts itself away — a celebration that has to be dismissed stops being one.
+
+## Components
+
+- [`CharacterMark`](/components/character-mark) — `celebrate` carries its own entry effect: one turn, with ribbons flung off it, and sixteen pieces of paper, once, on the transition.
+- [`ConfettiLayer`](/components/confetti-layer) — paper without a character, over anything, driven through a ref.
+- `createConfettiController` — the same paper for a plain SVG outside React.
+- [`usePublishMark`](/components/use-publish-mark) — the three phases and the timing, so the host never has to notice the moment itself.
+- `ShareCard` and [`TemplateDialog`](/components/template-dialog) — what a finished publish hands over.
+- [`HudPlate`](/components/hud-plate) — a `kpi` dial goes with good news: a figure, a change, and a history to spark-line. The number lands on the plate; the ring shows how it got there.
+
+## How the states move
+
+| From        | To          | When                                                              |
+| ----------- | ----------- | ----------------------------------------------------------------- |
+| `idle`      | `working`   | `begin()` — the request is out                                    |
+| `working`   | `celebrate` | `succeed()` — entry effect fires, the layer bursts, id `33`       |
+| `celebrate` | `idle`      | `celebrateMs` later (1.6 s); `onSettled` is a good place to close |
+| `working`   | `idle`      | `fail()` — straight back, no sad face                             |
+| `celebrate` | `proud`     | the result card; `ShareCard` uses `proud` for the face on it      |
+
+Failure returns to rest rather than to `sad` — see [`usePublishMark`](/components/use-publish-mark) for why the character stays out of it.
+
+## What each state looks like
+
+<StateMatrix states={['working', 'celebrate', 'proud', 'idle']} />
+
+`celebrate` is the one state with a spin and a burst in `STATE_ENTRY_EFFECTS`. It applies once per transition, never on mount, and is skipped under reduced motion — confetti on every frame would be noise, one burst as the state arrives is the punctuation the transition needs. The eyes cycle through `joyful`, `excited`, `wink` and `happy`, faster than any other state.
+
+## Next
+
+- [usePublishMark](/components/use-publish-mark) — work, celebrate, settle
+- [ConfettiLayer](/components/confetti-layer) — paper over anything
+- [TemplateDialog](/components/template-dialog) — name, instructions, visibility

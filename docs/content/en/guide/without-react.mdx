@@ -1,0 +1,134 @@
+# Without React
+
+Use Aora Bot from plain HTML or any framework through the `<aora-bot>` custom element, or call the engine directly when you want no element at all.
+
+## From a CDN
+
+One script tag is the whole setup. The file bundles the engine and registers `<aora-bot>` when it loads, so there is no build step.
+
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Aora Bot</title>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@aora-bot/element"></script>
+  </head>
+  <body>
+    <aora-bot character="mochi" state="happy" size="120"></aora-bot>
+  </body>
+</html>
+```
+
+Pin a version in the URL, for example `@aora-bot/element@0.1.1`, so a later release cannot change a page you have already shipped.
+
+## Install
+
+With a bundler, install the package and register the element once, early in your entry file:
+
+```bash
+pnpm add @aora-bot/element
+```
+
+```ts
+import { defineAoraBot } from '@aora-bot/element';
+
+defineAoraBot();
+```
+
+`defineAoraBot(tagName = 'aora-bot')` returns the element class and is safe to call more than once. Importing the package never touches the DOM, so it is safe in a server render or a build step, where `defineAoraBot` registers nothing. `@aora-bot/engine` comes along as a dependency. To serve the bundled file from your own host, import `@aora-bot/element/cdn`.
+
+The package is ESM-only, like the others.
+
+## Attributes
+
+Every attribute is optional. A value the engine does not know falls back to the default, or to the cast member's choice, and never throws.
+
+| Attribute        | What it controls                                                                       |
+| ---------------- | -------------------------------------------------------------------------------------- |
+| `character`      | A [cast](/design/cast) id such as `mochi`; sets `shape`, `color`, `face` and `nose`    |
+| `shape`          | Which [character](/design/shapes) to draw, `mochi` by default                          |
+| `color`          | One hue of the [palette](/design/palette), `black` by default                          |
+| `face`           | `cute` (default), `eyes` or `line`, see [Faces](/design/face)                          |
+| `nose`           | A nose id for the line face, or `none`; derived from `seed` by default                 |
+| `state`          | What it is doing, one of the [animation states](/design/states), `idle` by default     |
+| `style-id`       | The style series: `vector` (default), `pixel` or `kaomoji`                             |
+| `variant`        | A variant of that style, such as `outline` or `dot`                                    |
+| `seed`           | Any string; two characters with different seeds do not blink in unison                 |
+| `size`           | A CSS length, or a number of pixels; `28px` by default                                 |
+| `eye-color`      | A CSS colour for the eye cut-outs                                                      |
+| `badge-color`    | A CSS colour for the badge shown in the `notifying` state                              |
+| `eye-scale`      | A positive multiplier on eye size, `1` by default                                      |
+| `line-weight`    | A multiplier from 0.8 to 1.25 on the stroke weight, `1` by default                     |
+| `reduced-motion` | Boolean. Draw one still frame instead of animating; follows the OS setting when absent |
+| `paused`         | Boolean. Hold the current frame                                                        |
+| `emphasis`       | Boolean. Enlarge and converge the eyes                                                 |
+| `antics`         | Boolean. Hop or spin now and then while idle                                           |
+| `auto-pause`     | Boolean. Stop while the page is hidden or the character is scrolled out of view        |
+
+The style series is `style-id` because `style` is already the inline CSS attribute. Changing an attribute updates the running character. Only `seed`, `reduced-motion` and `auto-pause` are read once, so changing one of them builds a new character.
+
+The element is `role="img"` and carries an `aria-label` with the cast member's name, in Chinese when the nearest `lang` is `zh`. Set your own `aria-label` or `role` and they are left alone.
+
+The character is drawn in a shadow root, so page CSS cannot reach inside it. The host is `display: inline-block`; size it with `size`, or with your own `width` and `height`. The ink follows the page's `color-scheme`, and `--aora-bg-base` on any ancestor sets the colour behind the eye cut-outs, as described in [Theming](/guide/theming).
+
+## Methods
+
+| Member                | What it does                                                          |
+| --------------------- | --------------------------------------------------------------------- |
+| `spin(turns?)`        | Spin the body `turns` full revolutions, one by default                |
+| `bounce(strength?)`   | Hop; `strength` scales the height, `1` by default                     |
+| `burst(count?)`       | Throw confetti                                                        |
+| `pause()`, `resume()` | Hold or release the current frame                                     |
+| `controller`          | The engine's `CharacterController`, or `null` while not in a document |
+
+The methods do nothing while the element is not in a document.
+
+## Changing state from JavaScript
+
+Every attribute is also a property in camel case, so `el.state = 'happy'` is the same as `el.setAttribute('state', 'happy')`. The running character is updated in place and its springs carry over, which is what makes a state change look like a reaction rather than a restart.
+
+```html
+<aora-bot id="bot" character="luna" size="120"></aora-bot>
+<button id="ask">Ask</button>
+
+<script type="module">
+  const bot = document.querySelector('#bot');
+
+  document.querySelector('#ask').addEventListener('click', async () => {
+    bot.state = 'thinking';
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    bot.state = 'happy';
+    bot.bounce();
+  });
+</script>
+```
+
+For options with no attribute, such as `followTarget` or `hud`, call `update` on the controller:
+
+```js
+bot.controller.update({ hud: { kind: 'progress', value: 0.4 } });
+```
+
+## Without the element
+
+If you would rather not register a custom element, `@aora-bot/engine` has the same character as a function. `@aora-bot/element` is a thin layer over it.
+
+```ts
+import { createCharacter } from '@aora-bot/engine';
+
+const host = document.querySelector('#avatar')!;
+const character = createCharacter(host, { shape: 'mochi', state: 'happy', seed: 'mochi:blue' });
+
+character.update({ state: 'thinking' });
+character.spin(2);
+character.destroy();
+```
+
+`createCharacter` mounts one SVG into the host and returns a controller; call `destroy()` when you remove the host. The ink is the surrounding text colour until you set the `--aora-fg` custom property on the host, or pass `ink`. See the [engine README](https://github.com/sam70361/aora-bot/tree/main/packages/engine) for the rest.
+
+## Next
+
+- [Theming](/guide/theming) — the variables that draw a character
+- [Cast](/design/cast) — every named character
+- [States](/design/states) — everything a character can be doing

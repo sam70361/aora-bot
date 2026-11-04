@@ -1,0 +1,260 @@
+/*
+ * Design tokens: the single source for colour, space, type, shape, depth,
+ * motion and layering. The documentation site consumes the same file and only
+ * adds `--site-*` values of its own.
+ *
+ * Layer order is declared up front so the rest of the stylesheet can be split
+ * across files and imported in any order without the cascade changing. A host
+ * can also add rules outside these layers and win by default, which is what
+ * makes overriding a component style straightforward.
+ *
+ * ---- Dark mode: one mechanism -------------------------------------------
+ *
+ * Every colour below is a `light-dark()` pair, and the page decides which half
+ * applies through `color-scheme`:
+ *
+ *   :root                                   `light dark`, follows the system
+ *   .dark, [data-theme='dark'], .rp-dark    `dark`
+ *   .light, [data-theme='light']            `light`
+ *
+ * The character's own ink (`--aora-fg`) is built on `light-dark()` too, so the
+ * UI and the characters can never disagree about which theme is showing. The
+ * selectors work on any element, not just `:root`, so a single subtree can be
+ * pinned to a scheme.
+ */
+@layer aora.tokens, aora.base, aora.components;
+
+@layer aora.tokens {
+  :root {
+    /*
+     * The page owns the scheme; the kit follows it. Pinning `color-scheme:
+     * light` here would freeze every `light-dark()` value, the character's ink
+     * included, to its light half.
+     */
+    color-scheme: light dark;
+
+    /* ---- palette: one neutral ramp, one brand blue ---------------------- */
+
+    /*
+     * A very slightly warm neutral, so paper-coloured pages and white cards
+     * read as one family. Raw ramp values; components read the semantic
+     * tokens further down and never pick a step directly.
+     */
+    --aora-gray-50: oklch(0.985 0.003 85);
+    --aora-gray-100: oklch(0.965 0.005 85);
+    --aora-gray-200: oklch(0.93 0.006 85);
+    --aora-gray-300: oklch(0.875 0.007 85);
+    --aora-gray-400: oklch(0.74 0.008 85);
+    --aora-gray-500: oklch(0.6 0.008 85);
+    --aora-gray-600: oklch(0.5 0.008 85);
+    --aora-gray-700: oklch(0.4 0.008 85);
+    --aora-gray-800: oklch(0.3 0.007 85);
+    --aora-gray-850: oklch(0.255 0.007 85);
+    --aora-gray-900: oklch(0.215 0.006 85);
+    --aora-gray-950: oklch(0.18 0.005 85);
+
+    /*
+     * The one blue. Light is a touch deeper than `#0d7eff` so white text on it
+     * clears 4.5:1; dark is lifted so the fill keeps its edge on a dark card.
+     */
+    --aora-blue-500: oklch(0.57 0.205 257);
+    --aora-blue-600: oklch(0.51 0.2 257);
+    --aora-blue-700: oklch(0.45 0.17 257);
+    --aora-blue-400: oklch(0.705 0.16 252);
+    --aora-blue-300: oklch(0.77 0.13 252);
+
+    /* ---- colour: semantic ----------------------------------------------- */
+
+    /*
+     * The page background. It is also what the eye cut-outs are punched to,
+     * which is why it is overridable per container: a character on a coloured
+     * card sets this on the card.
+     */
+    --aora-bg-base: light-dark(var(--aora-gray-50), var(--aora-gray-950));
+    --aora-surface: light-dark(oklch(0.998 0.002 85), var(--aora-gray-900));
+    --aora-surface-raised: light-dark(oklch(1 0 0), var(--aora-gray-850));
+    --aora-surface-sunken: light-dark(var(--aora-gray-100), oklch(0.15 0.005 85));
+
+    --aora-text: light-dark(var(--aora-gray-900), oklch(0.955 0.004 85));
+    --aora-text-muted: light-dark(oklch(0.46 0.008 85), oklch(0.75 0.008 85));
+    --aora-text-faint: light-dark(oklch(0.56 0.008 85), oklch(0.63 0.008 85));
+
+    --aora-line: light-dark(oklch(0.2 0.01 85 / 0.1), oklch(1 0 0 / 0.1));
+    --aora-line-strong: light-dark(oklch(0.2 0.01 85 / 0.2), oklch(1 0 0 / 0.2));
+
+    --aora-fill: light-dark(oklch(0.45 0.01 85 / 0.07), oklch(1 0 0 / 0.07));
+    --aora-fill-hover: light-dark(oklch(0.45 0.01 85 / 0.12), oklch(1 0 0 / 0.12));
+    --aora-fill-active: light-dark(oklch(0.45 0.01 85 / 0.18), oklch(1 0 0 / 0.18));
+
+    --aora-accent: light-dark(var(--aora-blue-500), var(--aora-blue-400));
+    --aora-accent-hover: light-dark(var(--aora-blue-600), var(--aora-blue-300));
+    --aora-accent-active: light-dark(var(--aora-blue-700), var(--aora-blue-300));
+    --aora-accent-soft: light-dark(oklch(0.57 0.205 257 / 0.1), oklch(0.705 0.16 252 / 0.16));
+    --aora-on-accent: light-dark(oklch(1 0 0), oklch(0.2 0.03 260));
+    --aora-focus: var(--aora-accent);
+
+    /*
+     * Scrim and the text on it. Unlike `--aora-on-accent`, the on-scrim colour
+     * is white in both schemes: the scrim is dark whatever the page is, and a
+     * picture's controls sit on top of it.
+     */
+    --aora-scrim: light-dark(oklch(0.2 0.01 85 / 0.42), oklch(0 0 0 / 0.52));
+    --aora-on-scrim: oklch(1 0 0);
+
+    /*
+     * Status colours are their own tokens rather than reuses of the accent. A
+     * product that themes its accent purple has not thereby decided that
+     * "busy" is purple, and the two drift apart the moment it tries. Dark
+     * values are lifted, because a saturated dot on a dark card loses its edge.
+     */
+    --aora-status-online: light-dark(oklch(0.641 0.133 157.7), oklch(0.779 0.165 157.3));
+    --aora-status-busy: light-dark(oklch(0.626 0.193 23), oklch(0.701 0.19 21.2));
+    --aora-status-away: light-dark(oklch(0.758 0.14 76.7), oklch(0.827 0.169 90.5));
+    --aora-status-offline: light-dark(oklch(0.645 0.016 277.7), oklch(0.594 0.014 276));
+    --aora-status-working: var(--aora-accent);
+    --aora-status-attention: light-dark(oklch(0.691 0.191 45), oklch(0.752 0.166 51));
+    --aora-status-error: light-dark(oklch(0.59 0.195 24), oklch(0.737 0.161 20));
+    --aora-status-info: light-dark(oklch(0.542 0.179 288), oklch(0.704 0.16 289));
+
+    /* ---- space: 4px base ------------------------------------------------- */
+
+    --aora-space-0: 0;
+    --aora-space-0-5: 0.125rem; /*  2px */
+    --aora-space-1: 0.25rem; /*  4px */
+    --aora-space-2: 0.5rem; /*  8px */
+    --aora-space-3: 0.75rem; /* 12px */
+    --aora-space-4: 1rem; /* 16px */
+    --aora-space-5: 1.25rem; /* 20px */
+    --aora-space-6: 1.5rem; /* 24px */
+    --aora-space-8: 2rem; /* 32px */
+    --aora-space-10: 2.5rem; /* 40px */
+    --aora-space-12: 3rem; /* 48px */
+    --aora-space-16: 4rem; /* 64px */
+
+    /* ---- type ------------------------------------------------------------ */
+
+    --aora-font-sans:
+      'Inter var', Inter, system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+      'Microsoft YaHei', sans-serif;
+    --aora-font-mono: ui-monospace, 'SF Mono', SFMono-Regular, 'Cascadia Mono', Menlo, Consolas, monospace;
+
+    --aora-text-xs: 0.75rem; /* 12px  the floor, for supporting text only: counts, units, hints, identifiers in dense tables */
+    --aora-text-sm: 0.8125rem; /* 13px  labels: tabs, group and field names, card body */
+    --aora-text-md: 0.875rem; /* 14px  the names you choose by, and body text in controls */
+    --aora-text-lg: 1rem; /* 16px */
+    --aora-text-xl: 1.125rem; /* 18px */
+    --aora-text-2xl: 1.375rem; /* 22px */
+    --aora-text-3xl: 1.75rem; /* 28px */
+
+    --aora-leading-tight: 1.2;
+    --aora-leading-snug: 1.35;
+    --aora-leading-normal: 1.55;
+    --aora-leading-relaxed: 1.7;
+
+    --aora-weight-regular: 400;
+    --aora-weight-medium: 500;
+    --aora-weight-semibold: 600;
+    --aora-weight-bold: 700;
+
+    /* ---- shape ----------------------------------------------------------- */
+
+    /*
+     * One ramp. `xs` for a chip inside a control, `sm` for a control, `md`
+     * for an inner tile, `lg` for anything the eye reads as a card, `pill`
+     * for a dot or a capsule.
+     */
+    --aora-radius-xs: 4px;
+    --aora-radius-sm: 6px;
+    --aora-radius-md: 10px;
+    --aora-radius-lg: 16px;
+    --aora-radius-pill: 999px;
+
+    /* Every button, select and input is this tall. */
+    --aora-control-h-sm: 1.625rem; /* 26px */
+    --aora-control-h: 2rem; /* 32px */
+    --aora-control-h-lg: 2.75rem; /* 44px */
+
+    /* ---- depth ----------------------------------------------------------- */
+
+    /*
+     * A hairline edge plus a small, soft, layered shadow. The three ink
+     * strengths are the only part that differs between schemes: black at 8%
+     * is invisible on a dark page, so dark gets a heavier cast and leans on the
+     * edge.
+     */
+    --aora-shadow-c1: light-dark(oklch(0.25 0.02 260 / 0.05), oklch(0 0 0 / 0.3));
+    --aora-shadow-c2: light-dark(oklch(0.25 0.02 260 / 0.08), oklch(0 0 0 / 0.4));
+    --aora-shadow-c3: light-dark(oklch(0.25 0.02 260 / 0.14), oklch(0 0 0 / 0.55));
+
+    --aora-shadow-line: inset 0 0 0 1px var(--aora-line);
+    --aora-shadow-xs: 0 1px 1px var(--aora-shadow-c1);
+    --aora-shadow-sm: 0 1px 2px var(--aora-shadow-c1), 0 2px 6px -2px var(--aora-shadow-c2);
+    --aora-shadow-md: 0 1px 2px var(--aora-shadow-c1), 0 6px 16px -6px var(--aora-shadow-c2);
+    --aora-shadow-lg: 0 2px 4px var(--aora-shadow-c1), 0 16px 32px -12px var(--aora-shadow-c3);
+
+    /* ---- motion ---------------------------------------------------------- */
+
+    --aora-duration-instant: 80ms;
+    --aora-duration-fast: 120ms;
+    --aora-duration-base: 180ms;
+    --aora-duration-slow: 280ms;
+    --aora-duration-slower: 480ms;
+
+    --aora-ease-standard: cubic-bezier(0.2, 0, 0, 1);
+    --aora-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+    --aora-ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --aora-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+    /* Overshoots a little on the way in. Arrivals only. */
+    --aora-ease-spring: cubic-bezier(0.22, 1.2, 0.36, 1);
+
+    /* ---- layering -------------------------------------------------------- */
+
+    --aora-z-base: 0;
+    --aora-z-raised: 1;
+    --aora-z-sticky: 10;
+    --aora-z-dropdown: 20;
+    --aora-z-overlay: 30;
+    --aora-z-modal: 40;
+    --aora-z-popover: 50;
+    --aora-z-toast: 60;
+
+    /* ---- focus ----------------------------------------------------------- */
+
+    --aora-focus-ring: 2px solid var(--aora-focus);
+    --aora-focus-offset: 2px;
+  }
+
+  :is(.dark, [data-theme='dark'], .rp-dark) {
+    color-scheme: dark;
+  }
+
+  :is(.light, [data-theme='light']) {
+    color-scheme: light;
+  }
+
+  /*
+   * Motion tokens collapse to a frame under reduced motion, so a component
+   * that transitions through them needs no query of its own. Keyframe
+   * animations are still stopped explicitly in the component files.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      --aora-duration-instant: 1ms;
+      --aora-duration-fast: 1ms;
+      --aora-duration-base: 1ms;
+      --aora-duration-slow: 1ms;
+      --aora-duration-slower: 1ms;
+    }
+  }
+
+  /*
+   * The group activity mark's ink transition is registered in
+   * `ActivityMark.tsx` rather than here.
+   *
+   * A custom property is a string to the engine unless its type is declared,
+   * and an untyped property snaps rather than animating — but `@property`
+   * in a stylesheet only helps a consumer who imported the stylesheet, and
+   * the mark has to interpolate for one who did not. `CSS.registerProperty`
+   * covers both, so the declaration lives with the component that needs it.
+   */
+}

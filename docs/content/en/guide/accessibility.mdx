@@ -1,0 +1,90 @@
+# Accessibility
+
+What to write next to a character, and why a character is never allowed to be the only thing saying it.
+
+## Characters are decorative by default
+
+Every character renders with `aria-hidden="true"`. This is the right default: a character next to a name is a visual flourish, and announcing "image" before every row of a conversation makes a screen reader unusable.
+
+It also means **a character never conveys information on its own**. That is a constraint on you, not just on Aora Bot.
+
+## Where the meaning has to live
+
+Forty-four animation states carry real information — working, waiting for you, blocked, finished. None of it reaches a reader who cannot see the animation. Put the same fact in text:
+
+```tsx
+// Not this: the state is the only signal.
+<CharacterMark state={agent.running ? 'working' : 'idle'} />
+
+// This: the character decorates a fact that is already readable.
+<span>
+  <CharacterMark state={agent.running ? 'working' : 'idle'} />
+  <span>{agent.running ? 'Running tests' : 'Idle'}</span>
+</span>
+```
+
+`ActivityMark` does this for you — it renders a character and a text label from the same source, so they cannot disagree.
+
+## When a character is the only content
+
+An avatar standing alone with no adjacent name is content, and needs a name:
+
+```tsx
+<span role="img" aria-label={`${user.name}'s avatar`}>
+  <AgentAvatar agent={user} />
+</span>
+```
+
+Do not put the shape or ink in the label. "Blue cloud" describes pixels; the reader needs the person.
+
+## Motion
+
+The engine reads `prefers-reduced-motion` before it starts. When it is set:
+
+- springs settle to their targets immediately
+- one frame is drawn and no loop starts
+- no particles are emitted
+- CSS transitions in the component layer are disabled
+
+This is not decoration-level caution. Some states are genuine vestibular triggers: `celebrate` turns the character round and flings ribbons around it, and `burst()` throws particles outward from the centre. Both are suppressed.
+
+If you drive motion yourself, check the same preference:
+
+```ts
+import { prefersReducedMotion, onReducedMotionChange } from '@aora-bot/engine';
+
+if (!prefersReducedMotion()) confetti.current?.burst();
+```
+
+Avoid calling `spin()` or `burst()` in response to something the reader did not initiate.
+
+## Interactive characters
+
+A character used as a button needs to be a button.
+
+```tsx
+<button type="button" aria-label="Change avatar" onClick={open}>
+  <AgentAvatar agent={user} />
+</button>
+```
+
+`CharacterPicker` is already a pair of radio groups: each option has `role="radio"`, an accessible name, and a visible focus ring. Arrow keys and `Tab` behave as expected.
+
+## Colour
+
+Colour is never the only signal in the component layer. `AvatarStatusDot` takes an optional `label`, and `UnreadBadge` announces its count in full even when the visible text is capped at `99+`.
+
+The inks are not guaranteed to be distinguishable from each other for a reader with colour vision deficiency. Do not encode state in the character's ink alone.
+
+## Checklist
+
+- Characters are `aria-hidden` unless you give them a name
+- Every animation state has a text equivalent nearby
+- Motion is suppressed under `prefers-reduced-motion`
+- Interactive characters are real buttons with labels
+- No meaning is carried by colour alone
+
+## Next
+
+- [Browser support](/guide/browser-support) — the baseline and the fallbacks
+- [States](/design/states) — every animation state, grouped

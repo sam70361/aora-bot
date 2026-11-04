@@ -1,0 +1,161 @@
+import { StateMatrix } from '@theme';
+
+# 语音
+
+一次语音会话：角色就是麦克风开着的证据。
+
+## 先看效果
+
+按住说话。按住按钮打开频道；占用列表显示谁占着它；松开后这句话交给智能体，它先编排再回答。下方的输入框是通往同一个智能体的打字路径。
+
+```tsx preview
+import { useEffect, useState } from 'react';
+import { CharacterMark, MarkStageProvider, type CharacterState } from '@aora-bot/react';
+import { Composer, OccupancyList } from '@aora-bot/surfaces';
+
+const me = { id: 'you', name: '你', shape: 'pebble', color: 'cyan' } as const;
+const agent = { id: 'echo', name: 'Echo', shape: 'pill', color: 'magenta' } as const;
+
+export default function Demo() {
+  const [phase, setPhase] = useState<'idle' | 'talking' | 'composing' | 'speaking'>('idle');
+
+  useEffect(() => {
+    if (phase === 'composing') {
+      const timer = setTimeout(() => setPhase('speaking'), 1600);
+      return () => clearTimeout(timer);
+    }
+    if (phase === 'speaking') {
+      const timer = setTimeout(() => setPhase('idle'), 2200);
+      return () => clearTimeout(timer);
+    }
+  }, [phase]);
+
+  const state: CharacterState =
+    phase === 'talking'
+      ? 'listening'
+      : phase === 'composing'
+        ? 'composing'
+        : phase === 'speaking'
+          ? 'sending'
+          : 'idle';
+  const hud =
+    phase === 'talking'
+      ? { kind: 'voice' as const, level: 0.7, mode: 'listening' as const }
+      : phase === 'speaking'
+        ? { kind: 'voice' as const, level: 0.8, mode: 'speaking' as const }
+        : null;
+
+  return (
+    <MarkStageProvider>
+      <div className="site-demo site-demo--column">
+        <div className="site-demo__row">
+          <CharacterMark shape={agent.shape} color={agent.color} state={state} hud={hud} sizePx={72} />
+          <div className="site-controls">
+            <button
+              className="site-btn"
+              style={{ touchAction: 'none' }}
+              onPointerDown={() => setPhase('talking')}
+              onPointerUp={() => setPhase('composing')}
+              onPointerCancel={() => setPhase('idle')}
+            >
+              {phase === 'talking' ? '松开发送' : '按住说话'}
+            </button>
+            <span className="site-demo__label">{phase}</span>
+          </div>
+        </div>
+        <OccupancyList
+          rows={[
+            { id: 'mic', label: '麦克风', agents: phase === 'talking' ? [me] : [], state: 'dictating' },
+            { id: 'speaker', label: '扬声器', agents: phase === 'speaking' ? [agent] : [], state: 'sending' },
+          ]}
+        />
+        <Composer shape={agent.shape} color={agent.color} placeholder="…或者打字给 Echo" />
+      </div>
+    </MarkStageProvider>
+  );
+}
+```
+
+占用列表里的每一行都是 `StagedMark`，所以有四十行的页面每种状态只花一个引擎。空行渲染成"未在使用"而不是留白，因为这个列表回答的问题是此刻有没有东西在碰这个资源，而沉默也是一种回答。
+
+## 什么时候用
+
+语音界面有一个文字界面没有的问题：屏幕上没有任何东西证明智能体正在听你说话。角色就是这个证明。麦克风打开时它在听，你说话时它变成一个电平表，转写被回答时它在编排，多个智能体都可能占用频道时它显示谁在占用。
+
+## 用到的组件
+
+- [`CharacterMark`](/components/character-mark)——`state="dictating"` 加一个带实时电平的 `voice` 表盘。
+- [`HudPlate`](/components/hud-plate)——把转写或模式作为文字显示。
+- [`OccupancyList`](/components/occupancy-list) 与 `OccupancyMark`——哪些智能体占着麦克风、扬声器、频道。
+- [`Composer`](/components/walkthrough)——打字的备用路径；输入框旁的角色在获得焦点时 `listening`，敲下键时 `composing`。
+
+## 状态怎么走
+
+| 从          | 到          | 时机                                              |
+| ----------- | ----------- | ------------------------------------------------- |
+| —           | `idle`      | 麦克风关闭                                        |
+| `idle`      | `listening` | 麦克风打开；角色时不时点头                        |
+| `listening` | `dictating` | 检测到语音；`wave` 腰带就是电平表                 |
+| `dictating` | `composing` | 一句话结束，回复正在写                            |
+| `composing` | `sending`   | 回复发出——朗读时 `voice` 表盘切到 `speaking` 模式 |
+| `sending`   | `idle`      | 播放结束                                          |
+
+`listening` 是协议编号 `35`，`dictating` 是 `46`。`listening` 的点头靠脉冲而不是曲线——直接给竖直弹簧加速度——正是这一点让它读起来像在注意，而不是一段动画循环。
+
+## 每个状态的样子
+
+<StateMatrix states={['idle', 'listening', 'dictating', 'composing', 'sending']} />
+
+`dictating` 把身体交给 `wave`：四根带伪随机包络的柱子，一个画成角色的电平表。线条脸模式下 `dictating`、`composing` 和 `sending` 还会让嘴在两条频率互不相关的正弦波上一张一合，读起来像说话而不是节拍器。
+
+## 语音表盘
+
+`voice` 就是那个表盘。`level` 是宿主音频表给出的 0–1；`bands` 是柱子的数量；`mode` 区分听和说，说话时的柱子更快更高。每根柱子在自己的一对正弦波上抖动——所有柱子同步运动的电平表读起来像滑块，不像声音。
+
+```tsx preview
+import { useState } from 'react';
+import { CharacterMark, HudPlate } from '@aora-bot/react';
+
+export default function Demo() {
+  const [level, setLevel] = useState(0.6);
+  const [mode, setMode] = useState<'listening' | 'speaking'>('listening');
+
+  return (
+    <div className="site-demo site-demo--stack">
+      <HudPlate title={mode} value={Math.round(level * 100)} unit="%" sizePx={88}>
+        <CharacterMark
+          shape="pill"
+          color="magenta"
+          state={mode === 'listening' ? 'dictating' : 'composing'}
+          hud={{ kind: 'voice', level, bands: 5, mode }}
+          sizePx={88}
+        />
+      </HudPlate>
+      <div className="site-controls">
+        <label className="site-field">
+          电平
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.01}
+            value={level}
+            onChange={(event) => setLevel(Number(event.target.value))}
+          />
+        </label>
+        <button
+          className="site-btn"
+          onClick={() => setMode((m) => (m === 'listening' ? 'speaking' : 'listening'))}
+        >
+          {mode}
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+## 接下来
+
+- [OccupancyList](/components/occupancy-list)——谁在说话
+- [HudPlate](/components/hud-plate)——表盘旁边的一个数字

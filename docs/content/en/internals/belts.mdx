@@ -1,0 +1,102 @@
+# Belts and particles
+
+A group of states hand their body over to an overlay. The body morphs into a circle, shrinks to a core, and the meaning is carried by what orbits it — or, for two of them, by a glyph drawn beside it.
+
+> This is how the `eyes` and `line` faces draw them. With the default `cute` face the body stays whole, face included, and the same meaning is thrown beside it as an effect (rising dots for `thinking`, a filling arc for `progress`, a pencil for `writing`; `powering-down` dims the body and `bouncing` hops it). The demos below use `face="eyes"` so the belts themselves are visible.
+
+## The transition
+
+`beltBlend` drives it. The first 62% morphs the polar ring towards a circle; the remainder shrinks that circle to the belt's core size. Eyes fade out over the first 35%, since a face on a small sphere reads as a mistake.
+
+```tsx preview
+import { MarkStageProvider, StagedMark, STATE_BELT, BELT_CORE_SIZE } from '@aora-bot/react';
+
+const entries = Object.entries(STATE_BELT);
+
+export default function Demo() {
+  return (
+    <MarkStageProvider maxSources={entries.length}>
+      <table>
+        <thead>
+          <tr>
+            <th>belt</th>
+            <th>state</th>
+            <th>core</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {entries.map(([state, belt]) => (
+            <tr key={state}>
+              <td>
+                <code>{belt}</code>
+              </td>
+              <td>
+                <code>{state}</code>
+              </td>
+              <td>{BELT_CORE_SIZE[belt as never]}</td>
+              <td>
+                <StagedMark shape="blob" state={state as never} color="blue" face="eyes" sizePx={46} />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </MarkStageProvider>
+  );
+}
+```
+
+## Each belt
+
+| Belt       | State                     | Construction                                                                             |
+| ---------- | ------------------------- | ---------------------------------------------------------------------------------------- |
+| `dots`     | thinking                  | Three beads including the core; a Gaussian travels along them on a 1.4 s cycle           |
+| `orbit`    | orbit, messaging, waiting | Five satellites on an inclined ellipse; depth drives size and opacity                    |
+| `radar`    | radar                     | Three concentric rings expanding outward, thinning as they go                            |
+| `progress` | progress                  | Background ring plus a dash-array arc filling over 2.5 s                                 |
+| `gather`   | spawning                  | Five particles spiral inward over 2 s, then it becomes `progress`                        |
+| `wave`     | dictating                 | Four bars with a pseudo-random envelope, like a level meter                              |
+| `send`     | sending                   | A ball flies out along a fixed vector, trailing a fainter one, leaving an expanding ring |
+| `receive`  | receiving                 | A ball arrives from a deterministic per-arrival direction every 1.7 s                    |
+| `dock`     | uploading                 | Two balls fly in, then settle into an elliptical orbit                                   |
+| `ball`     | bouncing                  | Free fall with a perfectly elastic floor, squashing on contact                           |
+| `whirl`    | loading                   | The core wanders on four superposed sine waves                                           |
+| `standby`  | powering-down             | The core pulses in opacity with a one-shot contracting ring                              |
+| `pencil`   | writing                   | A pencil glyph scribbles beside the core on a 2:1 Lissajous, leaving two fading marks    |
+| `bang`     | alerting                  | An exclamation glyph snaps up with one overshoot, then holds with a slow 2 s pulse       |
+
+The two glyphs are generated, not drawn: `pencilGlyphPath` and `bangGlyphPath` build them from a rounded rectangle, a triangle and a capsule with the same `PathBuilder` the bodies use. When a belt changes kind — `thinking` handing over to `writing`, say — a second spring, `beltFade`, cross-fades the two frames and collapses the outgoing beads into the incoming glyph's position.
+
+## Belts are pure functions of time
+
+```ts
+evaluateBelt('orbit', 1.234); // always the same frame
+```
+
+Nothing accumulates between calls. A belt can be paused, scrubbed, resumed or evaluated out of order and still be correct.
+
+This is what lets hundreds of characters be frozen and thawed as they scroll in and out of view without drifting out of sync: there is no internal state to drift.
+
+## Particles
+
+Two systems share one update.
+
+**Confetti** launches evenly round a ring at the body radius, with an upward bias, then falls under gravity with per-frame damping and shrinks a little as it goes. Lifetimes are 0.45 to 0.85 seconds. Roughly one in six pieces is a gold star; the rest are dots or strips. Opacity fades in over the first tenth of the lifetime, then out on a power curve, which reads as receding rather than dissolving.
+
+**Ribbons** are flung off a spin. A spin is a turn about the vertical axis: the body stays upright and the face slides round it and back. When the spin passes 5 rad/s, four to six ribbons leave one after another on two or three tilted orbit planes, inner orbits first. Each is one soft colour, spaced round the hue wheel from the others, wide at the head and half as wide at the tail. A ribbon grows in, follows the spin with a `follow` factor between 0.74 and 0.94, coasts once the body stops, then draws its arc back into the head and is gone.
+
+Each ribbon is split by depth into the stretches behind the body and the stretches in front, so it passes around the character rather than across it.
+
+## The size trap
+
+Particle scaling must not be derived from a measurement of the rendered element.
+
+A shared animation source lives in a hidden container, and mirrors of it can be displayed at any size from 16 to 400 pixels. If the source measures its own box to decide how large particles should be, every mirror inherits the source's measurement — which is wrong for all of them, and pathologically wrong when the source is collapsed to a few pixels.
+
+Scale is passed in explicitly instead.
+
+## Next
+
+- [Rendering structure](/internals/rendering) — one SVG, every attribute written by hand
+- [States](/design/states) — every animation state, grouped

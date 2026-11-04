@@ -1,0 +1,126 @@
+import { StateMatrix } from '@theme';
+
+# 对话流
+
+把角色用作对话的状态行。
+
+## 先看效果
+
+一条由事实驱动的对话行：这一行通过 `facts` 发布自己知道的东西，一轮结束是一次带存活时间的显式持有，点击角色会戳它一下。下方是一条群组行，轮播它的成员。
+
+```tsx preview
+import { useState } from 'react';
+import { ActivityMark, GroupActivityMark, MarkStageProvider, useMarkCommands } from '@aora-bot/react';
+
+const agent = { id: 'nova', name: 'Nova' };
+const team = [{ id: 'ada' }, { id: 'grace' }, { id: 'alan' }];
+
+const TURN = [
+  { running: true, activity: 'thinking' },
+  { running: true, activity: 'searching' },
+  { running: true, activity: 'running-commands' },
+  { running: true, composing: true },
+];
+
+function Transcript() {
+  const commands = useMarkCommands();
+  const [step, setStep] = useState(0);
+  const [visible, setVisible] = useState(true);
+  const finished = step >= TURN.length;
+
+  const finish = (state: 'celebrate' | 'alerting') => {
+    commands.holdState(agent.id, state, { ttlMs: 1600 });
+    setStep(TURN.length);
+    // 回复落地后，活动行离场。
+    setTimeout(() => setVisible(false), 1600);
+  };
+
+  return (
+    <div className="site-demo site-demo--column">
+      <ActivityMark
+        agent={agent}
+        activityMode="facts"
+        facts={finished ? undefined : TURN[step]}
+        visible={visible}
+        bubble
+        onPoke={() => {}}
+      />
+      <GroupActivityMark members={team} tool="run" />
+      <div className="site-controls">
+        <button
+          className="site-btn"
+          disabled={finished}
+          onClick={() => (step + 1 < TURN.length ? setStep(step + 1) : finish('celebrate'))}
+        >
+          下一步
+        </button>
+        <button className="site-btn" disabled={finished} onClick={() => finish('alerting')}>
+          失败
+        </button>
+        <button
+          className="site-btn"
+          onClick={() => {
+            commands.releaseState(agent.id);
+            setStep(0);
+            setVisible(true);
+          }}
+        >
+          新的一轮
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default function Demo() {
+  return (
+    <MarkStageProvider>
+      <Transcript />
+    </MarkStageProvider>
+  );
+}
+```
+
+`ActivityMark` 的 `surface` 默认是 `chat`，所以第四步显示 `composing`：同样的事实在 `avatar` 表面上读出来仍是 `idle`——二十个头像每几百毫秒在两张脸之间闪动，是噪音而不是信息。
+
+## 什么时候用
+
+最后一条消息下面那一行，告诉用户智能体此刻在做什么。角色取代了"思考中…"加一个转圈：搜索和书写看起来不一样，动词和动画出自同一张表，所以文字和脸不可能各说各话。
+
+## 用到的组件
+
+- [`ActivityMark`](/components/activity-mark)——一个智能体、一行：角色加动词。`activityMode="facts"` 读取共享注册表而不是工具名。
+- [`GroupActivityMark`](/components/activity-mark#群组)——多个智能体轮流占据一个位置，群组不会变成一堵角色墙。
+- [`ActivityTicker`](/components/activity-ticker)——动词以替换而非改写的方式切换，行高保持不变。
+- [`MarkStageProvider`](/components/mark-stage)——每种外观一个引擎，也是命令注册表的所在。
+- [`useMarkCommands`](/components/mark-commands)——`holdFacts`、`holdState` 与 `poke`，让名册和对话谈的是同一个智能体。
+- [`HudPlate`](/components/hud-plate)——一轮的长度已知时（比如五次工具调用里的第三次），把数字放在角色旁边，可读也可被朗读。
+
+## 状态怎么走
+
+| 从          | 到          | 时机                        |
+| ----------- | ----------- | --------------------------- |
+| —           | `spawning`  | 本次会话首次出现            |
+| `spawning`  | `thinking`  | 2 秒后自动收敛              |
+| `thinking`  | `searching` | 工具调用开始                |
+| `searching` | `working`   | `run`、`shell`              |
+| `working`   | `composing` | 回复流式输出                |
+| `composing` | `celebrate` | 本轮结束（用 `ttlMs` 持有） |
+| `working`   | `alerting`  | 工具失败（用 `ttlMs` 持有） |
+| 任一        | 整行离场    | 持有到期                    |
+
+`spawning` 由 `useSpawnEntrance` 在智能体本次会话首次出现时播放一次，此后不再播放——滚出视野再滚回来的那一行并没有"到达两次"。引擎会在 `STATE_SETTLE_TO.spawning.afterMs`（2 秒）后把它收敛到 `idle`，宿主不需要自己计时。
+
+`celebrate` 和 `alerting` 是事件而不是条件：协议编号 `33` 和 `34` 都是一次性的。用 `ttlMs` 持有它们，回复落地之后这一行就不会一直庆祝下去。
+
+## 每个状态的样子
+
+<StateMatrix states={['thinking', 'searching', 'working', 'composing', 'celebrate', 'alerting']} />
+
+其中两个状态把身体交给了腰带：`thinking` 交给 `dots` 的三颗游走小球，`alerting` 交给 `bang` 字形。其余状态以整个身体运动，`composing` 在线条脸模式下还会让嘴一张一合。
+
+## 接下来
+
+- [ActivityMark](/components/activity-mark)——一次工具调用长什么样
+- [ActivityTicker](/components/activity-ticker)——滚动的活动动词
+- [AgentStateProvider](/components/agent-state)——把多个会话仲裁成一张脸

@@ -1,0 +1,150 @@
+import { API } from '@theme';
+
+# 引导页组件
+
+六个用来「展示」智能体产品而不必「成为」它的部件：窗口框、进行中的任务、起点卡片、等待屏、交接，以及消息输入框。
+
+> 属于 `@aora-bot/surfaces`，不在 `@aora-bot/react` 里：`pnpm add @aora-bot/surfaces @aora-bot/react`，并在 React 样式之后引入 `@aora-bot/surfaces/styles.css`。
+
+```tsx preview
+import { MarkStageProvider } from '@aora-bot/react';
+import { Composer, DemoDesktop, JobBubbles } from '@aora-bot/surfaces';
+
+export default function Demo() {
+  return (
+    <MarkStageProvider>
+      <div className="site-demo site-demo--center">
+        <DemoDesktop
+          title="工作区"
+          widthPx={380}
+          toolbar={<span style={{ opacity: 0.6 }}>app.example/inbox</span>}
+        >
+          <div style={{ display: 'grid', gap: 16, padding: '24px 16px 12px' }}>
+            <JobBubbles
+              shape="blob"
+              color="blue"
+              radiusPx={84}
+              jobs={['读需求', '起草回复', '核对数字', '开 pull request']}
+            />
+            <Composer placeholder="想做什么都可以说" onSubmit={() => {}} />
+          </div>
+        </DemoDesktop>
+      </div>
+    </MarkStageProvider>
+  );
+}
+```
+
+## DemoDesktop
+
+一个窗口框。引导页要展示软件而又不能是软件本身，而一张普通卡片读不出「应用」的感觉——窗口标题栏一个字不说，就能告诉人「这是别处正在发生的事情的一张画面」。框是纯展示的：包在宿主内容外面的 `aria-hidden` 外壳，内容保留自己的语义。`toolbar` 放标题栏下方的小外壳——页签、一个假 URL。
+
+## JobBubbles
+
+进行中的任务，化作角色周围的文字。用气泡而不是列表，因为要表达的是「几件事同时进行」，而列表读起来像队列。每个气泡以各自的周期、负的延迟漂浮，永不同相——一圈标签同步起伏，看起来就像一个物体在旋转。环用真实角度排布，而不是旋转容器：容器一转，文字跟着转，翻过来的标签没法读。`jobs` 默认取本地化里的四条；`radiusPx` 设定环的半径。
+
+## SuggestionCards
+
+```tsx preview
+import { useState } from 'react';
+import { SuggestionCards, type SuggestionCard } from '@aora-bot/surfaces';
+
+const cards: SuggestionCard[] = [
+  { id: 'triage', title: '整理收件箱', body: '把昨夜到达的邮件按该看的人分类。' },
+  { id: 'standup', title: '写站会纪要', body: '从昨天的提交里提炼三行。' },
+  { id: 'audit', title: '审计依赖', body: '找出过期的依赖，并说明风险有多大。' },
+];
+
+export default function Demo() {
+  const [picked, setPicked] = useState<string | null>(null);
+  return (
+    <div className="site-demo site-demo--column">
+      <SuggestionCards cards={cards} onPick={(card) => setPicked(card.title)} />
+      <span className="site-demo__label">{picked ?? '选一张'}</span>
+    </div>
+  );
+}
+```
+
+三个起点，各带一张脸。角色由卡片 id 推导而非人为挑选，这正是这个组件通用的原因：宿主传自己的卡片，不必挑形状就得到三个能分辨的智能体；同一张卡永远长一个样，因为推导是哈希而不是洗牌。在卡片上设 `shape` 和 `color` 可以覆盖。
+
+## LandingWait
+
+```tsx preview
+import { LandingWait } from '@aora-bot/surfaces';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      <LandingWait title="随时可以开始" body="给它第一个任务，它就会动起来。" />
+      <LandingWait
+        title="批准窗口"
+        body="超时后运行会自行继续。"
+        waitMs={90_000}
+        action={<button className="site-btn">立即批准</button>}
+      />
+    </div>
+  );
+}
+```
+
+什么都还没发生之前的那一屏。空白状态配一个等待中的角色，说的是「产品已经就绪，不是坏了」，这恰恰是空屏幕自己说不出来的一句话。不传 `waitMs` 时底盘计时已经等了多久；传了就变成截止时间，角色戴上 `timer` 表盘，底盘倒数。时钟放在底盘而不是表盘里，因为数字就是数字：外圈能表示时间*在*流逝，只有文字能说流逝了多少。`since` 让时钟从宿主已知的某个时刻起算。
+
+## HandOff
+
+```tsx preview
+import { MarkStageProvider } from '@aora-bot/react';
+import { HandOff } from '@aora-bot/surfaces';
+
+export default function Demo() {
+  return (
+    <MarkStageProvider>
+      <div className="site-demo site-demo--center">
+        <HandOff
+          from={{ id: 'ada', name: 'Ada' }}
+          to={{ id: 'grace', name: 'Grace' }}
+          label="发布说明"
+          loop
+        />
+      </div>
+    </MarkStageProvider>
+  );
+}
+```
+
+一个智能体把工作交给另一个。`sending` 和 `receiving` 在引擎里是配对的——一个向外倾，另一个接住——所以交接不需要一个在两人之间飞的物件也能读懂；身体已经描述了方向。用三拍而不是连续动画，因为这个过程有含义、有结尾：之前、之中、之后。`loop` 需要主动开启，给没人等它结束的营销页用。
+
+## Composer
+
+一个有角色留意着它的消息输入框。三个状态，由输入框在做什么驱动，而不是靠定时器：聚焦时 `listening`，输入时 `composing`，停止输入 `idleMs` 之后回到 `idle`。输入框旁边的角色只有在对输入有反应时才值得存在，而这个反应要快到像是在关注，又要安静到不打扰书写。不传 `value` 时是非受控的，可以不带任何状态直接放进演示里。下方的 props 表由 `ComposerProps` 生成；`sendButton` 隐藏发送按钮，给自带发送控件的宿主用。
+
+## API
+
+### DemoDesktop
+
+<API component="DemoDesktop" />
+
+### JobBubbles
+
+<API component="JobBubbles" />
+
+### SuggestionCards
+
+<API component="SuggestionCards" />
+
+### LandingWait
+
+<API component="LandingWait" />
+
+### HandOff
+
+<API component="HandOff" />
+
+### Composer
+
+<API component="Composer" />
+
+## 接下来
+
+- [新手引导](/scenarios/onboarding)——有剧本的第一次运行
+- [CastStage](/components/cast-stage)——多个角色依次入场

@@ -1,0 +1,113 @@
+# Rendering structure
+
+:::tip About this section
+These pages document how Aora Bot's procedural character system works.
+:::
+
+## One SVG, every attribute written by hand
+
+A character is a single `<svg>` with a `viewBox` of `-24 -24 277 277`. The shape space is 229 units square, centred at 114.5; the 24 units of margin on each side are where the animation happens. A `bounce` lifts the body 20 units, `excited` squashes it 6%, and both stay inside the SVG's own box — which matters because the first `overflow: hidden` ancestor would otherwise slice the top off every jump.
+
+Nothing is animated by CSS. A `requestAnimationFrame` loop writes `transform`, `d` and `opacity` directly with `setAttribute`.
+
+## Layer order
+
+Bottom to top:
+
+```
+<svg viewBox="-24 -24 277 277">
+  <g id={sourceId} transform="scale to the shape's own scale">
+    <defs>
+      <clipPath>        the body outline, so the face cannot escape it
+    <g>                 ribbons behind the body
+    <g>                 belt rings (eyes / line faces)
+    <g>                 ground shadow of the soft variant
+    <g>                 ← the body group, driven by springs
+      <g>               border and shadow of the sticker variant
+      <path>            the body, with the parts behind and in front of it
+      <g clip-path>     the face: the eyes, plus the mouth and blush or the nose
+      <g>               effects stuck to the face (a tear)
+      <circle>          notification badge
+    <g>                 belt dots and glyphs
+    <g>                 scene effects (hearts, sparkles, Zz, the bang...)
+    <g>                 HUD
+    <g>                 ribbons in front of the body
+    <g>                 confetti
+```
+
+The trails are the ribbons a fast spin flings off. Each one is split into the stretches behind the body and the stretches in front, according to each point's depth. That is what makes a ribbon pass convincingly around the character rather than sliding across it.
+
+Spin the character and watch the ribbons cross behind the body and come back in front of it:
+
+```tsx preview
+import { useRef } from 'react';
+import { CharacterMark, type CharacterHandle } from '@aora-bot/react';
+
+export default function Demo() {
+  const ref = useRef<CharacterHandle>(null);
+  return (
+    <div className="site-demo site-demo--center">
+      <CharacterMark ref={ref} shape="blob" color="violet" state="happy" sizePx={140} />
+      <div className="site-controls">
+        <button className="site-btn" onClick={() => ref.current?.spin(2)}>
+          spin(2)
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+## The eyes are holes, or white
+
+The single most load-bearing decision in the whole renderer.
+
+The eyes of the `eyes` and `line` faces are filled with the page background colour and clipped to the body path. They are not drawn _on_ the character; they are punched _out_ of it. A character therefore reads correctly on any background without knowing anything about the surface it sits on. The default `cute` face does not need the trick: it is painted white (`--aora-face`), which reads on every ink; only the `black` ink leaves that variable unset, so its face falls back to a cut-out. On the hollow variants (`outline`, `glass`) and on `sticker` the face switches to the ink and to the paper colour, because a cut-out would either vanish or show the page there.
+
+```
+<path d={body} fill="var(--aora-fg)"/>
+<g clip-path="url(#body)">
+  <path d={leftEye} fill="var(--aora-bg)"/>
+  <path d={rightEye} fill="var(--aora-bg)"/>
+</g>
+```
+
+The cost is that `--aora-bg` has to match what is actually behind. When it does not, the holes show as pale blobs — see [theming](/guide/theming).
+
+## Colour is a few variables
+
+```css
+--aora-fg: light-dark(#2a92fe, #0e74e0);
+--aora-face: #fff;
+--aora-bg: var(--aora-bg-base);
+```
+
+Written once at mount. The browser re-resolves `light-dark()` when `color-scheme` changes, so theme switching involves no JavaScript, no listener and no re-render — for one character or for a thousand.
+
+## Mirroring
+
+The root group carries an id, which lets any other SVG on the page draw the same character with `<use href="#id">`. The browser reuses whatever the source is rendering this frame.
+
+Because `--aora-fg` is an inherited custom property, it resolves at the `<use>` site rather than at the definition, so mirrors can each be a different ink while sharing one animation. This is what makes [the shared stage](/components/mark-stage) possible.
+
+## Why not React for the frame loop
+
+React mounts an empty host element and hands it to the engine. From then on, the engine owns the DOM.
+
+A frame writes on the order of fifty attributes. Routing that through the reconciler sixty times a second — building elements, diffing props, committing — costs substantially more than computing the animation does. The component re-renders only when a prop changes, and even then it pushes the change into the controller imperatively rather than re-rendering the SVG.
+
+## Particle pooling
+
+Particle counts change every frame. Rather than recreating elements, the renderer keeps a pool and only adds or removes the difference:
+
+```ts
+while (group.childElementCount > count) group.lastElementChild.remove();
+while (group.childElementCount < count) group.appendChild(create(tag));
+```
+
+In steady state this allocates nothing.
+
+## Next
+
+- [Shape derivation](/internals/shape-derivation) — from an outline to a face box
+- [Theming](/guide/theming) — the variables that draw a character

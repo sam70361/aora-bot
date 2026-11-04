@@ -1,0 +1,103 @@
+import { StateMatrix } from '@theme';
+
+# Desktop companion
+
+A character that stays on screen for hours without turning into noise.
+
+## See it
+
+The companion itself. The sleep timers are shortened so the cycle fits a visit; leave the defaults in a product. Hold the pointer down on the character to drag it, move away to let it doze, and come back.
+
+```tsx preview
+import { useRef, useState } from 'react';
+import { CharacterMark, useIdleSleep, type CharacterHandle, type CharacterState } from '@aora-bot/react';
+
+export default function Demo() {
+  const idle = useIdleSleep({ drowsyAfterMs: 5_000, sleepAfterMs: 10_000 });
+  const [mood, setMood] = useState<CharacterState>('idle');
+  const [held, setHeld] = useState(false);
+  const handle = useRef<CharacterHandle>(null);
+
+  const state: CharacterState = held ? 'dragging' : (idle.state ?? mood);
+
+  return (
+    <div className="site-demo site-demo--stack">
+      <span
+        style={{ display: 'inline-flex', cursor: held ? 'grabbing' : 'grab', touchAction: 'none' }}
+        onPointerDown={() => setHeld(true)}
+        onPointerUp={() => setHeld(false)}
+        onPointerCancel={() => setHeld(false)}
+      >
+        <CharacterMark
+          ref={handle}
+          shape="bun"
+          color="orange"
+          state={state}
+          followPointer
+          antics
+          sizePx={112}
+        />
+      </span>
+      <div className="site-controls">
+        {(['idle', 'humming', 'bored'] as const).map((option) => (
+          <button
+            key={option}
+            className="site-btn"
+            data-active={mood === option}
+            onClick={() => setMood(option)}
+          >
+            {option}
+          </button>
+        ))}
+        <button className="site-btn" onClick={idle.wake}>
+          wake
+        </button>
+        <button className="site-btn" onClick={() => handle.current?.bounce()}>
+          hop
+        </button>
+        <span className="site-demo__label">
+          {idle.phase}, showing {state}
+        </span>
+      </div>
+    </div>
+  );
+}
+```
+
+`followPointer` listens on the window, so the eyes track the pointer anywhere on the page, not only over the character. `followTarget` takes a point in viewport pixels instead — another element's centre, or a position the host is tracking already — and uses the same `mapPointerToGaze` curve the engine does, so two characters given the same point look at the same pixel.
+
+## When to use it
+
+A character that lives in a corner of the screen for hours. It is not telling the user anything most of the time, so the job is to be alive without being noisy: follow the pointer, nod off when the person does, wake when they come back, hop once in a while. Anything that loops visibly is wrong here, which is why idle motion is built on incommensurate sine waves and the flourishes are rare.
+
+## Components
+
+- [`CharacterMark`](/components/character-mark) — `followPointer`, `followTarget`, `antics`, `entryEffects` and the `CharacterHandle` for `spin`, `bounce`, `burst`.
+- [`useIdleSleep`](/components/use-idle-sleep) — drowsy after 45 s, asleep after 120 s, waking for 1.2 s on the first input; a hidden tab sleeps at once.
+- [`HudPlate`](/components/hud-plate) — the clock or the countdown next to it: `clock` folds a clock face into the ring, `timer` drains for a break, `gauge` is a focus reading, `notify` says something arrived while you were away.
+
+## How the states move
+
+| From       | To         | When                                                  |
+| ---------- | ---------- | ----------------------------------------------------- |
+| —          | `idle`     | nothing to do; three sine waves that never line up    |
+| `idle`     | `drowsy`   | `drowsyAfterMs` without input                         |
+| `drowsy`   | `sleeping` | `sleepAfterMs` without input, or the tab is hidden    |
+| `sleeping` | `waking`   | the first input, or `wake()` when a message arrives   |
+| `waking`   | `idle`     | `wakeMs` later — long enough for the hop to land      |
+| `idle`     | `humming`  | a mood the host picks; the mouth ripples in line mode |
+| `idle`     | `dragging` | pointer down on the character; the eyes lead the move |
+
+Spread the hook's state last: `state={idle.state ?? mood}`. While the visitor is active it returns `null`, so the host's own state shows; when they are not, the sleep cycle takes over regardless of what the host wanted to say.
+
+## What each state looks like
+
+<StateMatrix states={['idle', 'drowsy', 'sleeping', 'waking', 'humming', 'dragging', 'bored']} />
+
+None of these use a belt — a companion keeps its silhouette. `sleeping` and `drowsy` do not blink, because the eyes are already closed; `dragging` looks the way it is about to travel. `antics` only fires in `idle`, `happy` and `proud`, so a character that is asleep or being dragged never hops on its own.
+
+## Next
+
+- [useIdleSleep](/components/use-idle-sleep) — nods off when the visitor does
+- [Mark commands](/components/mark-commands) — hold, release, poke, spin
+- [CharacterMark](/components/character-mark) — the single animated character

@@ -1,0 +1,66 @@
+# 头像接口
+
+一个免费的接口，能把任意字符串变成一个角色。把地址放进 `<img>`，就得到一个确定的 Aora Bot 头像：同一个 id 永远返回同一个角色，不用安装、不用存储、也不用注册。
+
+## 使用
+
+```html
+<img src="https://aora-bot.vercel.app/avatar/alice.svg" width="64" height="64" alt="alice" />
+```
+
+在 Markdown 里同样可用，适合 README、issue 或任何允许外链图片的评论区：
+
+```md
+![alice](https://aora-bot.vercel.app/avatar/alice.svg)
+```
+
+id 可以是任意不超过 128 个字符的 URL 安全字符串：用户名、邮箱哈希、数据库主键都行。`.svg` 后缀可以省略。
+
+## 参数
+
+所有参数都是可选的，写在查询字符串里。
+
+| 参数      | 取值                                                           | 默认     | 作用                                           |
+| --------- | -------------------------------------------------------------- | -------- | ---------------------------------------------- |
+| `style`   | `vector`、`pixel`、`kaomoji`                                   | `vector` | 角色使用的[画风系列](/design/styles/vector)    |
+| `variant` | 所选画风的变体，见下方列表                                     | 画风自带 | 画风内的上色变体                               |
+| `state`   | 任意[状态](/design/states)，如 `happy`、`thinking`、`sleeping` | 静息表情 | 角色的表情与姿态                               |
+| `size`    | `16` 到 `1024` 的整数                                          | `128`    | SVG 的宽高，单位像素；超出范围会被限制在区间内 |
+
+各画风的变体：
+
+- `vector`：`solid`（默认）、`outline`、`glass`、`sticker`、`paper`、`soft`、`riso`
+- `pixel`：`crisp`（默认）、`dot`、`block`
+- `kaomoji`：`plain`（默认）、`bubble`
+
+```text
+https://aora-bot.vercel.app/avatar/alice.svg?style=pixel&variant=block&size=96
+https://aora-bot.vercel.app/avatar/alice.svg?state=happy
+```
+
+取值不在上述范围内，例如 `style=oil` 或 `size=big`，会返回 HTTP 400 和一行纯文本原因。接口不认识的查询参数会被忽略。背景是透明的。
+
+## 你会得到哪个角色
+
+如果 id 恰好是[阵容](/design/cast)里的角色 id，就得到那个角色：`/avatar/luna.svg` 就是露娜。其他 id 会被哈希到 46 位阵容成员中的一位，结果稳定，分布也均匀。阵容只有 46 位，所以不同的 id 可能落到同一个角色上；请把它当作一个友好的默认头像，而不是唯一的身份标识。
+
+对同一个引擎版本，结果是固定的。如果某次发布重画了角色或调整了阵容，同一个 id 的样子可能随之改变。
+
+## 缓存与嵌入
+
+响应的类型是 `image/svg+xml`，`Cache-Control` 为 `public, max-age=86400, s-maxage=31536000, stale-while-revalidate=604800`：浏览器缓存一天，边缘节点缓存一年。接口带有 `Access-Control-Allow-Origin: *`，所以也可以在任意来源下用 `fetch` 获取。SVG 是独立的：没有脚本，也没有外部引用。
+
+放在 `<img>` 里时，SVG 看不到你的页面，因此部分角色的墨色会跟随访客的系统浅色或深色设置，而不是你网站的主题。
+
+## 在应用里，请在本地渲染
+
+做产品时，建议自己渲染头像，而不是每次浏览页面都请求一次接口。服务端安全的入口不需要 DOM，也不需要网络：
+
+```ts
+import { castMember, renderStaticSvg } from '@aora-bot/engine/static';
+
+const luna = castMember('luna')!;
+const svg = renderStaticSvg({ shape: luna.shape, color: luna.color, state: 'happy', sizePx: 64 });
+```
+
+`renderAvatarDataUrl(key)` 能用一行代码为任意 key 做同样的事。它从引擎自己的候选池里挑选，所以同一个 id 得到的角色与这个接口挑出的并不相同。更多细节见[服务端渲染](/guide/server-rendering)。

@@ -1,0 +1,825 @@
+/*
+ * `@aora-bot/surfaces`: the dialogs, scenes and onboarding chrome built on the
+ * `@aora-bot/react` primitives.
+ *
+ * Load it after `@aora-bot/react/styles.css`. It needs that sheet's tokens, and
+ * its layer comes after the library's so a host's own rules still win by
+ * default without `!important`.
+ *
+ * Every class here is `aora-s-*`, to keep it apart from the primitives' `aora-*`
+ * and a host's own names. Controls the primitives already style (`aora-button`,
+ * `aora-field`) are used as they are rather than restyled.
+ *
+ * Colour comes from the tokens alone. Every token is a `light-dark()` pair
+ * resolved by `color-scheme`, so nothing in this file branches on a `.dark`
+ * class, and nothing here needs to: the page owns the scheme.
+ *
+ * Size comes from the tokens or from the component's own container. A surface
+ * with a definite width — the template dialog — is a size container and adapts
+ * its contents to the width it is actually given. The ones that size to their
+ * content (the desktop, the occupancy list) cannot be containers without
+ * collapsing, so they wrap intrinsically instead.
+ */
+
+/*
+ * Restated so the order holds whichever sheet a host loads first: a layer's
+ * position is fixed by its first mention.
+ */
+@layer aora.tokens, aora.base, aora.components, aora.surfaces;
+
+@layer aora.surfaces {
+  /* ---- template dialog ------------------------------------------------- */
+
+  .aora-s-template {
+    container: aora-s-template / inline-size;
+    display: flex;
+    flex-direction: column;
+    gap: var(--aora-space-3);
+    box-sizing: border-box;
+    inline-size: var(--aora-s-template-width, 30rem);
+    max-inline-size: 100%;
+    padding: var(--aora-space-4);
+    border: 1px solid var(--aora-line);
+    border-radius: var(--aora-radius-lg);
+    background: var(--aora-surface-raised);
+    box-shadow: var(--aora-shadow-md);
+  }
+
+  .aora-s-template__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--aora-space-3);
+  }
+
+  .aora-s-template__mark {
+    position: relative;
+    display: inline-flex;
+  }
+
+  /* Confetti has to escape the mark's box, so the layer is absolute and
+     twice its size rather than clipped to it. */
+  .aora-s-template__confetti {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 200%;
+    height: 200%;
+    transform: translate(-50%, -50%);
+  }
+
+  .aora-s-template__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--aora-space-1);
+  }
+
+  .aora-s-template__label {
+    color: var(--aora-text-muted);
+    font-size: var(--aora-text-sm);
+  }
+
+  .aora-s-template__error {
+    margin: 0;
+    color: var(--aora-status-error);
+    font-size: var(--aora-text-sm);
+  }
+
+  .aora-s-template__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--aora-space-2);
+    justify-content: end;
+  }
+
+  @container aora-s-template (inline-size < 24rem) {
+    .aora-s-template {
+      padding: var(--aora-space-3);
+    }
+
+    .aora-s-visibility {
+      flex-direction: column;
+    }
+
+    .aora-s-template__actions {
+      justify-content: stretch;
+
+      & .aora-button {
+        flex: 1;
+      }
+    }
+  }
+
+  /*
+   * The same ring as the primitives' controls (see `widgets.css` in
+   * `@aora-bot/react`): one treatment, so a keyboard user does not learn a
+   * different one per component.
+   */
+  :is(.aora-s-visibility__option, .aora-s-occupancy__mark--button, .aora-s-suggestions__card):focus-visible,
+  .aora-s-composer:focus-within {
+    outline: var(--aora-focus-ring);
+    outline-offset: var(--aora-focus-offset);
+  }
+  /* ---- visibility ------------------------------------------------------ */
+
+  .aora-s-visibility {
+    display: flex;
+    gap: var(--aora-space-2);
+  }
+
+  .aora-s-visibility__option {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--aora-space-0-5);
+    padding: var(--aora-space-2) var(--aora-space-3);
+    border: 1px solid var(--aora-line);
+    border-radius: var(--aora-radius-md);
+    background: var(--aora-surface);
+    color: var(--aora-text);
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+    transition:
+      background-color var(--aora-duration-fast) var(--aora-ease-standard),
+      border-color var(--aora-duration-fast) var(--aora-ease-standard);
+
+    &:hover {
+      border-color: var(--aora-line-strong);
+    }
+
+    &[data-selected] {
+      border-color: var(--aora-accent);
+      background: var(--aora-accent-soft);
+    }
+  }
+
+  .aora-s-visibility__label {
+    color: var(--aora-text);
+    font-size: var(--aora-text-sm);
+    font-weight: var(--aora-weight-medium);
+  }
+
+  .aora-s-visibility__hint {
+    color: var(--aora-text-faint);
+    font-size: var(--aora-text-xs);
+  }
+
+  /* ---- share card ------------------------------------------------------ */
+
+  .aora-s-share {
+    display: flex;
+    align-items: center;
+    gap: var(--aora-space-3);
+    padding: var(--aora-space-3);
+    border: 1px solid var(--aora-line);
+    border-radius: var(--aora-radius-md);
+    background: var(--aora-surface-sunken);
+  }
+
+  .aora-s-share__mark img {
+    border-radius: var(--aora-radius-pill);
+    object-fit: cover;
+  }
+
+  .aora-s-share__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .aora-s-share__name {
+    color: var(--aora-text);
+    font-size: var(--aora-text-md);
+    font-weight: var(--aora-weight-medium);
+  }
+
+  .aora-s-share__url {
+    color: var(--aora-text-faint);
+    font-size: var(--aora-text-xs);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* ---- occupancy ------------------------------------------------------- */
+
+  .aora-s-occupancy {
+    display: flex;
+    flex-direction: column;
+    gap: var(--aora-space-0-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .aora-s-occupancy__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--aora-space-3);
+    padding: var(--aora-space-1) var(--aora-space-2);
+    border-radius: var(--aora-radius-sm);
+    transition: background-color var(--aora-duration-fast) var(--aora-ease-standard);
+
+    &:hover {
+      background: var(--aora-fill);
+    }
+  }
+
+  .aora-s-occupancy__label {
+    color: var(--aora-text);
+    font-size: var(--aora-text-sm);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .aora-s-occupancy__idle {
+    color: var(--aora-text-faint);
+    font-size: var(--aora-text-xs);
+  }
+
+  /*
+   * Overlapped, and each mark punches a hole in the one behind it.
+   *
+   * The negative margin is what makes a stack of five read as a group rather
+   * than as a row; the ring is the page background, so neighbouring
+   * silhouettes stay separable even when two of them are the same shape.
+   */
+  .aora-s-occupancy__marks {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+  }
+
+  .aora-s-occupancy__mark {
+    display: inline-flex;
+    margin-inline-start: -5px;
+    padding: 1px;
+    border-radius: var(--aora-radius-pill);
+    background: var(--aora-bg-base);
+
+    &:first-child {
+      margin-inline-start: 0;
+    }
+  }
+
+  .aora-s-occupancy__mark--button {
+    border: 0;
+    cursor: pointer;
+  }
+
+  .aora-s-occupancy__picture {
+    border-radius: var(--aora-radius-pill);
+    object-fit: cover;
+  }
+
+  .aora-s-occupancy__overflow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-inline-start: -5px;
+    border-radius: var(--aora-radius-pill);
+    background: var(--aora-fill);
+    color: var(--aora-text-muted);
+    font-size: var(--aora-text-xs);
+  }
+
+  /* ---- device bezel ---------------------------------------------------- */
+
+  /* `widthPx` is a preference: the frame and screen are laid out in percentages, so a narrow parent can shrink it. */
+  .aora-s-bezel {
+    position: relative;
+    display: block;
+    max-inline-size: 100%;
+  }
+
+  .aora-s-bezel__frame {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .aora-s-bezel__shell {
+    fill: var(--aora-surface);
+    stroke: var(--aora-line-strong);
+    stroke-width: 1;
+  }
+
+  .aora-s-bezel__screen {
+    fill: var(--aora-surface-sunken);
+  }
+
+  .aora-s-bezel__light {
+    fill: var(--aora-text-faint);
+  }
+
+  .aora-s-bezel[data-light='off'] .aora-s-bezel__light {
+    fill: var(--aora-line-strong);
+  }
+
+  .aora-s-bezel[data-light='alert'] .aora-s-bezel__light {
+    fill: var(--aora-status-error);
+  }
+
+  .aora-s-bezel__stage {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--aora-radius-sm);
+    overflow: hidden;
+  }
+
+  /* ---- scenes ---------------------------------------------------------- */
+
+  .aora-s-scene,
+  .aora-s-boot,
+  .aora-s-landing {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-inline-size: 100%;
+    gap: var(--aora-space-3);
+    text-align: center;
+  }
+
+  .aora-s-scene__text,
+  .aora-s-boot__text,
+  .aora-s-landing__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--aora-space-1);
+    max-width: 42ch;
+  }
+
+  .aora-s-scene__title,
+  .aora-s-landing__title {
+    margin: 0;
+    color: var(--aora-text);
+    font-size: var(--aora-text-lg);
+    font-weight: var(--aora-weight-semibold);
+    line-height: var(--aora-leading-snug);
+  }
+
+  .aora-s-scene__body,
+  .aora-s-landing__body {
+    margin: 0;
+    color: var(--aora-text-muted);
+    font-size: var(--aora-text-sm);
+    line-height: var(--aora-leading-normal);
+  }
+
+  /* Whatever the way out of here is, centred under the copy. A row rather
+     than the column the text block is, because it is usually two buttons. */
+  .aora-s-scene__action,
+  .aora-s-landing__action {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--aora-space-2);
+  }
+
+  /* Mostly a hook for hosts that want to place the character themselves; the
+     kit only nudges it off the copy, since the column already has a gap. */
+  .aora-s-scene__mark {
+    margin-block: var(--aora-space-0-5);
+  }
+
+  .aora-s-boot__title {
+    color: var(--aora-text);
+    font-size: var(--aora-text-md);
+    font-weight: var(--aora-weight-medium);
+  }
+
+  .aora-s-boot__body {
+    color: var(--aora-text-muted);
+    font-size: var(--aora-text-sm);
+  }
+
+  .aora-s-boot__screen {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  /*
+   * One sweeping band, behind the character by default.
+   *
+   * `data-front` lifts it over instead, which is the version that reads as a
+   * scan *of* the character rather than of the screen it stands on.
+   */
+  .aora-s-boot__scan {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: linear-gradient(100deg, transparent 42%, var(--aora-fill-hover) 50%, transparent 58%);
+    background-size: 260% 100%;
+    animation: aora-s-boot-scan 2.4s linear infinite;
+  }
+
+  .aora-s-boot__screen[data-front] .aora-s-boot__scan {
+    z-index: 2;
+  }
+
+  .aora-s-boot__mark {
+    position: relative;
+    z-index: 1;
+  }
+
+  @keyframes aora-s-boot-scan {
+    from {
+      background-position: 130% 0;
+    }
+    to {
+      background-position: -130% 0;
+    }
+  }
+
+  /* ---- loading mark ---------------------------------------------------- */
+
+  .aora-s-loading-mark {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .aora-s-loading-mark__skeleton,
+  .aora-s-loading-mark__live {
+    position: absolute;
+    inset: 0;
+    transition: opacity var(--aora-duration-base) var(--aora-ease-out);
+  }
+
+  /*
+   * The placeholder is the silhouette itself, as a mask over a shimmer.
+   *
+   * Masking rather than drawing means the outline comes from the same
+   * generator the character does, so the skeleton and the face it becomes
+   * occupy exactly the same pixels and the cross-fade has nothing to shift.
+   */
+  .aora-s-loading-mark__skeleton {
+    background: linear-gradient(
+      100deg,
+      var(--aora-fill) 40%,
+      var(--aora-fill-hover) 50%,
+      var(--aora-fill) 60%
+    );
+    background-size: 280% 100%;
+    mask-image: var(--aora-mask);
+    mask-size: 100% 100%;
+    mask-repeat: no-repeat;
+    animation: aora-s-mark-shimmer 1.5s linear infinite;
+  }
+
+  .aora-s-loading-mark__live {
+    opacity: 0;
+  }
+
+  .aora-s-loading-mark[data-ready] .aora-s-loading-mark__skeleton {
+    opacity: 0;
+  }
+
+  .aora-s-loading-mark[data-ready] .aora-s-loading-mark__live {
+    opacity: 1;
+  }
+
+  @keyframes aora-s-mark-shimmer {
+    from {
+      background-position: 140% 0;
+    }
+    to {
+      background-position: -140% 0;
+    }
+  }
+
+  /* ---- cast stage ------------------------------------------------------ */
+
+  .aora-s-cast-stage {
+    position: relative;
+    display: block;
+  }
+
+  .aora-s-cast-stage__member {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: inline-flex;
+    transition-property: transform, opacity;
+    will-change: transform;
+  }
+
+  /*
+   * A gentle float on a wrapper of its own, since the member's transform
+   * belongs to its position. Amplitude, period and phase are custom properties
+   * so a group of characters can be given different ones and never drift into
+   * sync.
+   */
+  .aora-s-cast-stage__bob {
+    display: inline-flex;
+    animation: aora-s-cast-bob var(--aora-s-cast-bob-ms, 6400ms) ease-in-out infinite;
+    animation-delay: var(--aora-s-cast-bob-delay, 0s);
+  }
+
+  @keyframes aora-s-cast-bob {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(calc(var(--aora-s-cast-bob-amp, 4px) * -1));
+    }
+  }
+
+  /* ---- avatar slot ----------------------------------------------------- */
+
+  .aora-s-slot {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .aora-s-slot__ring,
+  .aora-s-slot__content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity var(--aora-duration-fast) var(--aora-ease-out);
+  }
+
+  .aora-s-slot__ring {
+    border: 1px dashed var(--aora-line-strong);
+    border-radius: var(--aora-radius-pill);
+  }
+
+  .aora-s-slot__content {
+    opacity: 0;
+  }
+
+  .aora-s-slot[data-arrived] .aora-s-slot__ring {
+    opacity: 0;
+  }
+
+  .aora-s-slot[data-arrived] .aora-s-slot__content {
+    opacity: 1;
+  }
+
+  /* ---- walkthrough ----------------------------------------------------- */
+
+  .aora-s-desktop {
+    display: flex;
+    flex-direction: column;
+    max-inline-size: 100%;
+    border: 1px solid var(--aora-line);
+    border-radius: var(--aora-radius-md);
+    background: var(--aora-surface);
+    box-shadow: var(--aora-shadow-md);
+    overflow: hidden;
+  }
+
+  .aora-s-desktop__bar {
+    display: flex;
+    align-items: center;
+    gap: var(--aora-space-2);
+    padding: var(--aora-space-2) var(--aora-space-3);
+    border-bottom: 1px solid var(--aora-line);
+    background: var(--aora-surface-sunken);
+  }
+
+  .aora-s-desktop__dots {
+    display: inline-flex;
+    gap: var(--aora-space-1);
+  }
+
+  .aora-s-desktop__dots i {
+    width: 7px;
+    height: 7px;
+    border-radius: var(--aora-radius-pill);
+    background: var(--aora-line-strong);
+  }
+
+  .aora-s-desktop__title {
+    color: var(--aora-text-muted);
+    font-size: var(--aora-text-xs);
+  }
+
+  .aora-s-desktop__toolbar {
+    padding: var(--aora-space-2) var(--aora-space-3);
+    border-bottom: 1px solid var(--aora-line);
+  }
+
+  .aora-s-desktop__body {
+    padding: var(--aora-space-4);
+  }
+
+  .aora-s-jobs {
+    position: relative;
+    display: block;
+  }
+
+  .aora-s-jobs__mark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .aora-s-jobs__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .aora-s-jobs__bubble {
+    position: absolute;
+    padding: var(--aora-space-1) var(--aora-space-2);
+    border: 1px solid var(--aora-line);
+    border-radius: var(--aora-radius-pill);
+    background: var(--aora-surface-raised);
+    box-shadow: var(--aora-shadow-sm);
+    color: var(--aora-text);
+    font-size: var(--aora-text-sm);
+    white-space: nowrap;
+    transform: translate(-50%, -50%);
+    animation-name: aora-s-job-drift;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+  }
+
+  /* Translating on top of the centring transform, so the layout position set
+     in the component is preserved. */
+  @keyframes aora-s-job-drift {
+    from,
+    to {
+      translate: 0 -3px;
+    }
+    50% {
+      translate: 0 3px;
+    }
+  }
+
+  /* The desktop sizes to its content, so it is not a container; the cards wrap
+     instead, each wanting at least a readable line. */
+  .aora-s-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--aora-space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .aora-s-suggestions__item {
+    display: flex;
+    flex: 1 1 9rem;
+  }
+
+  .aora-s-suggestions__card {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: start;
+    gap: var(--aora-space-1);
+    padding: var(--aora-space-3);
+    border: 1px solid var(--aora-line);
+    border-radius: var(--aora-radius-md);
+    background: var(--aora-surface);
+    color: var(--aora-text);
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+    transition:
+      background-color var(--aora-duration-fast) var(--aora-ease-standard),
+      border-color var(--aora-duration-fast) var(--aora-ease-standard);
+
+    &:hover {
+      border-color: var(--aora-line-strong);
+      background: var(--aora-fill);
+    }
+  }
+
+  .aora-s-suggestions__title {
+    color: var(--aora-text);
+    font-size: var(--aora-text-sm);
+    font-weight: var(--aora-weight-medium);
+  }
+
+  .aora-s-suggestions__body {
+    color: var(--aora-text-muted);
+    font-size: var(--aora-text-sm);
+  }
+
+  .aora-s-handoff {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--aora-space-4) var(--aora-space-5);
+  }
+
+  .aora-s-handoff__side {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--aora-space-2);
+    margin: 0;
+  }
+
+  .aora-s-handoff__side figcaption {
+    color: var(--aora-text-muted);
+    font-size: var(--aora-text-sm);
+  }
+
+  .aora-s-handoff__label {
+    color: var(--aora-text-faint);
+    font-size: var(--aora-text-xs);
+  }
+
+  .aora-s-composer {
+    display: flex;
+    align-items: center;
+    gap: var(--aora-space-2);
+    padding: var(--aora-space-2);
+    border: 1px solid var(--aora-line);
+    border-radius: var(--aora-radius-md);
+    background: var(--aora-surface);
+  }
+
+  .aora-s-composer__mark {
+    flex: none;
+  }
+
+  .aora-s-composer__field {
+    flex: 1;
+    border: 0;
+    background: transparent;
+
+    /* The composer shows the ring around the whole row instead. */
+    &:focus-visible {
+      outline: 0;
+    }
+  }
+
+  /*
+   * Under reduced motion every loop here stops dead rather than slowing down.
+   *
+   * All four are ambient — a shimmer, a sweep, a drift, a bob — and none of
+   * them carries information the static frame does not. A cross-fade is left
+   * alone: it is a state change, and removing it would make the swap a jump.
+   * (Its duration collapses through the motion tokens.)
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .aora-s-boot__scan,
+    .aora-s-loading-mark__skeleton,
+    .aora-s-jobs__bubble,
+    .aora-s-cast-stage__bob {
+      animation: none;
+    }
+
+    .aora-s-cast-stage__member {
+      transition-duration: 1ms;
+    }
+  }
+
+  /*
+   * Forced colours. Backgrounds and shadows are dropped by the platform, so
+   * every surface that was told apart by fill alone gets a system-colour edge,
+   * and every selected state gets one that is not a colour difference.
+   */
+  @media (forced-colors: active) {
+    .aora-s-template,
+    .aora-s-desktop,
+    .aora-s-share,
+    .aora-s-composer,
+    .aora-s-suggestions__card,
+    .aora-s-visibility__option {
+      border-color: ButtonText;
+    }
+
+    .aora-s-visibility__option[data-selected] {
+      outline: 2px solid Highlight;
+      outline-offset: -2px;
+    }
+
+    .aora-s-boot__scan,
+    .aora-s-loading-mark__skeleton {
+      background: transparent;
+      outline: 1px solid GrayText;
+    }
+
+    .aora-s-bezel__shell {
+      stroke: CanvasText;
+    }
+
+    .aora-s-bezel__light {
+      fill: CanvasText;
+    }
+  }
+}

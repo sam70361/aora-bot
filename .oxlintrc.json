@@ -1,0 +1,73 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "react", "unicorn", "oxc", "import"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn"
+  },
+  "env": {
+    "browser": true,
+    "es2024": true
+  },
+  "settings": {
+    "react": {
+      "version": "19"
+    }
+  },
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/exhaustive-deps": "error",
+    "react/jsx-key": "error",
+    "react/no-danger": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-no-useless-fragment": "warn",
+    "typescript/no-explicit-any": "error",
+    "typescript/consistent-type-imports": "error",
+    "typescript/no-non-null-assertion": "off",
+    "typescript/no-unused-vars": [
+      "error",
+      { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_", "ignoreRestSiblings": true }
+    ],
+    "unicorn/prefer-node-protocol": "error",
+    "unicorn/no-new-array": "off",
+    "unicorn/no-array-sort": "off",
+    "unicorn/consistent-function-scoping": "off",
+    "unicorn/no-array-for-each": "off",
+    "unicorn/no-null": "off",
+    "unicorn/prefer-spread": "off",
+    "oxc/no-map-spread": "off",
+    "import/no-cycle": "error",
+    "import/no-unassigned-import": ["warn", { "allow": ["**/*.css"] }],
+    "no-console": ["warn", { "allow": ["warn", "error"] }],
+    "no-shadow": "warn",
+    "no-unused-vars": "off",
+    "eqeqeq": ["error", "smart"]
+  },
+  "ignorePatterns": [
+    "**/dist/**",
+    "**/doc_build/**",
+    "**/node_modules/**",
+    "**/.rspress/**",
+    "reference/**",
+    "docs/theme/generated/**"
+  ],
+  "overrides": [
+    {
+      "files": ["**/test/**", "**/*.test.*"],
+      "rules": {
+        "no-console": "off",
+        "react/exhaustive-deps": "off",
+        "react/jsx-key": "off",
+        "react/no-array-index-key": "off"
+      }
+    },
+    {
+      "files": ["docs/scripts/**", "packages/engine/serve.mjs"],
+      "env": { "node": true },
+      "rules": {
+        "no-console": "off"
+      }
+    }
+  ]
+}

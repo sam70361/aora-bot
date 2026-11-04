@@ -1,0 +1,679 @@
+/*
+ * Components embedded in documentation pages.
+ *
+ * The prop tables, token table, overview grid, protocol table, cast grid,
+ * component graph and state matrix: things an MDX page drops into its prose.
+ * Each is a block of its own and sits on the page background, so the eye
+ * cut-outs of any character inside read `--aora-bg-base` from the root.
+ */
+
+@layer site.components {
+  /* ---- API tables ---------------------------------------------------------- */
+
+  /*
+   * Generated prop types can be very long — a shape or colour union runs to
+   * hundreds of characters. Let the table scroll rather than push the page wide,
+   * and allow the type column to wrap so a single union cannot force the scroll
+   * bar to the far right.
+   */
+  .site-api {
+    overflow-x: auto;
+    margin-block: var(--aora-space-4);
+  }
+
+  /* Rspress's unlayered table rules (auto layout, a 100% floor, 8rem cells) win without `!important`. */
+  .site-api table {
+    width: 100%;
+    min-width: 620px !important;
+    font-size: var(--aora-text-sm);
+    table-layout: fixed !important;
+  }
+
+  .site-api th,
+  .site-api td {
+    min-width: 0 !important;
+  }
+
+  /* A table drawn by a component, which Rspress does not wrap in its scroll container. */
+  .site-table {
+    overflow-x: auto;
+    margin-block: var(--aora-space-4);
+  }
+
+  .site-table table {
+    margin: 0 !important;
+  }
+
+  .site-table th,
+  .site-table td {
+    min-width: 0 !important;
+  }
+
+  .site-api th:nth-child(1),
+  .site-api td:nth-child(1) {
+    width: 20%;
+  }
+
+  .site-api th:nth-child(2),
+  .site-api td:nth-child(2) {
+    width: 30%;
+  }
+
+  .site-api th:nth-child(3),
+  .site-api td:nth-child(3) {
+    width: 14%;
+  }
+
+  .site-api td code {
+    display: inline-block;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    white-space: normal;
+    font-size: var(--aora-text-xs);
+    line-height: 1.5;
+  }
+
+  .site-api__required {
+    color: var(--aora-status-error);
+    margin-inline-start: var(--aora-space-1);
+  }
+
+  .site-api__empty {
+    color: var(--aora-text-muted);
+    font-style: italic;
+  }
+
+  /* ---- token table --------------------------------------------------------- */
+
+  .site-tokens {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: var(--aora-space-3);
+  }
+
+  /* A filled row, not an outlined one: these sit in a grid inside the prose. */
+  .site-token {
+    display: flex;
+    align-items: center;
+    gap: var(--aora-space-3);
+    padding: var(--aora-space-3) var(--aora-space-3);
+    border: 0;
+    border-radius: var(--aora-radius-md);
+    background: var(--aora-surface-sunken);
+    cursor: pointer;
+    text-align: start;
+    font: inherit;
+    color: inherit;
+  }
+
+  .site-token:hover {
+    background: var(--aora-fill-hover);
+  }
+
+  .site-token__chip {
+    width: 22px;
+    height: 22px;
+    border-radius: var(--aora-radius-sm);
+    box-shadow: var(--aora-shadow-line);
+    flex-shrink: 0;
+  }
+
+  .site-token__name {
+    font-family: var(--aora-font-mono);
+    font-size: var(--aora-text-xs);
+  }
+
+  .site-token__value {
+    font-size: var(--aora-text-xs);
+    color: var(--aora-text-muted);
+  }
+
+  /* ---- overview grid ------------------------------------------------------- */
+
+  .site-overview {
+    display: flex;
+    flex-direction: column;
+    gap: var(--aora-space-8);
+    margin-top: var(--aora-space-5);
+  }
+
+  /*
+   * A heading and its grid, as one flex item. `.site-overview`'s own gap does
+   * the spacing between groups; the floor override is what lets the grid inside
+   * shrink below its widest card instead of forcing the page wide.
+   */
+  .site-overview__group {
+    min-width: 0;
+  }
+
+  .site-overview__heading {
+    margin: 0 0 var(--aora-space-3);
+    padding-bottom: var(--aora-space-2);
+    border-bottom: 1px solid var(--aora-line);
+    font-size: var(--aora-text-md);
+    font-weight: var(--aora-weight-semibold);
+  }
+
+  .site-overview__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(216px, 1fr));
+    gap: var(--aora-space-4);
+  }
+
+  .site-overview__card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--aora-space-3);
+    padding: var(--aora-space-4) var(--aora-space-4);
+    border: 1px solid var(--aora-line);
+    border-radius: var(--aora-radius-md);
+    background: var(--aora-surface);
+    color: inherit;
+    transition:
+      border-color var(--aora-duration-fast) var(--aora-ease-standard),
+      box-shadow var(--aora-duration-fast) var(--aora-ease-standard);
+  }
+
+  .site-overview__card:hover {
+    border-color: var(--aora-line-strong);
+    box-shadow: var(--aora-shadow-md);
+  }
+
+  .site-overview__preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 88px;
+    border-radius: var(--aora-radius-md);
+    background: var(--aora-bg-base);
+  }
+
+  .site-overview__preview > svg {
+    width: 72px;
+    height: 72px;
+  }
+
+  .site-overview__title {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: var(--aora-space-2);
+    font-size: var(--aora-text-sm);
+    font-weight: var(--aora-weight-semibold);
+  }
+
+  .site-overview__name {
+    font-style: normal;
+    font-weight: var(--aora-weight-regular);
+    font-size: var(--aora-text-sm);
+    color: var(--aora-text-muted);
+  }
+
+  .site-overview__desc {
+    font-size: var(--aora-text-sm);
+    color: var(--aora-text-muted);
+    line-height: 1.6;
+  }
+
+  /* ---- protocol table ------------------------------------------------------ */
+
+  .site-protocol h3 {
+    display: flex;
+    align-items: baseline;
+    gap: var(--aora-space-3);
+  }
+
+  .site-protocol__range {
+    font-family: var(--aora-font-mono);
+    font-size: var(--aora-text-xs);
+    font-weight: var(--aora-weight-regular);
+    color: var(--aora-text-muted);
+  }
+
+  .site-protocol table {
+    width: 100%;
+  }
+
+  .site-protocol td {
+    vertical-align: middle;
+  }
+
+  .site-protocol__mark {
+    width: 48px;
+  }
+
+  .site-protocol__zh {
+    margin-inline-start: var(--aora-space-2);
+    font-style: normal;
+    font-size: var(--aora-text-xs);
+    color: var(--aora-text-muted);
+  }
+
+  /* A filled micro-pill. Outlined, thirty of them down a table read as a fence. */
+  .site-protocol__kind {
+    display: inline-block;
+    margin-inline-end: var(--aora-space-2);
+    padding: 1px var(--aora-space-2);
+    border-radius: var(--aora-radius-pill);
+    background: var(--aora-surface-sunken);
+    font-size: var(--aora-text-xs);
+    color: var(--aora-text-muted);
+  }
+
+  .site-protocol__kind[data-oneshot] {
+    background: var(--aora-accent-soft);
+    color: var(--aora-accent-hover);
+  }
+
+  .site-protocol tr[data-fallback] td:first-child code {
+    text-decoration: underline;
+    text-decoration-color: var(--aora-accent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  /* ---- cast grid ----------------------------------------------------------- */
+
+  .site-cast {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
+    gap: var(--aora-space-4);
+    margin-block: var(--aora-space-5);
+  }
+
+  .site-cast__card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--aora-space-3);
+    padding: var(--aora-space-4);
+    border: 1px solid var(--aora-line);
+    border-radius: var(--aora-radius-md);
+    background: var(--aora-surface);
+  }
+
+  .site-cast__stage {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 120px;
+    border-radius: var(--aora-radius-md);
+    background: var(--aora-bg-base);
+  }
+
+  /* A cast id is a preset name you pass to `preset="…"`: identifier floor. */
+  .site-cast__id {
+    position: absolute;
+    bottom: 8px;
+    inset-inline-end: 10px;
+    font-size: var(--aora-text-xs);
+    color: var(--aora-text-muted);
+  }
+
+  .site-cast__id code {
+    font-size: var(--aora-text-xs);
+  }
+
+  .site-cast__head {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: var(--aora-space-2);
+    font-size: var(--aora-text-md);
+  }
+
+  .site-cast__head em {
+    font-style: normal;
+    font-size: var(--aora-text-sm);
+    color: var(--aora-text-muted);
+  }
+
+  .site-cast__slug {
+    margin-inline-start: auto;
+    font-size: var(--aora-text-xs);
+  }
+
+  .site-cast__desc {
+    margin: 0;
+    font-size: var(--aora-text-sm);
+    line-height: 1.6;
+    color: var(--aora-text-muted);
+  }
+
+  .site-cast__traits {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 3px var(--aora-space-3);
+    margin: 0;
+    font-size: var(--aora-text-sm);
+  }
+
+  .site-cast__traits dt {
+    color: var(--aora-text-faint);
+  }
+
+  .site-cast__traits dd {
+    display: flex;
+    align-items: center;
+    gap: var(--aora-space-2);
+    margin: 0;
+  }
+
+  .site-cast__traits em {
+    font-style: normal;
+    color: var(--aora-text-muted);
+  }
+
+  .site-cast__swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: var(--aora-radius-sm);
+    background: var(--site-cast-accent);
+    box-shadow: var(--aora-shadow-line);
+  }
+
+  /* ---- scenario grid ------------------------------------------------------- */
+
+  /* `min(100%, …)` lets a single column shrink below the track floor on a narrow phone. */
+  .site-scenarios {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 232px), 1fr));
+    gap: var(--aora-space-4);
+    margin-block: var(--aora-space-5);
+  }
+
+  /*
+   * The card is an anchor, and Rspress's unlayered rule for doc links (inline,
+   * link blue, medium weight, underlined) beats any layered declaration, so
+   * the ones it would win are `!important`: an important declaration in a
+   * layer beats an unlayered one.
+   */
+  .site-scenarios__card {
+    display: flex !important;
+    flex-direction: column;
+    gap: var(--aora-space-2);
+    min-width: 0;
+    padding: var(--aora-space-4);
+    border: 1px solid var(--aora-line);
+    border-radius: var(--aora-radius-md);
+    background: var(--aora-surface);
+    color: inherit !important;
+    font-weight: var(--aora-weight-regular) !important;
+    text-decoration: none !important;
+    transition:
+      border-color var(--aora-duration-fast) var(--aora-ease-standard),
+      box-shadow var(--aora-duration-fast) var(--aora-ease-standard);
+  }
+
+  .site-scenarios__card:hover {
+    border-color: var(--aora-line-strong);
+    box-shadow: var(--aora-shadow-md);
+  }
+
+  .site-scenarios__stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 112px;
+    margin-bottom: var(--aora-space-1);
+    border-radius: var(--aora-radius-md);
+    background: var(--aora-bg-base);
+  }
+
+  .site-scenarios__title {
+    font-size: var(--aora-text-md);
+    font-weight: var(--aora-weight-semibold);
+  }
+
+  .site-scenarios__desc {
+    font-size: var(--aora-text-sm);
+    line-height: 1.6;
+    color: var(--aora-text-muted);
+  }
+
+  /* ---- component graph ----------------------------------------------------- */
+
+  .site-graph {
+    display: flex;
+    flex-direction: column;
+    margin-block: var(--aora-space-5) var(--aora-space-8);
+    border: 1px solid var(--aora-line);
+    border-radius: var(--aora-radius-lg);
+    background: color-mix(in oklab, var(--aora-surface-sunken) 60%, transparent);
+    overflow: hidden;
+  }
+
+  .site-graph__tier {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: var(--aora-space-5);
+    padding: var(--aora-space-5) var(--aora-space-6);
+    position: relative;
+  }
+
+  .site-graph__tier + .site-graph__tier {
+    border-top: 1px dashed var(--aora-line);
+  }
+
+  /* A short vertical tick joins each tier to the next, standing in for arrows. */
+  .site-graph__tier + .site-graph__tier::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: 42px;
+    width: 2px;
+    height: 20px;
+    background: var(--aora-accent);
+    border-radius: 0 0 var(--aora-radius-xs) var(--aora-radius-xs);
+    opacity: 0.55;
+  }
+
+  .site-graph__side {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: var(--aora-space-3);
+    align-content: start;
+  }
+
+  .site-graph__step {
+    grid-row: 1 / span 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--aora-accent);
+    color: var(--aora-on-accent);
+    font-size: var(--aora-text-xs);
+    font-weight: var(--aora-weight-semibold);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .site-graph__title {
+    font-size: var(--aora-text-md);
+    font-weight: var(--aora-weight-semibold);
+    line-height: 24px;
+    color: var(--aora-text);
+  }
+
+  .site-graph__note {
+    margin-top: var(--aora-space-1);
+    font-size: var(--aora-text-sm);
+    line-height: 1.6;
+    color: var(--aora-text-muted);
+  }
+
+  .site-graph__nodes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--aora-space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .site-graph__nodes > li {
+    margin: 0;
+  }
+
+  .site-graph__node {
+    display: flex;
+    flex-direction: column;
+    gap: var(--aora-space-1);
+    padding: var(--aora-space-3) var(--aora-space-4);
+    border: 1px solid var(--aora-line);
+    border-radius: var(--aora-radius-md);
+    background: var(--aora-bg-base);
+    color: inherit;
+    transition:
+      border-color var(--aora-duration-fast) var(--aora-ease-standard),
+      box-shadow var(--aora-duration-fast) var(--aora-ease-standard);
+  }
+
+  .site-graph__node:hover {
+    border-color: var(--aora-accent);
+    box-shadow: var(--aora-shadow-sm);
+  }
+
+  .site-graph__tier--engine .site-graph__node {
+    border-style: dashed;
+  }
+
+  .site-graph__name {
+    display: flex;
+    align-items: baseline;
+    gap: var(--aora-space-2);
+  }
+
+  .site-graph__name code {
+    font-size: var(--aora-text-sm);
+    font-weight: var(--aora-weight-semibold);
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--aora-text);
+  }
+
+  .site-graph__name em {
+    font-style: normal;
+    font-size: var(--aora-text-xs);
+    color: var(--aora-text-muted);
+  }
+
+  /* Component names, so the identifier floor applies to the row as a whole. */
+  .site-graph__uses {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--aora-space-2);
+    font-size: var(--aora-text-xs);
+    color: var(--aora-text-faint);
+  }
+
+  .site-graph__uses::before {
+    content: '↑';
+    opacity: 0.6;
+  }
+
+  .site-graph__uses code {
+    padding: 0;
+    border: 0;
+    background: none;
+    font-size: var(--aora-text-xs);
+    color: inherit;
+  }
+
+  .site-graph__foot {
+    margin: 0;
+    padding: var(--aora-space-3) var(--aora-space-6);
+    border-top: 1px solid var(--aora-line);
+    font-size: var(--aora-text-sm);
+    color: var(--aora-text-muted);
+  }
+
+  /* The tier's label column is 220px of a doc column that is itself short of a
+   * thousand pixels here; below the tablet line the two rows stack. */
+  @media (width < 960px) {
+    .site-graph__tier {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--aora-space-3);
+    }
+
+    .site-graph__tier + .site-graph__tier::before {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-overview__card,
+    .site-scenarios__card,
+    .site-graph__node {
+      transition: none;
+    }
+  }
+
+  /* ---- state matrix -------------------------------------------------------- */
+
+  /* Tables that carry live characters, on the design pages and the scenario pages. */
+
+  .site-matrix__bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--aora-space-2);
+    justify-content: flex-end;
+    margin-block: var(--aora-space-3) var(--aora-space-1);
+  }
+
+  /* A narrow screen scrolls the table rather than letting it run under the outline. */
+  .site-matrix section {
+    overflow-x: auto;
+  }
+
+  .site-matrix table {
+    width: 100%;
+  }
+
+  /* Rspress gives every cell an 8rem floor, which seven columns cannot meet inside the prose measure. */
+  .site-matrix th,
+  .site-matrix td {
+    min-width: 0 !important;
+  }
+
+  .site-matrix td {
+    vertical-align: middle;
+  }
+
+  .site-matrix__mark {
+    width: 64px;
+  }
+
+  .site-matrix__name {
+    display: block;
+    font-size: var(--aora-text-sm);
+    line-height: 1.4;
+    color: var(--aora-text-muted);
+  }
+
+  .site-matrix__none {
+    color: var(--aora-text-faint);
+  }
+
+  .site-matrix__chips {
+    max-width: 240px;
+  }
+
+  .site-matrix__chips code {
+    display: inline-block;
+    margin: 1px var(--aora-space-1) 1px 0;
+    white-space: normal;
+  }
+
+  /* A one-shot id is an event; the protocol table underlines those the same way. */
+  .site-matrix__chips code[data-oneshot] {
+    text-decoration: underline;
+    text-decoration-color: color-mix(in oklab, var(--aora-accent) 60%, transparent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+}

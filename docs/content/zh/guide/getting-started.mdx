@@ -1,0 +1,150 @@
+# 开始使用
+
+Aora Bot 用代码画出一个卡通角色。没有雪碧图，也没有导出的动画文件：每个角色的身体都是生成出来的轮廓，每个表情都是几个数字描述的笔画，每一帧都直接写进 SVG 属性。
+
+如果只想挑一个角色、拿到代码，直接去[控制台](/)：左边选画风，右边选颜色和脸型，底部选形状，角色下方选表情；滑杆按钮调画风参数，角色下方的代码条一点就复制对应的代码。
+
+## 安装
+
+```bash
+pnpm add @aora-bot/react
+```
+
+只用组件时，装 `@aora-bot/react` 就够了，它会带上 `@aora-bot/engine`。如果要自己从 `@aora-bot/engine` 导入（例如 `getStyle`、`getInkVars` 或 `@aora-bot/engine/agent`），或者想脱离 React 使用几何与动画，还需要 `pnpm add @aora-bot/engine`。
+
+这些包只提供 ESM：`exports` 里只有 `import` 条件，不能用 `require()`。
+
+不用 React？看[不用 React](/guide/without-react)：`<aora-bot>` 自定义元素，外加一行 CDN 脚本。
+
+:::warning 需要 React 19
+组件层把 `ref` 当作普通 prop 使用，并从 ref 回调里返回清理函数——两者都是 React 19 的语义。在 React 18 下清理函数会被忽略，共享动画源永不释放，镜像角色会渲染成空白。
+:::
+
+## 第一个角色
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+import '@aora-bot/react/styles.css';
+
+export default function Demo() {
+  return <CharacterMark shape="mochi" state="happy" sizePx={160} />;
+}
+```
+
+样式表在应用根部引入一次。三个 prop 承载了绝大部分含义，都有默认值，所以最短的写法就是上面这一行：
+
+| Prop    | 控制什么                                              |
+| ------- | ----------------------------------------------------- |
+| `shape` | 画哪个[角色](/design/shapes)，默认 `mochi`            |
+| `color` | [配色](/design/palette)里的一个色相，默认 `black`     |
+| `state` | 在做什么，[动画状态](/design/states)之一，默认 `idle` |
+
+## 换画风、变体和颜色
+
+画风用 `styleId` 选，每个画风有自己的变体，用 `variant` 选。颜色和状态不受影响，换了就是换了。
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo site-demo--center">
+      <CharacterMark shape="cat" color="pink" state="happy" sizePx={110} variant="soft" />
+      <CharacterMark shape="cat" color="green" state="happy" sizePx={110} styleId="pixel" />
+      <CharacterMark shape="cat" state="happy" sizePx={110} styleId="kaomoji" variant="bubble" />
+    </div>
+  );
+}
+```
+
+每个画风各有一页：[Vector](/design/styles/vector)、[Pixel](/design/styles/pixel)、[Kaomoji](/design/styles/kaomoji)。脸有三种，默认 `cute`，另外两种用 `face` 选，见[五官](/design/face)。
+
+## 背景 token
+
+默认的 `cute` 脸是画上去的白色，在任何背景上都成立。`eyes` 和 `line` 脸的眼睛是挖出来的孔，用页面背景色填充并裁剪在身体内，默认的 `black` 也是这样。这时角色所在的表面如果不是页面背景，就要告诉它，方法是设置 `--aora-bg-base`：
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24 }}>
+      <div style={{ padding: 20, borderRadius: 12, background: '#101828' }}>
+        <CharacterMark shape="blob" color="cyan" face="eyes" sizePx={80} />
+      </div>
+      <div
+        style={{
+          padding: 20,
+          borderRadius: 12,
+          background: '#101828',
+          ['--aora-bg-base' as string]: '#101828',
+        }}
+      >
+        <CharacterMark shape="blob" color="cyan" face="eyes" sizePx={80} />
+      </div>
+    </div>
+  );
+}
+```
+
+左边那个把眼睛挖成了页面色，露出两个浅色的洞；右边那个与容器一致。样式表把 token 放在 `@layer` 里，所以你自己写的规则无需 `!important` 就能覆盖它。
+
+## 命令式动作
+
+角色通过 ref 暴露三个一次性动作。
+
+```tsx preview
+import { useRef } from 'react';
+import { CharacterMark, type CharacterHandle } from '@aora-bot/react';
+
+export default function Demo() {
+  const ref = useRef<CharacterHandle>(null);
+
+  return (
+    <div className="site-demo site-demo--center">
+      <CharacterMark ref={ref} shape="pebble" color="violet" state="happy" sizePx={110} />
+      <div className="site-controls">
+        <button className="site-btn" onClick={() => ref.current?.spin(2)}>
+          spin(2)
+        </button>
+        <button className="site-btn" onClick={() => ref.current?.bounce()}>
+          bounce()
+        </button>
+        <button className="site-btn" onClick={() => ref.current?.burst()}>
+          burst()
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+## 给你的用户分配角色
+
+任意字符串都能哈希成稳定的形状与墨色，因此你可以给每个用户展示固定角色，而不需要存储任何数据。
+
+```tsx preview
+import { AgentAvatar } from '@aora-bot/react';
+
+const people = ['ada@example.com', 'grace@example.com', 'alan@example.com', 'edsger@example.com'];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {people.map((id) => (
+        <div className="site-demo__cell" key={id}>
+          <AgentAvatar agent={{ id }} sizePx={52} />
+          <span className="site-demo__label">{id.split('@')[0]}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## 接下来
+
+- [性能](/guide/performance)——怎样渲染上百个角色
+- [服务端渲染](/guide/server-rendering)——Next.js 与静态生成
+- [组件](/components/overview)——React 层提供的全部能力
+- [深入原理](/internals/rendering)——引擎究竟是怎么工作的

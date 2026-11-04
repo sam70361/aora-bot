@@ -1,0 +1,102 @@
+# 腰带与粒子
+
+一批状态把身体交给覆盖动效。身体先形变成圆，再收缩成核心，含义由围绕它运动的元素承载——其中两个由画在身旁的字形承载。
+
+> 这是 `eyes` 与 `line` 两种脸的画法。默认的 `cute` 脸下身体保持完整、脸也在，同样的含义改由身旁的特效来说（`thinking` 是升起的点，`progress` 是逐渐填满的弧，`writing` 是一支铅笔；`powering-down` 让身体变暗，`bouncing` 让身体弹跳）。下面的演示用 `face="eyes"` 让腰带本身可见。
+
+## 过渡
+
+`beltBlend` 驱动它。前 62% 把极坐标环形变成圆；其余部分把这个圆收到腰带的核心尺寸。眼睛在前 35% 淡出，因为小圆球上的脸读起来像错误。
+
+```tsx preview
+import { MarkStageProvider, StagedMark, STATE_BELT, BELT_CORE_SIZE } from '@aora-bot/react';
+
+const entries = Object.entries(STATE_BELT);
+
+export default function Demo() {
+  return (
+    <MarkStageProvider maxSources={entries.length}>
+      <table>
+        <thead>
+          <tr>
+            <th>belt</th>
+            <th>state</th>
+            <th>core</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {entries.map(([state, belt]) => (
+            <tr key={state}>
+              <td>
+                <code>{belt}</code>
+              </td>
+              <td>
+                <code>{state}</code>
+              </td>
+              <td>{BELT_CORE_SIZE[belt as never]}</td>
+              <td>
+                <StagedMark shape="blob" state={state as never} color="blue" face="eyes" sizePx={46} />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </MarkStageProvider>
+  );
+}
+```
+
+## 每条腰带
+
+| 腰带       | 状态                      | 构造                                                    |
+| ---------- | ------------------------- | ------------------------------------------------------- |
+| `dots`     | thinking                  | 包括核心在内的三颗珠；高斯沿它们走 1.4 秒一圈           |
+| `orbit`    | orbit, messaging, waiting | 倾斜椭圆上的五颗卫星；深度驱动大小与不透明度            |
+| `radar`    | radar                     | 三圈向外扩张的同心环，边走边变细                        |
+| `progress` | progress                  | 背景环加上 2.5 秒内填满的虚线弧                         |
+| `gather`   | spawning                  | 五颗粒子在 2 秒内螺旋向内，然后变成 `progress`          |
+| `wave`     | dictating                 | 四根带伪随机包络的条，像电平表                          |
+| `send`     | sending                   | 一颗球沿固定向量飞出，拖着一颗更淡的，留下扩张环        |
+| `receive`  | receiving                 | 每 1.7 秒从确定性方向飞来一颗球                         |
+| `dock`     | uploading                 | 两颗球飞入，然后落入椭圆轨道                            |
+| `ball`     | bouncing                  | 自由落体加完全弹性地面，接触时压扁                      |
+| `whirl`    | loading                   | 核心在四层叠加正弦上漫游                                |
+| `standby`  | powering-down             | 核心透明度脉冲，外加一次性收缩环                        |
+| `pencil`   | writing                   | 铅笔字形沿 2:1 李萨如曲线在核心旁涂写，留下两道渐隐笔迹 |
+| `bang`     | alerting                  | 感叹号字形弹起并过冲一次，随后以 2 秒慢脉冲保持在位     |
+
+两个字形是生成的，不是画的：`pencilGlyphPath` 与 `bangGlyphPath` 用身体同一套 `PathBuilder`，由圆角矩形、三角形与胶囊拼出。腰带换种类时——比如 `thinking` 交给 `writing`——第二根弹簧 `beltFade` 交叉淡化两帧，并把退出的珠子收拢到进入字形的位置。
+
+## 腰带是时间的纯函数
+
+```ts
+evaluateBelt('orbit', 1.234); // 永远是同一帧
+```
+
+两次调用之间不累积任何东西。腰带可以暂停、拖动、恢复或乱序求值，依然正确。
+
+这正是上百个角色滚进滚出视口时可以被冻结再解冻、而不会失同步的原因：没有内部状态可以漂移。
+
+## 粒子
+
+两套系统共享一次更新。
+
+**彩纸**均匀地从身体半径的环上发射，带向上偏差，然后在重力下下落、逐帧阻尼，并在下落中略微缩小。寿命 0.45 到 0.85 秒。大约六分之一是金色星星，其余是圆点或纸条。不透明度在寿命的前十分之一淡入，然后按幂曲线淡出，读起来像远去而不是溶解。
+
+**彩带**由自旋甩出。自旋是绕竖直轴的转身：身体保持直立，脸从一侧转到背面再转回来。自旋超过 5 rad/s 时，四到六条彩带依次甩出，落在两三个倾斜的轨道面上，内圈先出。每条是一种柔和的颜色，在色相环上和其他彩带错开；头宽尾窄，尾部只有头部一半宽。彩带先长出来，以 0.74 到 0.94 的 `follow` 因子跟着自旋走，身体停下后继续滑行，最后把弧线收回头部消失。
+
+每条彩带按深度拆成身体后方与前方的几段，所以它绕过角色，而不是从表面滑过去。
+
+## 尺寸陷阱
+
+粒子缩放绝不能从渲染元素的测量推导。
+
+共享动画源住在隐藏容器里，它的镜像可以从 16 到 400 像素任意显示。如果源测量自己的盒子来决定粒子该多大，每个镜像都会继承源的测量——对它们全部都是错的，当源被收成几个像素时则是病态的错。
+
+缩放被显式传入。
+
+## 接下来
+
+- [渲染结构](/internals/rendering)——一个 SVG，所有属性手写
+- [状态](/design/states)——全部动画状态，分组列出

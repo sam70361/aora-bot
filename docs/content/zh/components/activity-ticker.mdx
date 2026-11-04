@@ -1,0 +1,41 @@
+import { API } from '@theme';
+
+# ActivityTicker
+
+交叉淡入的单行文字。
+
+```tsx preview
+import { useEffect, useState } from 'react';
+import { ActivityTicker } from '@aora-bot/react';
+
+const lines = ['正在搜索网页', '正在阅读结果', '正在写摘要', '完成'];
+
+export default function Demo() {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setI((n) => (n + 1) % lines.length), 1600);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <div className="site-demo site-demo--center">
+      <ActivityTicker text={lines[i]} />
+    </div>
+  );
+}
+```
+
+## 为什么不直接换文字
+
+过渡期间出站和进站两行都在 DOM 里，叠在同一个网格格里。因此整行始终和两者中较高的那一行一样高，也和它需要的宽度一样宽。
+
+就地替换文字会让活动行每隔几秒因为字数变化而抖动——小事，但好几行同时动时非常显眼。
+
+## API
+
+<API component="ActivityTicker" />
+
+## 接下来
+
+- [ActivityMark](/components/activity-mark)——一次工具调用长什么样
+- [对话流](/scenarios/chat-stream)——一行带脸的状态

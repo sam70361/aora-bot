@@ -1,0 +1,71 @@
+import { API } from '@theme';
+
+# LocaleProvider
+
+Language for every component below it.
+
+```tsx preview
+import { LocaleProvider, CharacterPicker, ActivityMark } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo site-demo--column">
+      <LocaleProvider locale="zh-CN">
+        <ActivityMark agent={{ id: 'a' }} tool="write_file" />
+        <CharacterPicker shape="hex" color="cyan" layout="row" shapes={['hex', 'pill', 'cloud']} />
+      </LocaleProvider>
+    </div>
+  );
+}
+```
+
+See [internationalisation](/guide/internationalisation) for adding languages and overriding individual strings.
+
+## Names for identifiers
+
+Shape, ink and state identifiers are API — `'blob'`, `'blue'`, `'thinking'` — and are never translated. Their **display names** are, and the locale table carries them as id-driven families: `shape.*`, `color.*`, `state.*`, `stateDesc.*` (a one-line description of each state), `belt.*`, `hud.*`, `mouth.*`, `expression.*`, plus `face.*` and `nose.*` for the line face and `state.group.*` for the four groups the states fall into.
+
+`useLabel()` reads those families as functions, so a component iterating `SHAPE_IDS` does not have to build `'shape.' + id` and cast it to a key:
+
+```tsx preview
+import { LocaleProvider, SHAPE_IDS, useLabel, type ShapeId } from '@aora-bot/react';
+
+function Names({ shapes }: { shapes: ShapeId[] }) {
+  const label = useLabel();
+  return (
+    <div className="site-demo site-demo--column">
+      {shapes.map((shape) => (
+        <span className="site-demo__label" key={shape}>
+          <code>{shape}</code> → {label.shape(shape)}, {label.state('thinking')}, {label.hud('progress')}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+export default function Demo() {
+  return (
+    <div className="site-demo site-demo--column">
+      <Names shapes={SHAPE_IDS.slice(0, 3)} />
+      <LocaleProvider locale="zh-CN">
+        <Names shapes={SHAPE_IDS.slice(0, 3)} />
+      </LocaleProvider>
+    </div>
+  );
+}
+```
+
+HUD names come from the engine's own `HUD_KIND_LABELS`, which already carries both languages; the locale re-exports them rather than keeping a second copy.
+
+## Key families
+
+Beyond the identifier families, the table is grouped by the surface that reads it: `picker.*`, `editor.*`, `activity.*`, `template.*`, `avatar.*`, `occupancy.*`, `restricted.*`, `boot.*` and `loading.label`, `cast.*`, `walkthrough.*`, `sprite.*`. `LocaleKey` is a closed union over all of them, so an override with a misspelt key is a type error rather than a silent no-op.
+
+## API
+
+<API component="LocaleProvider" />
+
+## Next
+
+- [Internationalisation](/guide/internationalisation) — one provider, every label
+- [API index](/components/api-index) — every export in one place

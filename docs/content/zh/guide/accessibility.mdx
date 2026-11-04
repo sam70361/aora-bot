@@ -1,0 +1,90 @@
+# 无障碍
+
+角色旁边该写什么，以及为什么绝不能让角色成为唯一说明这件事的东西。
+
+## 角色默认是装饰
+
+每个角色都带 `aria-hidden="true"`。这是正确的默认值：名字旁边的角色是视觉点缀，在对话的每一行前面念「图片」会让屏幕阅读器没法用。
+
+这也意味着**角色本身从不单独传达信息**。这是对你的约束，而不只是对 Aora Bot 的约束。
+
+## 含义必须落在哪里
+
+四十四种动画状态携带真实信息——正在工作、在等你、被堵住、已经完成。看不见动画的读者拿不到这些。把同一事实写进文字：
+
+```tsx
+// 不要这样：状态是唯一信号。
+<CharacterMark state={agent.running ? 'working' : 'idle'} />
+
+// 这样：角色装饰一个已经可读的事实。
+<span>
+  <CharacterMark state={agent.running ? 'working' : 'idle'} />
+  <span>{agent.running ? '正在跑测试' : '空闲'}</span>
+</span>
+```
+
+`ActivityMark` 替你做这件事——它从同一来源渲染角色和文本标签，两者不可能互相矛盾。
+
+## 当角色是唯一内容
+
+一个单独站着、旁边没有名字的头像是内容，需要一个名字：
+
+```tsx
+<span role="img" aria-label={`${user.name} 的头像`}>
+  <AgentAvatar agent={user} />
+</span>
+```
+
+不要把形状或墨色写进标签。「蓝色云朵」描述的是像素；读者需要的是那个人。
+
+## 动效
+
+引擎启动前会读取 `prefers-reduced-motion`。打开时：
+
+- 弹簧立刻落到目标
+- 只画一帧，不启动循环
+- 不发射粒子
+- 组件层的 CSS 过渡被关掉
+
+这不是装饰级别的谨慎。有些状态是真正的前庭刺激：`celebrate` 让角色原地转身并甩出一圈彩带，`burst()` 从中心向外抛粒子。两者都会被抑制。
+
+如果你自己驱动动效，检查同一偏好：
+
+```ts
+import { prefersReducedMotion, onReducedMotionChange } from '@aora-bot/engine';
+
+if (!prefersReducedMotion()) confetti.current?.burst();
+```
+
+避免在读者没有主动发起的情况下调用 `spin()` 或 `burst()`。
+
+## 可交互的角色
+
+当角色被当作按钮使用时，它必须是一个按钮。
+
+```tsx
+<button type="button" aria-label="更换头像" onClick={open}>
+  <AgentAvatar agent={user} />
+</button>
+```
+
+`CharacterPicker` 已经是一对单选组：每个选项都有 `role="radio"`、可访问名称和可见焦点环。方向键和 `Tab` 的行为符合预期。
+
+## 颜色
+
+组件层从不把颜色当作唯一信号。`AvatarStatusDot` 接受可选的 `label`，`UnreadBadge` 即使可见文本封顶在 `99+`，也会向辅助技术完整播报计数。
+
+这些墨色并不能保证色觉障碍读者能两两区分。不要只靠角色墨色编码状态。
+
+## 清单
+
+- 角色是 `aria-hidden` 的，除非你给它一个名字
+- 每种动画状态附近都有等价文本
+- `prefers-reduced-motion` 下动效被抑制
+- 可交互角色是带标签的真按钮
+- 没有任何含义只靠颜色承载
+
+## 接下来
+
+- [浏览器支持](/guide/browser-support)——基线版本与回退
+- [状态](/design/states)——全部动画状态，分组列出

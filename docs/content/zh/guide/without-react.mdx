@@ -1,0 +1,134 @@
+# 不用 React
+
+通过 `<aora-bot>` 自定义元素，在纯 HTML 或任何框架里使用 Aora Bot；如果连自定义元素都不想要，也可以直接调用引擎。
+
+## 从 CDN 引入
+
+一个 script 标签就是全部配置。这个文件自带引擎，加载时自动注册 `<aora-bot>`，不需要构建步骤。
+
+```html
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <title>Aora Bot</title>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@aora-bot/element"></script>
+  </head>
+  <body>
+    <aora-bot character="mochi" state="happy" size="120"></aora-bot>
+  </body>
+</html>
+```
+
+建议在地址里固定版本，例如 `@aora-bot/element@0.1.1`，这样之后发布的新版本不会改变已经上线的页面。
+
+## 安装
+
+使用打包工具时，安装这个包，并在入口文件靠前的位置注册一次元素：
+
+```bash
+pnpm add @aora-bot/element
+```
+
+```ts
+import { defineAoraBot } from '@aora-bot/element';
+
+defineAoraBot();
+```
+
+`defineAoraBot(tagName = 'aora-bot')` 返回元素类，重复调用是安全的。导入这个包不会碰 DOM，所以在服务端渲染或构建脚本里导入也没问题，只是那里的 `defineAoraBot` 什么都不会注册。`@aora-bot/engine` 作为依赖会一并安装。想从自己的域名提供打包好的单文件，导入 `@aora-bot/element/cdn`。
+
+和其他包一样，它只提供 ESM。
+
+## 属性
+
+所有属性都是可选的。引擎不认识的值会回退到默认值，或回退到角色阵容成员的设定，不会抛错。
+
+| 属性             | 作用                                                                                   |
+| ---------------- | -------------------------------------------------------------------------------------- |
+| `character`      | [角色阵容](/design/cast)里的 id，例如 `mochi`；决定 `shape`、`color`、`face` 和 `nose` |
+| `shape`          | 画哪个[角色](/design/shapes)，默认 `mochi`                                             |
+| `color`          | [配色](/design/palette)里的一个色相，默认 `black`                                      |
+| `face`           | `cute`（默认）、`eyes` 或 `line`，见[五官](/design/face)                               |
+| `nose`           | 线条脸用的鼻子 id，或 `none`；默认由 `seed` 推出                                       |
+| `state`          | 它正在做什么，[动画状态](/design/states)之一，默认 `idle`                              |
+| `style-id`       | 画风：`vector`（默认）、`pixel` 或 `kaomoji`                                           |
+| `variant`        | 该画风的变体，例如 `outline` 或 `dot`                                                  |
+| `seed`           | 任意字符串；种子不同的角色不会同时眨眼                                                 |
+| `size`           | CSS 长度，或像素数；默认 `28px`                                                        |
+| `eye-color`      | 眼睛镂空处的 CSS 颜色                                                                  |
+| `badge-color`    | `notifying` 状态下角标的 CSS 颜色                                                      |
+| `eye-scale`      | 眼睛大小的正数倍率，默认 `1`                                                           |
+| `line-weight`    | 线条粗细的倍率，范围 0.8 到 1.25，默认 `1`                                             |
+| `reduced-motion` | 布尔。只画静止的一帧，不做动画；不写时跟随系统设置                                     |
+| `paused`         | 布尔。停在当前这一帧                                                                   |
+| `emphasis`       | 布尔。放大眼睛并让它们聚拢                                                             |
+| `antics`         | 布尔。空闲时偶尔自己蹦一下或转一圈                                                     |
+| `auto-pause`     | 布尔。页面隐藏或角色滚出视口时停止动画                                                 |
+
+画风叫 `style-id`，因为 `style` 已经是内联 CSS 的属性名。修改属性会就地更新正在运行的角色。只有 `seed`、`reduced-motion` 和 `auto-pause` 是创建时读取一次的，修改它们会重新创建角色。
+
+元素带有 `role="img"`，`aria-label` 是阵容成员的名字；最近的 `lang` 是 `zh` 时用中文名。自己设置了 `aria-label` 或 `role`，它们就不会被改动。
+
+角色画在 shadow root 里，页面的 CSS 够不到里面。宿主是 `display: inline-block`；用 `size` 设置大小，也可以自己写 `width` 和 `height`。墨色跟随页面的 `color-scheme`，任意祖先上的 `--aora-bg-base` 决定眼睛镂空处的底色，详见[主题](/guide/theming)。
+
+## 方法
+
+| 成员                  | 作用                                                    |
+| --------------------- | ------------------------------------------------------- |
+| `spin(turns?)`        | 让身体转 `turns` 整圈，默认一圈                         |
+| `bounce(strength?)`   | 蹦一下；`strength` 缩放高度，默认 `1`                   |
+| `burst(count?)`       | 撒彩纸                                                  |
+| `pause()`, `resume()` | 停在当前帧，或继续                                      |
+| `controller`          | 引擎的 `CharacterController`；元素不在文档里时为 `null` |
+
+元素不在文档里时，这些方法什么都不做。
+
+## 用 JavaScript 切换状态
+
+每个属性同时也是驼峰命名的属性，所以 `el.state = 'happy'` 和 `el.setAttribute('state', 'happy')` 等价。正在运行的角色会被就地更新，弹簧状态也会保留，所以状态切换看起来是一次反应，而不是重新开始。
+
+```html
+<aora-bot id="bot" character="luna" size="120"></aora-bot>
+<button id="ask">提问</button>
+
+<script type="module">
+  const bot = document.querySelector('#bot');
+
+  document.querySelector('#ask').addEventListener('click', async () => {
+    bot.state = 'thinking';
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    bot.state = 'happy';
+    bot.bounce();
+  });
+</script>
+```
+
+没有对应属性的选项，例如 `followTarget` 或 `hud`，调用控制器的 `update`：
+
+```js
+bot.controller.update({ hud: { kind: 'progress', value: 0.4 } });
+```
+
+## 不用自定义元素
+
+如果不想注册自定义元素，`@aora-bot/engine` 以函数的形式提供同一个角色，`@aora-bot/element` 只是它外面薄薄的一层。
+
+```ts
+import { createCharacter } from '@aora-bot/engine';
+
+const host = document.querySelector('#avatar')!;
+const character = createCharacter(host, { shape: 'mochi', state: 'happy', seed: 'mochi:blue' });
+
+character.update({ state: 'thinking' });
+character.spin(2);
+character.destroy();
+```
+
+`createCharacter` 把一个 SVG 挂进宿主并返回控制器；移除宿主时记得调用 `destroy()`。在宿主上设置 `--aora-fg` 自定义属性，或传入 `ink`，墨色才会生效；否则角色用周围的文字颜色。其余内容见[引擎 README](https://github.com/sam70361/aora-bot/tree/main/packages/engine)。
+
+## 接下来
+
+- [主题](/guide/theming)——画出角色的变量
+- [角色阵容](/design/cast)——每一个有名字的角色
+- [状态](/design/states)——角色能做的所有事

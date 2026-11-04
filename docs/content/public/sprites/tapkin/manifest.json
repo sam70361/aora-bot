@@ -1,0 +1,36 @@
+{
+  "kind": "sprite-mate",
+  "formatVersion": 1,
+  "id": "tapkin",
+  "name": { "zh": "塔皮", "en": "Tapkin" },
+  "frameSize": [320, 320],
+  "fps": 1,
+  "anchor": [0.5, 0.94],
+  "license": "Aora Bot License",
+  "provenance": {
+    "license": "Aora Bot License",
+    "generator": "Original character (cream mochi hamster, #916dff collar) generated from a text prompt on a solid chroma background, chroma-keyed, sliced from a 4x3 grid into 12 frames and contain-fit to 320x320.",
+    "basedOn": "An original character; no third-party assets used.",
+    "engine": null,
+    "created": "2026-08-26T00:00:00.000Z"
+  },
+  "frames": {
+    "00": ["00.png"],
+    "02": ["02.png"],
+    "10": ["10.png"],
+    "12": ["12.png"],
+    "13": ["13.png"],
+    "14": ["14.png"],
+    "15": ["15.png"],
+    "16": ["16.png"],
+    "17": ["17.png"],
+    "21": ["21.png"],
+    "30": ["30.png"],
+    "33": ["33.png"]
+  },
+  "fallback": {
+    "03": "13",
+    "11": "30",
+    "20": "30"
+  }
+}

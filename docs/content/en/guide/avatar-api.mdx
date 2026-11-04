@@ -1,0 +1,66 @@
+# Avatar API
+
+A free endpoint that turns any string into a character. Put the URL in an `<img>` and you get a deterministic Aora Bot avatar: the same id always returns the same character, with nothing to install, store or sign up for.
+
+## Use it
+
+```html
+<img src="https://aora-bot.vercel.app/avatar/alice.svg" width="64" height="64" alt="alice" />
+```
+
+In Markdown, which works in a README, an issue or a comment on any host that allows remote images:
+
+```md
+![alice](https://aora-bot.vercel.app/avatar/alice.svg)
+```
+
+The id is any URL-safe string up to 128 characters: a username, an email hash, a database key. The `.svg` suffix is optional.
+
+## Parameters
+
+Every parameter is optional and goes in the query string.
+
+| Parameter | Accepts                                                                | Default      | Effect                                                              |
+| --------- | ---------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------- |
+| `style`   | `vector`, `pixel`, `kaomoji`                                           | `vector`     | The [style series](/design/styles/vector) the character is drawn in |
+| `variant` | A variant of the chosen style, listed below                            | style's own  | Paint variant within the style                                      |
+| `state`   | Any [state](/design/states), such as `happy`, `thinking` or `sleeping` | resting face | The face and pose the character holds                               |
+| `size`    | An integer from `16` to `1024`                                         | `128`        | Width and height of the SVG in pixels; other values are clamped     |
+
+Variants by style:
+
+- `vector`: `solid` (default), `outline`, `glass`, `sticker`, `paper`, `soft`, `riso`
+- `pixel`: `crisp` (default), `dot`, `block`
+- `kaomoji`: `plain` (default), `bubble`
+
+```text
+https://aora-bot.vercel.app/avatar/alice.svg?style=pixel&variant=block&size=96
+https://aora-bot.vercel.app/avatar/alice.svg?state=happy
+```
+
+A value outside these lists, such as `style=oil` or `size=big`, returns HTTP 400 with a one-line plain-text reason. Query parameters the endpoint does not know are ignored. The background is transparent.
+
+## Which character you get
+
+If the id is exactly a [cast](/design/cast) id, you get that character: `/avatar/luna.svg` is Luna. Any other id is hashed to one of the 46 cast members, so the choice is stable and spreads evenly. Because the cast has 46 members, two different ids can land on the same character; treat the avatar as a friendly default, not as a unique identity.
+
+The result is fixed for a given engine version. A release that redraws a character or changes the cast can change what an id looks like.
+
+## Caching and embedding
+
+Responses are `image/svg+xml` with `Cache-Control: public, max-age=86400, s-maxage=31536000, stale-while-revalidate=604800`, so a browser keeps an avatar for a day and the edge for a year. The endpoint sends `Access-Control-Allow-Origin: *`, so you can also `fetch` it from any origin. The SVG is standalone: no script, no external references.
+
+Inside an `<img>` the SVG cannot see your page, so the ink of some characters follows the viewer's system light or dark setting rather than your site's theme.
+
+## In an app, render locally
+
+For a product, render avatars yourself rather than calling an endpoint on every page view. The server-safe entry needs no DOM and no network:
+
+```ts
+import { castMember, renderStaticSvg } from '@aora-bot/engine/static';
+
+const luna = castMember('luna')!;
+const svg = renderStaticSvg({ shape: luna.shape, color: luna.color, state: 'happy', sizePx: 64 });
+```
+
+`renderAvatarDataUrl(key)` does the same for an arbitrary key in one line. It picks from the engine's own pool, so it does not return the characters this endpoint picks for the same id. See [Server rendering](/guide/server-rendering) for the details.

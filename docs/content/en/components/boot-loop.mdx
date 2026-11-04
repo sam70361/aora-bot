@@ -1,0 +1,80 @@
+import { API } from '@theme';
+
+# BootLoop
+
+Something is starting up and nobody knows how long it will take.
+
+> Part of `@aora-bot/surfaces`, not `@aora-bot/react`: `pnpm add @aora-bot/surfaces @aora-bot/react`, and import `@aora-bot/surfaces/styles.css` after the React stylesheet.
+
+```tsx preview
+import { useState } from 'react';
+import { BootLoop } from '@aora-bot/surfaces';
+
+export default function Demo() {
+  const [cycles, setCycles] = useState(0);
+  return (
+    <div className="site-demo site-demo--column">
+      <BootLoop
+        title="Starting the workspace"
+        body={cycles >= 3 ? 'This is taking longer than usual.' : 'Bringing everything online.'}
+        durationMs={1800}
+        onCycle={setCycles}
+      />
+      <span className="site-demo__label">cycles: {cycles}</span>
+    </div>
+  );
+}
+```
+
+## Activity, not progress
+
+An indeterminate wait is the one case where a progress bar lies, so this scene shows activity instead: the character alternates between `working` and `thinking` — under the hood a whirl belt swapping for three travelling beads — while a scanline crosses the screen behind it. `durationMs` is the time on each state; the pair makes one cycle.
+
+`onCycle` exists so the host can escalate. Two cycles is a slow start; twelve is a problem worth saying something about, and only the host knows which message that is. The demo above changes its copy after three.
+
+`inFront` puts the character in front of the screen rather than behind it, for a layout where the bezel is scenery rather than the thing booting.
+
+## LoadingMark
+
+A placeholder in the shape of the character that is coming.
+
+```tsx preview
+import { useEffect, useState } from 'react';
+import { LoadingMark } from '@aora-bot/surfaces';
+
+export default function Demo() {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    const timer = setInterval(() => setReady((r) => !r), 2200);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="site-demo">
+      {(['hex', 'cloud', 'star'] as const).map((shape) => (
+        <div className="site-demo__cell" key={shape}>
+          <LoadingMark shape={shape} color="violet" ready={ready} sizePx={48} />
+          <span className="site-demo__label">{ready ? 'ready' : 'loading'}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+A grey circle where a hexagon will land is a layout shift waiting to happen, and a spinner in an avatar slot is a second kind of motion beside whatever the page is already doing. This is the silhouette itself — the same shape generator, as a CSS mask — with a shimmer over it, so the placeholder and the character occupy the identical outline and the swap on `ready` is a cross-fade rather than a replacement.
+
+Both layers stay mounted through the fade. Unmounting the placeholder on `ready` would show the character's first frame against nothing for a frame, which is the flicker this exists to avoid.
+
+## API
+
+<API component="BootLoop" />
+
+### LoadingMark
+
+<API component="LoadingMark" />
+
+## Next
+
+- [Boot and loading](/scenarios/boot-loading) — two different waits
+- [Belts and particles](/internals/belts) — how belt states are drawn

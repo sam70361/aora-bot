@@ -1,0 +1,337 @@
+{
+  "overview.group.core": { "en": "Core", "zh": "核心" },
+  "overview.group.avatar": { "en": "Avatars", "zh": "头像" },
+  "overview.group.activity": { "en": "Activity and effects", "zh": "活动与特效" },
+  "overview.group.agent": { "en": "Agent", "zh": "智能体" },
+  "overview.group.other": { "en": "Other", "zh": "其他" },
+  "overview.characterMark": {
+    "en": "A single animated character. The component everything else is built on.",
+    "zh": "单个动画角色。其余组件都建立在它之上。"
+  },
+  "overview.characterMarkMirror": {
+    "en": "Draws a running character again elsewhere for almost nothing.",
+    "zh": "几乎零成本地把正在运行的角色再画一遍。"
+  },
+  "overview.markStage": {
+    "en": "Shares one animation between every character of the same appearance.",
+    "zh": "让外观相同的角色共享同一份动画。"
+  },
+  "overview.agentAvatar": {
+    "en": "Picture, group cluster or character, chosen automatically.",
+    "zh": "照片、群组簇或角色，自动选择其一。"
+  },
+  "overview.avatarStack": {
+    "en": "Overlapping group members, each punched out of the one behind.",
+    "zh": "交叠的群组成员，每一个都从后方抠出轮廓。"
+  },
+  "overview.unreadBadge": {
+    "en": "Counters and presence dots that sit on an avatar.",
+    "zh": "叠在头像上的计数与在线状态点。"
+  },
+  "overview.characterPicker": {
+    "en": "Shape and ink chooser, with a selection ring in the shape itself.",
+    "zh": "形状与墨色选择器，选中环跟随形状本身。"
+  },
+  "overview.activityMark": {
+    "en": "What an agent is doing, as a character and a label from one source.",
+    "zh": "角色与文案来自同一数据源，表示智能体正在做什么。"
+  },
+  "overview.activityTicker": {
+    "en": "Crossfading single line that cannot change the row height.",
+    "zh": "交叉淡入的单行文字，不会把行高撑乱。"
+  },
+  "overview.confettiLayer": {
+    "en": "Celebration particles with no character attached.",
+    "zh": "独立的庆祝粒子，不依附任何角色。"
+  },
+  "overview.localeProvider": {
+    "en": "Language for every component below it.",
+    "zh": "为下方所有组件提供语言。"
+  },
+  "overview.agentState": {
+    "en": "One arbiter for a tree of characters: sessions, priority, dwell.",
+    "zh": "给一棵角色树共用一个仲裁器：会话、优先级、最短驻留。"
+  },
+  "overview.idleSleep": {
+    "en": "Let an idle character grow drowsy, then fall asleep.",
+    "zh": "空闲久了先困倦，再睡着。"
+  },
+  "overview.spriteMark": {
+    "en": "A painted sprite sheet that speaks the same protocol as the vectors.",
+    "zh": "手绘精灵图，讲和矢量角色同一套协议。"
+  },
+  "overview.group.hud": { "en": "HUD", "zh": "HUD" },
+  "overview.group.editor": { "en": "Editing and templates", "zh": "编辑与模板" },
+  "overview.group.scenes": { "en": "Scenes", "zh": "场景" },
+  "overview.hudPlate": {
+    "en": "A caption plate around a character wearing a dial: title, value, unit.",
+    "zh": "围绕带表盘角色的说明底盘：标题、数值、单位。"
+  },
+  "overview.agentHud": {
+    "en": "The arbiter's state and dial for one agent, on a plate.",
+    "zh": "把一个智能体的仲裁状态和表盘放到底盘上。"
+  },
+  "overview.markCommands": {
+    "en": "Hold facts and states on a mark from outside the tree, with priority and TTL.",
+    "zh": "从树外给角色挂上事实与状态，带优先级和时限。"
+  },
+  "overview.workingBadge": {
+    "en": "A small spinner badge for an avatar whose agent is busy.",
+    "zh": "智能体忙碌时叠在头像上的小转圈徽标。"
+  },
+  "overview.avatarEditor": {
+    "en": "Character, generated image or upload with crop, behind one dialog.",
+    "zh": "角色、生成图或上传裁切，收在一个对话框里。"
+  },
+  "overview.templateDialog": {
+    "en": "Name, instructions and visibility for an agent template, with a share card.",
+    "zh": "智能体模板的名称、指令与可见性，附分享卡片。"
+  },
+  "overview.usePublishMark": {
+    "en": "The character's arc through saving, published and celebrated.",
+    "zh": "角色在保存中、已发布、庆祝之间的状态弧线。"
+  },
+  "overview.occupancyList": {
+    "en": "Which agents hold which shared resource, one row per resource.",
+    "zh": "哪些智能体占用了哪些共享资源，一行一个。"
+  },
+  "overview.agentCharacterPicker": {
+    "en": "A picker that stages the choice until it is confirmed.",
+    "zh": "先暂存、确认后才生效的角色选择器。"
+  },
+  "overview.compactCharacterPicker": {
+    "en": "The picker folded into a row for tight spaces.",
+    "zh": "为狭小空间折成一行的选择器。"
+  },
+  "overview.restrictedScene": {
+    "en": "A blocked, offline or unauthorised state, told by a character in a bezel.",
+    "zh": "受限、离线或未授权状态，由边框里的角色来讲。"
+  },
+  "overview.bootLoop": {
+    "en": "A start-up sequence and a placeholder mark for loading rows.",
+    "zh": "启动序列，以及加载行用的占位角色。"
+  },
+  "overview.castStage": {
+    "en": "Several characters choreographed through a scripted scene.",
+    "zh": "多个角色按脚本编排的一场戏。"
+  },
+  "overview.walkthrough": {
+    "en": "Onboarding surfaces: desktop frame, job bubbles, cards, hand-off, composer.",
+    "zh": "引导页组件：桌面框、任务气泡、卡片、交接、输入框。"
+  },
+  "pg.faceStyle": { "en": "Face style", "zh": "脸型" },
+  "pg.state": { "en": "State", "zh": "状态" },
+  "pg.variant": { "en": "Variant", "zh": "变体" },
+  "pg.noParams": { "en": "This variant has no parameters.", "zh": "这个变体没有参数。" },
+  "graph.aria": {
+    "en": "Component layering, engine at the top, product surfaces at the bottom",
+    "zh": "组件分层图，引擎在上，产品级组件在下"
+  },
+  "graph.engine": { "en": "Engine", "zh": "引擎" },
+  "graph.engine.note": {
+    "en": "Shapes, faces, springs and static SVG. No React, no DOM required.",
+    "zh": "形状、面部、弹簧与静态 SVG。不含 React，也不要求 DOM。"
+  },
+  "graph.core": { "en": "Core", "zh": "核心" },
+  "graph.core.note": {
+    "en": "Mounts one engine per character, or mirrors one that is already running.",
+    "zh": "为每个角色挂载一个引擎，或镜像一个已在运行的引擎。"
+  },
+  "graph.agent": { "en": "Agent", "zh": "智能体" },
+  "graph.agent.note": {
+    "en": "Protocol, arbitration and sprite playback. Speaks two-digit ids, not state names.",
+    "zh": "协议、仲裁与精灵回放。讲的是两位数编号，而不是状态名。"
+  },
+  "graph.surface": { "en": "Surfaces", "zh": "界面组件" },
+  "graph.surface.note": {
+    "en": "Product-facing pieces composed from the core. Each card names what it is built on.",
+    "zh": "由核心组合出的面向产品的组件。每张卡片标注了它建立在什么之上。"
+  },
+  "graph.locale": {
+    "en": "wraps any of these to set their language.",
+    "zh": "包住其中任何一个，即可设置它们的语言。"
+  },
+  "matrix.state": { "en": "State", "zh": "状态" },
+  "matrix.eyes": { "en": "Eyes", "zh": "眼睛" },
+  "matrix.mouth": { "en": "Mouth", "zh": "嘴" },
+  "matrix.effect": { "en": "Effect", "zh": "特效" },
+  "matrix.id": { "en": "Id", "zh": "编号" },
+  "matrix.hud": { "en": "HUD", "zh": "HUD" },
+  "protocol.id": { "en": "Id", "zh": "编号" },
+  "protocol.name": { "en": "Name", "zh": "名称" },
+  "protocol.state": { "en": "State", "zh": "状态" },
+  "protocol.kind": { "en": "Kind", "zh": "类型" },
+  "protocol.event": { "en": "event", "zh": "事件" },
+  "protocol.condition": { "en": "condition", "zh": "条件" },
+  "protocol.fallback": { "en": "segment fallback", "zh": "分段回退" },
+  "cast.tour": { "en": "Tour", "zh": "巡演" },
+  "cast.stop": { "en": "Stop", "zh": "停止" },
+  "cast.copy": { "en": "Copy preset", "zh": "复制预设" },
+  "cast.copied": { "en": "Copied", "zh": "已复制" },
+  "scenarios.chatStream.title": { "en": "Chat stream", "zh": "对话流" },
+  "scenarios.chatStream.desc": {
+    "en": "Show what the agent is doing right now, with words and a face that never disagree.",
+    "zh": "让用户一眼看出智能体此刻在做什么，文字和脸说的是同一件事。"
+  },
+  "scenarios.agentRoster.title": { "en": "Agent roster", "zh": "智能体名册" },
+  "scenarios.agentRoster.desc": {
+    "en": "Twenty agents, each with a face of its own, for the cost of one engine.",
+    "zh": "二十个智能体各有一张脸，谁在忙一眼可见，只花一个引擎。"
+  },
+  "scenarios.characterSetup.title": { "en": "Character setup", "zh": "角色设置" },
+  "scenarios.characterSetup.desc": {
+    "en": "Let people choose how their agent looks and see every choice as it is made.",
+    "zh": "让用户挑选智能体的外观，每一次选择当下就看得见。"
+  },
+  "scenarios.onboarding.title": { "en": "Onboarding", "zh": "新手引导" },
+  "scenarios.onboarding.desc": {
+    "en": "Introduce the product on the first run and end with an agent of the user's own.",
+    "zh": "首次运行时介绍产品，最后让用户拿到属于自己的智能体。"
+  },
+  "scenarios.desktopCompanion.title": { "en": "Desktop companion", "zh": "桌面伙伴" },
+  "scenarios.desktopCompanion.desc": {
+    "en": "Live in a corner of the screen for hours without turning into noise.",
+    "zh": "在屏幕角落待上几个小时，活着却不吵闹。"
+  },
+  "scenarios.progressHud.title": { "en": "Progress HUD", "zh": "进度 HUD" },
+  "scenarios.progressHud.desc": {
+    "en": "On a long job, the body says what is happening and the ring says how far along it is.",
+    "zh": "长任务里，身体说正在做什么，外环说进行到哪一步。"
+  },
+  "scenarios.voice.title": { "en": "Voice", "zh": "语音" },
+  "scenarios.voice.desc": {
+    "en": "Prove the microphone is open and show who is holding the channel.",
+    "zh": "证明麦克风正开着，并显示谁占着频道。"
+  },
+  "scenarios.restricted.title": { "en": "Refusals and limits", "zh": "拒绝与限制" },
+  "scenarios.restricted.desc": {
+    "en": "Say no — a limit, a block, an outage — without looking broken.",
+    "zh": "说「不」——限额、封锁、宕机——却不像坏掉了。"
+  },
+  "scenarios.bootLoading.title": { "en": "Boot and loading", "zh": "启动与加载" },
+  "scenarios.bootLoading.desc": {
+    "en": "Wait honestly: a record about to arrive, or a start-up of unknown length.",
+    "zh": "诚实地等待：即将到达的记录，或时长未知的启动。"
+  },
+  "scenarios.celebration.title": { "en": "Celebration", "zh": "庆祝" },
+  "scenarios.celebration.desc": {
+    "en": "Celebrate once when good news lands, then put the celebration away.",
+    "zh": "好消息落地时庆祝一次，然后自己收起来。"
+  },
+  "api.prop": { "en": "Prop", "zh": "属性" },
+  "api.type": { "en": "Type", "zh": "类型" },
+  "api.default": { "en": "Default", "zh": "默认值" },
+  "api.description": { "en": "Description", "zh": "说明" },
+  "api.export": { "en": "Export", "zh": "导出" },
+  "api.kind": { "en": "Kind", "zh": "种类" },
+  "api.package": { "en": "Package", "zh": "包" },
+  "api.required": { "en": "Required", "zh": "必填" },
+  "api.deprecated": { "en": "Deprecated.", "zh": "已弃用。" },
+  "api.noProps": { "en": "This component takes no props.", "zh": "这个组件没有属性。" },
+  "api.missing": { "en": "No API metadata for", "zh": "没有找到 API 元数据：" },
+  "tokens.surfaces": { "en": "Surfaces", "zh": "表面" },
+  "tokens.text": { "en": "Text", "zh": "文字" },
+  "tokens.lines": { "en": "Lines and fills", "zh": "线条与填充" },
+  "tokens.accent": { "en": "Accent", "zh": "强调色" },
+  "tokens.radii": { "en": "Radii", "zh": "圆角" },
+  "tokens.copied": { "en": "Copied", "zh": "已复制" },
+  "home.title.lead": { "en": "Give your interface", "zh": "让界面" },
+  "home.title.em": { "en": "a face", "zh": "有表情" },
+  "home.tagline": {
+    "en": "One line of code gives your AI, statuses and avatars a character that moves.",
+    "zh": "一行代码，给 AI、状态和头像装上会动的角色。"
+  },
+  "home.poke": { "en": "Poke the character", "zh": "逗一逗角色" },
+  "home.start": { "en": "Get started", "zh": "开始使用" },
+  "home.random": { "en": "Random combination", "zh": "随机组合" },
+  "home.copyCode": { "en": "Copy code", "zh": "复制代码" },
+  "home.copied": { "en": "Copied", "zh": "已复制" },
+  "home.share": { "en": "Copy share link", "zh": "复制分享链接" },
+  "home.rail.style": { "en": "Style", "zh": "画风" },
+  "home.rail.color": { "en": "Colour", "zh": "颜色" },
+  "home.rail.shape": { "en": "Shape", "zh": "形状" },
+  "home.rail.state": { "en": "Expression", "zh": "表情" },
+  "home.rail.face": { "en": "Face", "zh": "脸型" },
+  "home.tune": { "en": "Style parameters", "zh": "画风参数" },
+  "home.tune.reset": { "en": "Reset", "zh": "恢复默认" },
+  "home.tune.none": { "en": "This style has nothing to tune.", "zh": "这个画风没有可调的参数。" },
+  "home.prevShape": { "en": "Previous shape", "zh": "上一个形状" },
+  "home.nextShape": { "en": "Next shape", "zh": "下一个形状" },
+  "sponsor.title": { "en": "Sponsor", "zh": "打赏作者" },
+  "sponsor.lead": {
+    "en": "If Aora Bot gave your interface a little more expression, you are welcome to buy the author a coffee.",
+    "zh": "如果 Aora Bot 让你的界面多了一点表情，欢迎请作者喝杯咖啡。"
+  },
+  "sponsor.note": {
+    "en": "Aora Bot is a project I build and maintain on my own, in my spare time. There is no team and no funding behind it, only the love of making it: every character, every style and every page of the docs is polished by hand. I will keep creating, keep the source public, keep it free for individuals and small teams, and keep it updated, and every bit of support turns into more characters, more styles and better docs.",
+    "zh": "Aora Bot 是我在业余时间独立维护的项目。没有团队，也没有融资，支撑它的是热爱：每一个角色、每一种画风、每一页文档，都是一点一点打磨出来的。我会继续坚持创作、公开源码，让个人和小团队一直免费使用，并长期更新；你的每一份打赏，都会变成更多的角色、更多的画风和更好的文档。"
+  },
+  "sponsor.wechatAlt": { "en": "WeChat Pay QR code", "zh": "微信支付收款码" },
+  "sponsor.alipayAlt": { "en": "Alipay QR code", "zh": "支付宝收款码" },
+  "sponsor.contactTitle": { "en": "Add me on WeChat", "zh": "加我微信交流" },
+  "sponsor.contactNote": {
+    "en": "Questions, collaboration or suggestions welcome.",
+    "zh": "使用问题、合作或建议都欢迎。"
+  },
+  "sponsor.contactAlt": { "en": "Personal WeChat QR code", "zh": "个人微信二维码" },
+  "sponsor.qqTitle": { "en": "Join the QQ group", "zh": "加入 QQ 交流群" },
+  "sponsor.qqNote": {
+    "en": "Group 626080597. Share what you make and report issues.",
+    "zh": "群号 626080597，分享作品、反馈问题。"
+  },
+  "sponsor.qqAlt": { "en": "QQ group QR code", "zh": "QQ 交流群二维码" },
+  "sponsor.soon": { "en": "Coming soon", "zh": "即将开放" },
+  "sponsor.thanks": {
+    "en": "I see every bit of support, and I am grateful for each one. Thank you.",
+    "zh": "每一份支持我都会认真看到，谢谢你。"
+  },
+  "sponsor.partnerTitle": { "en": "Become a sponsor", "zh": "成为赞助商" },
+  "sponsor.partnerLead": {
+    "en": "Aora Bot is built for front-end, AI and hardware developers, and designers use it for avatars and mascots. A sponsor’s logo sits on this page and in the project README, in front of every developer who comes to pick a character.",
+    "zh": "Aora Bot 面向前端、AI 与硬件开发者，也被设计师用来制作头像和吉祥物。赞助商的标志会展示在本页和项目 README 中，长期出现在每一位来挑角色的开发者面前。"
+  },
+  "sponsor.audienceLabel": { "en": "Who reads it", "zh": "主要受众" },
+  "sponsor.audience.frontend": { "en": "React and front-end developers", "zh": "React 与前端开发者" },
+  "sponsor.audience.agent": { "en": "AI agent builders", "zh": "AI 智能体开发者" },
+  "sponsor.audience.maker": { "en": "Hardware makers", "zh": "硬件创客" },
+  "sponsor.audience.design": { "en": "Designers and indie developers", "zh": "设计师与独立开发者" },
+  "sponsor.seatLead": { "en": "Lead sponsor", "zh": "首席赞助" },
+  "sponsor.seatTier": { "en": "Sponsor", "zh": "赞助商" },
+  "sponsor.seat": { "en": "Open seat", "zh": "虚位以待" },
+  "sponsor.fitsTitle": { "en": "Ideal sponsors", "zh": "理想赞助伙伴" },
+  "sponsor.fit.board.title": { "en": "Dev boards and smart hardware", "zh": "开发板与智能硬件" },
+  "sponsor.fit.board.text": {
+    "en": "Makers and hardware developers come here to put a face on small screens and desk devices. Your board is there at the first step of their smart toy or desk companion, right when they choose what to build on.",
+    "zh": "这里聚集着想给小屏幕和桌面设备加上表情的创客与硬件开发者。你的开发板会出现在他们动手做智能玩具、桌面伙伴的第一步，正是选型的时刻。"
+  },
+  "sponsor.fit.agent.title": { "en": "AI models and agent platforms", "zh": "AI 模型与智能体平台" },
+  "sponsor.fit.agent.text": {
+    "en": "The core audience builds interfaces for AI assistants and agents; the emotion protocol and the Claude Code and Cursor adapters are made for them. Showing up here puts you directly in front of the developers you want to reach.",
+    "zh": "核心受众是正在给 AI 助手和智能体做界面的开发者，情绪协议与 Claude Code、Cursor 适配器正是为他们准备的。在这里展示，就是直接站在你的目标开发者面前。"
+  },
+  "sponsor.fit.cloud.title": { "en": "Cloud and hosting platforms", "zh": "云服务与部署平台" },
+  "sponsor.fit.cloud.text": {
+    "en": "Readers are mostly React and front-end developers, from side projects to team products, and every one of them ships somewhere. Your platform is seen before they choose where to host.",
+    "zh": "读者以 React 与前端开发者为主，从个人项目到团队产品都有，做完都要部署上线。你的平台能在他们选择托管与基础设施之前被看见。"
+  },
+  "sponsor.fit.devtools.title": { "en": "Developer tools and IDEs", "zh": "开发者工具与 IDE" },
+  "sponsor.fit.devtools.text": {
+    "en": "The audience writes code every day and is quick to try new tools. A logo here and in the README is seen often, and by the people who decide what their team uses.",
+    "zh": "受众每天写代码、挑工具，乐于尝试新东西。标志出现在本页和 README 中，会被高频地看到，看到它的正是决定团队用什么工具的人。"
+  },
+  "sponsor.fit.education.title": { "en": "Coding education and courses", "zh": "编程教育与课程" },
+  "sponsor.fit.education.text": {
+    "en": "One line of code brings a character to life, which also draws developers who are just learning front end and AI. Courses and learning platforms can build recognition while they are starting out.",
+    "zh": "一行代码就能让角色动起来，也吸引着正在学习前端与 AI 的新人开发者。课程与教育平台可以在他们入门的阶段建立品牌认知。"
+  },
+  "sponsor.fit.design.title": { "en": "Design tools and asset platforms", "zh": "设计工具与素材平台" },
+  "sponsor.fit.design.text": {
+    "en": "Designers and indie developers come here for avatars, mascots and expressions. Design tools, fonts and asset marketplaces are shown right at the start of their work.",
+    "zh": "设计师和独立开发者来这里挑选头像、吉祥物与表情。设计工具、字体与素材平台可以在他们创作的起点获得展示。"
+  },
+  "sponsor.partnerAction": { "en": "Talk about sponsoring", "zh": "洽谈赞助" },
+  "sponsor.partnerCta": {
+    "en": "Add me on WeChat above and mention sponsorship.",
+    "zh": "添加上方微信，备注「赞助」即可。"
+  }
+}

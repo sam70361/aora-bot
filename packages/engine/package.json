@@ -1,0 +1,66 @@
+{
+  "name": "@aora-bot/engine",
+  "version": "0.1.1",
+  "description": "Procedural character engine: shape generators, face fitting, pose projection, spring state machine, belts, particles, emotion protocol",
+  "license": "SEE LICENSE IN LICENSE",
+  "homepage": "https://aora-bot.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sam70361/aora-bot.git",
+    "directory": "packages/engine"
+  },
+  "bugs": "https://github.com/sam70361/aora-bot/issues",
+  "keywords": [
+    "character",
+    "avatar",
+    "procedural",
+    "svg",
+    "animation",
+    "spring",
+    "generative",
+    "mascot"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./static": {
+      "types": "./dist/static.d.ts",
+      "import": "./dist/static.js"
+    },
+    "./agent": {
+      "types": "./dist/agent.d.ts",
+      "import": "./dist/agent.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "rslib build",
+    "dev": "rslib build --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@rslib/core": "^0.18.0",
+    "happy-dom": "^20.14.5",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}

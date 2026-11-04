@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Aora Bot agent relay</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font:
+          15px/1.5 ui-sans-serif,
+          system-ui,
+          sans-serif;
+      }
+      body {
+        margin: 2rem auto;
+        max-width: 28rem;
+        display: grid;
+        justify-items: center;
+        gap: 0.75rem;
+      }
+      img {
+        width: 160px;
+        height: 160px;
+      }
+      code {
+        font-size: 0.9em;
+      }
+    </style>
+  </head>
+  <body>
+    <img id="face" alt="" width="160" height="160" src="/preview.svg" />
+    <p id="caption">idle</p>
+    <p>POST <code>{"session_id":"s","aoraBotId":"32"}</code> to <code>/state</code>.</p>
+    <script>
+      const face = document.getElementById('face');
+      const caption = document.getElementById('caption');
+      const source = new EventSource('/events');
+      source.onmessage = (event) => {
+        const data = JSON.parse(event.data) ?? {};
+        caption.textContent = [data.state, data.tips].filter(Boolean).join(' — ');
+        face.src = '/preview.svg?' + Date.now();
+      };
+    </script>
+  </body>
+</html>

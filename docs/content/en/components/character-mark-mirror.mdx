@@ -1,0 +1,49 @@
+import { API } from '@theme';
+
+# CharacterMarkMirror
+
+Draws an already-running character again, somewhere else.
+
+```tsx preview
+import { CharacterMark, CharacterMarkMirror } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      <div className="site-demo__cell">
+        <CharacterMark sourceId="demo-source" shape="hex" color="blue" state="orbit" sizePx={92} />
+        <span className="site-demo__label">source</span>
+      </div>
+      {(['red', 'green', 'violet', 'orange'] as const).map((color) => (
+        <div className="site-demo__cell" key={color}>
+          <CharacterMarkMirror sourceId="demo-source" color={color} sizePx={92} />
+          <span className="site-demo__label">mirror</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+One engine, five characters, five inks. The mirrors are `<use href>` elements pointing at the source's root group.
+
+## Ink without a second animation
+
+Ink is an inherited CSS custom property, so it resolves where the `<use>` element sits rather than where the source was defined. Each mirror sets its own `--aora-fg` and the shared geometry picks it up.
+
+Size works the same way — it is set on the wrapper, not inside the SVG.
+
+## Ids must be unique per page
+
+`sourceId` becomes a DOM id, and `<use href="#id">` resolves to the first match in the document. Two sources with the same id on one page means every mirror points at the first one.
+
+Prefer [`MarkStageProvider`](/components/mark-stage), which derives ids from `useId` and cannot collide — even with several providers on one page, which is exactly what a documentation site with several examples produces.
+
+## API
+
+<API component="CharacterMarkMirror" />
+
+## Next
+
+- [MarkStageProvider](/components/mark-stage) — share engines by appearance
+- [Performance](/guide/performance) — how to render hundreds of characters

@@ -1,0 +1,166 @@
+import { StateMatrix } from '@theme';
+
+# Voice
+
+A voice session, where the character is the proof that the microphone is open.
+
+## See it
+
+Push to talk. Holding the button opens the channel; the occupancy list shows who holds it; releasing hands the utterance to the agent, which composes and then answers. The composer underneath is the typed path to the same agent.
+
+```tsx preview
+import { useEffect, useState } from 'react';
+import { CharacterMark, MarkStageProvider, type CharacterState } from '@aora-bot/react';
+import { Composer, OccupancyList } from '@aora-bot/surfaces';
+
+const me = { id: 'you', name: 'You', shape: 'pebble', color: 'cyan' } as const;
+const agent = { id: 'echo', name: 'Echo', shape: 'pill', color: 'magenta' } as const;
+
+export default function Demo() {
+  const [phase, setPhase] = useState<'idle' | 'talking' | 'composing' | 'speaking'>('idle');
+
+  useEffect(() => {
+    if (phase === 'composing') {
+      const timer = setTimeout(() => setPhase('speaking'), 1600);
+      return () => clearTimeout(timer);
+    }
+    if (phase === 'speaking') {
+      const timer = setTimeout(() => setPhase('idle'), 2200);
+      return () => clearTimeout(timer);
+    }
+  }, [phase]);
+
+  const state: CharacterState =
+    phase === 'talking'
+      ? 'listening'
+      : phase === 'composing'
+        ? 'composing'
+        : phase === 'speaking'
+          ? 'sending'
+          : 'idle';
+  const hud =
+    phase === 'talking'
+      ? { kind: 'voice' as const, level: 0.7, mode: 'listening' as const }
+      : phase === 'speaking'
+        ? { kind: 'voice' as const, level: 0.8, mode: 'speaking' as const }
+        : null;
+
+  return (
+    <MarkStageProvider>
+      <div className="site-demo site-demo--column">
+        <div className="site-demo__row">
+          <CharacterMark shape={agent.shape} color={agent.color} state={state} hud={hud} sizePx={72} />
+          <div className="site-controls">
+            <button
+              className="site-btn"
+              style={{ touchAction: 'none' }}
+              onPointerDown={() => setPhase('talking')}
+              onPointerUp={() => setPhase('composing')}
+              onPointerCancel={() => setPhase('idle')}
+            >
+              {phase === 'talking' ? 'release to send' : 'hold to talk'}
+            </button>
+            <span className="site-demo__label">{phase}</span>
+          </div>
+        </div>
+        <OccupancyList
+          rows={[
+            { id: 'mic', label: 'Microphone', agents: phase === 'talking' ? [me] : [], state: 'dictating' },
+            {
+              id: 'speaker',
+              label: 'Speaker',
+              agents: phase === 'speaking' ? [agent] : [],
+              state: 'sending',
+            },
+          ]}
+        />
+        <Composer shape={agent.shape} color={agent.color} placeholder="…or type to Echo" />
+      </div>
+    </MarkStageProvider>
+  );
+}
+```
+
+The occupancy rows are `StagedMark`s, so a page with forty of them costs one engine per distinct state. An empty row renders "not in use" rather than a gap, because the question the list answers is whether anything is touching the resource right now, and silence is an answer.
+
+## When to use it
+
+A voice interface has one problem a text one does not: nothing on screen proves that the agent is hearing you. The character is that proof. It listens when the microphone opens, turns into a level meter while you speak, composes while the transcript is being answered, and shows who is holding the channel when several agents could be.
+
+## Components
+
+- [`CharacterMark`](/components/character-mark) — `state="dictating"` and a `voice` dial with the live level.
+- [`HudPlate`](/components/hud-plate) — the transcript or the mode as text.
+- [`OccupancyList`](/components/occupancy-list) and `OccupancyMark` — which agents are on the microphone, the speaker, the channel.
+- [`Composer`](/components/walkthrough) — the typed fallback; the character beside the field goes `listening` on focus and `composing` on a keystroke.
+
+## How the states move
+
+| From        | To          | When                                                                  |
+| ----------- | ----------- | --------------------------------------------------------------------- |
+| —           | `idle`      | the microphone is closed                                              |
+| `idle`      | `listening` | the microphone opens; the character nods now and then                 |
+| `listening` | `dictating` | speech is detected; the `wave` belt is the level meter                |
+| `dictating` | `composing` | the utterance ended and a reply is being written                      |
+| `composing` | `sending`   | the reply goes out — spoken, with the `voice` dial in `speaking` mode |
+| `sending`   | `idle`      | playback finished                                                     |
+
+`listening` is protocol id `35` and `dictating` is `46`. `listening` nods on impulses rather than a curve — velocity added to the vertical spring — which is what makes it read as attention rather than as an animation loop.
+
+## What each state looks like
+
+<StateMatrix states={['idle', 'listening', 'dictating', 'composing', 'sending']} />
+
+`dictating` hands its body to `wave`: four bars with a pseudo-random envelope, a level meter drawn as a character. In line-face mode `dictating`, `composing` and `sending` also pulse the mouth on two incommensurate sines, so it reads as speech rather than a metronome.
+
+## The voice dial
+
+`voice` is the dial. `level` is 0–1 from the host's audio meter; `bands` is how many bars; `mode` tells listening from speaking, and speaking bars move faster and taller. Each band wobbles on its own pair of sines — a meter where every bar moves together reads as a slider, not a voice.
+
+```tsx preview
+import { useState } from 'react';
+import { CharacterMark, HudPlate } from '@aora-bot/react';
+
+export default function Demo() {
+  const [level, setLevel] = useState(0.6);
+  const [mode, setMode] = useState<'listening' | 'speaking'>('listening');
+
+  return (
+    <div className="site-demo site-demo--stack">
+      <HudPlate title={mode} value={Math.round(level * 100)} unit="%" sizePx={88}>
+        <CharacterMark
+          shape="pill"
+          color="magenta"
+          state={mode === 'listening' ? 'dictating' : 'composing'}
+          hud={{ kind: 'voice', level, bands: 5, mode }}
+          sizePx={88}
+        />
+      </HudPlate>
+      <div className="site-controls">
+        <label className="site-field">
+          level
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.01}
+            value={level}
+            onChange={(event) => setLevel(Number(event.target.value))}
+          />
+        </label>
+        <button
+          className="site-btn"
+          onClick={() => setMode((m) => (m === 'listening' ? 'speaking' : 'listening'))}
+        >
+          {mode}
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+## Next
+
+- [OccupancyList](/components/occupancy-list) — who is speaking
+- [HudPlate](/components/hud-plate) — a figure beside the dial

@@ -1,0 +1,326 @@
+import { StyleParamsDemo } from '@theme';
+
+# Vector styles
+
+The `vector` series draws a character as smooth SVG paths. It has seven variants that differ in paint only: the geometry, the animation and the face are the same in all of them, so a new state or a new shape arrives in every variant at once.
+
+```tsx preview
+import { getStyle } from '@aora-bot/engine';
+import { CharacterMark } from '@aora-bot/react';
+
+const variants = getStyle('vector').variants;
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {variants.map((variant) => (
+        <div className="site-demo__cell" key={variant}>
+          <CharacterMark shape="mochi" color="blue" state="happy" sizePx={96} variant={variant} />
+          <span className="site-demo__label">{variant}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+| Variant   | Body                                                        | Colour of the `cute` face       | Parameters                               |
+| --------- | ----------------------------------------------------------- | ------------------------------- | ---------------------------------------- |
+| `solid`   | Flat fill of the ink                                        | White (`--aora-face`)           | —                                        |
+| `outline` | Stroked, with an 8% ink fill                                | The ink                         | `strokeWidth`                            |
+| `glass`   | A tinted body with a fine rim, lit at the top and the rim   | The ink                         | `strokeWidth`                            |
+| `sticker` | Filled, inside a white border and a shadow                  | The paper (`--aora-paper`)      | `stickerWidth`, `stickerShadow`          |
+| `paper`   | Filled, over a darker copy of itself                        | White                           | `paperOffset`, `paperAngle`, `paperTilt` |
+| `soft`    | Radial wash, a shadow on the ground, an optional gloss      | Dark brown (`--aora-face-soft`) | `softShadow`, `softGloss`                |
+| `riso`    | Two inks printed out of register, multiplied, with halftone | White                           | `risoOffset`, `risoHalftone`             |
+
+`solid`, `outline` and `glass` are described with the [`CharacterMark`](/components/character-mark) props. This page covers the other variants, and the one-colour line look that `outline` gives.
+
+## Sticker
+
+A sticker is a figure with a white border cut round it and a small soft shadow under it, as if it had been stuck onto the page. The border wraps the body and the notification badge as one silhouette, and it is drawn inside the body's transform, so it squashes, turns and fades with the body — through a bounce, a spin or a belt.
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  const surfaces = ['#fcfcfc', '#16161a', '#2b1a3d'];
+  return (
+    <div className="site-demo">
+      {surfaces.map((bg) => (
+        <div
+          key={bg}
+          style={{
+            padding: 18,
+            borderRadius: 16,
+            background: bg,
+            colorScheme: bg === '#fcfcfc' ? 'light' : 'dark',
+          }}
+        >
+          <CharacterMark shape="cloud" color="orange" state="happy" sizePx={96} variant="sticker" />
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+The paper does not follow the page. A sticker is a thing with its own edge, so on a dark page it stays light — that contrast is what lifts it off the surface. For the same reason its eyes are paper too, rather than holes that would show the page through. A host that wants a cream or a tinted edge sets `--aora-paper` on any ancestor:
+
+```css
+.card {
+  --aora-paper: #fff7e6;
+}
+```
+
+`stickerWidth` is how far the border reaches beyond the body, in shape-space units, so it scales with the character: a 24-pixel avatar gets a border about one pixel wide. `stickerShadow` turns the drop shadow off, which is what you want on a busy background or in a long list.
+
+```tsx preview
+import { renderStaticSvgDataUrl } from '@aora-bot/react';
+
+const cases = [
+  { label: 'stickerWidth 4', styleOptions: { stickerWidth: 4 } },
+  { label: 'default', styleOptions: {} },
+  { label: 'stickerWidth 20', styleOptions: { stickerWidth: 20 } },
+  { label: 'stickerShadow false', styleOptions: { stickerShadow: false } },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {cases.map(({ label, styleOptions }) => (
+        <div className="site-demo__cell" key={label}>
+          <img
+            alt=""
+            width={96}
+            height={96}
+            src={renderStaticSvgDataUrl({
+              shape: 'bell',
+              color: 'red',
+              state: 'happy',
+              variant: 'sticker',
+              styleOptions,
+            })}
+          />
+          <span className="site-demo__label">{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## Paper
+
+A paper cut-out lies on a darker copy of itself, offset down and to one side, with no blur: a hard shadow. `paperOffset` is the distance in shape-space units and `paperAngle` the direction in degrees, clockwise from the right — `90` is straight down.
+
+```tsx preview
+import { renderStaticSvgDataUrl } from '@aora-bot/react';
+
+const cases = [
+  { label: 'offset 4', styleOptions: { paperOffset: 4 } },
+  { label: 'default', styleOptions: {} },
+  { label: 'offset 16', styleOptions: { paperOffset: 16 } },
+  { label: 'angle 0°', styleOptions: { paperAngle: 0 } },
+  { label: 'angle 225°', styleOptions: { paperAngle: 225 } },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {cases.map(({ label, styleOptions }) => (
+        <div className="site-demo__cell" key={label}>
+          <img
+            alt=""
+            width={96}
+            height={96}
+            src={renderStaticSvgDataUrl({
+              shape: 'tofu',
+              color: 'green',
+              state: 'happy',
+              variant: 'paper',
+              styleOptions,
+            })}
+          />
+          <span className="site-demo__label">{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+Two decisions are worth knowing.
+
+- **The shade comes from the ink, not from a second colour.** The shadow is a copy of the body in the same paint with black laid over it at 32%, so it is the ink, darkened. That works whatever the ink is — the `--aora-fg` token, a flat colour, a gradient — which `color-mix()` on a computed colour would not do for the last.
+- **The direction does not turn with the body.** The offset is applied outside the body's transform. When the character spins the shadow squashes and rotates with it but keeps falling the same way, like a light that stays where it is.
+
+The figure itself stays upright. A slight tilt would be a pose, and poses belong to the simulation (`poseHome`), not to paint, so `paper` never changes where the face or the belt is.
+
+## Soft
+
+`soft` is a rounded toy: the flat body under a radial wash (light at the top left, dark at the bottom right) and a shadow on the ground that stays put when the body hops. The face is dark brown and the blush leans pink. A small gloss at the top left is off by default (`softGloss`), because on a shape whose face sits high it lands on an eye. The wash and the gloss are overlays on the body rather than a gradient computed from the ink, so they work on a token, a colour or a gradient ink. Parts such as ears take the wash too, so their shading matches where they sit on the figure.
+
+```tsx preview
+import { renderStaticSvgDataUrl } from '@aora-bot/react';
+
+const cases = [
+  { label: 'default', styleOptions: {} },
+  { label: 'softShadow false', styleOptions: { softShadow: false } },
+  { label: 'softGloss true', styleOptions: { softGloss: true } },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {cases.map(({ label, styleOptions }) => (
+        <div className="site-demo__cell" key={label}>
+          <img
+            alt=""
+            width={96}
+            height={96}
+            src={renderStaticSvgDataUrl({
+              shape: 'bunny',
+              color: 'pink',
+              state: 'happy',
+              variant: 'soft',
+              styleOptions,
+            })}
+          />
+          <span className="site-demo__label">{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## Riso
+
+`riso` imitates two-colour stencil printing: the body is printed in its own ink in place, multiplied over a copy in the second ink (`--aora-ink2`, pink by default and gold on a pink body) shifted a little to one side, with a halftone screen over the top. The edge where the two passes miss each other is the look of this variant. `risoOffset` is the misregistration in shape-space units, and `risoHalftone` switches the screen.
+
+```tsx preview
+import { renderStaticSvgDataUrl } from '@aora-bot/react';
+
+const cases = [
+  { label: 'offset 0', styleOptions: { risoOffset: 0 } },
+  { label: 'default', styleOptions: {} },
+  { label: 'offset 20', styleOptions: { risoOffset: 20 } },
+  { label: 'risoHalftone false', styleOptions: { risoHalftone: false } },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {cases.map(({ label, styleOptions }) => (
+        <div className="site-demo__cell" key={label}>
+          <img
+            alt=""
+            width={96}
+            height={96}
+            src={renderStaticSvgDataUrl({
+              shape: 'star',
+              color: 'blue',
+              state: 'happy',
+              variant: 'riso',
+              styleOptions,
+            })}
+          />
+          <span className="site-demo__label">{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## A single line
+
+The `outline` variant already is the single-line look. What decides whether it is one colour is its ink. With no `ink` the stroke, the eyes and the features use `--aora-fg`, and `CharacterMark` sets that to the palette colour — so the outline is blue, violet, whatever `color` says. To draw in the text colour instead, give it `currentColor`:
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+const surfaces = [
+  { bg: '#fcfcfc', fg: '#1f2937', scheme: 'light' },
+  { bg: '#16161a', fg: '#f4f4f5', scheme: 'dark' },
+  { bg: '#fde68a', fg: '#7c2d12', scheme: 'light' },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {surfaces.map(({ bg, fg, scheme }) => (
+        <div
+          key={bg}
+          style={{ padding: 18, borderRadius: 16, background: bg, color: fg, colorScheme: scheme }}
+        >
+          <CharacterMark
+            shape="bun"
+            state="happy"
+            face="line"
+            sizePx={96}
+            variant="outline"
+            ink={{ flat: 'currentColor' }}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+Everything in the character takes the ink: the outline, the eyes, the line face, the HUD dials and, for a flat ink, the belt's dots and rings. Nothing is tied to a palette entry, so the character sits in any theme without a colour of its own.
+
+From the engine:
+
+```ts
+createCharacter(host, { variant: 'outline', ink: { flat: 'currentColor' } });
+```
+
+A static render takes the same `ink`:
+
+```ts
+const svg = renderStaticSvg({ variant: 'outline', ink: { flat: 'currentColor' } });
+```
+
+Inline that markup in the page. Loaded through an `<img>`, an SVG has no surrounding text colour to inherit and `currentColor` becomes black.
+
+## Parameters
+
+Parameters belong to the series and every variant reads only its own. Out-of-range numbers are clamped and snapped to the step; a value of the wrong type falls back to the default; unknown keys are dropped.
+
+| Parameter       | Variant           | Default | Range       | Meaning                                        |
+| --------------- | ----------------- | ------- | ----------- | ---------------------------------------------- |
+| `strokeWidth`   | outline and glass | 10      | 4–28, by 1  | Line width, in shape-space units               |
+| `stickerWidth`  | sticker           | 12      | 4–20, by 1  | How far the border reaches beyond the body     |
+| `stickerShadow` | sticker           | `true`  | —           | Whether the sticker casts its soft shadow      |
+| `paperOffset`   | paper             | 9       | 0–20, by 1  | Distance of the hard shadow                    |
+| `paperAngle`    | paper             | 55      | 0–360, by 5 | Direction of the hard shadow, clockwise from → |
+| `paperTilt`     | paper             | −3      | −8–8, by 1  | Tilt of the whole cut-out, in degrees          |
+| `softShadow`    | soft              | `true`  | —           | Whether a shadow lies on the ground            |
+| `softGloss`     | soft              | `false` | —           | Whether a small gloss is drawn                 |
+| `risoOffset`    | riso              | 10      | 0–20, by 1  | Misregistration between the two passes         |
+| `risoHalftone`  | riso              | `true`  | —           | Whether the halftone screen is laid on         |
+
+Pick a variant and the panel lists only the parameters that variant reads. It is built from the registry, so it stays in step with the table above.
+
+<StyleParamsDemo style="vector" />
+
+```ts
+createCharacter(host, {
+  variant: 'sticker',
+  styleOptions: { stickerWidth: 14, stickerShadow: false },
+});
+
+character.update({ variant: 'paper', styleOptions: { paperOffset: 12, paperAngle: 90 } });
+```
+
+`variant` can change on a running character; the paint is redrawn at once, even while the character is paused. `styleOptions` is resolved from the defaults on every update rather than merged into the last one, so pass every value you want to keep. `validateStyleOptions(getStyle('vector'), options)` reports what resolving would have silently repaired.
+
+## Next
+
+- [CharacterMark](/components/character-mark) — the component, and the first three variants
+- [Kaomoji style](/design/styles/kaomoji) — the character written as one line of text
+- [Faces](/design/face) — the three faces that every variant can wear
+- [Theming](/guide/theming) — the variables that paint a character

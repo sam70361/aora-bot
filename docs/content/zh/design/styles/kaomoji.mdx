@@ -1,0 +1,152 @@
+# 颜文字风格
+
+`kaomoji` 系列把角色写成一行文字：`(・ω・)`、`☁(^▽^) ♪`、`ฅ(・ω・)ฅ`。形状决定括号，状态决定表情和尾巴。它没有身体，是最轻的一个系列，放进一行文字里也读得出是谁。
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {['mochi', 'cat', 'cloud', 'ghost', 'bunny', 'bot'].map((shape) => (
+        <CharacterMark
+          key={shape}
+          styleId="kaomoji"
+          shape={shape}
+          color="violet"
+          state="happy"
+          sizePx={120}
+        />
+      ))}
+    </div>
+  );
+}
+```
+
+```tsx
+<CharacterMark styleId="kaomoji" shape="cat" state="happy" />
+<CharacterMark styleId="kaomoji" variant="bubble" shape="cloud" state="thinking" />
+```
+
+默认系列是 `vector`；没有指定风格的角色用它来画。
+
+## 变体
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+const variants = ['plain', 'bubble'] as const;
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {variants.map((variant) => (
+        <div className="site-demo__cell" key={variant}>
+          <CharacterMark
+            styleId="kaomoji"
+            variant={variant}
+            shape="mochi"
+            color="orange"
+            state="curious"
+            sizePx={140}
+          />
+          <span className="site-demo__label">{variant}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+| 变体     | 画法                                         |
+| -------- | -------------------------------------------- |
+| `plain`  | 只有文字，默认值。                           |
+| `bubble` | 文字衬在一块用墨色淡染的胶囊上，像一个气泡。 |
+
+## 括号由形状决定
+
+形状穿什么括号，由引擎里的 `SHAPE_WRAPPERS` 决定：猫是 `ฅ( )ฅ`，兔子是 `૮( )ა`，云朵是 `☁( )`，没有专属括号的形状用一对圆括号。
+
+```tsx preview
+import { SHAPE_IDS } from '@aora-bot/react';
+import { kaomoji } from '@aora-bot/engine';
+
+export default function Demo() {
+  return (
+    <table>
+      <tbody>
+        {SHAPE_IDS.map((id) => (
+          <tr key={id}>
+            <td>
+              <code>{id}</code>
+            </td>
+            <td>{kaomoji(id, 'idle')}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+```
+
+## 表情和尾巴由状态决定
+
+括号里的脸沿用 `cute` 脸的语法：圆点眼表示在专注，弧线表示满足，叉表示拒绝。括号后面的尾巴是这个状态的情绪特效写成的符号：`zZ`、`♪`、`✎`、`!`。每个状态都有一张脸（`STATE_FACES`）和一个尾巴（`STATE_TAILS`，可以为空）。
+
+```tsx preview
+import { CHARACTER_STATES } from '@aora-bot/react';
+import { kaomoji } from '@aora-bot/engine';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {CHARACTER_STATES.map((state) => (
+        <div className="site-demo__cell" key={state}>
+          <span style={{ fontSize: 18, whiteSpace: 'nowrap' }}>{kaomoji('mochi', state)}</span>
+          <span className="site-demo__label">{state}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+`styleOptions.tail` 可以关掉尾巴，只留括号和脸。
+
+## 当作纯文本用
+
+`kaomoji(shape, state)` 返回的就是系列画出来的那一行字，所以聊天消息、终端输出、日志里都可以用同一套角色：
+
+```ts
+import { kaomoji } from '@aora-bot/engine';
+
+kaomoji('cat', 'happy'); // ฅ(^▽^)ฅ ♪
+kaomoji('mochi', 'thinking'); // (・_・)?
+```
+
+## 参数
+
+| 参数     | 默认值 | 范围       | 含义                         |
+| -------- | ------ | ---------- | ---------------------------- |
+| `weight` | `500`  | 300 到 800 | 字重，步长 100。             |
+| `tail`   | `true` | 开或关     | 是否写出括号后面的情绪符号。 |
+
+```tsx
+<CharacterMark styleId="kaomoji" styleOptions={{ weight: 700, tail: false }} />
+```
+
+参数和别的系列一样，由引擎夹到范围内、未知的键会被丢弃，也可以在运行中的角色上用 `update({ style, variant, styleOptions })` 切换。
+
+## 它画什么，不画什么
+
+整行字就是整个角色：它跟着身体的变换走，所以弹跳、挤压、倾斜这些动作会带着文字一起动。脸、腰带、HUD 表盘和粒子没有对应的画法——情绪靠尾巴说，活动靠尾巴和脸说。
+
+- 文字用宿主的字体渲染（`ui-sans-serif`、`PingFang SC`、`Microsoft YaHei` 依次回退），不同系统上字形略有差别；宽度是估算的，字号会缩放到让整行装进角色的盒子里。
+- 颜色是角色的墨色，和别的系列一样随明暗主题变化。
+- 静态输出是确定的，不需要 DOM，服务端渲染时可以放心用。
+
+## 接下来
+
+- [矢量风格](/design/styles/vector)——默认系列的七种变体
+- [像素风格](/design/styles/pixel)——画在网格上的同一个角色
+- [形状](/design/shapes)——每个形状的括号从哪来

@@ -1,0 +1,169 @@
+# 面部与姿态投影
+
+身体是平的。脸表现得像画在球面上。这种错位让角色在没有任何 3D 渲染的情况下读出立体感。
+
+## 投影
+
+每只眼睛的中心被抬到单位球面，旋转，再把它的局部切平面投影回二维。
+
+```ts
+const X = (cx - CENTER) / CENTER;
+const Y = (CENTER - cy) / CENTER;
+const Z = Math.sqrt(1 - X * X - Y * Y);
+```
+
+旋转后的位置给出眼睛的新中心。投影出的切基给出一个 2×2 矩阵，按如下方式应用：
+
+```
+translate(px py) matrix(a b c d 0 0) translate(-cx -cy)
+```
+
+靠近剪影边缘的眼睛，切向量会远离屏幕，投影变短，眼睛被压扁。正对观者的眼睛保持完整宽度。深度低于一个小阈值时眼睛完全隐藏——它已经转到背面。
+
+## 构造切平面标架
+
+这部分很容易做错，而且做错会非常显眼，而不是微妙。
+
+直觉上的基是极坐标那一套：一根绕中心的向量，另一根与它垂直。它好算，但它是错的，因为它**跟着点的位置一起转**。偏到一侧的眼睛到达时已经被预旋转了它绕中心走的那一段——对一个普通面部位置来说超过一百度。结果是两只眼睛以狂乱的角度躺着，怎么调姿态都修不好。
+
+正确的构造是把一根**世界**轴投影到切平面上：
+
+```ts
+const dot = worldRight · n;
+let u = normalize(worldRight - dot * n);
+const v = n × u;
+```
+
+对一个正对观者、没有旋转的点，这会退化成单位矩阵，这正是要测试的性质。当法线与世界右轴平行时回退到世界上轴，否则投影会退化。
+
+## 姿态与静息姿态
+
+两个欧拉三元组叠加：
+
+|                     | turn | tilt | roll |
+| ------------------- | ---- | ---- | ---- |
+| `DEFAULT_POSE`      | 0    | 0    | 0    |
+| `DEFAULT_POSE_HOME` | 13   | −5   | 0    |
+
+`poseHome` 是角色静止时那一点三点四分之三侧转——刚好暗示头有正面和侧面。`pose` 是动画驱动的实时值。
+
+它们通过矩阵乘法合成，所以两者都贡献。两边都很大时会叠加：静息姿态和实时姿态各带三十度滚转会变成六十度，脸会完全甩出身体。
+
+```tsx preview
+import { useState } from 'react';
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  const [turn, setTurn] = useState(13);
+  const [tilt, setTilt] = useState(-5);
+  const [roll, setRoll] = useState(0);
+
+  return (
+    <div className="site-demo site-demo--center">
+      <CharacterMark
+        key={`${turn}-${tilt}-${roll}`}
+        shape="blob"
+        color="blue"
+        sizePx={150}
+        poseHome={{ turn, tilt, roll }}
+      />
+      <div className="site-demo site-demo--column" style={{ border: 0 }}>
+        <label className="site-field">
+          turn {turn}°
+          <input type="range" min={-60} max={60} value={turn} onChange={(e) => setTurn(+e.target.value)} />
+        </label>
+        <label className="site-field">
+          tilt {tilt}°
+          <input type="range" min={-45} max={45} value={tilt} onChange={(e) => setTilt(+e.target.value)} />
+        </label>
+        <label className="site-field">
+          roll {roll}°
+          <input type="range" min={-45} max={45} value={roll} onChange={(e) => setRoll(+e.target.value)} />
+        </label>
+      </div>
+    </div>
+  );
+}
+```
+
+把 `turn` 推得足够远，一只眼睛会压扁到消失——深度测试在它转到身体后面时触发。
+
+## 面部微调
+
+五个乘数坐在拟合面部盒和眼睛之间：
+
+| 字段        | 效果         |
+| ----------- | ------------ |
+| `size`      | 缩放整张脸   |
+| `gap`       | 两眼间距     |
+| `height`    | 垂直偏移     |
+| `eyeWidth`  | 眼睛水平缩放 |
+| `eyeHeight` | 眼睛垂直缩放 |
+
+状态会覆盖个别字段——`angry` 加宽间距并缩小脸，`shy` 把它压低。渲染值向目标缓动而不是跳变，所以切状态不会弹出。
+
+## 眨眼
+
+眨眼只乘 `eyeHeight`，所以眼睛垂直挤扁，同时保持宽度和位置。结合切平面矩阵，转过头时的眨眼沿脸自己的轴压缩，而不是沿屏幕轴。
+
+线条模式下眨眼有下限。把眼睛挤到 5% 高度会让它比旁边的鼻子和嘴更细，所以挤压停在共享线宽上：眨眼变成一道短横线，而不是一根发丝。
+
+## 脸盘
+
+[线条脸](/design/face)加入了鼻子和嘴。`computeFacePlacement` 摆放全部三个五官，`computeEyePlacement` 是它的包装，丢掉多出来的部分。
+
+鼻子和嘴的锚点不是独立投影的。每一个都用和眼睛相同的姿态矩阵抬到同一个球面上，并按比例跟随眼睛的视线偏移：
+
+| 五官 | 竖直锚点                  | 视线份额 |
+| ---- | ------------------------- | -------- |
+| 眼睛 | `centreY`                 | 100%     |
+| 鼻子 | `centreY + 0.86 × radius` | 60%      |
+| 嘴   | `centreY + 2.3 × radius`  | 50%      |
+
+`radius` 是拟合出的眼睛半径，所以间距随身体缩放。递减的视线份额让侧目读起来像脸在倾斜而不是滑动：越靠近头中心的五官移动越少，真实的头也是这样。
+
+两个夹取把五官留在身体上。水平方向，每个锚点在各自高度上被夹在 `spanAt` 之内，留出自身半宽加一个线宽的边距。竖直方向，两个锚点都被托在 `bottom − 2 × lineWidth` 之上，所以矮胖的形状得到一张压缩的脸，而不是一张挂在下巴外面的嘴。
+
+## 线宽
+
+所有用笔画画出的东西——鼻子、嘴，以及拓扑比笔画更细时的眼睛——用同一个宽度：
+
+```ts
+lineWidth = radius * LINE_WEIGHT; // LINE_WEIGHT = 0.34
+```
+
+它每帧从拟合半径重新计算，所以和眼睛一样随身体和 `eyeScale` 缩放。细的眼睛拓扑通过给 `eyeOutline` 传 `minWidth` 抬到这个下限；因为轮廓先在单位尺度构建再被 `sizeY` 拉伸，下限要先除回去。
+
+## 嘴的几何
+
+`MouthSpec` 是以眼睛半径为单位的六个数字；`mouthOutline` 把它变成一个用来描边、而不是填充的闭合多边形。
+
+```ts
+lip(u) = dy + bend · (1 − u²) · (1 + skew · u) + wave · sin(π u)   // u ∈ [−1, 1]
+lens(u) = open · √(1 − u²)
+upper(u) = lip(u) − 0.38 · lens(u)
+lower(u) = lip(u) + 0.62 · lens(u)
+```
+
+唇线是一条穿过两个嘴角、被 `bend` 弯曲的抛物线，`(1 + skew·u)` 因子把顶点推向一侧嘴角。开口是在两片唇之间按 38/62 分配的半椭圆，因为嘴主要向下张开。轮廓沿 `upper` 从左到右，再沿 `lower` 回来；两个嘴角共用，所以闭合路径没有零长度线段。
+
+`open` 为零时两片唇重合，多边形没有面积——只有描边可见。正因如此 `morphMouth` 才能把闭嘴和张嘴当作同一形状的不同参数。
+
+## cute 脸的摆放
+
+默认的 `cute` 脸用另一套摆法，由同一个入口 `computeFacePlacement` 给出：
+
+- 眼睛半径取身体在脸所在高度的宽度的 7.8%，再以身体高度的 8% 封顶、5% 做下限。
+- 两眼相距 2.6 个眼睛半径，脸整体比 `eyes` 脸更靠近身体中心。
+- 嘴和腮红按 50% 跟随眼睛的视线，和上面的递减份额是同一个道理；腮红同样被夹在 `spanAt` 之内。
+
+每个状态戴哪双眼睛、哪张嘴，由 `STATE_CUTE_EYES` 和 `STATE_CUTE_MOUTH` 给出，见[表情](/design/expressions)。
+
+## 脸型之间的缓动
+
+在运行中的角色上切换 `face` 不会重建任何东西。`cute` 与另外两种脸之间用一个 `cuteBlend` 弹簧过渡，腮红、特效和五官各有自己的弹簧（`blush`、`fx`、`featureFade`）。`eyes` 与 `line` 之间则是一个 `lineBlend` 弹簧从 0 走到 1；眼睛收缩、笔画下限和五官透明度都是它的函数，所以嘴随眼睛收缩而淡入。改变鼻子走另一个 `featureFade` 弹簧，旧鼻子交叉淡入新鼻子。减少动态偏好下两者都立即落定。
+
+## 接下来
+
+- [弹簧与状态机](/internals/springs)——通道、脉冲与收敛
+- [五官](/design/face)——三种脸，以及参数化的鼻子与嘴

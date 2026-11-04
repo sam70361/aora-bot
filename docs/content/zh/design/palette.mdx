@@ -1,0 +1,158 @@
+import { PaletteGrid } from '@theme';
+
+# 配色
+
+每个色相带三层：给选择器的色块值、每种配色方案一个的身体墨色，以及给静态头像的一对渐变。
+
+<PaletteGrid />
+
+## 每个色相三层
+
+选择器色块和渲染出的角色问题相反。色块是 20 像素的方块，必须和相邻的色块区分开。角色是大幅填色剪影，必须在白页和近黑页上都可读。一个值做不到两件事：为色块调的会让身体刺眼，为身体调的会让色块发浑。
+
+所以每个色相带三层。
+
+| 层         | 用途                                 |
+| ---------- | ------------------------------------ |
+| `value`    | 平面色块色，为小尺寸识别调过         |
+| `ink`      | 两个值，每种配色方案一个，给角色身体 |
+| `gradient` | 两对，给静态头像                     |
+
+```tsx preview
+import { COLOR_SWATCHES, getSwatchHex, getInkColor } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {COLOR_SWATCHES.map((s) => (
+        <div className="site-demo__cell" key={s.id} style={{ minWidth: 92 }}>
+          <div style={{ display: 'flex', gap: 2 }}>
+            <span style={{ width: 26, height: 26, borderRadius: 6, background: getSwatchHex(s.id) }} />
+            <span
+              style={{ width: 26, height: 26, borderRadius: 6, background: getInkColor(s.id, 'light') }}
+            />
+            <span style={{ width: 26, height: 26, borderRadius: 6, background: getInkColor(s.id, 'dark') }} />
+          </div>
+          <span className="site-demo__label">{s.id}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## 自动浅色与深色
+
+墨色以 `light-dark()` 对写出，并写入一次 CSS 自定义属性：
+
+```ts
+getInkColorCss('blue'); // → light-dark(#2B8FFF, #2884EB)
+```
+
+`color-scheme` 变化时浏览器重新解析。这就是整套主题切换机制——没有监听、没有重渲染、没有闪烁，一个角色和一千个角色代价相同。
+
+## black 会反转
+
+`black` 是唯一一种深色墨色不是浅色墨色变暗版本的色相——它变成白色。中性角色应当是相对页面对比最强的那个，在深色页面上这意味着走到另一边。
+
+## 墨色之外的变量
+
+身体墨色是 `--aora-fg`，但脸和个别变体还要自己的颜色。给角色写样式时用 `getInkVars(color)` 一次写全，不要只写 `--aora-fg`；`CharacterMark` 和 `StagedMark` 内部就是这么做的。
+
+| 变量                  | 用途                       | 值                                                                                                                  |
+| --------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `--aora-fg`           | 身体墨色                   | 该色相的 `light-dark()` 对                                                                                          |
+| `--aora-face`         | `cute` 脸的颜色            | 所有色相都是白色；`black` 不写，回落为页面底色，脸就成了挖空                                                        |
+| `--aora-face-soft`    | `soft` 变体的深色脸        | 只为 `black` 写：它的身体随明暗反转，这张深色脸跟着反转                                                             |
+| `--aora-face-sticker` | `sticker` 变体的脸         | 只为 `black` 写：暗色下身体变成白色，脸从纸白换成黑色                                                               |
+| `--aora-hair-shade`   | 实心身体上头发叠加的阴影色 | 默认 `#000000`；`black` 由 `getInkVars` 写成 `light-dark(#FFFFFF, #000000)`，让黑色角色的头发在浅色页面上仍然看得清 |
+| `--aora-ink2`         | `riso` 变体的第二墨色      | 粉色身体改用金色，其余沿用样式表里的默认                                                                            |
+
+```tsx preview
+import { getInkVars } from '@aora-bot/engine';
+
+export default function Demo() {
+  return (
+    <table>
+      <tbody>
+        {(['blue', 'pink', 'black'] as const).map((id) => (
+          <tr key={id}>
+            <td>
+              <code>getInkVars('{id}')</code>
+            </td>
+            <td>
+              <code>{Object.keys(getInkVars(id)).join('、')}</code>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+```
+
+## 确定性分配
+
+任意字符串都会映射到稳定的墨色与形状。
+
+```tsx preview
+import { autoColorForKey, autoShapeForKey, renderStaticSvgDataUrl } from '@aora-bot/react';
+
+const keys = ['ada', 'grace', 'alan', 'edsger', 'barbara', 'donald'];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {keys.map((key) => (
+        <div className="site-demo__cell" key={key}>
+          <img
+            src={renderStaticSvgDataUrl({ shape: autoShapeForKey(key), color: autoColorForKey(key) })}
+            width={54}
+            height={54}
+            alt=""
+          />
+          <span className="site-demo__label">{key}</span>
+          <span className="site-demo__label">{autoColorForKey(key)}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+分配使用 FNV-1a 再加一步雪崩，只差一个字符的键会落在池子里很远的地方，而不是彼此相邻。`black` 被排除在分配之外——它留给显式默认，因此被分配的角色看起来总是「被选过的」。
+
+## 光晕
+
+`haloBackground` 从色相合成一层柔软的多停渐变，用在头像背后。
+
+```tsx preview
+import { COLOR_IDS, haloBackground, renderAvatarDataUrl } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {COLOR_IDS.slice(0, 6).map((id) => (
+        <span
+          key={id}
+          style={{
+            display: 'grid',
+            placeItems: 'center',
+            width: 74,
+            height: 74,
+            borderRadius: 18,
+            background: haloBackground(id),
+          }}
+        >
+          <img src={renderAvatarDataUrl(id, { color: id })} width={46} height={46} alt="" />
+        </span>
+      ))}
+    </div>
+  );
+}
+```
+
+## 接下来
+
+- [渲染结构](/internals/rendering)——一个 SVG，所有属性手写
+- [主题](/guide/theming)——画出角色的两个变量

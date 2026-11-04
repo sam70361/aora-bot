@@ -1,0 +1,174 @@
+import { StateGrid, FxGrid, StateMatrix } from '@theme';
+
+# States
+
+States come in four groups, and every one is live below, sharing a single stage. On the default `cute` face each state has its own eyes, mouth and blush, and some throw off an effect (see [Expressions](/design/expressions)); in [line face](/design/face) mode each state also wears a mouth from `STATE_MOUTH`.
+
+<StateGrid />
+
+## What a state defines
+
+| Table                  | Role                                                   |
+| ---------------------- | ------------------------------------------------------ |
+| `STATE_CUTE_EYES`      | Eyes the `cute` face cycles through                    |
+| `STATE_CUTE_MOUTH`     | Mouth of the `cute` face                               |
+| `STATE_BLUSH`          | Blush strength of the `cute` face                      |
+| `STATE_FX`             | Mood or activity effect outside the body               |
+| `STATE_EYE_TOPOLOGIES` | Expressions of the `eyes` and `line` faces             |
+| `STATE_EYE_SWITCH_MS`  | Randomised interval between them                       |
+| `STATE_BLINK_MS`       | Blink interval, or `null` for states that do not blink |
+| `STATE_FACE_TUNE`      | Face adjustments layered over the default              |
+| `STATE_GAZE`           | Gaze drift amplitude and how often it retargets        |
+| `STATE_BELT`           | Belt overlay of the `eyes` and `line` faces            |
+| `STATE_MOUTH`          | Mouth worn in line-face mode                           |
+| `STATE_ENTRY_EFFECTS`  | One-off spin, bounce or burst on entry                 |
+| behaviour              | A function returning body targets each frame           |
+
+## Body motion
+
+A behaviour returns four numbers per frame — tilt, x, y and squash — which springs then chase. Because springs do the smoothing, a behaviour can jump its targets without producing a visible jump.
+
+`idle` is the one worth reading:
+
+```ts
+({ clock }) => ({
+  tilt: Math.sin(clock * 0.5) * 1.5 + Math.sin(clock * 0.17) * 0.6,
+  x: Math.sin(clock * 0.27),
+  y: Math.sin(clock * 0.85) * 1.2,
+  squash: 1 + Math.sin(clock * 0.85) * 0.007,
+});
+```
+
+Three sine waves at unrelated frequencies. Because the periods never line up, the motion has no perceptible loop — which is what stops a character sitting in a sidebar for ten minutes from looking like a repeating GIF.
+
+## Impulses
+
+Some states need discrete events rather than a continuous curve. `angry` kicks the vertical spring every 1.8 to 3.2 seconds; `listening` nods. These add velocity directly instead of moving a target:
+
+```ts
+impulse(70); // adds to the y spring's velocity
+```
+
+The spring absorbs the kick and settles, which produces a physical recoil that would be tedious to author as a curve.
+
+## Spring channels
+
+Every continuous quantity is a damped spring integrated at a fixed 120 Hz substep, regardless of display refresh rate.
+
+| Channel           | ω   | ζ    | Drives                                  |
+| ----------------- | --- | ---- | --------------------------------------- |
+| `tilt`            | 5   | 0.9  | Body rotation, scaled by `tiltScale`    |
+| `x`               | 3.5 | 1    | Horizontal drift                        |
+| `y`               | 4   | 1    | Vertical drift and impulses             |
+| `squash`          | 10  | 0.8  | Vertical scale                          |
+| `blink`           | 26  | 1    | Eye opening                             |
+| `eyeScale`        | 9   | 0.85 | Emphasis                                |
+| `gazeX` / `gazeY` | 13  | 1    | Gaze offset                             |
+| `eyeMorph`        | 8   | 1    | Expression transition                   |
+| `spin`            | 6.2 | 1    | Imperative turn about the vertical axis |
+| `cuteBlend`       | 10  | 1    | Cross-over to and from the `cute` face  |
+| `blush`           | 8   | 1    | Blush strength                          |
+| `fx`              | 7   | 1    | Effect fade-in                          |
+| `beltBlend`       | 14  | 1    | Body-to-belt transition                 |
+| `beltFade`        | 11  | 1    | Cross-fade between two belt kinds       |
+| `hudBlend`        | 12  | 1    | HUD dial fade in and out                |
+| `badge`           | 9   | 0.55 | Notification dot                        |
+
+The fixed substep is why a 144 Hz monitor and a 60 Hz monitor converge identically. Integrating with the frame delta directly would make the character settle faster on a faster display.
+
+## Belt states on the cute face
+
+On the `eyes` and `line` faces, sixteen states hand their body over to a belt overlay (`STATE_BELT`): the body morphs to a circle, shrinks to a core, and what the state means is carried by the elements moving around it. On the default `cute` face that would lose the face, so they **do not shrink the body**: the whole character, face included, stays, and the same meaning is said by an effect beside it (`STATE_FX`) — rising dots for `thinking`, a small filling bar at the top right for `progress`, a pencil for `writing`. `powering-down` dims the body and `bouncing` hops it.
+
+<FxGrid />
+
+Like the mood effects these are pure functions of time, carried on the snapshot as `fx`, so the vector, pixel and kaomoji series agree automatically. On the `cute` face `snapshot.belt` is always `null`.
+
+## Belts
+
+The `eyes` and `line` faces draw these states with a belt: the body collapses to a core and the belt takes over. See [belts and particles](/internals/belts) for how the transition works and how each belt is drawn. The demo below uses `face="eyes"` so the belts themselves are visible.
+
+```tsx preview
+import { MarkStageProvider, StagedMark, STATE_BELT } from '@aora-bot/react';
+
+export default function Demo() {
+  const entries = Object.entries(STATE_BELT) as [string, string][];
+  return (
+    <MarkStageProvider maxSources={entries.length}>
+      <div className="site-demo">
+        {entries.map(([state, belt]) => (
+          <div className="site-demo__cell" key={state}>
+            <StagedMark shape="mochi" state={state as never} color="blue" face="eyes" sizePx={62} />
+            <span className="site-demo__label">{belt}</span>
+            <span className="site-demo__label" style={{ opacity: 0.6 }}>
+              {state}
+            </span>
+          </div>
+        ))}
+      </div>
+    </MarkStageProvider>
+  );
+}
+```
+
+Belts are pure functions of time. Nothing accumulates, so a belt can be paused, scrubbed or resumed at any point and remain correct — which is what lets hundreds of characters be frozen without drifting out of sync when they resume.
+
+## At a glance
+
+Every state in one table: the eyes it cycles, its mouth, its effect (`cute` face) or the belt it hands its body to (`eyes` and `line` faces), the protocol ids that reach it, and a dial that tends to sit well beside it. All but the last column are read from the engine's tables at render time; the HUD column is a suggestion, since a dial is data the host has and a state is what the agent is doing, and the engine deliberately keeps the two independent.
+
+<StateMatrix groups />
+
+## Mapping application state
+
+Most applications do not think in these terms. Two helpers translate.
+
+```tsx preview
+import { characterStateForAgent, activityFromTool, TOOL_ACTIVITIES } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>tool</th>
+          <th>state</th>
+        </tr>
+      </thead>
+      <tbody>
+        {Object.keys(TOOL_ACTIVITIES).map((tool) => (
+          <tr key={tool}>
+            <td>
+              <code>{tool}</code>
+            </td>
+            <td>
+              <code>{activityFromTool(tool).state}</code>
+            </td>
+          </tr>
+        ))}
+        <tr>
+          <td>
+            <code>{'{ awaitingUser: true }'}</code>
+          </td>
+          <td>
+            <code>{characterStateForAgent({ awaitingUser: true })}</code>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <code>{'{ running: true }'}</code>
+          </td>
+          <td>
+            <code>{characterStateForAgent({ running: true })}</code>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  );
+}
+```
+
+## Next
+
+- [Springs and states](/internals/springs) — channels, impulses and settling
+- [Belts and particles](/internals/belts) — how the `eyes` and `line` faces hand the body to a belt

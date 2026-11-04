@@ -1,0 +1,169 @@
+# Face and pose
+
+The body is flat. The face behaves as though painted on a sphere. That mismatch is what makes the character read as three-dimensional without any 3D rendering.
+
+## The projection
+
+Each eye centre is lifted onto a unit sphere, rotated, and its local tangent plane projected back to two dimensions.
+
+```ts
+const X = (cx - CENTER) / CENTER;
+const Y = (CENTER - cy) / CENTER;
+const Z = Math.sqrt(1 - X * X - Y * Y);
+```
+
+The rotated position gives the eye's new centre. The projected tangent basis gives a 2×2 matrix, which is applied as:
+
+```
+translate(px py) matrix(a b c d 0 0) translate(-cx -cy)
+```
+
+An eye near the silhouette edge has tangent vectors tipping away from the screen, so their projections shorten and the eye compresses. An eye facing the viewer keeps its full width. Depth below a small threshold hides the eye entirely — it has rotated around the back.
+
+## Building the tangent frame
+
+This is the part that is easy to get wrong, and getting it wrong is spectacular rather than subtle.
+
+The intuitive basis is the polar one: a vector pointing around the centre and another perpendicular to it. It is easy to compute and it is incorrect, because it **rotates with the point's position**. An eye placed off to one side arrives pre-rotated by however far around it sits — a twist of more than a hundred degrees for a perfectly ordinary face position. The result is two eyes lying at wild angles that no amount of adjusting the pose will fix.
+
+The correct construction projects a _world_ axis onto the tangent plane:
+
+```ts
+const dot = worldRight · n;
+let u = normalize(worldRight - dot * n);
+const v = n × u;
+```
+
+For a point facing the viewer under no rotation this reduces to the identity, which is the property to test for. Fall back to world up when the normal is parallel to world right, or the projection degenerates.
+
+## Pose and rest pose
+
+Two Euler triples compose:
+
+|                     | turn | tilt | roll |
+| ------------------- | ---- | ---- | ---- |
+| `DEFAULT_POSE`      | 0    | 0    | 0    |
+| `DEFAULT_POSE_HOME` | 13   | −5   | 0    |
+
+`poseHome` is the slight three-quarter turn the character holds at rest — just enough to imply a head with a front and a side. `pose` is the live value that animation drives.
+
+They compose by matrix multiplication, so both contribute. Large values in both compound: a rest pose and a live pose each carrying thirty degrees of roll produce sixty, which swings the face off the body entirely.
+
+```tsx preview
+import { useState } from 'react';
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  const [turn, setTurn] = useState(13);
+  const [tilt, setTilt] = useState(-5);
+  const [roll, setRoll] = useState(0);
+
+  return (
+    <div className="site-demo site-demo--center">
+      <CharacterMark
+        key={`${turn}-${tilt}-${roll}`}
+        shape="blob"
+        color="blue"
+        sizePx={150}
+        poseHome={{ turn, tilt, roll }}
+      />
+      <div className="site-demo site-demo--column" style={{ border: 0 }}>
+        <label className="site-field">
+          turn {turn}°
+          <input type="range" min={-60} max={60} value={turn} onChange={(e) => setTurn(+e.target.value)} />
+        </label>
+        <label className="site-field">
+          tilt {tilt}°
+          <input type="range" min={-45} max={45} value={tilt} onChange={(e) => setTilt(+e.target.value)} />
+        </label>
+        <label className="site-field">
+          roll {roll}°
+          <input type="range" min={-45} max={45} value={roll} onChange={(e) => setRoll(+e.target.value)} />
+        </label>
+      </div>
+    </div>
+  );
+}
+```
+
+Push `turn` far enough and one eye compresses to nothing and disappears — the depth test firing as it rotates behind the body.
+
+## Face tuning
+
+Five multipliers sit between the fitted face box and the eyes:
+
+| Field       | Effect                    |
+| ----------- | ------------------------- |
+| `size`      | Scales the whole face     |
+| `gap`       | Distance between the eyes |
+| `height`    | Vertical offset           |
+| `eyeWidth`  | Horizontal eye scale      |
+| `eyeHeight` | Vertical eye scale        |
+
+States override individual fields — `angry` widens the gap and shrinks the face, `shy` lowers it. The rendered values ease towards their targets rather than snapping, so a state change does not pop.
+
+## Blink
+
+Blink multiplies `eyeHeight` only, so the eye squeezes vertically while keeping its width and its position. Combined with the tangent-plane matrix, a blink on a turned head compresses along the face's own axis rather than the screen's.
+
+In line mode the blink has a floor. Squeezing an eye to 5% height would make it thinner than the nose and mouth beside it, so the squeeze stops at the shared line weight: a blink becomes a short horizontal stroke, not a hairline.
+
+## The plate
+
+The [line face](/design/face) adds a nose and a mouth. `computeFacePlacement` places all three features and `computeEyePlacement` is a wrapper over it that drops the extras.
+
+The nose and mouth anchors are not projected independently. Each is lifted onto the same sphere with the same pose matrix as the eyes, and each takes a share of the eyes' gaze offset:
+
+| Feature | Vertical anchor           | Gaze share |
+| ------- | ------------------------- | ---------- |
+| eyes    | `centreY`                 | 100%       |
+| nose    | `centreY + 0.86 × radius` | 60%        |
+| mouth   | `centreY + 2.3 × radius`  | 50%        |
+
+`radius` is the fitted eye radius, so the spacing scales with the body. The decreasing gaze share is what makes a sideways glance read as the face leaning rather than sliding: features nearer the centre of the head move less, as they would on a real one.
+
+Two clamps keep the features on the body. Horizontally, each anchor is held inside `spanAt` at its own height with a margin of its own half-width plus one line weight. Vertically, both anchors are held above `bottom − 2 × lineWidth`, so a squat shape gets a compressed face rather than a mouth hanging off its chin.
+
+## Line weight
+
+Everything drawn as a stroke — the nose, the mouth, and the eyes when a topology is thinner than the stroke — uses one width:
+
+```ts
+lineWidth = radius * LINE_WEIGHT; // LINE_WEIGHT = 0.34
+```
+
+It is recomputed every frame from the fitted radius, so it scales with the body and with `eyeScale` exactly as the eyes do. Thin eye topologies are floored to it by passing `minWidth` to `eyeOutline`; because the outline is built at unit scale and then stretched by `sizeY`, the floor is divided back out first.
+
+## Mouth geometry
+
+A `MouthSpec` is six numbers in eye radii; `mouthOutline` turns it into a closed polygon meant to be stroked, not filled.
+
+```ts
+lip(u) = dy + bend · (1 − u²) · (1 + skew · u) + wave · sin(π u)   // u ∈ [−1, 1]
+lens(u) = open · √(1 − u²)
+upper(u) = lip(u) − 0.38 · lens(u)
+lower(u) = lip(u) + 0.62 · lens(u)
+```
+
+The lip line is a parabola through the corners, bowed by `bend`, with the `(1 + skew·u)` factor pushing the apex towards one corner. The opening is a half-ellipse split 38/62 between the lips, because a mouth opens mostly downward. The outline runs along `upper` left to right and back along `lower`; the two corners are shared so the closed path has no zero-length segment.
+
+When `open` is zero the two lips coincide and the polygon has no area — only its stroke shows. That is what lets `morphMouth` treat a closed mouth and an open one as the same shape at different parameters.
+
+## The cute face
+
+The default `cute` face is placed by the same entry point, `computeFacePlacement`, with its own proportions:
+
+- The eye radius is 7.8% of the body width at the height of the face, capped at 8% of the body height and floored at 5%.
+- The eyes sit 2.6 radii apart, and the whole face sits closer to the centre of the body than the `eyes` face does.
+- The mouth and the blush follow 50% of the gaze, for the same reason as the decreasing shares above; the blush is clamped inside `spanAt` too.
+
+Which eyes and which mouth each state wears comes from `STATE_CUTE_EYES` and `STATE_CUTE_MOUTH`; see [Expressions](/design/expressions).
+
+## Easing between styles
+
+Switching `face` on a live character does not rebuild anything. Between `cute` and the other two faces a `cuteBlend` spring does the work, and the blush, the effects and the features each have a spring of their own (`blush`, `fx`, `featureFade`). Between `eyes` and `line`, a `lineBlend` spring runs 0 → 1; the eye shrink, the stroke floor and the feature opacity are all functions of it, so the mouth fades in while the eyes shrink. Changing the nose runs a separate `featureFade` spring so the old nose crossfades into the new one. Under reduced motion both settle instantly.
+
+## Next
+
+- [Springs and states](/internals/springs) — channels, impulses and settling
+- [Faces](/design/face) — the three faces, and the parametric nose and mouth

@@ -1,0 +1,545 @@
+/*
+ * Rspress overrides.
+ *
+ * Everything here restyles a built-in Rspress element through its class name
+ * or its custom properties. Nothing is replaced, so search, the mobile drawer,
+ * the language switcher and keyboard navigation keep working.
+ *
+ * This is the only file in the site that uses `!important`, and only for one
+ * reason: Rspress's stylesheet is not in a layer, and an unlayered declaration
+ * beats a layered one at any specificity. In a layer, `!important` flips that
+ * — a layered important declaration beats unlayered ones, including the
+ * `!important` Rspress's own home layout injects — so each declaration below
+ * that has to win against Rspress carries it, and nothing else on the site
+ * needs to.
+ *
+ * Declarations that Rspress does not set (a new `border-radius` on the search
+ * button, say) are written plainly.
+ */
+
+@layer site.shell {
+  /* ---- Rspress reads the kit's tokens -------------------------------------- */
+
+  /*
+   * One mapping, at the root. Both themes come through it, because every value
+   * is a `light-dark()` pair resolved by `color-scheme`, which the kit's tokens
+   * already set for `.rp-dark`. Rspress's own light and dark palettes are
+   * replaced rather than patched, so a colour changed in `tokens.css` reaches
+   * the navbar, the sidebar and the prose in the same commit.
+   */
+  :root {
+    --rp-c-bg: var(--aora-bg-base) !important;
+    --rp-c-bg-soft: var(--aora-surface-sunken) !important;
+    --rp-c-bg-mute: var(--site-paper-mute) !important;
+    --rp-c-bg-alt: var(--aora-bg-base) !important;
+    --rp-c-divider: var(--aora-line-strong) !important;
+    --rp-c-divider-light: var(--aora-line) !important;
+    --rp-c-text-0: var(--aora-text) !important;
+    --rp-c-text-1: var(--aora-text) !important;
+    --rp-c-text-2: var(--aora-text-muted) !important;
+    --rp-c-text-3: var(--aora-text-faint) !important;
+    --rp-c-text-4: var(--aora-text-faint) !important;
+
+    --rp-c-brand: var(--aora-accent) !important;
+    --rp-c-brand-dark: light-dark(var(--aora-blue-600), var(--aora-blue-500)) !important;
+    --rp-c-brand-darker: var(--aora-blue-700) !important;
+    --rp-c-brand-light: light-dark(var(--aora-blue-400), var(--aora-blue-300)) !important;
+    --rp-c-brand-lighter: var(--aora-blue-300) !important;
+    --rp-c-brand-tint: var(--aora-accent-soft) !important;
+
+    --rp-font-family-base: var(--aora-font-sans) !important;
+    --rp-font-family-mono: var(--aora-font-mono) !important;
+    --rp-radius: var(--aora-radius-lg) !important;
+    --rp-radius-small: var(--aora-radius-sm) !important;
+
+    /* The navbar's height plus the gap above it: what the layout reserves. */
+    --rp-nav-height: calc(var(--site-nav-height) + var(--site-nav-inset)) !important;
+
+    /*
+     * Rspress centres the prose on a full-width page by pushing the rails apart
+     * with viewport-derived margins: `--rp-sidebar-margin-left` grows as
+     * `(100vw - content) / 2 - sidebar`, and the outline gets the mirror image.
+     * That arithmetic assumes the container is the viewport. Ours is capped at
+     * `--site-shell-width` and centred by `margin-inline: auto`, so on anything
+     * wider than ~1640px those margins are paid a second time, out of
+     * the shell's own width — at 2560px the doc column is left with 68px. The
+     * rails stay put; the margins go.
+     */
+    --rp-sidebar-margin-left: 0px !important;
+    --rp-outline-margin-right: 0px !important;
+    --rp-sidebar-width: var(--site-sidebar-width) !important;
+    --rp-outline-width: var(--site-outline-width) !important;
+
+    /*
+     * Fragment links must clear the floating navbar. Rspress already sets
+     * `scroll-padding-top` on the root to its own nav height, so this overrides
+     * that one value rather than adding `scroll-margin-top` to every heading —
+     * the two stack, and the combination overshoots by the height of the bar
+     * twice over.
+     */
+    scroll-padding-top: var(--site-anchor-offset) !important;
+  }
+
+  @media (width < 1280px) {
+    :root {
+      scroll-padding-top: calc(var(--site-anchor-offset) + var(--site-doc-menu-height)) !important;
+    }
+  }
+
+  /* ---- floating navbar ------------------------------------------------------ */
+
+  /*
+   * The navbar keeps its contents and its `position: sticky` behaviour; only
+   * the box changes. Staying in flow means the layout still reserves space for
+   * it, so nothing below has to be re-padded — taking it out of flow with
+   * `fixed` would mean manually offsetting the doc, the sidebar and the home
+   * layout, and getting all three right at every breakpoint.
+   *
+   * The pill is the site's capsule: the translucent, blurred, ringed surface
+   * from `site-tokens.css`, the same one `.site-capsule` draws on the home
+   * page's other three edges. Its ends are half the bar's height, so the
+   * padding keeps the contents out of the curve.
+   *
+   * The home layout injects `background: transparent !important` to fade the
+   * bar into its hero. A bar with no fill is a floating outline, so the fill
+   * is pinned here; a layered `!important` outranks the injected one.
+   */
+  .rp-nav {
+    top: var(--site-nav-inset) !important;
+    width: var(--site-nav-width) !important;
+    height: var(--site-nav-height) !important;
+    margin: var(--site-nav-inset) auto 0 !important;
+    --rp-nav-padding-x: var(--aora-space-6) !important;
+    padding: 0 var(--rp-nav-padding-x) !important;
+    border: 0 !important;
+    border-radius: var(--aora-radius-pill) !important;
+    background: var(--site-capsule-bg) !important;
+    -webkit-backdrop-filter: var(--site-capsule-blur) !important;
+    backdrop-filter: var(--site-capsule-blur) !important;
+    box-shadow: var(--site-capsule-shadow) !important;
+  }
+
+  /*
+   * Height stays fixed on scroll. Changing it makes the page jump, and
+   * the shadow does not change either: a bar that gets heavier as you scroll
+   * is the second thing the eye catches on. Only the fill firms up, once
+   * `CapsuleNav` has marked the page as scrolled, because prose passing under
+   * a see-through bar is harder to read than the same prose under a firmer one.
+   */
+  :root[data-site-nav='condensed'] .rp-nav {
+    background: var(--site-capsule-bg-firm) !important;
+  }
+
+  /* The default bar draws a full-width bottom rule, which a floating bar must not have. */
+  .rp-nav::after,
+  .rp-nav::before {
+    display: none !important;
+  }
+
+  @media (width < 640px) {
+    .rp-nav {
+      --rp-nav-padding-x: var(--aora-space-4) !important;
+    }
+  }
+
+  /*
+   * Above Rspress's phone breakpoint the capsule reads [logo] … [items] …
+   * [search][controls]: the items on the capsule's own centre line, the search
+   * button and the controls together at the right end.
+   *
+   * The items are taken out of the flow and centred on the bar, so neither
+   * end's width moves them. That needs room for half the items plus the right
+   * end on each side of the centre line, which the English labels run out of
+   * below 1120px; there the items stay in the flow just before the search
+   * button. Below 960px even that is too narrow for five, so the last item,
+   * the external link to the classic Emotion Ball, steps out until the phone
+   * menu takes over.
+   */
+  @media (width > 768px) {
+    .rp-nav__right {
+      flex: 1 1 0;
+      justify-content: flex-end;
+      gap: var(--aora-space-3);
+    }
+
+    .rp-nav .rp-nav-menu--right {
+      order: -1;
+    }
+  }
+
+  @media (768px < width < 960px) {
+    .rp-nav .rp-nav-menu--right > :last-child {
+      display: none !important;
+    }
+  }
+
+  @media (width >= 1120px) {
+    .rp-nav .rp-nav-menu--right {
+      position: absolute;
+      left: 50%;
+      translate: -50% 0;
+    }
+  }
+
+  /*
+   * The phone menu opens under the pill. A full-width opaque sheet flush with
+   * the pill's lower edge reads as the pill being cut off, so it becomes a card
+   * on the same capsule surface, the same gap from the edges and from the pill.
+   */
+  .rp-nav-screen {
+    top: calc(var(--site-nav-offset) + var(--aora-space-2)) !important;
+    right: var(--site-capsule-gap) !important;
+    bottom: auto !important;
+    left: var(--site-capsule-gap) !important;
+    width: auto !important;
+    height: auto !important;
+    max-height: calc(
+      100dvh - var(--site-nav-offset) - var(--aora-space-2) - var(--site-capsule-gap)
+    ) !important;
+    overflow-y: auto;
+    border-radius: var(--aora-radius-lg) !important;
+    background: var(--site-capsule-bg-firm) !important;
+    -webkit-backdrop-filter: var(--site-capsule-blur) !important;
+    backdrop-filter: var(--site-capsule-blur) !important;
+    box-shadow: var(--site-capsule-shadow) !important;
+  }
+
+  .rp-nav-menu__item {
+    font-size: var(--aora-text-sm) !important;
+  }
+
+  /* ---- language switch ------------------------------------------------------ */
+
+  /*
+   * `LangSwitch` takes the language menu's place: it is mounted after the
+   * hamburger, so the order puts it back between the search button and the
+   * controls, and the menu it replaces is hidden.
+   */
+  .rp-nav__others > .rp-nav-menu__item {
+    display: none !important;
+  }
+
+  .rp-nav__right > .site-lang {
+    order: 1;
+  }
+
+  .rp-nav__others,
+  .rp-nav-hamburger__sm,
+  .rp-nav-hamburger__md {
+    order: 2;
+  }
+
+  /*
+   * Both marks are cut into the track; the thumb is a raised key over the
+   * current language that carries its mark in full ink.
+   */
+  .site-lang {
+    --_w: 3.75rem;
+    --_h: 1.75rem;
+    --_pad: 0.1875rem;
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    flex: none;
+    width: var(--_w);
+    height: var(--_h);
+    padding: 0;
+    border: 0;
+    border-radius: var(--aora-radius-pill);
+    background: var(--aora-fill-hover);
+    box-shadow:
+      inset 0 1px 2px color-mix(in oklab, black 18%, transparent),
+      inset 0 0 0 1px color-mix(in oklab, currentColor 8%, transparent);
+    color: var(--aora-text-faint);
+    font: inherit;
+    font-size: var(--aora-text-xs);
+    font-weight: var(--aora-weight-semibold);
+    letter-spacing: 0.02em;
+    cursor: pointer;
+  }
+
+  .site-lang__mark {
+    text-align: center;
+    text-shadow: 0 1px 0 light-dark(rgb(255 255 255 / 0.7), rgb(0 0 0 / 0.5));
+  }
+
+  .site-lang__thumb {
+    position: absolute;
+    top: var(--_pad);
+    left: var(--_pad);
+    display: grid;
+    place-items: center;
+    width: calc(var(--_w) / 2 - var(--_pad));
+    height: calc(var(--_h) - var(--_pad) * 2);
+    border-radius: var(--aora-radius-pill);
+    background: var(--aora-surface);
+    box-shadow: var(--aora-shadow-sm);
+    color: var(--aora-text);
+    transition: translate var(--aora-duration-base) var(--aora-ease-out);
+  }
+
+  .site-lang[aria-checked='true'] .site-lang__thumb {
+    translate: calc(var(--_w) / 2 - var(--_pad)) 0;
+  }
+
+  .site-lang:hover .site-lang__thumb {
+    color: var(--aora-accent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-lang__thumb {
+      transition: none;
+    }
+  }
+
+  .rp-search-button {
+    border-radius: var(--aora-radius-pill);
+  }
+
+  /* ---- shell alignment ------------------------------------------------------ */
+
+  /*
+   * Put the three-column document layout on the same centred track as the
+   * navbar, so the sidebar's left edge and the outline's right edge meet the
+   * ends of the bar.
+   */
+  .rp-doc-layout__container {
+    max-width: var(--site-shell-width) !important;
+    margin-inline: auto !important;
+  }
+
+  /*
+   * Give the reclaimed width to the prose, not to the two rails. A sidebar of
+   * short nav labels does not get better at 320px, and the outline is a list of
+   * headings; the doc column is the only one whose measure matters. The rail
+   * widths go through Rspress's own variables above, because it pins the
+   * sidebar with `min-width` as well as `width`.
+   */
+  .rp-doc-layout__sidebar {
+    flex: 0 0 var(--rp-sidebar-width);
+  }
+
+  .rp-doc-layout__outline {
+    flex: 0 0 var(--rp-outline-width);
+  }
+
+  /*
+   * No cap of its own: the shell width already bounds it, and a cap below the
+   * remaining width would leave a dead strip between the prose and the outline
+   * instead of letting the outline meet the end of the bar.
+   */
+  .rp-doc-layout__doc {
+    min-width: 0;
+    max-width: none !important;
+  }
+
+  /*
+   * Both rails stick at `--rp-nav-height`, which this file redefines as the
+   * navbar's height plus its inset, so the built-in offset already clears the
+   * bar. What the defaults get wrong is the look: an opaque sidebar with a hard
+   * right rule and a shadowed outline, on a page whose ambient backdrop shows
+   * through everywhere else.
+   *
+   * The sidebar is a fixed drawer below 769px and needs its opaque background
+   * there. The site has three breakpoints and 769 is not one of them, so the
+   * next one up takes the rule.
+   */
+  @media (width >= 960px) {
+    .rp-doc-layout__sidebar {
+      border-right: 0 !important;
+      background: transparent !important;
+    }
+  }
+
+  /* Below 1280px the outline is a floating popover and keeps its shadow. */
+  @media (width >= 1280px) {
+    .rp-doc-layout__outline {
+      box-shadow: none !important;
+    }
+  }
+
+  /* ---- one sidebar for the whole site -------------------------------------- */
+
+  /*
+   * Every section is listed at once, so the sidebar is long and the section
+   * headings are what the eye navigates by. They get the treatment headings in
+   * a long list need — smaller, quieter, letterspaced, and separated by space
+   * above rather than a rule, so six of them do not read as six boxes.
+   */
+  .rp-sidebar-section-header {
+    margin: 1.375rem 0 0.375rem;
+    padding-inline: var(--aora-space-3);
+    font-size: var(--aora-text-sm);
+    font-weight: var(--aora-weight-semibold);
+    letter-spacing: 0.04em;
+    color: var(--aora-text-faint);
+    text-transform: uppercase;
+  }
+
+  .rp-sidebar-section-header:first-child {
+    margin-top: var(--aora-space-1);
+  }
+
+  /* A long sidebar needs tighter rows than a short one. */
+  .rp-sidebar-item {
+    font-size: var(--aora-text-sm);
+    line-height: var(--aora-leading-normal);
+  }
+
+  /*
+   * The Chinese half of a composed label (`entryLabel` in navigation.ts), in
+   * the sidebar and in the prev / next links. It is one unit: if a label is
+   * ever too long, the whole translation moves down a line instead of
+   * splitting after a character.
+   */
+  .rp-sidebar-item em,
+  .rp-prev-next-page em {
+    display: inline-block;
+    font-size: var(--aora-text-xs);
+    font-style: normal;
+    color: var(--aora-text-muted);
+    white-space: nowrap;
+  }
+
+  .rp-sidebar-item--active em {
+    color: inherit;
+    opacity: 0.75;
+  }
+
+  /* ---- demo cards ------------------------------------------------------------ */
+
+  /*
+   * The preview card's content box ships as `padding: 0; overflow: auto`. A demo
+   * written as a bare `<CharacterMark />` therefore sits flush against a
+   * clipping edge, and the moment the character jumps its top is cut off. Give
+   * every card the breathing room and the non-clipping overflow that
+   * `.site-demo` has, so a demo does not have to remember to wrap itself.
+   *
+   * `.rp-preview--internal__card` is the plugin-preview card of Rspress 2.
+   */
+  .rp-preview--internal__card__content {
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--aora-space-5);
+    min-width: 0;
+    min-height: 7.5rem;
+    padding: 1.75rem var(--aora-space-6) !important;
+    overflow: visible !important;
+  }
+
+  /* On a phone the toolbar column and the side padding would leave a demo barely half the measure. */
+  @media (width < 640px) {
+    .rp-preview--internal__card__content {
+      padding-inline: 0 !important;
+      overflow-x: auto !important;
+    }
+
+    .rp-preview-operations--web {
+      position: absolute;
+      inset-block-start: var(--aora-space-2);
+      inset-inline-end: var(--aora-space-2);
+      gap: var(--aora-space-2);
+    }
+
+    .rp-preview-operations--web .rp-preview-operations__button {
+      margin-left: 0;
+    }
+  }
+
+  /* A demo inside a preview card is already on a card; do not double-frame it. */
+  .rp-preview--internal__card__content > .site-demo {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0;
+    background: none;
+    box-shadow: none;
+  }
+
+  /*
+   * A table a demo prints straight from a registry has no markdown around it to
+   * style it, and the card resets cell padding to a pixel. Give it the doc
+   * table's rhythm so the columns read as columns.
+   */
+  /* The card cannot clip, so anything wider than a phone scrolls on its own. */
+  .rp-preview--internal__card__content table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: var(--aora-text-sm);
+  }
+
+  .rp-preview--internal__card__content pre {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .rp-preview--internal__card__content :is(th, td) {
+    padding: var(--aora-space-1) var(--aora-space-3);
+    text-align: start;
+  }
+
+  /* ---- callouts -------------------------------------------------------------- */
+
+  /*
+   * A callout's title is marked by a 4px bar in its colour, a single thick edge
+   * of the kind nothing else on the site draws. The box already carries the
+   * colour in its tint and its ring, so the mark becomes a dot in the same
+   * colour, the shape the site uses for a status everywhere else.
+   */
+  .rp-callout__title::before {
+    width: 0.5rem !important;
+    height: 0.5rem !important;
+    border-radius: var(--aora-radius-pill) !important;
+    align-self: center;
+  }
+
+  /* ---- links that are cards -------------------------------------------------- */
+
+  /*
+   * Documentation links are underlined. A card or a node that happens to be an
+   * anchor is not, and these sit inside the prose, where the link style
+   * applies to them.
+   */
+  .site-overview__card,
+  .site-graph__node {
+    text-decoration: none !important;
+  }
+
+  /* ---- doc tables ------------------------------------------------------------ */
+
+  /*
+   * A token in a prose table is one word: `--aora-face` split after its
+   * hyphen reads as two. Tables sit in a scroll container, so a cell that
+   * cannot fit its code scrolls the table rather than breaking the name.
+   */
+  .rp-doc td code,
+  .rp-doc th code {
+    white-space: nowrap;
+  }
+
+  /* The same holds in prose. On a phone the measure is too short to promise that, so code breaks anywhere instead. */
+  .rspress-doc :is(p, li) > code {
+    white-space: nowrap;
+  }
+
+  @media (width < 640px) {
+    .rspress-doc :is(p, li) > code {
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  /*
+   * Generated prop types can be very long — a shape or colour union runs to
+   * hundreds of characters. The identifier inside a cell wraps instead of
+   * pushing the table wide, which Rspress's `code` rule would otherwise
+   * prevent by keeping it on one line.
+   */
+  .site-api td code,
+  .site-matrix__chips code {
+    white-space: normal !important;
+  }
+}

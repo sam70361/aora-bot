@@ -1,0 +1,151 @@
+# Getting started
+
+Aora Bot draws a cartoon character entirely from code. There are no sprite sheets and no exported animations: each body is a generated outline, each expression is a stroke described by a few numbers, and each frame is written straight to SVG attributes.
+
+If you only want to pick a character and copy the code, go to the [console](/): style on the left, colour and face on the right, shape along the bottom and the expression under the character. The sliders button tunes the style's parameters, and the code chip under the character copies the matching markup.
+
+## Install
+
+```bash
+pnpm add @aora-bot/react
+```
+
+The components need only `@aora-bot/react`, which brings `@aora-bot/engine` along. To import from `@aora-bot/engine` yourself (for example `getStyle`, `getInkVars` or `@aora-bot/engine/agent`), or to use the geometry and animation without React, also run `pnpm add @aora-bot/engine`.
+
+The packages are ESM-only: their `exports` have only the `import` condition, so `require()` is not available.
+
+Not using React? See [Without React](/guide/without-react) for the `<aora-bot>` custom element and a one-line CDN script.
+
+:::warning React 19 is required
+The component layer uses `ref` as an ordinary prop and returns cleanup functions from ref callbacks. Both are React 19 semantics. On React 18 the cleanups are ignored, shared animation sources are never released, and mirrored characters render blank.
+:::
+
+## First character
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+import '@aora-bot/react/styles.css';
+
+export default function Demo() {
+  return <CharacterMark shape="mochi" state="happy" sizePx={160} />;
+}
+```
+
+Import the stylesheet once at the root of your application. Three props carry most of the meaning and all of them have defaults, so the line above is the shortest form:
+
+| Prop    | What it controls                                                                   |
+| ------- | ---------------------------------------------------------------------------------- |
+| `shape` | Which [character](/design/shapes) to draw, `mochi` by default                      |
+| `color` | One hue of the [palette](/design/palette), `black` by default                      |
+| `state` | What it is doing, one of the [animation states](/design/states), `idle` by default |
+
+## Style, variant and colour
+
+Pick a style with `styleId`; every style has its own variants, picked with `variant`. Colour and state carry over unchanged.
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo site-demo--center">
+      <CharacterMark shape="cat" color="pink" state="happy" sizePx={110} variant="soft" />
+      <CharacterMark shape="cat" color="green" state="happy" sizePx={110} styleId="pixel" />
+      <CharacterMark shape="cat" state="happy" sizePx={110} styleId="kaomoji" variant="bubble" />
+    </div>
+  );
+}
+```
+
+Each style has a page: [Vector](/design/styles/vector), [Pixel](/design/styles/pixel), [Kaomoji](/design/styles/kaomoji). There are three faces, `cute` by default; pick another with `face`, see [Faces](/design/face).
+
+## The background token
+
+The default `cute` face is painted white and reads on any background. The eyes of the `eyes` and `line` faces are holes, filled with the page background colour and clipped to the body, and so is the face of the default `black` ink. If the character sits on something other than the page background, tell it so by setting `--aora-bg-base`:
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24 }}>
+      <div style={{ padding: 20, borderRadius: 12, background: '#101828' }}>
+        <CharacterMark shape="blob" color="cyan" face="eyes" sizePx={80} />
+      </div>
+      <div
+        style={{
+          padding: 20,
+          borderRadius: 12,
+          background: '#101828',
+          // Tell the character what is actually behind it.
+          ['--aora-bg-base' as string]: '#101828',
+        }}
+      >
+        <CharacterMark shape="blob" color="cyan" face="eyes" sizePx={80} />
+      </div>
+    </div>
+  );
+}
+```
+
+The first character punches its eyes to the page colour and shows two pale holes. The second matches its container. The stylesheet puts its tokens inside a `@layer`, so your own rules win over it without needing `!important`.
+
+## Imperative actions
+
+Characters expose three one-shot actions through a ref.
+
+```tsx preview
+import { useRef } from 'react';
+import { CharacterMark, type CharacterHandle } from '@aora-bot/react';
+
+export default function Demo() {
+  const ref = useRef<CharacterHandle>(null);
+
+  return (
+    <div className="site-demo site-demo--center">
+      <CharacterMark ref={ref} shape="pebble" color="violet" state="happy" sizePx={110} />
+      <div className="site-controls">
+        <button className="site-btn" onClick={() => ref.current?.spin(2)}>
+          spin(2)
+        </button>
+        <button className="site-btn" onClick={() => ref.current?.bounce()}>
+          bounce()
+        </button>
+        <button className="site-btn" onClick={() => ref.current?.burst()}>
+          burst()
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+## Characters for your users
+
+Any string hashes to a stable shape and ink, so you can show a consistent character per user without storing anything.
+
+```tsx preview
+import { AgentAvatar } from '@aora-bot/react';
+
+const people = ['ada@example.com', 'grace@example.com', 'alan@example.com', 'edsger@example.com'];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {people.map((id) => (
+        <div className="site-demo__cell" key={id}>
+          <AgentAvatar agent={{ id }} sizePx={52} />
+          <span className="site-demo__label">{id.split('@')[0]}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## Next
+
+- [Performance](/guide/performance) — how to render hundreds of characters
+- [Server rendering](/guide/server-rendering) — Next.js and static generation
+- [Components](/components/overview) — everything the React layer provides
+- [Internals](/internals/rendering) — how the engine actually works

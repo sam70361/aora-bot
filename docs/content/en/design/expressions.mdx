@@ -1,0 +1,219 @@
+import { ExpressionGrid, EyeTopologyGrid, LineExpressionGrid, CuteMouthGrid } from '@theme';
+
+# Expressions
+
+An expression is four things: the eyes, the mouth, the blush, and the effect some states throw off. The default `cute` face gives every state a set of them; this page goes through each.
+
+<ExpressionGrid />
+
+Above is every eye of the `cute` face, each a handful of numbers. When you pin an eye with the `expression` option, its name is the id shown here; when you do not, the state decides.
+
+## An eye is a curved stroke
+
+```ts
+interface EyeSpec {
+  dx: number; // offset from the anchor
+  dy: number;
+  len: number; // half-length of the centreline
+  width: number; // half-thickness
+  angle: number; // direction of the centreline
+  bend: number; // how far the midpoint bows sideways
+}
+```
+
+A centreline of half-length `len` points along `angle`, bows sideways by `bend`, then takes a thickness of `width` with round caps. A dot eye is a stroke with almost no length, so `width` is its radius; a smiling eye is a horizontal stroke with a negative bend; a closed eye is a horizontal stroke with a positive one. `sad` and `mad` carry a brow above the dot, and `cross` and `star` are an x and a four-pointed star.
+
+```tsx preview
+import { CUTE_EYE_TOPOLOGIES, CUTE_EYE_IDS } from '@aora-bot/engine';
+
+export default function Demo() {
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>len</th>
+          <th>width</th>
+          <th>angle</th>
+          <th>bend</th>
+          <th>dx / dy</th>
+        </tr>
+      </thead>
+      <tbody>
+        {CUTE_EYE_IDS.map((id) => {
+          const [left] = CUTE_EYE_TOPOLOGIES[id];
+          return (
+            <tr key={id}>
+              <td>
+                <code>{id}</code>
+              </td>
+              <td>{left.len}</td>
+              <td>{left.width}</td>
+              <td>{left.angle.toFixed(2)}</td>
+              <td>{left.bend}</td>
+              <td>
+                {left.dx} / {left.dy}
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+}
+```
+
+The eye radius is 7.8% of the body's width at the height of the face, capped at 8% of the body's height and floored at 5%, so a narrow body still gets eyes you can read. The eyes sit 2.6 radii apart — the proportions of a baby's face — and the face is placed close to the middle of the body.
+
+## The mouth
+
+<CuteMouthGrid />
+
+Like the eyes, the mouth is a handful of numbers and every field interpolates independently, so a state change morphs the mouth continuously instead of swapping it. `none` draws no mouth; each state names one in `STATE_CUTE_MOUTH`. `cat` is the two small arcs of an ω; the wider a mouth opens, the thinner its stroke, until it turns solid.
+
+Six states talk: `composing`, `dictating`, `messaging`, `sending`, `laughing` and `humming`. Their mouth pulses on two incommensurate sine waves. Under `prefers-reduced-motion` the pulse is off.
+
+The mouth and the blush follow 50% of the eyes' gaze, so turning the head tilts the whole face rather than moving the eyes while the mouth stays put.
+
+## Blush
+
+The blush is two flat, faint pink ellipses on the cheeks, strength 0 to 1, given per state (`STATE_BLUSH`) and eased on a spring. Only the warm moods, shyness and deep sleep flush; no busy state does, because a blush on every other face stops meaning anything.
+
+```tsx preview
+import { STATE_BLUSH } from '@aora-bot/engine';
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {Object.entries(STATE_BLUSH)
+        .filter(([, amount]) => amount > 0)
+        .map(([state, amount]) => (
+          <div className="site-demo__cell" key={state}>
+            <CharacterMark shape="mochi" color="blue" state={state as never} sizePx={72} />
+            <span className="site-demo__label">{state}</span>
+            <span className="site-demo__label" style={{ opacity: 0.6 }}>
+              {amount}
+            </span>
+          </div>
+        ))}
+    </div>
+  );
+}
+```
+
+## Mood effects
+
+Some states carry an effect outside the body: Zz for sleeping, a pink heart for happy, a tear for sad, three strokes for surprised, a red bang for refusing, gold sparkles for celebrating, a small spinning arc at the top right while working. Effects sit beside the body and never ring it. An effect is a pure function of time (`evaluateFx`) carried on the frame snapshot as `fx`, so the vector, pixel and kaomoji series agree automatically.
+
+`STATE_FX` maps states to effects. The table below reads it directly, and includes the activity effects the belt states use instead (see [States](/design/states#belt-states-on-the-cute-face)).
+
+```tsx preview
+import { FX_KINDS, STATE_FX } from '@aora-bot/engine';
+
+export default function Demo() {
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Effect</th>
+          <th>States</th>
+        </tr>
+      </thead>
+      <tbody>
+        {FX_KINDS.map((kind) => (
+          <tr key={kind}>
+            <td>
+              <code>{kind}</code>
+            </td>
+            <td>
+              {Object.entries(STATE_FX)
+                .filter(([, fx]) => fx === kind)
+                .map(([state]) => state)
+                .join(', ') || '—'}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+```
+
+## Cycling by state
+
+A state names a set of eyes and cycles through them at random intervals. `idle` drifts between the dot and an occasional glance to either side; `searching` switches roughly every half second.
+
+```tsx preview
+import { STATE_CUTE_EYES, STATE_EYE_SWITCH_MS } from '@aora-bot/engine';
+
+const rows = ['idle', 'thinking', 'searching', 'sleeping', 'angry', 'celebrate'] as const;
+
+export default function Demo() {
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>state</th>
+          <th>sequence</th>
+          <th>switch interval</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((state) => {
+          const ms = STATE_EYE_SWITCH_MS[state];
+          return (
+            <tr key={state}>
+              <td>
+                <code>{state}</code>
+              </td>
+              <td>{STATE_CUTE_EYES[state].join(' → ')}</td>
+              <td>{ms ? `${ms[0]}–${ms[1]} ms` : 'held'}</td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+}
+```
+
+## Blinking
+
+A blink is not a fade. The eye squeezes to 5% of its height, overshoots to 108%, then settles at 100%. Without the overshoot it reads as the eye briefly disappearing rather than blinking. After the first blink there is a 14% chance of a second.
+
+## Expressions on the eyes and line faces
+
+The `eyes` and `line` faces have a set of eye topologies of their own, each also one curved stroke. Below they are drawn on the `eyes` face, and then at the shared line weight of the [line face](/design/face): the geometry is unchanged, the eyes are smaller, and the thin expressions are floored to the weight of the nose and mouth beside them.
+
+<EyeTopologyGrid />
+
+<LineExpressionGrid />
+
+`wink` is the exception: the one topology whose two eyes differ, a happy arc on one side and a neutral eye on the other. The `cute` face has an eye of the same name.
+
+On the `cute` face an eye name from the `eyes` and `line` sets is translated to the nearest cute eye (`happy` → `arch`, `angry` → `mad`, `dizzy` → `cross`, and so on), so the same `expression` value means something on every face.
+
+On the `eyes` and `line` faces the eye radius is a fixed share of the body's width at eye height, capped by the body's height and floored for thin bodies. The fitted face box decides only _where_ the face goes, not how big it is. On a round body an open eye is about a fifth of the body's width and a quarter of its height, with a gap between the eyes a little wider than an eye — the proportions of a face drawn on a ball. Every outline is then stretched horizontally by a fixed factor, so the open eye reads as an oval rather than a slit and the closed and smiling strokes span a matching width. A counter-scale finally compensates for each shape's own rendering scale, which keeps eyes the same size across shapes.
+
+## Why parameters and not outlines
+
+The obvious representation is a digitised ring of points per expression, exported from a design file.
+
+Parameters win for one concrete reason: **morphing**. The same argument settles the [line face's mouth](/design/face#the-mouth-is-six-numbers) — six numbers for the same reason the eye is a handful.
+
+Interpolating two rings point by point lets points cross each other halfway. From a horizontal bar to a vertical one, a naive blend passes through a tangle rather than a rotation. An implementation that stores outlines has to work around this: recover the principal axis from the points, blend the axes, and rebuild the outline — in effect rediscovering the parameters that were thrown away.
+
+Interpolating a handful of numbers is exact. Every intermediate value is a valid eye, because there is no way to express an invalid one.
+
+```ts
+morphEye(a, b, t); // always an eye
+```
+
+The one subtlety is that `angle` takes the shorter way round, so a +40° squint does not sweep through horizontal on its way to −40°.
+
+## Next
+
+- [States](/design/states) — what each state wears and throws off
+- [Faces](/design/face) — the three faces, and the line face's nose and mouth
+- [Face and pose](/internals/face-and-pose) — how the head turns
