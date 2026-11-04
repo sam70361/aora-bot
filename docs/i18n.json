@@ -1,4 +1,7 @@
 {
+  "footer.lead": { "en": "© 2026 sam70361. Licensed under the ", "zh": "© 2026 sam70361，按 " },
+  "footer.license": { "en": "Aora Bot License", "zh": "Aora Bot 许可协议" },
+  "footer.tail": { "en": ".", "zh": "授权" },
   "overview.group.core": { "en": "Core", "zh": "核心" },
   "overview.group.avatar": { "en": "Avatars", "zh": "头像" },
   "overview.group.activity": { "en": "Activity and effects", "zh": "活动与特效" },
@@ -236,7 +239,7 @@
   "tokens.radii": { "en": "Radii", "zh": "圆角" },
   "tokens.copied": { "en": "Copied", "zh": "已复制" },
   "home.title.lead": { "en": "Give your interface", "zh": "让界面" },
-  "home.title.em": { "en": "a face", "zh": "有表情" },
+  "home.title.em": { "en": "a face", "zh": "趣味生动" },
   "home.tagline": {
     "en": "One line of code gives your AI, statuses and avatars a character that moves.",
     "zh": "一行代码，给 AI、状态和头像装上会动的角色。"
@@ -245,6 +248,9 @@
   "home.start": { "en": "Get started", "zh": "开始使用" },
   "home.random": { "en": "Random combination", "zh": "随机组合" },
   "home.copyCode": { "en": "Copy code", "zh": "复制代码" },
+  "home.copyLink": { "en": "Copy avatar link", "zh": "复制头像链接" },
+  "home.format": { "en": "Code format", "zh": "代码格式" },
+  "home.format.avatar": { "en": "Avatar", "zh": "头像" },
   "home.copied": { "en": "Copied", "zh": "已复制" },
   "home.share": { "en": "Copy share link", "zh": "复制分享链接" },
   "home.rail.style": { "en": "Style", "zh": "画风" },

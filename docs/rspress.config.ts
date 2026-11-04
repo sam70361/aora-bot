@@ -75,10 +75,6 @@ export default defineConfig({
       docRepoBaseUrl: 'https://github.com/sam70361/aora-bot/tree/main/docs/content',
     },
     lastUpdated: true,
-    footer: {
-      message:
-        'Released under the Aora Bot License. Not affiliated with any product discussed in the analysis.',
-    },
   },
 
   markdown: {

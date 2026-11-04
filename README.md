@@ -80,6 +80,8 @@ import '@aora-bot/surfaces/styles.css'; // 放在 react 样式之后
 <img src="https://aora-bot.vercel.app/avatar/alice.svg" width="64" height="64" alt="alice" />
 ```
 
+> CDN 引入和头像接口在中国大陆暂不可用，用 npm 安装、随项目打包的方式不受影响。面向大陆用户的访问方案已在计划中。
+
 ## 包
 
 | 包                   | 作用                                                                                                                                                   |

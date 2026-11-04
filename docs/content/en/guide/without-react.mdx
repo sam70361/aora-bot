@@ -20,7 +20,11 @@ One script tag is the whole setup. The file bundles the engine and registers `<a
 </html>
 ```
 
-Pin a version in the URL, for example `@aora-bot/element@0.1.1`, so a later release cannot change a page you have already shipped.
+Pin a version in the URL, for example `@aora-bot/element@0.1.2`, so a later release cannot change a page you have already shipped.
+
+:::warning Not yet available in mainland China
+jsDelivr is unreliable in mainland China, so a page that loads the element from the CDN may fail to load there. Installing from npm and bundling it with your project is not affected. Access for users in mainland China is planned.
+:::
 
 ## Install
 
@@ -54,6 +58,7 @@ Every attribute is optional. A value the engine does not know falls back to the 
 | `state`          | What it is doing, one of the [animation states](/design/states), `idle` by default     |
 | `style-id`       | The style series: `vector` (default), `pixel` or `kaomoji`                             |
 | `variant`        | A variant of that style, such as `outline` or `dot`                                    |
+| `style-options`  | A JSON object of that style's parameters, such as `{"paperOffset":12}`                 |
 | `seed`           | Any string; two characters with different seeds do not blink in unison                 |
 | `size`           | A CSS length, or a number of pixels; `28px` by default                                 |
 | `eye-color`      | A CSS colour for the eye cut-outs                                                      |
@@ -67,6 +72,12 @@ Every attribute is optional. A value the engine does not know falls back to the 
 | `auto-pause`     | Boolean. Stop while the page is hidden or the character is scrolled out of view        |
 
 The style series is `style-id` because `style` is already the inline CSS attribute. Changing an attribute updates the running character. Only `seed`, `reduced-motion` and `auto-pause` are read once, so changing one of them builds a new character.
+
+`style-options` takes the parameters of the chosen style, which are listed on the style pages ([vector](/design/styles/vector), [pixel](/design/styles/pixel), [kaomoji](/design/styles/kaomoji)). Write them as a JSON object in a single-quoted attribute; a value that is not a JSON object is ignored, and removing the attribute restores the defaults.
+
+```html
+<aora-bot shape="mochi" color="blue" variant="paper" style-options='{"paperOffset":12}'></aora-bot>
+```
 
 The element is `role="img"` and carries an `aria-label` with the cast member's name, in Chinese when the nearest `lang` is `zh`. Set your own `aria-label` or `role` and they are left alone.
 

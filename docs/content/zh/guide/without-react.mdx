@@ -20,7 +20,11 @@
 </html>
 ```
 
-建议在地址里固定版本，例如 `@aora-bot/element@0.1.1`，这样之后发布的新版本不会改变已经上线的页面。
+建议在地址里固定版本，例如 `@aora-bot/element@0.1.2`，这样之后发布的新版本不会改变已经上线的页面。
+
+:::warning 中国大陆暂不可用
+jsDelivr 在中国大陆访问不稳定，从 CDN 引入的页面在大陆可能无法加载。用 npm 安装、随项目一起打包的方式不受影响。面向大陆用户的访问方案已在计划中。
+:::
 
 ## 安装
 
@@ -54,6 +58,7 @@ defineAoraBot();
 | `state`          | 它正在做什么，[动画状态](/design/states)之一，默认 `idle`                              |
 | `style-id`       | 画风：`vector`（默认）、`pixel` 或 `kaomoji`                                           |
 | `variant`        | 该画风的变体，例如 `outline` 或 `dot`                                                  |
+| `style-options`  | 该画风参数的 JSON 对象，例如 `{"paperOffset":12}`                                      |
 | `seed`           | 任意字符串；种子不同的角色不会同时眨眼                                                 |
 | `size`           | CSS 长度，或像素数；默认 `28px`                                                        |
 | `eye-color`      | 眼睛镂空处的 CSS 颜色                                                                  |
@@ -67,6 +72,12 @@ defineAoraBot();
 | `auto-pause`     | 布尔。页面隐藏或角色滚出视口时停止动画                                                 |
 
 画风叫 `style-id`，因为 `style` 已经是内联 CSS 的属性名。修改属性会就地更新正在运行的角色。只有 `seed`、`reduced-motion` 和 `auto-pause` 是创建时读取一次的，修改它们会重新创建角色。
+
+`style-options` 接收所选画风的参数，参数列表见各画风页面（[vector](/design/styles/vector)、[pixel](/design/styles/pixel)、[kaomoji](/design/styles/kaomoji)）。把它们写成 JSON 对象，放进单引号属性里；不是 JSON 对象的值会被忽略，移除这个属性则恢复默认值。
+
+```html
+<aora-bot shape="mochi" color="blue" variant="paper" style-options='{"paperOffset":12}'></aora-bot>
+```
 
 元素带有 `role="img"`，`aria-label` 是阵容成员的名字；最近的 `lang` 是 `zh` 时用中文名。自己设置了 `aria-label` 或 `role`，它们就不会被改动。
 

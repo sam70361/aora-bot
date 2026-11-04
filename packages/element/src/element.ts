@@ -43,6 +43,8 @@ export interface AoraBotAttributes {
   /** The style series. Named `style-id` because `style` is already the inline CSS. */
   'style-id'?: StyleId;
   variant?: StyleVariant;
+  /** A JSON object of the series' parameters, such as `{"paperOffset":12}`. */
+  'style-options'?: string;
   seed?: string;
   /** A CSS length, or a bare number of pixels. Defaults to 28px. */
   size?: string | number;
@@ -68,6 +70,7 @@ const ATTRIBUTES = [
   'state',
   'style-id',
   'variant',
+  'style-options',
   'seed',
   'size',
   'eye-color',
@@ -121,6 +124,18 @@ const finite = (value: string | null): number | undefined => {
   return Number.isFinite(number) ? number : undefined;
 };
 
+/** The attribute as a JSON object; text that is not one is read as no parameters, never as an error. */
+function jsonObject(value: string | null): Record<string, unknown> {
+  try {
+    const parsed: unknown = JSON.parse(value ?? '');
+    return parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)
+      ? (parsed as Record<string, unknown>)
+      : {};
+  } catch {
+    return {};
+  }
+}
+
 /** A bare number is pixels. Anything else has to be a width the browser accepts. */
 function cssLength(value: string | null): string | null {
   const text = value?.trim();
@@ -172,6 +187,7 @@ function resolve(el: Element): Resolved {
       state,
       variant,
       style,
+      styleOptions: jsonObject(get('style-options')),
       face,
       nose,
       paused: el.hasAttribute('paused'),
@@ -216,6 +232,7 @@ export class AoraBotElement extends Base {
   declare state: string | null;
   declare styleId: string | null;
   declare variant: string | null;
+  declare styleOptions: string | null;
   declare seed: string | null;
   declare size: string | null;
   declare eyeColor: string | null;
@@ -319,6 +336,7 @@ const PROPERTIES = {
     state: 'state',
     styleId: 'style-id',
     variant: 'variant',
+    styleOptions: 'style-options',
     seed: 'seed',
     size: 'size',
     eyeColor: 'eye-color',

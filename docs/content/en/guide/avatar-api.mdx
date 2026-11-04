@@ -2,6 +2,10 @@
 
 A free endpoint that turns any string into a character. Put the URL in an `<img>` and you get a deterministic Aora Bot avatar: the same id always returns the same character, with nothing to install, store or sign up for.
 
+:::warning Not yet available in mainland China
+The endpoint runs on `aora-bot.vercel.app`, which is usually unreachable from mainland China, so avatars may not show for users there. Access for users in mainland China is planned.
+:::
+
 ## Use it
 
 ```html
@@ -25,6 +29,9 @@ Every parameter is optional and goes in the query string.
 | `style`   | `vector`, `pixel`, `kaomoji`                                           | `vector`     | The [style series](/design/styles/vector) the character is drawn in |
 | `variant` | A variant of the chosen style, listed below                            | style's own  | Paint variant within the style                                      |
 | `state`   | Any [state](/design/states), such as `happy`, `thinking` or `sleeping` | resting face | The face and pose the character holds                               |
+| `shape`   | Any [shape](/design/shapes) id, such as `mochi` or `hex`               | from the id  | Replaces the character's body                                       |
+| `color`   | Any hue of the [palette](/design/palette), such as `blue` or `pink`    | from the id  | Replaces the character's colour                                     |
+| `face`    | `cute`, `eyes` or `line`, see [Faces](/design/face)                    | `cute`       | The face style                                                      |
 | `size`    | An integer from `16` to `1024`                                         | `128`        | Width and height of the SVG in pixels; other values are clamped     |
 
 Variants by style:
@@ -33,16 +40,22 @@ Variants by style:
 - `pixel`: `crisp` (default), `dot`, `block`
 - `kaomoji`: `plain` (default), `bubble`
 
+Every parameter of the chosen style is also a query key, for example `strokeWidth` or `paperOffset` for `vector`, `grid` or `outline` for `pixel`, `weight` or `tail` for `kaomoji`. Numbers are written as numbers and booleans as `true` or `false` (`1` and `0` also work). The ranges are listed on the style pages: [vector](/design/styles/vector), [pixel](/design/styles/pixel) and [kaomoji](/design/styles/kaomoji).
+
 ```text
 https://aora-bot.vercel.app/avatar/alice.svg?style=pixel&variant=block&size=96
 https://aora-bot.vercel.app/avatar/alice.svg?state=happy
+https://aora-bot.vercel.app/avatar/mochi-blue.svg?shape=mochi&color=blue&state=happy
+https://aora-bot.vercel.app/avatar/alice.svg?variant=paper&paperOffset=12
 ```
 
-A value outside these lists, such as `style=oil` or `size=big`, returns HTTP 400 with a one-line plain-text reason. Query parameters the endpoint does not know are ignored. The background is transparent.
+The [console](/) on the home page builds one of these for you: choose the avatar format on its code chip to copy the link for the character you made.
+
+A value outside these lists, such as `style=oil`, `color=plaid`, `size=big` or a style parameter out of range, returns HTTP 400 with a one-line plain-text reason. Query parameters the endpoint does not know are ignored. The background is transparent.
 
 ## Which character you get
 
-If the id is exactly a [cast](/design/cast) id, you get that character: `/avatar/luna.svg` is Luna. Any other id is hashed to one of the 46 cast members, so the choice is stable and spreads evenly. Because the cast has 46 members, two different ids can land on the same character; treat the avatar as a friendly default, not as a unique identity.
+If the id is exactly a [cast](/design/cast) id, you get that character: `/avatar/luna.svg` is Luna. Any other id is hashed to one of the 46 cast members, so the choice is stable and spreads evenly. `shape`, `color` and `face` replace what the id picked, so an id with all three set is only a file name. Because the cast has 46 members, two different ids can land on the same character; treat the avatar as a friendly default, not as a unique identity.
 
 The result is fixed for a given engine version. A release that redraws a character or changes the cast can change what an id looks like.
 
