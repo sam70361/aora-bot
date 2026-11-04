@@ -4,16 +4,18 @@
 
 **为 AI 助手打造的表情引擎 —— 32 种状态表情 · 3 种身体形态 · 纯 SVG + 原生 JavaScript · 零依赖**
 
-[![在线预览](https://img.shields.io/badge/demo-emotion--balls.vercel.app-8A63F4?logo=vercel&logoColor=white)](https://emotion-balls.vercel.app/)
+[![在线预览](https://img.shields.io/badge/demo-GitHub%20Pages-8A63F4?logo=github&logoColor=white)](https://sam70361.github.io/aora-bot/)
 [![许可](https://img.shields.io/badge/license-learning--only-orange)](LICENSE)
 [![零依赖](https://img.shields.io/badge/dependencies-zero-brightgreen)](#)
 [![技术栈](https://img.shields.io/badge/made%20with-vanilla%20JS%20%2B%20SVG-F7DF1E?logo=javascript&logoColor=black)](#)
 
 **中文** | [English](README.en.md)
 
-[在线预览](https://emotion-balls.vercel.app/) · [特性](#特性) · [快速开始](#快速开始) · [集成指南](#集成指南) · [自定义与扩展](#自定义与扩展) · [许可](#许可)
+[在线预览](https://sam70361.github.io/aora-bot/) · [特性](#特性) · [快速开始](#快速开始) · [集成指南](#集成指南) · [自定义与扩展](#自定义与扩展) · [许可](#许可)
 
 </div>
+
+> **表情馆已升级为 Aora Bot。** 这里是 Emotion Ball 表情馆的经典版存档，保留原始代码、提交历史与原授权，不再更新。新的角色引擎、文档与 npm 包见 [Aora Bot](https://github.com/sam70361/aora-bot)。
 
 ---
 

@@ -4,16 +4,18 @@
 
 **An expression engine for AI assistants — 32 emotion states · 3 body shapes · pure SVG + vanilla JavaScript · zero dependencies**
 
-[![Live Demo](https://img.shields.io/badge/demo-emotion--balls.vercel.app-8A63F4?logo=vercel&logoColor=white)](https://emotion-balls.vercel.app/)
+[![Live Demo](https://img.shields.io/badge/demo-GitHub%20Pages-8A63F4?logo=github&logoColor=white)](https://sam70361.github.io/aora-bot/)
 [![License](https://img.shields.io/badge/license-learning--only-orange)](LICENSE)
 [![Zero Dependencies](https://img.shields.io/badge/dependencies-zero-brightgreen)](#)
 [![Made With](https://img.shields.io/badge/made%20with-vanilla%20JS%20%2B%20SVG-F7DF1E?logo=javascript&logoColor=black)](#)
 
 [中文](README.md) | **English**
 
-[Live demo](https://emotion-balls.vercel.app/) · [Features](#features) · [Quick start](#quick-start) · [Integration guide](#integration-guide) · [Customization](#customization--extensibility) · [License](#license)
+[Live demo](https://sam70361.github.io/aora-bot/) · [Features](#features) · [Quick start](#quick-start) · [Integration guide](#integration-guide) · [Customization](#customization--extensibility) · [License](#license)
 
 </div>
+
+> **Emotion Ball is now Aora Bot.** This branch is the classic Emotion Ball archive, kept with its original code, history and license, and no longer updated. The new character engine, docs and npm packages live in [Aora Bot](https://github.com/sam70361/aora-bot).
 
 ---
 
