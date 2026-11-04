@@ -222,6 +222,7 @@ button, input, select { font: inherit; color: inherit; }
   transition: color 0.2s, border-color 0.2s, background 0.2s;
 }
 .icon-btn:hover { color: var(--text); border-color: var(--line-strong); background: var(--bg-soft); }
+.upgrade-link { text-decoration: none; }
 
 .lang-btn {
   width: auto;

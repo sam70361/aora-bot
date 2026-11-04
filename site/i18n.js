@@ -11,6 +11,7 @@ window.MM_I18N = (function () {
     zh: {
       docTitle: 'Emotion Gallery 表情总馆',
       brandName: 'Emotion Gallery',
+      upgradeLink: '新版 Aora Bot',
       navWall: '陈列墙',
       navAlbum: '画册',
       langBtn: 'EN',
@@ -56,6 +57,7 @@ window.MM_I18N = (function () {
     en: {
       docTitle: 'Emotion Gallery',
       brandName: 'Emotion Gallery',
+      upgradeLink: 'New: Aora Bot',
       navWall: 'Wall',
       navAlbum: 'Album',
       langBtn: '中',
