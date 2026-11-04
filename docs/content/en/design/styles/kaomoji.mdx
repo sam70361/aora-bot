@@ -1,0 +1,152 @@
+# Kaomoji style
+
+The `kaomoji` series writes a character as one line of text: `(・ω・)`, `☁(^▽^) ♪`, `ฅ(・ω・)ฅ`. The shape chooses the brackets, the state chooses the face and the tail. It has no body, which makes it the lightest series — and one you can still tell apart inside a line of prose.
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {['mochi', 'cat', 'cloud', 'ghost', 'bunny', 'bot'].map((shape) => (
+        <CharacterMark
+          key={shape}
+          styleId="kaomoji"
+          shape={shape}
+          color="violet"
+          state="happy"
+          sizePx={120}
+        />
+      ))}
+    </div>
+  );
+}
+```
+
+```tsx
+<CharacterMark styleId="kaomoji" shape="cat" state="happy" />
+<CharacterMark styleId="kaomoji" variant="bubble" shape="cloud" state="thinking" />
+```
+
+The default series is `vector`; a character with no style set is drawn in it.
+
+## Variants
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+const variants = ['plain', 'bubble'] as const;
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {variants.map((variant) => (
+        <div className="site-demo__cell" key={variant}>
+          <CharacterMark
+            styleId="kaomoji"
+            variant={variant}
+            shape="mochi"
+            color="orange"
+            state="curious"
+            sizePx={140}
+          />
+          <span className="site-demo__label">{variant}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+| Variant  | Drawn as                                                           |
+| -------- | ------------------------------------------------------------------ |
+| `plain`  | Text alone. The default.                                           |
+| `bubble` | The text set on a pill lightly tinted with the ink, like a bubble. |
+
+## The shape picks the brackets
+
+Which brackets a shape wears is decided by `SHAPE_WRAPPERS` in the engine: a cat is `ฅ( )ฅ`, a bunny `૮( )ა`, a cloud `☁( )`, and a shape without brackets of its own gets a plain pair of parentheses.
+
+```tsx preview
+import { SHAPE_IDS } from '@aora-bot/react';
+import { kaomoji } from '@aora-bot/engine';
+
+export default function Demo() {
+  return (
+    <table>
+      <tbody>
+        {SHAPE_IDS.map((id) => (
+          <tr key={id}>
+            <td>
+              <code>{id}</code>
+            </td>
+            <td>{kaomoji(id, 'idle')}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+```
+
+## The state picks the face and the tail
+
+The face inside the brackets keeps the grammar of the `cute` face: dot eyes for attention, arcs for contentment, crosses for refusal. The tail after the brackets is the state's mood effect written as a mark: `zZ`, `♪`, `✎`, `!`. Every state has a face (`STATE_FACES`) and a tail (`STATE_TAILS`, which may be empty).
+
+```tsx preview
+import { CHARACTER_STATES } from '@aora-bot/react';
+import { kaomoji } from '@aora-bot/engine';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {CHARACTER_STATES.map((state) => (
+        <div className="site-demo__cell" key={state}>
+          <span style={{ fontSize: 18, whiteSpace: 'nowrap' }}>{kaomoji('mochi', state)}</span>
+          <span className="site-demo__label">{state}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+`styleOptions.tail` switches the tail off and leaves the brackets and the face.
+
+## As plain text
+
+`kaomoji(shape, state)` returns the very line the series draws, so chat messages, terminal output and logs can use the same characters:
+
+```ts
+import { kaomoji } from '@aora-bot/engine';
+
+kaomoji('cat', 'happy'); // ฅ(^▽^)ฅ ♪
+kaomoji('mochi', 'thinking'); // (・_・)?
+```
+
+## Parameters
+
+| Parameter | Default | Range      | Meaning                                                     |
+| --------- | ------- | ---------- | ----------------------------------------------------------- |
+| `weight`  | `500`   | 300 to 800 | Font weight, in steps of 100.                               |
+| `tail`    | `true`  | on or off  | Whether the mood mark after the closing bracket is written. |
+
+```tsx
+<CharacterMark styleId="kaomoji" styleOptions={{ weight: 700, tail: false }} />
+```
+
+As in the other series, the engine clamps values into range and drops unknown keys, and a running character can switch with `update({ style, variant, styleOptions })`.
+
+## What it draws, and what it does not
+
+The line of text is the whole character. It rides the body's transform, so a hop, a squash or a tilt carries the text with it. The belt, the HUD dial and the particles have no counterpart here — mood is told by the tail, and activity by the tail and the face.
+
+- The text is rendered in the host's font (falling back through `ui-sans-serif`, `PingFang SC` and `Microsoft YaHei`), so glyphs differ a little between systems. Width is estimated, and the font size is scaled so the whole line fits the character's box.
+- The colour is the character's ink, so it follows the light and dark theme like every other series.
+- Static output is deterministic and needs no DOM, so it is safe for server rendering.
+
+## Next
+
+- [Vector styles](/design/styles/vector) — the default series and its seven variants
+- [Pixel style](/design/styles/pixel) — the same character on a grid
+- [Shapes](/design/shapes) — where each shape's brackets come from

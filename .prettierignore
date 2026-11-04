@@ -1,0 +1,9 @@
+node_modules
+dist
+doc_build
+.rspress
+reference
+pnpm-lock.yaml
+CHANGELOG.md
+packages/engine/test/__snapshots__
+docs/theme/generated

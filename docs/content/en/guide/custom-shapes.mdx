@@ -1,0 +1,167 @@
+# Custom shapes
+
+A shape is a function that returns a closed outline. Everything else — the path, the face position, the eye size, how much the body is allowed to tilt, the particle orbit radius, the morph ring — is derived from those points.
+
+## Register one
+
+```tsx preview
+import { useEffect, useState } from 'react';
+import { CharacterMark, defineShape } from '@aora-bot/react';
+
+// A five-lobed scallop, sampled in polar coordinates.
+function lobes(): [number, number][] {
+  const points: [number, number][] = [];
+  for (let i = 0; i < 180; i++) {
+    const t = (i / 180) * Math.PI * 2;
+    const r = 96 + 20 * Math.cos(5 * t);
+    points.push([r * Math.cos(t), r * Math.sin(t)]);
+  }
+  return points;
+}
+
+export default function Demo() {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    defineShape('lobes', lobes);
+    setReady(true);
+  }, []);
+
+  if (!ready) return null;
+
+  return (
+    <div className="site-demo site-demo--center">
+      <CharacterMark shape={'lobes' as never} color="yellow" state="happy" sizePx={120} />
+      <CharacterMark shape={'lobes' as never} color="magenta" state="thinking" sizePx={120} />
+    </div>
+  );
+}
+```
+
+Note what you did _not_ have to supply: where the eyes go, how big they are, whether the shape is allowed to tip, or what path data to ship.
+
+:::tip Use a new id
+`defineShape` with an existing id replaces that built-in character, for the whole page. Avoid every id in [`SHAPE_IDS`](/design/shapes).
+:::
+
+## What gets derived
+
+| Property     | How                                                          |
+| ------------ | ------------------------------------------------------------ |
+| `path`       | Outline normalised to a standard size and centred            |
+| `face`       | Largest inscribed ellipse, found by grid search              |
+| `radius`     | Farthest point from the centre                               |
+| `beltRadius` | Widest horizontal half-extent, used as the particle orbit    |
+| `tiltScale`  | Width just above the base compared with slightly higher up   |
+| `spanAt(y)`  | Lookup table of left and right edges, used to clamp the eyes |
+| `ring`       | 96-point polar resample, used to morph between shapes        |
+
+Derivation is lazy — a shape is built the first time it is used, not at import, because face fitting is expensive. [Shape derivation](/internals/shape-derivation) has the measurements.
+
+Cusps on organic outlines (the tip of a drop, the point of a leaf) should be softened with `shapeGenerators.fourierSmooth` rather than a corner radius.
+
+## Ears, leaves and antennae
+
+The ears, leaves and antennae of the built-in characters are `ShapeDef.parts`: they ride the body and deform with its pose, and apart from `hair`, which the face steers clear of, they take no part in fitting the face. `defineShape` takes them in its options, each a `tone` and an outline in the same coordinates as the body (see [Shapes](/design/shapes#parts) for what the four tones paint). They are normalised together with the body, so a part never has to be placed in the 228-unit box by hand.
+
+```tsx preview
+import { useEffect, useState } from 'react';
+import { CharacterMark, defineShape } from '@aora-bot/react';
+
+function ellipse(cx: number, cy: number, rx: number, ry: number): [number, number][] {
+  return Array.from({ length: 64 }, (_, i) => {
+    const t = (i / 64) * Math.PI * 2;
+    return [cx + rx * Math.cos(t), cy + ry * Math.sin(t)];
+  });
+}
+
+export default function Demo() {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    defineShape('eared', () => ellipse(0, 0, 100, 88), {
+      parts: [
+        { tone: 'body', outline: ellipse(-58, -92, 26, 42) },
+        { tone: 'body', outline: ellipse(58, -92, 26, 42) },
+        { tone: 'inner', outline: ellipse(-58, -90, 12, 26) },
+        { tone: 'inner', outline: ellipse(58, -90, 12, 26) },
+      ],
+    });
+    setReady(true);
+  }, []);
+
+  if (!ready) return null;
+
+  return (
+    <div className="site-demo site-demo--center">
+      <CharacterMark shape={'eared' as never} color="orange" state="happy" sizePx={120} />
+      <CharacterMark shape={'eared' as never} color="violet" state="idle" variant="sticker" sizePx={120} />
+    </div>
+  );
+}
+```
+
+Parts do not morph: when a character changes shape, the old ones fade out and the new ones fade in.
+
+## Rules for a good outline
+
+**Return points, not a path string.** The registry needs to measure the outline, and measuring a path means parsing and flattening it.
+
+**Centre on the origin.** Normalisation re-centres by bounding box, so a roughly centred outline avoids surprises when a long tail shifts the box.
+
+**Sample densely enough.** 128 to 160 points is right. Below about 60 the Catmull-Rom spline through them starts to visibly cut corners.
+
+**Avoid sharp concave notches.** The face fitter looks for the roomiest ellipse; a shape that is mostly thin arms will end up with a tiny face and correspondingly tiny eyes.
+
+**Keep the aspect ratio moderate.** Something three times taller than it is wide leaves no room for two eyes side by side.
+
+## Rounded polygons
+
+For faceted shapes, use the same helper. It clips each corner radius to what the adjacent edges can accommodate, so an over-large radius degrades into a circle instead of producing self-intersecting geometry.
+
+```tsx preview
+import { useEffect, useState } from 'react';
+import { CharacterMark, defineShape } from '@aora-bot/react';
+import { shapeGenerators } from '@aora-bot/engine';
+
+function facet(): [number, number][] {
+  const vertices: [number, number][] = [];
+  for (let i = 0; i < 5; i++) {
+    const a = -Math.PI / 2 + (i / 5) * Math.PI * 2;
+    vertices.push([112 * Math.cos(a), 112 * Math.sin(a)]);
+  }
+  return shapeGenerators.roundedPolygon(vertices, new Array(5).fill(22));
+}
+
+export default function Demo() {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    defineShape('facet', facet);
+    setReady(true);
+  }, []);
+  if (!ready) return null;
+  return <CharacterMark shape={'facet' as never} color="cyan" state="proud" sizePx={120} />;
+}
+```
+
+## Nudging the face
+
+Triangular shapes have room at the base but not at the apex, which pushes the face low and can crowd one eye. `leftDX` shifts the left eye:
+
+```ts
+defineShape('triangle', triangle, { leftDX: -6 });
+```
+
+Use it sparingly. If a shape needs more than a few units of correction, the outline is usually the thing to change.
+
+## Contributing a character
+
+The built-in characters are a coherent set — they are meant to be told apart at 16 pixels, which rules out anything intricate. New characters are better published as userland registrations than added to the core.
+
+If you have a character you think belongs in the set, open an issue with the generator function and a screenshot at 16, 36 and 120 pixels.
+
+## Next
+
+- [Shape derivation](/internals/shape-derivation) — from an outline to a face box
+- [Shapes](/design/shapes) — every built-in character
+- [Performance](/guide/performance) — how to render hundreds of characters

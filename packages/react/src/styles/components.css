@@ -1,0 +1,773 @@
+@layer aora.base {
+  /*
+   * The two variables every character reads. `--aora-fg` is set per instance
+   * by the component; `--aora-bg` defaults to the page background so the eye
+   * cut-outs look like holes rather than white paint. Overriding
+   * `--aora-bg-base` on any ancestor re-themes the holes for that subtree,
+   * which is what lets a character sit on a coloured card.
+   */
+  .aora-mark {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+    --aora-bg: var(--aora-bg-base, Canvas);
+    /*
+     * A host that wants a lift under a character sets `--aora-mark-filter` on
+     * a container, rather than reaching into `.aora-mark` with a descendant
+     * selector. Inherited, so it reaches every mark below the container.
+     */
+    filter: var(--aora-mark-filter, none);
+  }
+
+  .aora-mark > svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /*
+   * `.aora-mark--mirror` and `.aora-mark--still` carry no styles of their own.
+   * They mark how a character is being drawn — a `<use>` of a shared source,
+   * or a frozen SVG past the stage's cap — so a consumer or a test can tell
+   * the three cases apart without reading the markup.
+   */
+
+  /* Hidden host for shared animation sources. Off-screen rather than
+     `display: none`, because a display-none SVG is not rendered and `<use>`
+     would have nothing to mirror. */
+  .aora-stage {
+    position: fixed;
+    top: 0;
+    inset-inline-start: 0;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0;
+  }
+}
+
+@layer aora.components {
+  /* ---- avatar ---------------------------------------------------------- */
+
+  .aora-avatar {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: var(--aora-radius-pill);
+  }
+
+  /*
+   * `--aora-avatar-fill` lets the character be smaller than the circle it sits
+   * in without the circle changing size, which is what keeps a row of avatars
+   * aligned when one of them is inset.
+   */
+  .aora-avatar img {
+    display: block;
+    width: var(--aora-avatar-fill, 100%);
+    height: var(--aora-avatar-fill, 100%);
+    object-fit: cover;
+  }
+
+  .aora-avatar--picture img {
+    border-radius: var(--aora-radius-pill);
+  }
+
+  /*
+   * A group's cluster is wider than it is tall, so the circle the single
+   * avatar draws would cut the outer discs off. The class exists mainly as a
+   * hook — a host that wants a plate behind its groups has somewhere to put
+   * it — and squares off the box while it is here.
+   */
+  .aora-avatar--group {
+    border-radius: 0;
+  }
+
+  /* ---- stack ----------------------------------------------------------- */
+
+  .aora-stack {
+    position: relative;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  .aora-stack__item {
+    position: absolute;
+    top: 0;
+    display: block;
+  }
+
+  .aora-stack__item img {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .aora-stack__overflow {
+    position: absolute;
+    top: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--aora-radius-pill);
+    background: var(--aora-fill);
+    color: var(--aora-text-muted);
+    font-size: var(--aora-text-xs);
+    font-weight: var(--aora-weight-semibold);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---- badges ---------------------------------------------------------- */
+
+  .aora-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.125rem;
+    height: 1.125rem;
+    padding: 0 var(--aora-space-1);
+    border-radius: var(--aora-radius-pill);
+    background: var(--aora-accent);
+    color: var(--aora-on-accent);
+    font-size: var(--aora-text-xs);
+    font-weight: var(--aora-weight-semibold);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  /*
+   * `isolate` so the halo ring, which sits at `z-index: -1` to get behind the
+   * dot's own background, cannot also slide behind the avatar it is pinned to.
+   */
+  .aora-status {
+    position: relative;
+    isolation: isolate;
+    display: inline-block;
+    width: 0.5625rem;
+    height: 0.5625rem;
+    border-radius: var(--aora-radius-pill);
+    box-shadow: 0 0 0 2px var(--aora-bg-base);
+    background: var(--aora-status-ink, var(--aora-text-faint));
+  }
+
+  .aora-status[data-tone='online'] {
+    --aora-status-ink: var(--aora-status-online);
+  }
+  .aora-status[data-tone='busy'] {
+    --aora-status-ink: var(--aora-status-busy);
+  }
+  .aora-status[data-tone='away'] {
+    --aora-status-ink: var(--aora-status-away);
+  }
+  .aora-status[data-tone='offline'] {
+    --aora-status-ink: var(--aora-status-offline);
+  }
+  .aora-status[data-tone='working'] {
+    --aora-status-ink: var(--aora-status-working);
+  }
+  .aora-status[data-tone='attention'] {
+    --aora-status-ink: var(--aora-status-attention);
+  }
+  .aora-status[data-tone='error'] {
+    --aora-status-ink: var(--aora-status-error);
+  }
+  .aora-status[data-tone='info'] {
+    --aora-status-ink: var(--aora-status-info);
+  }
+
+  .aora-status--pulse {
+    animation: aora-pulse 1.8s ease-in-out infinite;
+  }
+
+  /* Expanding halo. Fades as it grows, so the eye is caught by the movement
+     rather than by a second solid ring competing with the dot. */
+  .aora-status--ring::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--aora-status-ink, var(--aora-text-faint));
+    animation: aora-status-ring 1900ms ease-out infinite;
+  }
+
+  /* ---- working badge ---------------------------------------------------- */
+
+  .aora-working {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(var(--aora-working-size, 8px) * 0.55);
+    color: var(--aora-text-faint);
+  }
+
+  .aora-working__dot {
+    width: var(--aora-working-size, 8px);
+    height: var(--aora-working-size, 8px);
+    border-radius: var(--aora-radius-pill);
+    background: currentColor;
+    animation: aora-working-dot 1300ms ease-in-out infinite;
+  }
+
+  /* ---- picker ---------------------------------------------------------- */
+
+  .aora-picker {
+    display: flex;
+    flex-direction: column;
+    gap: var(--aora-space-4);
+  }
+
+  /* Wraps rather than overflowing: a row of groups has no container to
+     query, since it sizes to its content, so it adapts the intrinsic way. */
+  .aora-picker--row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--aora-space-4) var(--aora-space-6);
+    align-items: flex-start;
+  }
+
+  .aora-picker__group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--aora-space-2);
+  }
+
+  .aora-picker__label {
+    font-size: var(--aora-text-sm);
+    font-weight: var(--aora-weight-semibold);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--aora-text-faint);
+  }
+
+  .aora-picker__items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--aora-space-1);
+  }
+
+  /*
+   * `grid` means a real grid: fixed columns so the whole roster can be
+   * scanned by position. Wrapping flex, which `row` keeps, breaks a row
+   * wherever the width happens to run out.
+   *
+   * The column count follows the picker's own width, not the viewport's. The
+   * width is a definite `rem` capped by `max-inline-size` rather than a
+   * percentage: a container query needs size containment, and a percentage
+   * width inside a shrink-to-fit parent would contain down to nothing. A host
+   * that wants the picker to fill its parent sets `--aora-picker-width: 100%`.
+   *
+   * A default cell is a `PICKER_MARK_PX` mark and its padding, 2.75rem, with a
+   * 0.25rem gap between cells, so n columns need 3n − 0.25rem. Each breakpoint
+   * is where the next count fits.
+   */
+  .aora-picker--grid {
+    container: aora-picker / inline-size;
+    inline-size: var(--aora-picker-width, 17.75rem);
+    max-inline-size: 100%;
+
+    & .aora-picker__items {
+      display: grid;
+      grid-template-columns: repeat(6, max-content);
+      justify-content: space-between;
+    }
+
+    /* The face choice is a segmented control, not a cell of the roster. */
+    & .aora-picker__items--segments {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+    }
+  }
+
+  @container aora-picker (inline-size >= 32.75rem) {
+    .aora-picker--grid .aora-picker__items {
+      grid-template-columns: repeat(11, max-content);
+    }
+  }
+
+  @container aora-picker (inline-size >= 23.75rem) and (inline-size < 32.75rem) {
+    .aora-picker--grid .aora-picker__items {
+      grid-template-columns: repeat(8, max-content);
+    }
+  }
+
+  @container aora-picker (inline-size < 17.75rem) {
+    .aora-picker--grid .aora-picker__items {
+      grid-template-columns: repeat(4, max-content);
+    }
+  }
+
+  @container aora-picker (inline-size < 11.75rem) {
+    .aora-picker--grid .aora-picker__items {
+      grid-template-columns: repeat(3, max-content);
+    }
+  }
+
+  .aora-picker__item {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--aora-space-1);
+    border: 0;
+    border-radius: var(--aora-radius-md);
+    background: transparent;
+    cursor: pointer;
+    transition: background-color var(--aora-duration-fast) var(--aora-ease-standard);
+
+    &:hover {
+      background: var(--aora-fill);
+    }
+  }
+
+  /*
+   * The selection ring traces the selected shape's own outline. Both the ring
+   * and the body come from the same generator, so a custom shape registered
+   * with `defineShape` gets a correct ring for free.
+   */
+  .aora-picker__item[data-selected]::after {
+    content: '';
+    position: absolute;
+    inset: var(--aora-space-1);
+    background: var(--aora-accent);
+    mask-image: var(--aora-picker-ring);
+    mask-size: 100% 100%;
+    mask-repeat: no-repeat;
+    -webkit-mask-image: var(--aora-picker-ring);
+    -webkit-mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    pointer-events: none;
+  }
+
+  .aora-picker__swatch {
+    width: 1.5rem;
+    height: 1.5rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--aora-radius-pill);
+    background: var(--aora-swatch);
+    cursor: pointer;
+    box-shadow: inset 0 0 0 1px var(--aora-line);
+    transition: box-shadow var(--aora-duration-fast) var(--aora-ease-standard);
+
+    &[data-selected] {
+      box-shadow:
+        inset 0 0 0 1px var(--aora-line),
+        0 0 0 2px var(--aora-bg-base),
+        0 0 0 4px var(--aora-accent);
+    }
+  }
+
+  /* Face style toggle: a small preview beside its name, in a pill segment. */
+  .aora-picker__segment {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--aora-space-1);
+    padding: var(--aora-space-1) var(--aora-space-3) var(--aora-space-1) var(--aora-space-2);
+    border: 1px solid var(--aora-line);
+    border-radius: var(--aora-radius-pill);
+    background: transparent;
+    color: var(--aora-text);
+    font: inherit;
+    font-size: var(--aora-text-sm);
+    cursor: pointer;
+    transition:
+      background-color var(--aora-duration-fast) var(--aora-ease-standard),
+      border-color var(--aora-duration-fast) var(--aora-ease-standard);
+
+    &:hover {
+      background: var(--aora-fill);
+    }
+
+    &[data-selected] {
+      border-color: var(--aora-accent);
+      box-shadow: inset 0 0 0 1px var(--aora-accent);
+    }
+  }
+
+  /*
+   * One focus ring, offset and colour for everything interactive in this file.
+   * The surfaces carry their own copy of the list in `surfaces.css`, so a host
+   * that replaces that file keeps a visible focus state here.
+   */
+  :is(.aora-picker__item, .aora-picker__swatch, .aora-picker__segment, .aora-activity__mark):focus-visible {
+    outline: var(--aora-focus-ring);
+    outline-offset: var(--aora-focus-offset);
+  }
+
+  /* ---- activity -------------------------------------------------------- */
+
+  /* Raster character: a box the size of the mark with the frame image
+     contained inside. `image-rendering` is left at the default; sprites are
+     exported large and downscaled, so smoothing is wanted. */
+  .aora-sprite {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  .aora-sprite > img {
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  /*
+   * The row grows from its left edge rather than its centre. A status line
+   * lives at the start of a message, and something that scales about its
+   * middle appears to slide leftwards on the way in.
+   */
+  .aora-activity {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--aora-space-2);
+    transform-origin: left center;
+    color: var(--aora-text-muted);
+    font-size: var(--aora-text-sm);
+  }
+
+  .aora-activity--entering {
+    animation: aora-spawn 320ms var(--aora-ease-spring);
+  }
+
+  .aora-activity--leaving {
+    animation: aora-activity-out var(--aora-duration-fast) var(--aora-ease-in) both;
+  }
+
+  /* The character itself. Also a `<button>` when the host passed `onPoke`,
+     hence the reset. */
+  .aora-activity__mark {
+    display: inline-flex;
+    align-items: center;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .aora-activity__mark:focus-visible {
+    border-radius: var(--aora-radius-pill);
+  }
+
+  .aora-activity__mark--poked {
+    animation: aora-poke-hop 420ms var(--aora-ease-spring);
+  }
+
+  /* The arrival overshoots. Delayed so the row has faded in first and the
+     character lands into a box that already exists. */
+  .aora-activity--spawning .aora-activity__mark {
+    animation: aora-spawn-pop 380ms var(--aora-ease-spring) 180ms both;
+  }
+
+  .aora-activity__label--hover {
+    opacity: 0;
+    transition: opacity var(--aora-duration-base) var(--aora-ease-standard);
+  }
+
+  .aora-activity:hover .aora-activity__label--hover,
+  .aora-activity:focus-within .aora-activity__label--hover,
+  .aora-activity--emphasis .aora-activity__label--hover {
+    opacity: 1;
+  }
+
+  /*
+   * The ink is a registered custom property, so it interpolates. Declaring the
+   * transition on the wrapper rather than on the mark means the value the
+   * marks inherit is the animated one — a transition on the mark itself would
+   * have nothing to animate, since its own declaration never changes.
+   */
+  .aora-activity-group {
+    display: inline-flex;
+    align-items: center;
+    transition: --aora-activity-ink var(--aora-activity-ink-ms, 700ms) var(--aora-ease-in-out);
+  }
+
+  .aora-activity-group__picture {
+    display: block;
+    border-radius: var(--aora-radius-pill);
+    object-fit: cover;
+    animation: aora-picture-swap 220ms ease both;
+  }
+
+  /* Speech bubble for a label that needs to stand off the page rather than
+     sit in the text flow. */
+  .aora-bubble {
+    display: inline-block;
+    padding: var(--aora-space-1) var(--aora-space-3);
+    border-radius: var(--aora-radius-md);
+    background: var(--aora-fill);
+    color: var(--aora-text);
+    line-height: var(--aora-leading-snug);
+    animation: aora-bubble-in 240ms var(--aora-ease-spring) both;
+  }
+
+  /*
+   * Both lines occupy the same grid cell so the row height is the taller of
+   * the two throughout the swap, instead of collapsing between them.
+   */
+  .aora-ticker {
+    display: inline-grid;
+    grid-template-areas: 'line';
+    align-items: center;
+  }
+
+  .aora-ticker__line {
+    grid-area: line;
+    white-space: nowrap;
+  }
+
+  .aora-ticker__line--in {
+    animation: aora-ticker-in var(--aora-ticker-duration, 220ms) var(--aora-ease-out) both;
+  }
+
+  .aora-ticker__line--out {
+    animation: aora-ticker-out var(--aora-ticker-duration, 220ms) var(--aora-ease-in) both;
+  }
+
+  /* Text for assistive technology only, for a label the design shows as a
+     character alone. */
+  .aora-visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* ---- effects --------------------------------------------------------- */
+
+  /* Pieces fly past the character's box, and the layer sits over whatever it
+     is celebrating, so it must not swallow that element's clicks. */
+  .aora-confetti {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+
+  /* ---- keyframes ------------------------------------------------------- */
+
+  @keyframes aora-pulse {
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.55;
+      transform: scale(0.86);
+    }
+  }
+
+  @keyframes aora-spawn {
+    from {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* The arrival: small, then slightly too big, then right. */
+  @keyframes aora-spawn-pop {
+    from {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+    70% {
+      opacity: 1;
+      transform: scale(1.08);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes aora-activity-out {
+    from {
+      opacity: 1;
+      transform: none;
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.92);
+    }
+  }
+
+  @keyframes aora-poke-hop {
+    0% {
+      transform: none;
+    }
+    30% {
+      transform: translateY(-18%) rotate(-7deg);
+    }
+    62% {
+      transform: translateY(0) rotate(5deg);
+    }
+    100% {
+      transform: none;
+    }
+  }
+
+  @keyframes aora-picture-swap {
+    from {
+      opacity: 0;
+      transform: scale(0.72);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* The outgoing line leaves upwards and the incoming one follows it, so the
+     sequence has a direction instead of dissolving in place. */
+  @keyframes aora-ticker-in {
+    from {
+      opacity: 0;
+      transform: translateY(0.55em);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes aora-ticker-out {
+    from {
+      opacity: 1;
+      transform: none;
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-0.55em);
+    }
+  }
+
+  @keyframes aora-bubble-in {
+    from {
+      opacity: 0;
+      transform: scale(0.88) translateY(3px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes aora-working-dot {
+    0%,
+    100% {
+      opacity: 0.3;
+      transform: scale(0.8);
+    }
+    45% {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  @keyframes aora-status-ring {
+    from {
+      opacity: 0.45;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(2.2);
+    }
+  }
+
+  /*
+   * Motion here is decorative. The character's own animation is handled inside
+   * the engine, which checks the same preference before starting its loop.
+   *
+   * The two that keep a rule rather than dropping to `none` are the ones whose
+   * end state is not the resting one: a dot left mid-pulse and a badge left at
+   * 30% opacity would both read as disabled.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .aora-status--pulse,
+    .aora-status--ring::after,
+    .aora-activity--entering,
+    .aora-activity--leaving,
+    .aora-activity--spawning .aora-activity__mark,
+    .aora-activity__mark--poked,
+    .aora-activity-group__picture,
+    .aora-bubble,
+    .aora-ticker__line--in,
+    .aora-ticker__line--out {
+      animation: none;
+    }
+
+    .aora-status--ring::after {
+      display: none;
+    }
+
+    .aora-working__dot {
+      animation: none;
+      opacity: 0.65;
+    }
+
+    .aora-activity-group {
+      transition: none;
+    }
+
+    .aora-activity__label--hover {
+      transition: none;
+    }
+  }
+
+  /*
+   * Forced colours (Windows High Contrast). Selection here is carried by a
+   * colour alone — an accent ring, an accent border — and forced colours
+   * flatten both. Each selected state gets a system-colour edge instead, and
+   * the mask-drawn ring is repainted as `Highlight`.
+   */
+  @media (forced-colors: active) {
+    .aora-picker__item[data-selected]::after {
+      background: Highlight;
+    }
+
+    .aora-picker__swatch {
+      border: 1px solid CanvasText;
+    }
+
+    .aora-picker__swatch[data-selected],
+    .aora-picker__segment[data-selected] {
+      outline: 2px solid Highlight;
+      outline-offset: 1px;
+    }
+
+    .aora-picker__segment {
+      border-color: ButtonText;
+    }
+
+    .aora-status,
+    .aora-working__dot {
+      forced-color-adjust: none;
+    }
+
+    .aora-badge {
+      border: 1px solid CanvasText;
+      background: Canvas;
+      color: CanvasText;
+    }
+  }
+}

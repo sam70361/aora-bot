@@ -1,0 +1,131 @@
+import { StateMatrix } from '@theme';
+
+# 新手引导
+
+一次介绍产品、并让用户最后拿到自己智能体的首次运行。
+
+## 先看效果
+
+一段三步的场景：两个角色登场，一个把工作交给另一个，接收方落进头像槽位。手动切换会暂停自动播放——伸手去按按钮的人是在自己驾驶。
+
+```tsx preview
+import { useState } from 'react';
+import { CharacterMark } from '@aora-bot/react';
+import { AvatarSlot, CastStage, DemoDesktop, useCastScene, type CastStep } from '@aora-bot/surfaces';
+
+const members = [
+  { id: 'guide', shape: 'cloud', color: 'cyan', bobPx: 4 },
+  { id: 'mine', shape: 'pear', color: 'green', bobPx: 3, bobMs: 4600 },
+] as const;
+
+const steps: CastStep[] = [
+  {
+    id: 'arrive',
+    durationMs: 2600,
+    positions: { guide: { x: -70, y: 0, state: 'spawning' }, mine: { x: 70, y: 0, state: 'spawning' } },
+  },
+  {
+    id: 'handoff',
+    durationMs: 2200,
+    positions: { guide: { x: -70, y: 0, state: 'sending' }, mine: { x: 70, y: 0, state: 'receiving' } },
+  },
+  {
+    id: 'land',
+    durationMs: 0,
+    positions: {
+      guide: { x: -90, y: -40, scale: 0.7, state: 'happy' },
+      mine: { x: 0, y: 70, scale: 0.8, state: 'idle' },
+    },
+  },
+];
+
+export default function Demo() {
+  const scene = useCastScene(steps, { autoplay: true });
+  const [arrived, setArrived] = useState(false);
+  const landed = scene.stepIndex === steps.length - 1;
+
+  return (
+    <div className="site-demo site-demo--stack">
+      <DemoDesktop title="首次运行" widthPx={300} style={{ maxWidth: '100%' }}>
+        <CastStage
+          members={members}
+          steps={steps}
+          stepIndex={scene.stepIndex}
+          widthPx={280}
+          heightPx={220}
+          sizePx={72}
+          onArrive={(id, index) => id === 'mine' && index === steps.length - 1 && setArrived(true)}
+        >
+          <span className="site-demo__slot">
+            <AvatarSlot arrived={landed && arrived} sizePx={64}>
+              <CharacterMark shape="pear" color="green" sizePx={56} />
+            </AvatarSlot>
+          </span>
+        </CastStage>
+      </DemoDesktop>
+      <div className="site-controls">
+        <button className="site-btn" onClick={scene.prev}>
+          上一步
+        </button>
+        <button className="site-btn" onClick={scene.next}>
+          下一步
+        </button>
+        <button
+          className="site-btn"
+          onClick={() => {
+            setArrived(false);
+            scene.goTo(0);
+            scene.play();
+          }}
+        >
+          重播
+        </button>
+        <span className="site-demo__label">
+          第 {scene.stepIndex + 1} / {steps.length} 步，{scene.playing ? '播放中' : '已暂停'}
+        </span>
+      </div>
+    </div>
+  );
+}
+```
+
+移动是 CSS 过渡，缓动函数是从引擎自己的弹簧采样出来的 `linear()`，所以滑行会像脸一样过冲，却不需要第二个帧循环。槽位用普通 CSS 定位：它不知道自己在哪里，正因如此宿主可以把它放在场景旁边的表单里，而不是场景之内。
+
+## 什么时候用
+
+第一次运行。什么都还没发生，产品得在没被使用的情况下展示自己能做什么，而用户最后要得到一个属于自己的智能体。角色随产品一起醒来，走完一段简短的剧本，最后落进那个将成为用户头像的槽位——刚才看着的东西，现在就是自己的东西。
+
+## 用到的组件
+
+- [`CastStage`](/components/cast-stage) 与 `useCastScene`——多个角色按剧本移动，`AvatarSlot` 是其中一个最终落脚的位置。
+- [`DemoDesktop`](/components/walkthrough)、`JobBubbles`、`SuggestionCards`、`LandingWait`、`HandOff` 与 `Composer`——引导流程的零件：放演示的窗口、进行中的工作、三个起点、空白屏幕、一个智能体交接给另一个，以及一个角色会留意的输入框。
+- [`CharacterMark`](/components/character-mark)——`onSettle` 告诉宿主 `spawning` 或 `waking` 什么时候走完了。
+
+## 状态怎么走
+
+| 从          | 到          | 时机                                |
+| ----------- | ----------- | ----------------------------------- |
+| —           | `spawning`  | 场景开始；`gather` 腰带把自己画出来 |
+| `spawning`  | `idle`      | 2 秒后自动收敛（`STATE_SETTLE_TO`） |
+| `idle`      | `waking`    | 用户的第一次输入                    |
+| `waking`    | `idle`      | 1.6 秒后自动收敛                    |
+| `idle`      | `curious`   | 递上一张建议卡片                    |
+| `idle`      | `working`   | 工作气泡展示进行中的任务            |
+| `sending`   | `receiving` | 一个智能体把工作交给另一个          |
+| `listening` | `composing` | 输入框获得焦点，然后敲下第一个键    |
+
+`spawning` 和 `waking` 是瞬间，不是条件。它们的时钟由引擎持有，通过 `onSettle` 上报，宿主自己的状态可以跟着走，不必再写一个重复的计时器。减弱动态效果时收敛照样触发，只是省掉那一下花活。
+
+## 每个状态的样子
+
+<StateMatrix
+  states={['spawning', 'waking', 'idle', 'curious', 'sending', 'receiving', 'listening', 'composing']}
+/>
+
+`spawning` 是这里唯一的腰带：五颗粒子用两秒螺旋向内，之后腰带表现得像 `progress`。`waking` 进入时弹一下，眼睛分三步睁开。`sending` 与 `receiving` 是一对——一个探身送出，另一个接住——所以 `HandOff` 不需要在两者之间画任何飞行的东西。
+
+## 接下来
+
+- [CastStage](/components/cast-stage)——多个角色依次入场
+- [Walkthrough 系列](/components/walkthrough)——桌面、气泡、卡片与输入框
+- [BootLoop](/components/boot-loop)——程序化生成的启动序列

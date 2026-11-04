@@ -1,0 +1,68 @@
+import { API } from '@theme';
+
+# AgentHud
+
+The arbiter's current reading, as a character and a plate.
+
+```tsx preview
+import { useEffect } from 'react';
+import { AgentHud, AgentStateProvider, useAgentState } from '@aora-bot/react';
+
+function Feed() {
+  const { update } = useAgentState();
+  useEffect(() => {
+    let remaining = 90_000;
+    update({ sessionId: 'nova', state: 'thinking', tips: 'Reading the brief' });
+    const timer = setInterval(() => {
+      remaining = remaining <= 0 ? 90_000 : remaining - 5_000;
+      update({
+        sessionId: 'nova',
+        state: remaining < 20_000 ? 'waiting' : 'working',
+        tips: remaining < 20_000 ? 'Needs an answer soon' : 'Running the checks',
+        hud: { kind: 'timer', remainingMs: remaining, totalMs: 90_000 },
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [update]);
+  return null;
+}
+
+export default function Demo() {
+  return (
+    <AgentStateProvider>
+      <Feed />
+      <div className="site-demo site-demo--center">
+        <AgentHud agent={{ id: 'nova', name: 'Nova' }} placement="right" />
+      </div>
+    </AgentStateProvider>
+  );
+}
+```
+
+## One source of truth
+
+Everything on the screen comes from the nearest [`AgentStateProvider`](/components/agent-state). The state drives the face, the `tips` line becomes the plate's supporting text, and the `hud` travels with whichever session is winning — so a timer sent by one session never lingers on the face of another. The plate's level follows the state: `alerting` and `refusing` are `alert`, `waiting` and `suspicious` are `warn`, `happy`, `proud` and `celebrate` are `ok`, everything else is `info`. Pass `level` to override it.
+
+Outside a provider the component still renders — an idle character with the agent's name and no dial — so a header can mount before the agent channel is connected.
+
+## useAgentHud
+
+The hook behind it. It reads the winning result's `hud` off the provider, or `null` when there is no provider or no dial, so a host that wants its own layout can put the same spec on a [`CharacterMark`](/components/character-mark) directly.
+
+```tsx
+const hud = useAgentHud();
+<CharacterMark shape="hex" state={state} hud={hud} />;
+```
+
+## Appearance
+
+`agent` supplies the shape, ink, face and nose the same way [`AgentAvatar`](/components/agent-avatar) resolves them: explicit fields first, then `preset`, then a deterministic derivation from `id`. `face`, `nose` and `lineWeight` override the agent's, so a line-face HUD in a heavier pen is one prop away. The line weight is shared by the nose, the mouth and the dial — see [the line face across surfaces](/design/face#the-line-face-across-surfaces).
+
+## API
+
+<API component="AgentHud" />
+
+## Next
+
+- [HudPlate](/components/hud-plate) — a figure beside the dial
+- [Progress HUD](/scenarios/progress-hud) — the body works, the ring counts

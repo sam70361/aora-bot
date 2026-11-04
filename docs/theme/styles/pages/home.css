@@ -1,0 +1,1159 @@
+/*
+ * Home — /.
+ *
+ * One screen. A console in front of a wall, with each thing you can change
+ * about the big character in a floating capsule on its own edge: the navbar on
+ * top, style on the left, colour on the right, shape along the bottom, and the
+ * expression dock right under the character. The capsule surface is the
+ * shared `.site-capsule` (shell.css); this file only places and fills them.
+ * Behind it all is a field of small characters, which the capsules blur and
+ * which fades out behind the middle column.
+ *
+ * Every box that holds a list has a fixed size and scrolls inside it, so a
+ * registry that doubles changes what can be reached and nothing about the
+ * layout. Interaction states change colour, background, outline, full-ring
+ * shadow, transform and opacity only.
+ */
+
+@layer site.pages {
+  .site-home {
+    /* The big character: as tall as the screen allows, never so tall the dock falls off it. */
+    --site-hero-mark: clamp(9rem, 30dvh, 19rem);
+    --site-rail-w: 5.5rem;
+    --site-rail-w-color: 3.5rem;
+    --site-dock-h: 6.5rem;
+    --site-ring: var(--aora-shadow-line);
+    /* The page starts at the top of the viewport, under the navbar, so the wall shows through it. */
+    margin-top: calc(var(--site-nav-offset) * -1);
+    overflow-x: clip;
+  }
+
+  .site-icon {
+    width: 1.0625rem;
+    height: 1.0625rem;
+    flex: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* The die has more edges than a line icon in the same box, so they are drawn finer. */
+  .site-icon__dice {
+    stroke-width: 1.6;
+    transform-box: fill-box;
+    transform-origin: center;
+    transition: rotate var(--aora-duration-base) var(--aora-ease-out);
+  }
+
+  .site-home__tool:hover .site-icon__dice {
+    rotate: -14deg;
+  }
+
+  /* Lit from above in both themes: the ink is dark on light paper and light on dark paper. */
+  .site-icon__dice-top {
+    fill: light-dark(transparent, color-mix(in oklab, currentColor 38%, transparent));
+  }
+
+  .site-icon__dice-left {
+    fill: color-mix(in oklab, currentColor 18%, transparent);
+  }
+
+  .site-icon__dice-right {
+    fill: light-dark(color-mix(in oklab, currentColor 36%, transparent), transparent);
+  }
+
+  .site-home__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* ---- the screen ------------------------------------------------------------ */
+
+  /*
+   * The padding keeps every capsule `--site-capsule-gap` from the viewport and
+   * from the navbar, the same distance on all four sides. On a screen wider
+   * than the shell the side capsules move in with the navbar's ends.
+   */
+  .site-home__hero {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'style centre color'
+      'bottom bottom bottom';
+    gap: var(--site-capsule-gap);
+    box-sizing: border-box;
+    height: max(38rem, 100dvh);
+    padding: calc(var(--site-nav-offset) + var(--site-capsule-gap))
+      max(var(--site-capsule-gap), (100% - var(--site-shell-max)) / 2) var(--site-capsule-gap);
+  }
+
+  /* ---- wall ------------------------------------------------------------------ */
+
+  /*
+   * Decoration only. The host stays upright and carries the mask, so the clear
+   * zone follows the console's own column and not the tilt; the turned field
+   * inside it is sized in script to cover the host. Rows move by transform
+   * alone, and `contain` keeps all of it out of the page's layout.
+   *
+   * The capsules are glass and carry their own legibility, so the wall runs at
+   * full strength behind them and behind the navbar. The mask only clears what
+   * has no capsule of its own. Alpha is the wall's strength, and the full
+   * strength is a colour so it can differ by theme:
+   *   - a clear pool round the centre column (the title, the character, its
+   *     dock and the actions), an ellipse that is fully clear in its middle
+   *     and eases back into the wall over its outer two thirds, with enough
+   *     stops that the falloff reads as light rather than as rings, so there
+   *     is no edge anywhere — the stage is lit, not cut out. It is subtracted
+   *     from the wall;
+   *   - the strip along the top, added back afterwards, so the wall is never
+   *     cut off behind the navbar.
+   */
+  .site-home__wall {
+    --_full: light-dark(rgb(0 0 0 / 0.85), rgb(0 0 0 / 0.8));
+    /* `vw`, not `%`: a gradient's size cannot mix `%` with other units inside `min()`. */
+    --_pool-x: min(60vw, 48rem + max(0rem, 100vw - 80rem) * 0.45);
+    --_pool-y: 62%;
+    --_pool-at: 50% 46%;
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    contain: layout paint;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.9s var(--aora-ease-out);
+    mask-image:
+      linear-gradient(to bottom, var(--_full) 4rem, transparent 6.5rem),
+      linear-gradient(var(--_full), var(--_full)),
+      radial-gradient(
+        var(--_pool-x) var(--_pool-y) at var(--_pool-at),
+        #000 32%,
+        rgb(0 0 0 / 0.93) 42%,
+        rgb(0 0 0 / 0.78) 52%,
+        rgb(0 0 0 / 0.56) 62%,
+        rgb(0 0 0 / 0.34) 72%,
+        rgb(0 0 0 / 0.16) 82%,
+        rgb(0 0 0 / 0.05) 91%,
+        transparent 100%
+      );
+    mask-composite: add, subtract, add;
+    &[data-ready] {
+      opacity: 1;
+    }
+
+    &[data-paused] .site-home__row {
+      animation-play-state: paused;
+    }
+  }
+
+  .site-home__field {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-gap);
+    translate: -50% -50%;
+    rotate: var(--site-tilt);
+  }
+
+  /* One row is its content twice, so a drift of half its width is one seamless loop. */
+  .site-home__row {
+    display: flex;
+    flex: none;
+    width: max-content;
+    animation: site-wall-drift var(--site-dur) linear infinite;
+    animation-delay: calc(var(--site-dur) * var(--site-phase) * -1);
+
+    &[data-reverse] {
+      animation-direction: reverse;
+    }
+  }
+
+  @keyframes site-wall-drift {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* No card: a pool of the character's own ink under it, fading out well inside the tile. */
+  .site-home__tile {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: var(--site-tile);
+    height: var(--site-tile);
+    margin-inline-end: var(--site-gap);
+    background: radial-gradient(
+      closest-side,
+      light-dark(
+        color-mix(in oklab, var(--site-tile-ink) 14%, transparent),
+        color-mix(in oklab, var(--site-tile-ink) 20%, transparent)
+      ),
+      transparent
+    );
+  }
+
+  /* ---- side capsules --------------------------------------------------------- */
+
+  /*
+   * A vertical pill, as tall as its content up to the room between the navbar
+   * and the dock, and centred in it. Its ends are half its width; the padding
+   * keeps the first and last option out of the curve, and the list inside fades
+   * out there instead of being cut. The side padding belongs to the scroll box
+   * and not to the pill: a scroll box clips at its padding edge, and the
+   * selected option's ring and the focus ring need that padding to draw in.
+   */
+  .site-home__rail {
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    box-sizing: border-box;
+    max-height: 100%;
+    min-height: 0;
+    padding-block: var(--aora-space-4);
+  }
+
+  .site-home__rail--style {
+    grid-area: style;
+    width: var(--site-rail-w);
+  }
+
+  .site-home__rail--color {
+    grid-area: color;
+    width: var(--site-rail-w-color);
+  }
+
+  .site-home__cap {
+    flex: none;
+    margin: 0 0 var(--aora-space-1);
+    font-size: var(--aora-text-sm);
+    font-weight: var(--aora-weight-semibold);
+    letter-spacing: 0.1em;
+    color: var(--aora-text-faint);
+    text-align: center;
+  }
+
+  /*
+   * The scroll box inside a capsule. It scrolls on its own and does not hand the
+   * wheel to the page when it reaches an end, and it fades at the edges so a
+   * clipped option reads as "more" and not as a mistake. The padding is at
+   * least the fade, so an option at rest at either end is never half faded.
+   */
+  .site-home__scroll {
+    --_fade: var(--aora-space-3);
+    display: flex;
+    flex: 0 1 auto;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--aora-space-1);
+    min-height: 0;
+    padding: var(--_fade) var(--aora-space-2);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: none;
+    mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      #000 var(--_fade),
+      #000 calc(100% - var(--_fade)),
+      transparent
+    );
+  }
+
+  .site-home__scroll--dots {
+    gap: var(--aora-space-2);
+  }
+
+  /* A second caption in the same capsule, for the list under the first. */
+  .site-home__cap--next {
+    margin-top: var(--aora-space-2);
+  }
+
+  /* Three faces: few enough never to scroll, so they sit under the colours at their own size. */
+  .site-home__faces {
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--aora-space-1);
+    padding: var(--aora-space-1) var(--aora-space-1) 0;
+  }
+
+  .site-home__opt--face {
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: var(--aora-radius-md);
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+
+  .site-home__group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--aora-space-1);
+    width: 100%;
+    margin-bottom: var(--aora-space-3);
+  }
+
+  .site-home__groupName {
+    margin: 0;
+    font-size: var(--aora-text-sm);
+    font-weight: var(--aora-weight-semibold);
+    color: var(--aora-text-faint);
+  }
+
+  /* ---- options --------------------------------------------------------------- */
+
+  /*
+   * One option: a fixed box holding a preview and, for styles and shapes, a
+   * name. The preview box is as big as its character, so drawing late or
+   * drawing something else cannot resize it.
+   */
+  .site-home__slot {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: var(--site-slot);
+    height: var(--site-slot);
+  }
+
+  .site-home__opt {
+    --_tint: color-mix(in oklab, var(--site-swatch, var(--aora-accent)) 14%, var(--site-paper));
+    display: flex;
+    flex: none;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--aora-space-0-5);
+    border: 0;
+    border-radius: var(--aora-radius-lg);
+    background: transparent;
+    color: var(--aora-text-muted);
+    font: inherit;
+    font-size: var(--aora-text-md);
+    cursor: pointer;
+    transition:
+      background-color var(--aora-duration-fast) var(--aora-ease-standard),
+      color var(--aora-duration-fast) var(--aora-ease-standard),
+      box-shadow var(--aora-duration-fast) var(--aora-ease-standard),
+      transform var(--aora-duration-base) var(--aora-ease-out);
+
+    &:hover {
+      background: var(--aora-fill);
+      color: var(--aora-text);
+    }
+
+    &[aria-checked='true'] {
+      --aora-bg-base: var(--_tint);
+      background: var(--_tint);
+      color: var(--aora-text);
+      box-shadow: 0 0 0 2px var(--site-swatch, var(--aora-accent));
+    }
+  }
+
+  .site-home__optName {
+    max-width: 100%;
+    overflow: hidden;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .site-home__opt--style {
+    width: 100%;
+    padding: var(--aora-space-1) 0;
+  }
+
+  .site-home__opt--shape {
+    width: 5.25rem;
+    padding: var(--aora-space-2) 0 var(--aora-space-1);
+
+    &:hover {
+      transform: translateY(-3px);
+    }
+  }
+
+  .site-home__opt--state {
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: var(--aora-radius-md);
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+
+  .site-home__dot {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--aora-radius-pill);
+    background: transparent;
+    cursor: pointer;
+
+    &[aria-checked='true'] .site-home__swatch {
+      box-shadow:
+        0 0 0 2px var(--site-paper),
+        0 0 0 4px var(--site-dot);
+    }
+
+    &:hover .site-home__swatch {
+      transform: scale(1.14);
+    }
+  }
+
+  .site-home__swatch {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: var(--aora-radius-pill);
+    background: var(--site-dot);
+    box-shadow: inset 0 0 0 1px var(--aora-line);
+    transition:
+      box-shadow var(--aora-duration-fast) var(--aora-ease-standard),
+      transform var(--aora-duration-base) var(--aora-ease-out);
+  }
+
+  /* ---- bottom dock ----------------------------------------------------------- */
+
+  /*
+   * A horizontal pill, centred, as wide as its shapes need up to the room it
+   * has (or its own cap). The shapes scroll inside it, fading out under the
+   * arrows' side instead of being cut.
+   */
+  .site-home__strip {
+    grid-area: bottom;
+    display: flex;
+    align-items: center;
+    gap: var(--aora-space-2);
+    justify-self: center;
+    box-sizing: border-box;
+    width: fit-content;
+    max-width: min(100%, 64rem);
+    height: var(--site-dock-h);
+    padding-inline: var(--aora-space-4);
+  }
+
+  .site-home__nav {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--aora-radius-pill);
+    background: var(--aora-fill);
+    color: var(--aora-text);
+    cursor: pointer;
+    transition: background-color var(--aora-duration-fast) var(--aora-ease-standard);
+
+    &:hover {
+      background: var(--aora-fill-hover);
+    }
+  }
+
+  .site-home__track {
+    --_fade: var(--aora-space-8);
+    position: relative;
+    display: flex;
+    flex: 0 1 auto;
+    align-items: center;
+    min-width: 0;
+    height: 100%;
+    padding-inline: var(--_fade);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 var(--_fade),
+      #000 calc(100% - var(--_fade)),
+      transparent
+    );
+  }
+
+  .site-home__family {
+    display: flex;
+    flex: none;
+    gap: var(--aora-space-1);
+  }
+
+  .site-home__family + .site-home__family {
+    margin-inline-start: var(--aora-space-2);
+    padding-inline-start: var(--aora-space-3);
+    border-inline-start: 1px solid var(--aora-line);
+  }
+
+  /* ---- centre ---------------------------------------------------------------- */
+
+  .site-home__centre {
+    grid-area: centre;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--aora-space-4);
+    min-width: 0;
+    min-height: 0;
+    text-align: center;
+  }
+
+  .site-home__head {
+    display: grid;
+    gap: var(--aora-space-2);
+    justify-items: center;
+  }
+
+  .site-home__title {
+    margin: 0;
+    font-size: clamp(2.25rem, 4.6vw, 3.75rem);
+    font-weight: var(--aora-weight-bold);
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+  }
+
+  .site-home__title em {
+    margin-inline-start: 0.25em;
+    font-style: normal;
+    background: linear-gradient(
+      100deg,
+      var(--site-swatch),
+      color-mix(in oklab, var(--site-swatch) 45%, oklch(0.72 0.18 350))
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+  }
+
+  .site-home__tagline {
+    max-width: 38rem;
+    margin: 0;
+    padding-inline: var(--aora-space-4);
+    font-size: clamp(var(--aora-text-md), 1.3vw, var(--aora-text-xl));
+    line-height: var(--aora-leading-snug);
+    color: var(--aora-text-muted);
+  }
+
+  .site-home__stage {
+    position: relative;
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: var(--site-hero-mark);
+    height: var(--site-hero-mark);
+  }
+
+  .site-home__poke {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: var(--aora-radius-lg);
+    background: none;
+    line-height: 0;
+    cursor: pointer;
+  }
+
+  /*
+   * The name of what it is doing, as a speech bubble that cannot push anything.
+   * It sits just outside the character's box: ears, horns and the corner
+   * effects (hearts, sparkles, the spinner) all use the top right inside it.
+   */
+  .site-home__now {
+    position: absolute;
+    top: 6%;
+    left: 100%;
+    margin: 0;
+    padding: var(--aora-space-1) var(--aora-space-3);
+    border-radius: var(--aora-radius-lg) var(--aora-radius-lg) var(--aora-radius-lg) var(--aora-radius-xs);
+    background: var(--aora-surface);
+    box-shadow: var(--site-ring), var(--aora-shadow-md);
+    font-size: var(--aora-text-sm);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  /* ---- expression dock ------------------------------------------------------- */
+
+  .site-home__dock {
+    display: grid;
+    gap: var(--aora-space-2);
+    justify-items: center;
+    width: min(100%, 46rem);
+    --aora-bg-base: var(--site-paper);
+  }
+
+  .site-home__tabs {
+    display: flex;
+    gap: var(--aora-space-0-5);
+    max-width: 100%;
+    padding: var(--aora-space-0-5);
+    overflow-x: auto;
+    border-radius: var(--aora-radius-pill);
+    background: var(--aora-fill);
+    scrollbar-width: none;
+  }
+
+  .site-home__tab {
+    display: flex;
+    flex: none;
+    align-items: baseline;
+    gap: var(--aora-space-1);
+    height: var(--aora-control-h);
+    padding: 0 var(--aora-space-3);
+    border: 0;
+    border-radius: var(--aora-radius-pill);
+    background: transparent;
+    color: var(--aora-text-muted);
+    font: inherit;
+    font-size: var(--aora-text-sm);
+    font-weight: var(--aora-weight-medium);
+    line-height: var(--aora-control-h);
+    cursor: pointer;
+    transition:
+      background-color var(--aora-duration-fast) var(--aora-ease-standard),
+      color var(--aora-duration-fast) var(--aora-ease-standard);
+
+    & small {
+      font-size: var(--aora-text-xs);
+      font-variant-numeric: tabular-nums;
+      opacity: 0.6;
+    }
+
+    &:hover {
+      color: var(--aora-text);
+    }
+
+    &[aria-selected='true'] {
+      background: var(--aora-text);
+      color: var(--site-paper);
+    }
+  }
+
+  .site-home__states {
+    --_fade: var(--aora-space-6);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: safe center;
+    gap: var(--aora-space-1);
+    width: 100%;
+    height: 3.5rem;
+    padding-inline: var(--_fade);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 var(--_fade),
+      #000 calc(100% - var(--_fade)),
+      transparent
+    );
+  }
+
+  /* ---- actions --------------------------------------------------------------- */
+
+  .site-home__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--aora-space-2);
+    width: min(100%, 52rem);
+    padding-inline: var(--aora-space-4);
+  }
+
+  .site-home__start {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--aora-space-2);
+    height: var(--aora-control-h-lg);
+    padding: 0 var(--aora-space-5);
+    border-radius: var(--aora-radius-md);
+    background: var(--aora-accent);
+    box-shadow: var(--site-shadow-accent);
+    color: var(--aora-on-accent);
+    font-size: var(--aora-text-md);
+    font-weight: var(--aora-weight-semibold);
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      background-color var(--aora-duration-fast) var(--aora-ease-standard),
+      transform var(--aora-duration-base) var(--aora-ease-out);
+
+    &:hover {
+      background: var(--aora-accent-hover);
+      transform: translateY(-1px);
+    }
+  }
+
+  /* The one-line tag. Its box is fixed; a long tag is cut with an ellipsis, never wrapped. */
+  .site-home__chip {
+    display: flex;
+    flex: 1 1 18rem;
+    align-items: center;
+    gap: var(--aora-space-2);
+    max-width: 32rem;
+    height: var(--aora-control-h-lg);
+    /* The icon's own margin on the right: as far from the edge as from the top and bottom. */
+    padding: 0 calc((var(--aora-control-h-lg) - 2rem) / 2) 0 var(--aora-space-4);
+    border: 0;
+    border-radius: var(--aora-radius-md);
+    background: var(--aora-surface-sunken);
+    box-shadow: var(--site-ring);
+    color: var(--aora-text);
+    text-align: start;
+    cursor: pointer;
+    transition: background-color var(--aora-duration-fast) var(--aora-ease-standard);
+
+    &:hover {
+      background: var(--aora-fill);
+    }
+
+    & code {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      font-family: var(--aora-font-mono);
+      font-size: var(--aora-text-sm);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .site-home__chipIcon,
+  .site-home__tool {
+    display: grid;
+    place-items: center;
+    flex: none;
+
+    & > .site-icon {
+      grid-area: 1 / 1;
+      transition:
+        opacity var(--aora-duration-base) var(--aora-ease-standard),
+        transform var(--aora-duration-base) var(--aora-ease-out);
+    }
+
+    /* Copy swaps to a tick in place; the two share one cell. */
+    & > .site-icon:nth-of-type(2) {
+      opacity: 0;
+      transform: scale(0.5);
+      color: var(--aora-status-online);
+    }
+
+    &[data-copied] > .site-icon:nth-of-type(1) {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+
+    &[data-copied] > .site-icon:nth-of-type(2) {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .site-home__chipIcon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--aora-radius-sm);
+    background: var(--aora-surface);
+  }
+
+  .site-home__tool {
+    width: var(--aora-control-h-lg);
+    height: var(--aora-control-h-lg);
+    padding: 0;
+    border: 0;
+    border-radius: var(--aora-radius-md);
+    background: var(--aora-surface);
+    box-shadow: var(--site-ring);
+    color: var(--aora-text);
+    cursor: pointer;
+    transition:
+      background-color var(--aora-duration-fast) var(--aora-ease-standard),
+      transform var(--aora-duration-base) var(--aora-ease-out);
+
+    &:hover {
+      background: var(--aora-fill-hover);
+      transform: rotate(-8deg) scale(1.05);
+    }
+
+    /* Parameters moved off their defaults: the button wears the ink. */
+    &[data-active] {
+      box-shadow: 0 0 0 2px var(--site-swatch, var(--aora-accent));
+      color: var(--site-swatch, var(--aora-accent));
+    }
+  }
+
+  /* ---- parameters ------------------------------------------------------------ */
+
+  /*
+   * A glass card in the top layer, placed over its button in script. The rows
+   * are a three-column grid (name, control, value), so every slider starts and
+   * ends at the same place whatever its name.
+   */
+  .site-home__tune {
+    position: fixed;
+    inset: auto;
+    box-sizing: border-box;
+    width: min(21rem, calc(100vw - var(--aora-space-6)));
+    margin: 0;
+    padding: var(--aora-space-4);
+    border: 0;
+    border-radius: var(--aora-radius-lg);
+    background: var(--site-capsule-bg);
+    -webkit-backdrop-filter: var(--site-capsule-blur);
+    backdrop-filter: var(--site-capsule-blur);
+    box-shadow: var(--site-capsule-shadow);
+    color: var(--aora-text);
+    font-size: var(--aora-text-sm);
+
+    &:popover-open {
+      display: grid;
+      gap: var(--aora-space-3);
+    }
+  }
+
+  .site-home__tuneHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--aora-space-3);
+  }
+
+  .site-home__tuneTitle {
+    display: grid;
+    gap: var(--aora-space-0-5);
+    margin: 0;
+    font-weight: var(--aora-weight-semibold);
+
+    & span {
+      font-size: var(--aora-text-sm);
+      font-weight: var(--aora-weight-regular);
+      color: var(--aora-text-muted);
+    }
+  }
+
+  .site-home__tuneReset {
+    height: var(--aora-control-h-sm);
+    padding: 0 var(--aora-space-3);
+    border: 0;
+    border-radius: var(--aora-radius-pill);
+    background: var(--aora-fill);
+    color: var(--aora-text);
+    font: inherit;
+    font-size: var(--aora-text-sm);
+    cursor: pointer;
+    transition: background-color var(--aora-duration-fast) var(--aora-ease-standard);
+
+    &:hover:not(:disabled) {
+      background: var(--aora-fill-hover);
+    }
+
+    &:disabled {
+      opacity: 0.45;
+      cursor: default;
+    }
+  }
+
+  .site-home__tuneRow {
+    display: grid;
+    grid-template-columns: 6.5rem minmax(0, 1fr) 2.5rem;
+    align-items: center;
+    gap: var(--aora-space-3);
+    min-height: var(--aora-control-h-sm);
+    color: var(--aora-text-muted);
+
+    & input[type='range'] {
+      width: 100%;
+      margin: 0;
+      accent-color: var(--site-swatch, var(--aora-accent));
+    }
+
+    & output {
+      font-family: var(--aora-font-mono);
+      font-size: var(--aora-text-xs);
+      font-variant-numeric: tabular-nums;
+      color: var(--aora-text);
+      text-align: end;
+    }
+  }
+
+  .site-home__tuneOptions {
+    display: flex;
+    flex-wrap: wrap;
+    grid-column: 2 / -1;
+    gap: var(--aora-space-1);
+  }
+
+  .site-home__tuneOption {
+    height: var(--aora-control-h-sm);
+    padding: 0 var(--aora-space-3);
+    border: 0;
+    border-radius: var(--aora-radius-pill);
+    background: var(--aora-fill);
+    color: var(--aora-text-muted);
+    font: inherit;
+    font-size: var(--aora-text-sm);
+    cursor: pointer;
+
+    &[aria-checked='true'] {
+      background: var(--aora-text);
+      color: var(--site-paper);
+    }
+  }
+
+  /* A switch drawn on the checkbox itself: a track, and a knob that slides by transform. */
+  .site-home__switch {
+    position: relative;
+    grid-column: 2 / -1;
+    justify-self: end;
+    width: 2.25rem;
+    height: 1.25rem;
+    margin: 0;
+    border-radius: var(--aora-radius-pill);
+    background: var(--aora-fill-hover);
+    appearance: none;
+    cursor: pointer;
+    transition: background-color var(--aora-duration-fast) var(--aora-ease-standard);
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset-block-start: 0.125rem;
+      inset-inline-start: 0.125rem;
+      width: 1rem;
+      height: 1rem;
+      border-radius: var(--aora-radius-pill);
+      background: var(--aora-surface);
+      box-shadow: var(--aora-shadow-sm);
+      transition: transform var(--aora-duration-base) var(--aora-ease-out);
+    }
+
+    &:checked {
+      background: var(--site-swatch, var(--aora-accent));
+    }
+
+    &:checked::after {
+      transform: translateX(1rem);
+    }
+  }
+
+  .site-home__tuneNone {
+    margin: 0;
+    color: var(--aora-text-muted);
+  }
+
+  /* ---- narrow: the capsules lie down ----------------------------------------- */
+
+  /*
+   * Below this width there is no room beside the character, so the page is one
+   * column: the navbar capsule, the title, the character and its expression
+   * dock and actions, then the three capsules stacked as a deck at the bottom —
+   * style and colour as horizontal pills, shape as the dock. They keep the
+   * same surface and the same gap to the edge; they only turn. The column
+   * fills the screen and grows past it only when the screen is too short for
+   * it, so nothing overlaps.
+   */
+  @media (width < 900px) {
+    .site-home {
+      --site-hero-mark: clamp(6.5rem, 18dvh, 13rem);
+      --site-dock-h: 6rem;
+    }
+
+    .site-home__hero {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--aora-space-3);
+      height: auto;
+      min-height: 100dvh;
+    }
+
+    /* The centre column dissolves into the hero's own flex column so its parts and the capsules can interleave. */
+    .site-home__centre {
+      display: contents;
+    }
+
+    .site-home__head {
+      order: 1;
+      margin-block: var(--aora-space-2) auto;
+    }
+
+    .site-home__stage {
+      order: 2;
+      align-self: center;
+    }
+
+    .site-home__dock {
+      order: 3;
+      align-self: center;
+    }
+
+    .site-home__actions {
+      order: 4;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto auto;
+      align-self: center;
+      width: min(100%, 32rem);
+      padding-inline: 0;
+    }
+
+    .site-home__start {
+      justify-content: center;
+    }
+
+    .site-home__chip {
+      grid-row: 2;
+      grid-column: 1 / -1;
+      max-width: none;
+    }
+
+    .site-home__rail--style {
+      order: 5;
+    }
+
+    .site-home__rail--color {
+      order: 6;
+    }
+
+    .site-home__strip {
+      order: 7;
+      justify-self: stretch;
+      width: auto;
+      max-width: none;
+    }
+
+    .site-home__rail {
+      flex-direction: row;
+      align-items: center;
+      align-self: stretch;
+      gap: var(--aora-space-2);
+      width: auto;
+      max-height: none;
+      padding: var(--aora-space-1) var(--aora-space-5);
+    }
+
+    .site-home__rail--style {
+      height: 5.5rem;
+    }
+
+    .site-home__rail--color {
+      height: 3.5rem;
+      padding-inline: var(--aora-space-5);
+    }
+
+    .site-home__cap {
+      margin: 0;
+      padding-inline-end: var(--aora-space-3);
+      border-inline-end: 1px solid var(--aora-line);
+    }
+
+    /* Colours and faces each get a line of the capsule, captions in one column, so neither list is squeezed. */
+    .site-home__rail--color {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      row-gap: var(--aora-space-1);
+      height: auto;
+      padding-block: var(--aora-space-2);
+    }
+
+    .site-home__faces {
+      flex-direction: row;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .site-home__scroll {
+      flex: 1 1 0;
+      flex-direction: row;
+      justify-content: safe center;
+      align-self: stretch;
+      align-items: center;
+      min-width: 0;
+      padding: var(--aora-space-1) var(--_fade);
+      overflow: auto hidden;
+      mask-image: linear-gradient(
+        to right,
+        transparent,
+        #000 var(--_fade),
+        #000 calc(100% - var(--_fade)),
+        transparent
+      );
+    }
+
+    .site-home__group {
+      flex-direction: row;
+      flex: none;
+      width: auto;
+      margin: 0 var(--aora-space-2) 0 0;
+    }
+
+    .site-home__groupName {
+      white-space: nowrap;
+    }
+
+    .site-home__opt--style {
+      width: 4.5rem;
+    }
+
+    /*
+     * One column: no side capsules to dodge. The wall is dimmer everywhere,
+     * kept off the title and the character, and comes back behind the deck.
+     */
+    .site-home__wall {
+      --_full: light-dark(rgb(0 0 0 / 0.55), rgb(0 0 0 / 0.4));
+      --_deck: 25rem;
+      mask-image:
+        linear-gradient(to bottom, var(--_full) 4rem, transparent 6.5rem),
+        linear-gradient(
+          to bottom,
+          color-mix(in oklab, var(--_full) 32%, transparent) calc(100% - var(--_deck) - 6rem),
+          var(--_full) calc(100% - var(--_deck))
+        );
+      mask-composite: add;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-home__row {
+      animation: none;
+      transform: translateX(calc(var(--site-phase) * -50%));
+    }
+
+    .site-home__opt,
+    .site-home__tool,
+    .site-home__start {
+      transition-property: background-color, color, box-shadow;
+    }
+
+    .site-home__opt:hover,
+    .site-home__tool:hover,
+    .site-home__start:hover {
+      transform: none;
+    }
+  }
+}

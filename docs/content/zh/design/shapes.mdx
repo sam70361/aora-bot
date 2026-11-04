@@ -1,0 +1,130 @@
+import { ShapeGrid } from '@theme';
+
+# 形状
+
+一个角色就是一张图纸：一条身体轮廓，加上耳朵、叶子、天线这类可选的配件。点一下下面的任何一个，会在上方放大。
+
+<ShapeGrid />
+
+默认形状是 `mochi`。每个小标题下是一个家族，顺序与引擎里的 `SHAPE_FAMILIES` 一致。一个角色只归一个家族，引擎新增角色，这一页会自己长出来。
+
+```tsx
+<CharacterMark shape="mochi" state="happy" />
+<CharacterMark shape="bunny" state="happy" />
+```
+
+## 一张图纸里有什么
+
+每个角色在引擎的 `shapes/characters/` 里有一份图纸，按家族一个文件（`round.ts`、`critter.ts`……）：
+
+- **身体**：一条闭合轮廓。能直接用的 SVG 路径原样放进去；稠密的轮廓先采样成点环，再用 Catmull-Rom 样条平滑重建。
+- **脸的位置**：身体的质量不在包围盒中心时（例如带耳朵的角色，身体偏下），图纸给出脸该往哪放。
+- **配件**（可选）：耳朵、叶子、天线，见下一节。
+
+形状在第一次使用时才推导：轮廓缩放到较长边 228.44 单位，并重新居中。注册一个形状得到的远不止轮廓。
+
+| 属性         | 用途                         |
+| ------------ | ---------------------------- |
+| `path`       | 身体                         |
+| `face`       | 眼睛的位置与大小             |
+| `radius`     | 到中心的最远距离             |
+| `beltRadius` | 粒子轨道半径                 |
+| `tiltScale`  | 身体允许旋转的幅度           |
+| `spanAt(y)`  | 把脸夹在轮廓内               |
+| `ring`       | 形状间形变，以及收成腰带核心 |
+| `parts`      | 身体之外的配件               |
+
+```tsx preview
+import { getShape, SHAPE_IDS } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>形状</th>
+          <th>radius</th>
+          <th>beltRadius</th>
+          <th>tiltScale</th>
+          <th>face.eye</th>
+          <th>parts</th>
+        </tr>
+      </thead>
+      <tbody>
+        {SHAPE_IDS.map((id) => {
+          const s = getShape(id);
+          return (
+            <tr key={id}>
+              <td>
+                <code>{id}</code>
+              </td>
+              <td>{s.radius.toFixed(1)}</td>
+              <td>{s.beltRadius.toFixed(1)}</td>
+              <td>{s.tiltScale.toFixed(2)}</td>
+              <td>{s.face.eye.toFixed(2)}</td>
+              <td>{s.parts.length || '—'}</td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+}
+```
+
+## 配件
+
+耳朵、叶子、天线不进身体的主环。`ring`（96 点）是形变、脸部拟合、腰带和 `spanAt` 的唯一依据；配件放在 `ShapeDef.parts` 里，与身体共用同一次归一化（外框取身体与配件的并集，面积只取身体），所以配件不会顶出动画需要的余量。
+
+配件跟着身体的姿态走，从不形变。换形状时，旧配件淡出、新配件淡入，所以形变过程中耳朵不会突然消失。
+
+每个配件有一种上色方式：
+
+| `tone`  | 画成                                                                                              |
+| ------- | ------------------------------------------------------------------------------------------------- |
+| `body`  | 身体自己的墨色，像是轮廓的一部分（兔耳、天线、仙人掌的手臂）                                      |
+| `leaf`  | 绿色，读取 `--aora-leaf`（绿色身体上自动换成更亮的绿）                                            |
+| `inner` | 墨色与白色各半，用于耳廓内侧、包子的褶                                                            |
+| `hair`  | 实心类变体里比墨色深一档（浅色模式下的黑色身体上则浅一档），`outline` 与 `glass` 里用墨色实心填满 |
+
+`hair` 还会让脸的拟合避开它：刘海压住的地方不放眼睛，所以人物的脸总在发际线以下。
+
+向量系列的每种变体都画配件：`outline` 与 `glass` 把配件并进身体的轮廓一起描边，不留接缝；`sticker` 的白边和 `paper` 的硬阴影把配件一并包进去。像素系列把配件栅格化进同一张网格。
+
+```tsx preview
+import { CharacterMark, SHAPE_IDS, getShape } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {SHAPE_IDS.filter((id) => getShape(id).parts.length > 0).map((id) => (
+        <div className="site-demo__cell" key={id}>
+          <CharacterMark shape={id} color="orange" state="happy" sizePx={84} />
+          <span className="site-demo__label">{id}</span>
+          <span className="site-demo__label" style={{ opacity: 0.6 }}>
+            {getShape(id)
+              .parts.map((part) => part.tone)
+              .join('、')}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+`defineShape` 也接受 `parts` 选项，四种 `tone` 同样适用。见[自定义形状](/guide/custom-shapes)。
+
+## 为什么平底形状几乎不倾斜
+
+平底形状一旦倾斜就会显得不对——底面翘起来，重量感也跟着消失。所以 `tiltScale` 是从轮廓量出来的，不是配出来的：`tofu`、`cloud`、`star`、`bell` 和 `bot` 算出 0.15，于是它们是摇晃而不是倾倒；`ghost` 和 `onigiri` 略高一点，`mochi` 和 `blob` 算出 1，可以自由倾斜；没有任何形状带着手写的倾斜系数。具体怎么量，见[形状推导](/internals/shape-derivation)。
+
+## 添加自己的角色
+
+用 `defineShape` 注册一个返回点集的函数，上表里的一切都会替你推导出来。完整教程见[自定义形状](/guide/custom-shapes)。
+
+## 接下来
+
+- [形状推导](/internals/shape-derivation)——从轮廓到脸的位置
+- [自定义形状](/guide/custom-shapes)——注册自己的轮廓
+- [角色阵容](/design/cast)——给每个形状起了名字的角色

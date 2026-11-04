@@ -1,0 +1,219 @@
+import { ExpressionGrid, EyeTopologyGrid, LineExpressionGrid, CuteMouthGrid } from '@theme';
+
+# 表情
+
+一个表情由四样东西组成：眼睛、嘴、腮红，和部分状态带出的特效。默认的 `cute` 脸给每个状态配一组，下面逐一讲。
+
+<ExpressionGrid />
+
+上面是 `cute` 脸的全部眼型，每一种都是几个数字。眼型用 `expression` 选项固定住时，名字就是这里的 id；不固定时，由状态决定。
+
+## 一只眼睛是一段曲线笔画
+
+```ts
+interface EyeSpec {
+  dx: number; // 相对锚点的偏移
+  dy: number;
+  len: number; // 中心线半长
+  width: number; // 半厚度
+  angle: number; // 中心线方向
+  bend: number; // 中点向侧面弯的程度
+}
+```
+
+半长为 `len` 的中心线沿 `angle` 指向，向侧面弯 `bend`，再赋厚度 `width`，两端圆帽。圆点眼是一段几乎没有长度的笔画，`width` 就是它的半径；笑眼是带负弯的水平笔画；闭眼是带正弯的水平笔画。`sad`、`mad` 在圆点上方多带一道眉，`cross` 与 `star` 是叉和四角星。
+
+```tsx preview
+import { CUTE_EYE_TOPOLOGIES, CUTE_EYE_IDS } from '@aora-bot/engine';
+
+export default function Demo() {
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>len</th>
+          <th>width</th>
+          <th>angle</th>
+          <th>bend</th>
+          <th>dx / dy</th>
+        </tr>
+      </thead>
+      <tbody>
+        {CUTE_EYE_IDS.map((id) => {
+          const [left] = CUTE_EYE_TOPOLOGIES[id];
+          return (
+            <tr key={id}>
+              <td>
+                <code>{id}</code>
+              </td>
+              <td>{left.len}</td>
+              <td>{left.width}</td>
+              <td>{left.angle.toFixed(2)}</td>
+              <td>{left.bend}</td>
+              <td>
+                {left.dx} / {left.dy}
+              </td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+}
+```
+
+眼睛大小取身体在脸所在高度的宽度的 7.8%，再以身体高度的 8% 封顶、5% 做下限，所以窄身体的眼睛也看得清。两眼相距 2.6 个眼睛半径——就是一张婴儿脸的比例，脸也放得比较靠近身体中心。
+
+## 嘴
+
+<CuteMouthGrid />
+
+嘴和眼睛一样是几个数字，每个字段独立插值，所以状态切换时嘴是连续地变形，而不是替换。`none` 是不画嘴；每个状态用 `STATE_CUTE_MOUTH` 指定一张。`cat` 是 ω 形的两个小弧；张开的嘴越开，笔画越细，开到一定程度改成实心。
+
+六个状态会说话：`composing`、`dictating`、`messaging`、`sending`、`laughing` 和 `humming`，它们的嘴在两个不可通约的正弦波上一开一合。`prefers-reduced-motion` 下关闭。
+
+嘴和腮红按 50% 跟随眼睛的视线，所以转头时整张脸一起倾斜，而不是眼睛在动、嘴留在原地。
+
+## 腮红
+
+腮红是脸颊上两片扁而淡的粉色椭圆，强度 0 到 1，按状态给出（`STATE_BLUSH`），在弹簧上渐变。只有开心一类的情绪、害羞和熟睡会脸红；处理中的状态一律不红，腮红出现得太多就不再表达什么。
+
+```tsx preview
+import { STATE_BLUSH } from '@aora-bot/engine';
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {Object.entries(STATE_BLUSH)
+        .filter(([, amount]) => amount > 0)
+        .map(([state, amount]) => (
+          <div className="site-demo__cell" key={state}>
+            <CharacterMark shape="mochi" color="blue" state={state as never} sizePx={72} />
+            <span className="site-demo__label">{state}</span>
+            <span className="site-demo__label" style={{ opacity: 0.6 }}>
+              {amount}
+            </span>
+          </div>
+        ))}
+    </div>
+  );
+}
+```
+
+## 情绪特效
+
+有些状态在身体之外还带着一个特效：睡着的 Zz，开心的粉心，难过的泪滴，惊讶的三道线，拒绝的红色感叹号，庆祝的金色闪光，工作中右上角转圈的小弧。特效都放在身体旁边，从不绕着身体画一圈。特效是时间的纯函数（`evaluateFx`），随帧快照的 `fx` 字段交给渲染器，所以向量、像素、颜文字三个系列自动一致。
+
+`STATE_FX` 把状态映射到特效；下表直接读它，也包括腰带状态改用的活动特效（见[状态](/design/states#腰带状态在-cute-脸下的样子)）。
+
+```tsx preview
+import { FX_KINDS, STATE_FX } from '@aora-bot/engine';
+
+export default function Demo() {
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>特效</th>
+          <th>状态</th>
+        </tr>
+      </thead>
+      <tbody>
+        {FX_KINDS.map((kind) => (
+          <tr key={kind}>
+            <td>
+              <code>{kind}</code>
+            </td>
+            <td>
+              {Object.entries(STATE_FX)
+                .filter(([, fx]) => fx === kind)
+                .map(([state]) => state)
+                .join('、') || '—'}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+```
+
+## 按状态轮播
+
+一个状态点名一组眼型，并按随机间隔循环。`idle` 在圆点和偶尔的左右一瞥之间漂移；`searching` 大约每半秒换一次。
+
+```tsx preview
+import { STATE_CUTE_EYES, STATE_EYE_SWITCH_MS } from '@aora-bot/engine';
+
+const rows = ['idle', 'thinking', 'searching', 'sleeping', 'angry', 'celebrate'] as const;
+
+export default function Demo() {
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>state</th>
+          <th>sequence</th>
+          <th>switch interval</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((state) => {
+          const ms = STATE_EYE_SWITCH_MS[state];
+          return (
+            <tr key={state}>
+              <td>
+                <code>{state}</code>
+              </td>
+              <td>{STATE_CUTE_EYES[state].join(' → ')}</td>
+              <td>{ms ? `${ms[0]}–${ms[1]} ms` : 'held'}</td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+}
+```
+
+## 眨眼
+
+眨眼不是淡出。眼睛先挤到 5% 高度，再超调到 108%，然后落回 100%。没有超调，它读起来像眼睛短暂消失，而不是眨眼。第一次之后有 14% 的概率再眨一下。
+
+## eyes 与 line 脸的表情
+
+`eyes` 和 `line` 两种脸有它们自己的一套眼睛拓扑，每种也是一段这样的曲线笔画。下面是它们在 `eyes` 脸上的样子，以及在[线条脸](/design/face)的共享线宽下的样子：几何不变，眼睛更小，细的表情被抬到旁边鼻子和嘴的线宽。
+
+<EyeTopologyGrid />
+
+<LineExpressionGrid />
+
+`wink` 是其中的例外：唯一一种两只眼睛不同的拓扑，一边是开心的弧，另一边是中性的眼。它在 `cute` 脸里也有一个同名的眼型。
+
+在 `cute` 脸上，`eyes` 与 `line` 的眼型名会被翻译成最接近的 cute 眼型（`happy` → `arch`、`angry` → `mad`、`dizzy` → `cross` 等），所以同一个 `expression` 值在每种脸上都有意义。
+
+眼睛在 `eyes` 与 `line` 脸里的大小，取身体在眼睛所在高度的宽度的一个固定比例，再以身体高度封顶，并设一个下限。拟合出的脸盒只决定脸*在哪*，不决定脸*多大*。在圆润的身体上，睁开的眼睛大约占身体宽度的五分之一、高度的四分之一，两眼间距略宽于一只眼——就是在球上画一张脸的比例。所有眼形再按一个固定系数横向拉宽，睁眼读作椭圆而不是细缝，闭眼与笑眼的笔画也跨出相同的宽度。最后用一层反缩放补偿每个形状自己的渲染比例，这样眼睛在不同的形状上看起来一样大。
+
+## 为什么用参数而不是轮廓
+
+最直觉的表示是每个表情一组数字化点环，从设计文件导出。
+
+参数赢在一个具体原因：**形变**。同样的论证也决定了[线条脸的嘴](/design/face#嘴是六个数字)——嘴是六个数字，理由和眼睛是五个数字一样。
+
+逐点插值两个点环会让点在过渡中途互相穿越。从水平条到垂直条，朴素混合会经过一团纠缠，而不是一次旋转。存储轮廓的实现必须绕开这一点：从点里恢复主轴、混合主轴、再重建轮廓——实际上是把丢掉的参数重新找回来。
+
+插值五个数字是精确的。每个中间值都是合法的眼睛，因为没有办法表达不合法的眼睛。
+
+```ts
+morphEye(a, b, t); // 永远是一只眼睛
+```
+
+唯一的细节是 `angle` 走较短的那条路，所以 +40° 的斜视不会经过水平再到 −40°。
+
+## 接下来
+
+- [状态](/design/states)——每个状态戴什么表情、带什么特效
+- [五官](/design/face)——三种脸，以及线条脸的鼻子和嘴
+- [面部与姿态投影](/internals/face-and-pose)——头是怎么转的

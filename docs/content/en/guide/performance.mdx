@@ -1,0 +1,149 @@
+# Performance
+
+A character is not free. It runs a physics integrator and writes a few dozen SVG attributes every frame. One is trivial; two hundred, done naively, will drop frames on any machine. This page explains what Aora Bot does about that and what you need to do.
+
+## One loop, not one per character
+
+Every character subscribes to a single shared `requestAnimationFrame` loop.
+
+```ts
+import { ticker } from '@aora-bot/engine';
+
+const stop = ticker.add((dt, now) => {
+  // Called once per frame, after every character has been updated.
+});
+```
+
+Scheduling a callback per character is the obvious design and it scales badly: each one carries its own timestamp bookkeeping, and the browser has to walk a longer callback list every frame. One loop fanning out to subscribers costs about the same as one character, and it guarantees everything on screen is evaluated against an identical timestamp, so animations stay in phase.
+
+The loop stops entirely when the last character unmounts.
+
+## Share animations between identical characters
+
+The larger win is not running the same animation twice. `MarkStageProvider` hosts one hidden character per distinct **appearance** and every visible instance becomes a `<use href>` reference to it.
+
+```tsx preview
+import { MarkStageProvider, StagedMark } from '@aora-bot/react';
+
+const COLOURS = ['blue', 'green', 'violet', 'orange', 'magenta', 'cyan'] as const;
+
+export default function Demo() {
+  // Sixty marks, two distinct appearances, two running engines.
+  return (
+    <MarkStageProvider>
+      <div className="site-demo">
+        {Array.from({ length: 60 }, (_, i) => (
+          <StagedMark
+            key={i}
+            shape="blob"
+            state={i % 2 ? 'thinking' : 'happy'}
+            color={COLOURS[i % COLOURS.length]}
+            sizePx={30}
+          />
+        ))}
+      </div>
+    </MarkStageProvider>
+  );
+}
+```
+
+### What counts as the same appearance
+
+Shape, state and face style — ink and size are excluded, so sixty agents that are all idle blobs cost one engine even when every one of them is a different ink. [`MarkStageProvider`](/components/mark-stage) explains the key, and why agent identity is the wrong thing to key on.
+
+### The cap
+
+`maxSources` caps how many engines run at once, 36 by default. Past it the page degrades by leaving some characters still rather than by slowing all of them down.
+
+```tsx
+<MarkStageProvider maxSources={16}>{children}</MarkStageProvider>
+```
+
+## Pause what is not visible
+
+`autoPause` watches page visibility, viewport intersection and `prefers-reduced-motion`, and calls `pause()` / `resume()` for you. A character scrolled off screen and back looks like it was waiting, not like it restarted — `pause()` freezes the current frame rather than resetting.
+
+```tsx
+<CharacterMark shape="blob" autoPause />
+```
+
+Pass an options object to drop a signal or grow the intersection margin:
+
+```tsx
+<CharacterMark shape="blob" autoPause={{ rootMargin: '120px', reducedMotion: false }} />
+```
+
+`paused` is still there for hosts that already have their own observer. The two combine: either one is enough to stop the loop.
+
+## Fall back to still images
+
+For very large collections, do not animate at all. `renderAvatarDataUrl` produces a static SVG with no runtime cost:
+
+```tsx preview
+import { renderAvatarDataUrl } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {Array.from({ length: 24 }, (_, i) => (
+        <img key={i} src={renderAvatarDataUrl(`user-${i}`)} width={36} height={36} alt="" />
+      ))}
+    </div>
+  );
+}
+```
+
+Static rendering accepts an expression and a state, so a still character can still show what it was doing:
+
+```tsx preview
+import { renderStaticSvgDataUrl } from '@aora-bot/react';
+
+const states = ['idle', 'sleeping', 'happy', 'angry', 'surprised', 'thinking'] as const;
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {states.map((state) => (
+        <div className="site-demo__cell" key={state}>
+          <img
+            src={renderStaticSvgDataUrl({ shape: 'blob', color: 'green', state })}
+            width={52}
+            height={52}
+            alt=""
+          />
+          <span className="site-demo__label">{state}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+This matters more than it looks. A static renderer locked to one neutral expression cannot represent a state gallery at all — every cell would show the same face regardless of its label.
+
+## Reduced motion
+
+The engine checks `prefers-reduced-motion` before starting. When it is set, springs settle to their targets immediately, one frame is drawn, no loop starts and no particles are emitted. You do not need to handle this yourself, but you can query it:
+
+```ts
+import { prefersReducedMotion, onReducedMotionChange } from '@aora-bot/engine';
+```
+
+## Budget
+
+Rough guidance on a mid-range laptop at 60 Hz:
+
+| Concurrent engines | Result                                                     |
+| ------------------ | ---------------------------------------------------------- |
+| 1–12               | No measurable cost                                         |
+| 12–36              | Comfortable; the default cap                               |
+| 36–60              | Works, but leaves little headroom for the rest of the page |
+| 60+                | Use mirrors, pausing, or still images                      |
+
+The number that matters is _engines_, not characters. Mirrors are close to free, so a page can show hundreds of characters while staying in the first row of this table.
+
+## Next
+
+- [Server rendering](/guide/server-rendering) — Next.js and static generation
+- [MarkStageProvider](/components/mark-stage) — share engines by appearance
+- [Rendering structure](/internals/rendering) — one SVG, every attribute written by hand

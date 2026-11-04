@@ -1,0 +1,121 @@
+import { API } from '@theme';
+
+# SpriteMark
+
+A painted character driven by the same states as the vector ones.
+
+```tsx preview
+import { useState } from 'react';
+import { SpriteMark, CharacterMark, EMOTION_IDS, getEmotion } from '@aora-bot/react';
+
+const ids = ['02', '30', '32', '33', '34', '10', '13', '21', '00'];
+
+export default function Demo() {
+  const [id, setId] = useState('02');
+  return (
+    <div className="site-demo site-demo--column" style={{ alignItems: 'center' }}>
+      <div className="site-demo">
+        <SpriteMark src="/sprites/bao/manifest.json" emotionId={id} sizePx={120} />
+        <SpriteMark src="/sprites/tapkin/manifest.json" emotionId={id} sizePx={120} />
+        <CharacterMark shape="bun" color="orange" emotionId={id} sizePx={120} />
+      </div>
+      <div className="site-controls">
+        {ids.map((i) => (
+          <button key={i} className="site-btn" aria-pressed={i === id} onClick={() => setId(i)}>
+            {i} {getEmotion(i)?.name.en}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+Two sprite sets and one procedural character, all answering the same [protocol id](/design/protocol). A host that has built its state logic against `CharacterMark` can swap in a mascot without touching it.
+
+## When to reach for this
+
+The vector characters are the point of Aora Bot: they are procedural, themeable, and weightless. `SpriteMark` is the escape hatch for the one thing they cannot be — a specific illustration. A brand mascot, a pet drawn by hand, a photograph-derived creature: things with a look that cannot be generated.
+
+The cost is real. A sheet is tens of PNG files instead of a few kilobytes of maths; it does not recolour with the theme; it has exactly the states someone drew. Treat it as an asset, not a component you configure.
+
+## The manifest
+
+A `sprite-mate` manifest is a folder of PNG frames with a `manifest.json` keyed by protocol id:
+
+```json
+{
+  "kind": "sprite-mate",
+  "formatVersion": 1,
+  "id": "tapkin",
+  "name": { "en": "Tapkin", "zh": "塔皮" },
+  "frameSize": [320, 320],
+  "fps": 1,
+  "anchor": [0.5, 0.94],
+  "license": "Aora Bot License",
+  "frames": {
+    "00": ["00.png"],
+    "02": ["02.png"],
+    "10": ["10.png"],
+    "30": ["30.png"],
+    "33": ["33.png"]
+  },
+  "fallback": { "03": "02", "11": "30", "20": "30" }
+}
+```
+
+- `frames` maps an id to one or more file names relative to the manifest. One file is a still; several play at `fps`.
+- `fallback` lets a sheet answer ids it has not drawn by pointing at ones it has. Chains are followed for at most four hops, so a typo cannot hang the page.
+- `anchor` is where the character stands within the frame, as fractions. The image is `object-fit: contain` and positioned by it, so a tall sheet keeps its feet where the box's feet are.
+
+Resolution order for an id: the id itself; the manifest's `fallback` chain; the [segment fallback](/design/protocol#segments) — an unknown agent-work id shows the sheet's "busy" frames, an unknown feeling shows idle; and finally idle (`02`), which every valid sheet must have.
+
+`spriteCoverage(manifest, EMOTION_IDS)` audits a sheet: how many ids it serves directly, how many by fallback, how many not at all, and any authoring problems (a missing idle, a dangling fallback, a cycle). Run it in a test against your own sheet.
+
+## Loading
+
+With `src` the manifest is fetched on the client and cached per URL for the page's lifetime. Until it arrives — and if it fails — the mark shows a procedural character in the same state, so the layout never has a hole in it and the state is never lost. Pass `fallback="none"` for an empty box instead.
+
+```tsx
+<SpriteMark src="/sprites/bao/manifest.json" state="thinking" />
+```
+
+For server rendering, or when the manifest is bundled, pass it directly with the directory its frames live in. The first frame is emitted as plain markup.
+
+An imported JSON file types `kind` as `string`, so narrow it with `isSpriteManifest` first:
+
+```tsx
+import { SpriteMark, isSpriteManifest } from '@aora-bot/react';
+import manifest from './sprites/bao/manifest.json';
+
+if (!isSpriteManifest(manifest)) throw new Error('Not a sprite-mate manifest');
+
+<SpriteMark manifest={manifest} baseUrl="/sprites/bao/" state="thinking" />;
+```
+
+## Motion
+
+Frames are shown with a single `<img>` whose `src` swaps on a timer. There is no canvas and no per-frame JavaScript beyond that assignment, and the other frames of a clip are preloaded so a swap never flashes an empty box. Under `prefers-reduced-motion` only the first frame is shown. `paused` holds the first frame; `fps` overrides the manifest's rate.
+
+## The bundled sheets
+
+The docs ship two sets under `/sprites/` for demonstration, both project original and under the Aora Bot License: `bao`, 32 ids with two frames each, rendered from the procedural `bao` character (the `bun` shape), and `tapkin`, 12 ids with one frame each, of a prompt-designed hamster. Their `provenance` blocks record how each was made.
+
+## API
+
+<API component="SpriteMark" />
+
+### Helpers
+
+```ts
+loadSpriteManifest(url): Promise<SpriteManifest>; // fetch + validate, cached
+useSpriteManifest(url): { manifest, error, loading };
+isSpriteManifest(value): value is SpriteManifest;
+resolveSpriteFrames(manifest, id): SpriteClip | null;
+spriteCoverage(manifest, ids): SpriteCoverage;
+```
+
+## Next
+
+- [Cast](/design/cast) — the named characters
+- [Agent integration](/guide/agent-integration) — wiring an agent to a face

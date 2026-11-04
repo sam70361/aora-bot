@@ -1,0 +1,167 @@
+# 自定义形状
+
+形状就是一个返回闭合轮廓的函数。其余一切——路径、面部位置、眼睛大小、身体允许倾斜的幅度、粒子轨道半径、形变环——都从这些点推导出来。
+
+## 注册一个
+
+```tsx preview
+import { useEffect, useState } from 'react';
+import { CharacterMark, defineShape } from '@aora-bot/react';
+
+// 五瓣的花边形，在极坐标下采样。
+function lobes(): [number, number][] {
+  const points: [number, number][] = [];
+  for (let i = 0; i < 180; i++) {
+    const t = (i / 180) * Math.PI * 2;
+    const r = 96 + 20 * Math.cos(5 * t);
+    points.push([r * Math.cos(t), r * Math.sin(t)]);
+  }
+  return points;
+}
+
+export default function Demo() {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    defineShape('lobes', lobes);
+    setReady(true);
+  }, []);
+
+  if (!ready) return null;
+
+  return (
+    <div className="site-demo site-demo--center">
+      <CharacterMark shape={'lobes' as never} color="yellow" state="happy" sizePx={120} />
+      <CharacterMark shape={'lobes' as never} color="magenta" state="thinking" sizePx={120} />
+    </div>
+  );
+}
+```
+
+注意你**没有**提供的东西：眼睛落在哪里、有多大、形状能不能倾侧，以及要打包哪些路径数据。
+
+:::tip 用一个新的 id
+`defineShape` 用已有的 id 会替换那个内置角色，对整个页面生效。内置的 [`SHAPE_IDS`](/design/shapes) 里的 id 都别用。
+:::
+
+## 会推导出什么
+
+| 属性         | 如何得到                          |
+| ------------ | --------------------------------- |
+| `path`       | 轮廓归一化到标准尺寸并居中        |
+| `face`       | 网格搜索得到的最大内切椭圆        |
+| `radius`     | 离中心最远的点                    |
+| `beltRadius` | 最宽的水平半宽，用作粒子轨道      |
+| `tiltScale`  | 紧贴底部的宽度与稍高处宽度之比    |
+| `spanAt(y)`  | 左右边缘查找表，用来夹住眼睛      |
+| `ring`       | 96 点极坐标重采样，用于形状间形变 |
+
+推导是惰性的——形状在第一次使用时才构建，而不是在导入时，因为面部拟合很贵。具体的量法见[形状推导](/internals/shape-derivation)。
+
+有机轮廓上的尖端（水滴的顶、叶子的尖）应该用 `shapeGenerators.fourierSmooth` 软化，而不是切圆角。
+
+## 耳朵、叶子和天线
+
+内置角色里的耳朵、叶子、天线是 `ShapeDef.parts`：它们跟着身体一起动，随身体的姿态变形；除了 `hair`（脸会避开它），都不参与脸的拟合。`defineShape` 在选项里接受它们，每个配件是一个 `tone` 加一条轮廓，坐标和身体的轮廓一致（四种 `tone` 各画成什么，见[形状](/design/shapes#配件)）。配件和身体一起归一化，不用自己去对齐那个 228 单位的框。
+
+```tsx preview
+import { useEffect, useState } from 'react';
+import { CharacterMark, defineShape } from '@aora-bot/react';
+
+function ellipse(cx: number, cy: number, rx: number, ry: number): [number, number][] {
+  return Array.from({ length: 64 }, (_, i) => {
+    const t = (i / 64) * Math.PI * 2;
+    return [cx + rx * Math.cos(t), cy + ry * Math.sin(t)];
+  });
+}
+
+export default function Demo() {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    defineShape('eared', () => ellipse(0, 0, 100, 88), {
+      parts: [
+        { tone: 'body', outline: ellipse(-58, -92, 26, 42) },
+        { tone: 'body', outline: ellipse(58, -92, 26, 42) },
+        { tone: 'inner', outline: ellipse(-58, -90, 12, 26) },
+        { tone: 'inner', outline: ellipse(58, -90, 12, 26) },
+      ],
+    });
+    setReady(true);
+  }, []);
+
+  if (!ready) return null;
+
+  return (
+    <div className="site-demo site-demo--center">
+      <CharacterMark shape={'eared' as never} color="orange" state="happy" sizePx={120} />
+      <CharacterMark shape={'eared' as never} color="violet" state="idle" variant="sticker" sizePx={120} />
+    </div>
+  );
+}
+```
+
+配件不形变：角色换形状时，旧配件淡出，新配件淡入。
+
+## 好轮廓的规则
+
+**返回点，而不是路径字符串。** 注册表需要测量轮廓，测量路径意味着解析并展平它。
+
+**以原点为中心。** 归一化按包围盒重新居中，大致居中的轮廓可以避免长尾巴把盒子拽偏。
+
+**采样足够密。** 128 到 160 个点正好。低于大约 60，穿过它们的 Catmull-Rom 样条会明显切角。
+
+**避免尖锐的凹口。** 面部拟合器寻找最宽裕的椭圆；大部分是细手臂的形状会得到一张很小的脸和相应很小的眼睛。
+
+**长宽比保持适中。** 三倍于宽度的高度没有空间并排放两只眼睛。
+
+## 圆角多边形
+
+有棱角的形状请用同一套辅助函数。它会把每个圆角半径裁到相邻边能容纳的范围，过大的半径会退化成圆，而不是自相交。
+
+```tsx preview
+import { useEffect, useState } from 'react';
+import { CharacterMark, defineShape } from '@aora-bot/react';
+import { shapeGenerators } from '@aora-bot/engine';
+
+function facet(): [number, number][] {
+  const vertices: [number, number][] = [];
+  for (let i = 0; i < 5; i++) {
+    const a = -Math.PI / 2 + (i / 5) * Math.PI * 2;
+    vertices.push([112 * Math.cos(a), 112 * Math.sin(a)]);
+  }
+  return shapeGenerators.roundedPolygon(vertices, new Array(5).fill(22));
+}
+
+export default function Demo() {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    defineShape('facet', facet);
+    setReady(true);
+  }, []);
+  if (!ready) return null;
+  return <CharacterMark shape={'facet' as never} color="cyan" state="proud" sizePx={120} />;
+}
+```
+
+## 微调面部
+
+三角形底部有空间、顶端没有，这会把脸压低并挤到一只眼睛。`leftDX` 平移左眼：
+
+```ts
+defineShape('triangle', triangle, { leftDX: -6 });
+```
+
+少用。如果一个形状需要超过几个单位的校正，通常该改的是轮廓。
+
+## 贡献一个角色
+
+内置的角色是一套彼此协调的集合——它们要在 16 像素时也能被区分开，这排除了一切过于精细的东西。新角色更适合作为用户侧注册发布，而不是加进核心。
+
+如果你认为某个角色属于这套，请开一个 issue，附上生成函数以及 16、36、120 像素的截图。
+
+## 接下来
+
+- [形状推导](/internals/shape-derivation)——从轮廓到面部盒
+- [形状](/design/shapes)——全部内置角色
+- [性能](/guide/performance)——怎样渲染上百个角色

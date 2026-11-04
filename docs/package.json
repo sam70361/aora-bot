@@ -1,0 +1,28 @@
+{
+  "name": "@aora-bot/docs",
+  "version": "0.1.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "api": "tsx scripts/extract-api.ts",
+    "dev": "pnpm run api && rspress dev",
+    "build": "pnpm run api && rspress build",
+    "preview": "rspress preview",
+    "typecheck": "pnpm run api && tsc --noEmit"
+  },
+  "dependencies": {
+    "@aora-bot/engine": "workspace:*",
+    "@aora-bot/react": "workspace:*",
+    "@aora-bot/surfaces": "workspace:*",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@rspress/core": "^2.0.21",
+    "@rspress/plugin-preview": "^2.0.21",
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7",
+    "tsx": "^4.20.3",
+    "typescript": "^5.9.2"
+  }
+}

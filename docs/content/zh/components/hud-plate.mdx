@@ -1,0 +1,99 @@
+import { API } from '@theme';
+
+# HudPlate
+
+表盘周围的文字。
+
+```tsx preview
+import { useEffect, useState } from 'react';
+import { CharacterMark, HudPlate, useHudSpec } from '@aora-bot/react';
+
+export default function Demo() {
+  const [used, setUsed] = useState(9_000);
+  useEffect(() => {
+    const timer = setInterval(() => setUsed((v) => (v >= 15_000 ? 3_000 : v + 500)), 600);
+    return () => clearInterval(timer);
+  }, []);
+
+  const hud = useHudSpec('context', { used, total: 15_000 });
+  const pct = Math.round((used / 15_000) * 100);
+
+  return (
+    <div className="site-demo site-demo--center">
+      <HudPlate
+        title="上下文"
+        value={pct}
+        unit="%"
+        lines={[`已用 ${(used / 1000).toFixed(1)}k / 15k token`]}
+        level={pct > 85 ? 'alert' : pct > 70 ? 'warn' : 'info'}
+      >
+        <CharacterMark shape="hex" color="blue" state="progress" hud={hud} sizePx={72} />
+      </HudPlate>
+    </div>
+  );
+}
+```
+
+## 为什么要有底盘
+
+画在角色身体外圈的表盘是一段几何：五分之四满的环、转了三分之二的指针。它说不出「83%」或「还剩四分钟」，也不该去说——那个尺寸的 SVG 文字根本读不清。所以角色只管几何，底盘负责文字：标题、数值、单位，以及下方的补充行。
+
+底盘不做任何四舍五入或格式化。`value` 原样显示，由宿主决定这个数字用什么精度才诚实。
+
+## 位置与等级
+
+`placement` 把文字放在角色下方、上方或右侧。`level` 给底盘着色——`info`、`ok`、`warn`、`alert`——并且应当少用：每个状态都变色的底盘，一轮对话就会闪过四种颜色。
+
+```tsx preview
+import { CharacterMark, HudPlate } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      <HudPlate title="同步" value="完成" level="ok" placement="top">
+        <CharacterMark shape="tofu" color="green" state="happy" hud={{ kind: 'sync', state: 'done' }} />
+      </HudPlate>
+      <HudPlate title="倒计时" value="0:42" level="warn" placement="right" lines={['等待批准']}>
+        <CharacterMark
+          shape="pill"
+          color="orange"
+          state="waiting"
+          hud={{ kind: 'timer', remainingMs: 42_000, totalMs: 120_000 }}
+        />
+      </HudPlate>
+      <HudPlate title="余额" value={3} unit="点" level="alert">
+        <CharacterMark
+          shape="hex"
+          color="red"
+          state="alerting"
+          hud={{ kind: 'balance', value: 3, low: true }}
+        />
+      </HudPlate>
+    </div>
+  );
+}
+```
+
+## useHudSpec
+
+宿主手里的数据往往参差不齐：首次渲染时还是 `undefined` 的比例、从接口拿到的字符串型 token 数。直接塞给 `hud`，要么画错表盘，要么抛错。`useHudSpec` 接收种类和原始值，用协议的 `isHudSpec` 检查一遍，返回合法的 spec 或 `null`——`null` 就是不画表盘，这正是数据还在路上时该有的样子。
+
+```ts
+const hud = useHudSpec('progress', { value: fraction }); // fraction 变成数字之前都是 null
+const clock = useHudSpec('clock'); // 没有必填字段的种类不需要 values
+```
+
+全部种类见 `HUD_KINDS`；每种的字段形状是 `HudSpec` 联合类型，在[协议页](/design/protocol#hud)有说明。
+
+## 无障碍
+
+底盘是一个 polite 的 `role="status"` 区域，屏幕阅读器能听到数字变化，又不会被它打断。表盘本身是装饰，不进入无障碍树。
+
+## API
+
+<API component="HudPlate" />
+
+## 接下来
+
+- [AgentHud](/components/agent-hud)——角色、表盘与说明一起
+- [进度 HUD](/scenarios/progress-hud)——身体在干活，外环在计数

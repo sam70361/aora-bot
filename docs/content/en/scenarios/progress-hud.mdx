@@ -1,0 +1,131 @@
+import { StateMatrix } from '@theme';
+
+# Progress HUD
+
+A long job, with the body saying what is happening and the ring saying how far along it is.
+
+## See it
+
+One session reporting a fraction to the arbiter. `AgentHud` reads the state, the dial and the tip from the same result, so the three cannot describe different jobs. Reaching the end sends `celebrate`, an event the arbiter never drops.
+
+```tsx preview
+import { useState } from 'react';
+import { AgentHud, AgentStateProvider, useAgentState } from '@aora-bot/react';
+
+function Job() {
+  const { update } = useAgentState();
+  const [value, setValue] = useState(0.35);
+
+  const report = (next: number) => {
+    setValue(next);
+    update({
+      sessionId: 'export',
+      state: next >= 1 ? 'celebrate' : 'working',
+      hud: { kind: 'progress', value: next },
+      tips: next >= 1 ? 'Export finished' : `${Math.round(next * 100)}%, 2 of 6 files`,
+    });
+  };
+
+  return (
+    <div className="site-demo site-demo--stack">
+      <AgentHud agent={{ id: 'exporter', name: 'Exporter' }} sizePx={88} />
+      <div className="site-controls">
+        <label className="site-field">
+          progress
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.01}
+            value={value}
+            onChange={(event) => report(Number(event.target.value))}
+          />
+        </label>
+        <button className="site-btn" onClick={() => report(1)}>
+          finish
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default function Demo() {
+  return (
+    <AgentStateProvider>
+      <Job />
+    </AgentStateProvider>
+  );
+}
+```
+
+Until the slider moves the arbiter has heard nothing, so `AgentHud` draws an idle character with no dial — a HUD is a decoration on a page that has to render before any agent has connected. `useHudSpec('progress', { value })` gives the same protection to a host assembling a spec by hand: an `undefined` fraction on the first render becomes `null`, and `hud={null}` is a character with no dial.
+
+## When to use it
+
+A long job — an export, an index build, a batch of uploads — and a character beside it that has something to show for the whole duration. Two layers do the work. The body says what the agent _is doing_: `working`, or `progress` when the job is a measured thing. The ring outside the body says what it _knows_: a fraction, a ceiling, a sync state. They are separate on purpose, so a character can be working and showing 83% at once without the two competing for the same pixels.
+
+## Components
+
+- [`CharacterMark`](/components/character-mark) — `hud={...}`, a `HudSpec` the host already has the numbers for.
+- [`HudPlate`](/components/hud-plate) — the figure as text beside the dial, in a polite live region, because a ring cannot say _83%_.
+- [`AgentHud`](/components/agent-hud) — the arbiter's current state, dial and caption as one component, so a dial from one session cannot sit beside a face from another.
+- [`useHudSpec`](/components/agent-hud) — build a spec from live values and get `null` when they do not hold up yet.
+- [`AgentStateProvider`](/components/agent-state) — where the numbers arrive.
+
+## How the states move
+
+| From      | To          | When                                                   |
+| --------- | ----------- | ------------------------------------------------------ |
+| —         | `working`   | the job started and its length is unknown              |
+| `working` | `progress`  | the job reports a fraction; the dial carries the value |
+| `working` | `uploading` | bytes are leaving; pair with `sync`                    |
+| `working` | `loading`   | bytes are arriving                                     |
+| any       | `celebrate` | the job reached the end — one-shot id `33`             |
+| any       | `alerting`  | the job failed — one-shot id `34`                      |
+
+The `progress` state's belt is indeterminate: a ring that fills and resets on a four-second cycle, meaning "a measured thing is underway". The measurement itself always goes in the HUD, whose `progress` ring is the value. Use the `working` body with a `progress` dial when the fraction is what matters, and the `progress` body when all you can say is that it is moving.
+
+## What each state looks like
+
+<StateMatrix states={['working', 'progress', 'uploading', 'loading', 'celebrate', 'alerting']} />
+
+On the `eyes` and `line` faces, four of these hand their body to a belt. Because a HUD is drawn in the ring outside the body, a belt state and a dial coexist: the body collapses to its core, the belt orbits it, and the dial sits further out still.
+
+## Six dials
+
+Six dials for measured things. `progress` and `gauge` are a fraction against a ceiling; `context` counts cells rather than filling an arc, because the last few slots are the ones that matter; `balance` shows the magnitude and leaves the figure to the plate; `kpi` spark-lines a series; `sync` is a lifecycle. Every one is a pure function of `(spec, time)`, so a paused character, a server render and a screenshot agree.
+
+```tsx preview
+import { CharacterMark, HudPlate, type HudSpec } from '@aora-bot/react';
+
+const dials: { spec: HudSpec; title: string; value: string | number; unit?: string }[] = [
+  { spec: { kind: 'progress', value: 0.83 }, title: 'Export', value: 83, unit: '%' },
+  { spec: { kind: 'gauge', value: 62, max: 100 }, title: 'CPU', value: 62, unit: '%' },
+  { spec: { kind: 'sync', state: 'syncing' }, title: 'Sync', value: '…' },
+  {
+    spec: { kind: 'kpi', value: 412, delta: 38, series: [280, 310, 296, 350, 374, 412] },
+    title: 'Runs',
+    value: 412,
+  },
+  { spec: { kind: 'context', used: 13_400, total: 15_000 }, title: 'Context', value: '13.4k', unit: '/ 15k' },
+  { spec: { kind: 'balance', value: 1240, low: true, unit: 'credits' }, title: 'Balance', value: 1240 },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {dials.map((dial) => (
+        <HudPlate key={dial.spec.kind} title={dial.title} value={dial.value} unit={dial.unit} sizePx={64}>
+          <CharacterMark shape="tofu" color="blue" state="working" hud={dial.spec} sizePx={64} />
+        </HudPlate>
+      ))}
+    </div>
+  );
+}
+```
+
+## Next
+
+- [HudPlate](/components/hud-plate) — a figure beside the dial
+- [AgentHud](/components/agent-hud) — character, dial and caption together
+- [States](/design/states) — every animation state, grouped

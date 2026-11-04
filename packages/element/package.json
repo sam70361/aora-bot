@@ -1,0 +1,66 @@
+{
+  "name": "@aora-bot/element",
+  "version": "0.1.1",
+  "description": "The Aora Bot procedural character as a framework-free Web Component, with a one-line CDN build",
+  "license": "SEE LICENSE IN LICENSE",
+  "homepage": "https://aora-bot.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sam70361/aora-bot.git",
+    "directory": "packages/element"
+  },
+  "bugs": "https://github.com/sam70361/aora-bot/issues",
+  "keywords": [
+    "web-component",
+    "custom-element",
+    "character",
+    "avatar",
+    "procedural",
+    "svg",
+    "animation",
+    "mascot"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "sideEffects": [
+    "./dist/aora-bot.js"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "unpkg": "./dist/aora-bot.js",
+  "jsdelivr": "./dist/aora-bot.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./cdn": "./dist/aora-bot.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "rslib build",
+    "dev": "rslib build --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@aora-bot/engine": "workspace:*"
+  },
+  "devDependencies": {
+    "@rslib/core": "^0.18.0",
+    "happy-dom": "^20.14.5",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}

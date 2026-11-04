@@ -1,0 +1,189 @@
+import { StyleParamsDemo } from '@theme';
+
+# Pixel style
+
+The same character, drawn on a grid. Every state, shape and face — the default `cute` face and the effects beside it included — is available in it, because the pixel series reads the same frame the vector one does and only decides which cells to fill.
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {['blob', 'hex', 'cloud', 'star'].map((shape) => (
+        <CharacterMark key={shape} styleId="pixel" shape={shape} color="blue" state="happy" sizePx={96} />
+      ))}
+    </div>
+  );
+}
+```
+
+```tsx
+<CharacterMark styleId="pixel" shape="blob" />
+<CharacterMark styleId="pixel" variant="dot" styleOptions={{ grid: 32 }} />
+```
+
+The default series is `vector`; a character that does not name a style is drawn in it.
+
+## Variants
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+const variants = ['crisp', 'dot', 'block'] as const;
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {variants.map((variant) => (
+        <div className="site-demo__cell" key={variant}>
+          <CharacterMark
+            styleId="pixel"
+            variant={variant}
+            shape="blob"
+            color="orange"
+            state="curious"
+            sizePx={110}
+          />
+          <span className="site-demo__label">{variant}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+| Variant | What it draws                                                                                      |
+| ------- | -------------------------------------------------------------------------------------------------- |
+| `crisp` | Solid squares, the default. Neighbouring cells of one colour merge into one path with crisp edges. |
+| `dot`   | An LED panel: dim unlit dots on a dark plate, bright dots where the character is, a slight glow.   |
+| `block` | Squares with a seam between them, so the grid shows even where the colour is flat.                 |
+
+The plate behind `dot` is part of the picture and does not follow the theme: an LED panel is dark in a light page too. Its eyes are white LEDs unless `eyeColor` says otherwise.
+
+## Parameters
+
+Parameters go in `styleOptions`. The engine merges them over the defaults, clamps numbers to their range and snaps them to the step, so a slider and a typed value agree. Unknown keys are dropped.
+
+| Parameter | Default | Range     | Meaning                                                                 |
+| --------- | ------- | --------- | ----------------------------------------------------------------------- |
+| `grid`    | `24`    | 8 to 64   | Cells across the character. Relative to shape space, not to pixels.     |
+| `gap`     | `0.16`  | 0 to 0.5  | Seam between cells, as a fraction of a cell. Read by `block` and `dot`. |
+| `shades`  | `3`     | 1 to 5    | Tones in the ladder. `1` is flat.                                       |
+| `fps`     | `12`    | 0 to 60   | Motion is sampled on this clock. `0` follows every frame.               |
+| `outline` | `true`  | on or off | Darken the cells on the edge of the body.                               |
+| `glow`    | `true`  | on or off | The blur behind lit dots. Read by `dot`.                                |
+
+Pick a variant and the panel lists only the parameters that variant reads. It is built from the registry, so it stays in step with the table above.
+
+<StyleParamsDemo style="pixel" />
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+const grids = [12, 16, 24, 32, 48] as const;
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {grids.map((grid) => (
+        <div className="site-demo__cell" key={grid}>
+          <CharacterMark
+            styleId="pixel"
+            shape="tofu"
+            color="violet"
+            state="idle"
+            sizePx={96}
+            styleOptions={{ grid }}
+          />
+          <span className="site-demo__label">grid {grid}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+Because `grid` is measured in shape space, the number of cells does not change with `sizePx`. A 16px mark and a 120px mark are the same pixel character at two sizes, not two different drawings.
+
+Style parameters never reach the simulation. The same `seed` blinks at the same moments in every series, and changing `grid` does not restart anything.
+
+## How a cell is decided
+
+The grid is a fixed lattice laid over shape space and anchored at its centre, so a symmetric shape rasterises symmetrically for odd and even grids alike. Each frame is rasterised into a small buffer of paint ids, in painter's order:
+
+1. Belt rings and back trails, and the stroked arcs and rings of the effects.
+2. The body, by sampling the centre of every cell against the outline.
+3. The face: eyes, then the `cute` face's mouth and blush or the line face's nose and mouth, then the badge.
+4. Belt dots and glyphs, effect dots and the pencil glyph, the HUD primitives, front trails and particles.
+
+Colour is not stored in the buffer. A paint id stands for a tint and an opacity, so "did the picture change" is a comparison of two integer arrays. The live renderer rasterises every frame it is given, compares, and only builds and writes the DOM when a cell differs.
+
+### Eyes at low resolution
+
+Eyes are the part that suffers most when a picture is a few dozen cells wide, so they are not sampled like the body.
+
+- Both eyes are measured with sub-cell coverage, then averaged with the mirror of the other into a single glyph that is stamped on both sides. They are symmetric by construction.
+- The threshold adapts to the best coverage of the glyph, and a thin stroke such as a closed eye falls back to one cell per column, so it never disappears and never becomes two rows.
+- An eye is never empty, and there is always at least one cell between the two.
+- The nose and the mouth of the line face keep a cell clear of the eyes and of each other.
+
+### Shades
+
+`shades` picks a ladder of tones. Each cell is classed by its neighbours: on the edge, lit on the upper-left side, or in shadow on the lower-right.
+
+| `shades` | Tones                                   |
+| -------- | --------------------------------------- |
+| 1        | Flat.                                   |
+| 2        | Edge darker.                            |
+| 3        | Edge darker, upper-left lighter.        |
+| 4        | As 3, plus a shadow on the lower-right. |
+| 5        | As 4, with a glint on the upper-left.   |
+
+`dot` leaves out the dark tones, the edge and the shadow: they would vanish into the plate. It keeps the light ones, and the rest of the shine comes from the glow.
+
+A gradient `ink` is quantised by cell position into `shades` bands along the gradient angle. No new colour ids are involved: each step is a `color-mix` of the ink with black or white, so the character follows the theme and the palette.
+
+## In the engine
+
+```ts
+import { createCharacter, renderStaticSvg } from '@aora-bot/engine';
+
+const mark = createCharacter(host, {
+  style: 'pixel',
+  variant: 'dot',
+  styleOptions: { grid: 32 },
+});
+
+// Switch the series later. The renderer is replaced; the simulation is not.
+mark.update({ style: 'vector' });
+
+const svg = renderStaticSvg({ style: 'pixel', shape: 'hex', state: 'thinking' });
+```
+
+Static output is deterministic and needs no DOM, so it is safe during server rendering. Live and static share one scene build.
+
+A variant the series does not have falls back to its default, so switching a `vector` character in `outline` over to `pixel` draws `crisp`.
+
+## In React
+
+`CharacterMark`, `CharacterMarkMirror` and `StagedMark` take `styleId`, `variant` and `styleOptions`, and put `data-style` and `data-variant` on the root. The prop is `styleId` because `style` on a mark is already inline CSS.
+
+`AppearanceProvider` sets them for a subtree. A prop on the mark wins over it, and nested providers merge field by field.
+
+```tsx
+import { AppearanceProvider, CharacterMark, StagedMark } from '@aora-bot/react';
+
+<AppearanceProvider styleId="pixel" variant="block" styleOptions={{ grid: 20 }}>
+  <CharacterMark shape="blob" />
+  <StagedMark shape="hex" />
+</AppearanceProvider>;
+```
+
+`StagedMark` shares one running engine between every mark of the same appearance. The style, the variant and the parameters that differ from the defaults are part of that appearance, so a pixel source is never mirrored by a vector mark, and `{}` and `{ grid: 24 }` share a source.
+
+## Limits
+
+- Printed figures on a HUD dial are not drawn. They are too small to read on a grid; the dial itself is.
+- Translucency is quantised to quarters and replaces the cell beneath it rather than blending with it.
+- At small grids the difference between some eyes is subtle: with 24 cells a happy, a sad and a sleeping eye are each a row or two apart.

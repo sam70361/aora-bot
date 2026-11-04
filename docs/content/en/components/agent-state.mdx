@@ -1,0 +1,224 @@
+import { API } from '@theme';
+
+# AgentStateProvider
+
+One arbiter for a subtree; hooks to feed it and read it.
+
+```tsx preview
+import { useState } from 'react';
+import { AgentStateProvider, useAgentState, CharacterMark, ActivityTicker } from '@aora-bot/react';
+
+function Sessions() {
+  const agent = useAgentState();
+  // The provider only re-renders when the *displayed* state changes, so a
+  // table of every session needs its own nudge.
+  const [, bump] = useState(0);
+  const update = (u: Parameters<typeof agent.update>[0]) => (agent.update(u), bump((n) => n + 1));
+  const remove = (id: string) => (agent.remove(id), bump((n) => n + 1));
+  const sessions = Array.from(agent.arbiter.sessions().entries());
+  return (
+    <table style={{ margin: 0, fontSize: 13 }}>
+      <tbody>
+        {sessions.length === 0 && (
+          <tr>
+            <td style={{ opacity: 0.6 }}>no sessions</td>
+          </tr>
+        )}
+        {sessions.map(([id, s]) => (
+          <tr key={id}>
+            <td>
+              <code>{id}</code>
+            </td>
+            <td>{s.state}</td>
+            <td>{s.headless ? 'headless' : ''}</td>
+            <td>
+              <button className="site-btn" onClick={() => remove(id)}>
+                end
+              </button>
+            </td>
+          </tr>
+        ))}
+        <tr>
+          <td colSpan={4}>
+            <div className="site-controls">
+              <button className="site-btn" onClick={() => update({ sessionId: 'chat', state: 'thinking' })}>
+                chat: thinking
+              </button>
+              <button className="site-btn" onClick={() => update({ sessionId: 'chat', state: 'composing' })}>
+                chat: composing
+              </button>
+              <button
+                className="site-btn"
+                onClick={() => update({ sessionId: 'build', state: 'working', headless: true })}
+              >
+                build: working (headless)
+              </button>
+              <button
+                className="site-btn"
+                onClick={() => update({ sessionId: 'build', emotionId: '34', tips: 'Build failed' })}
+              >
+                build: 34 error
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  );
+}
+
+function Face() {
+  const { state, tips } = useAgentState();
+  return (
+    <div className="site-demo site-demo--column" style={{ alignItems: 'center' }}>
+      <CharacterMark shape="mochi" color="cyan" state={state} sizePx={96} />
+      <ActivityTicker text={tips ?? state} />
+    </div>
+  );
+}
+
+export default function Demo() {
+  return (
+    <AgentStateProvider minDisplayMs={600}>
+      <div className="site-demo" style={{ alignItems: 'flex-start' }}>
+        <Face />
+        <Sessions />
+      </div>
+    </AgentStateProvider>
+  );
+}
+```
+
+The headless `build` session is tracked — it appears in the table — but never shown. When it errors it is no longer headless and takes over the face, because an error needs a person.
+
+## useArbiter
+
+Runs an [arbiter](/guide/agent-integration#arbitration) for the lifetime of a component and re-renders it when the displayed state or caption changes — not when sessions come and go underneath without changing the result.
+
+```tsx
+const { state, emotionId, tips, current, update, remove, arbiter } = useArbiter({
+  minDisplayMs: 900,
+  priority: { searching: 45 },
+  tickMs: 15_000, // how often silent sessions are expired; 0 disables
+});
+```
+
+Options are read once, at mount, the same contract as `createCharacter`. Every `ArbiterOptions` field is accepted; see the arbiter section of the integration guide for what each rule does.
+
+## AgentStateProvider and useAgentState
+
+`AgentStateProvider` calls `useArbiter` with its props and shares the value. Put it above the part of the page that shows the agent; feed it from wherever events arrive — a WebSocket handler, [`useStateChannel`](#channels), a hook script — and read it with `useAgentState` in the component that renders the character.
+
+```tsx
+<AgentStateProvider minDisplayMs={{ defaultMs: 900, byState: { celebrate: 2000 } }}>
+  <Sidebar />
+</AgentStateProvider>;
+
+function Sidebar() {
+  const { state, tips } = useAgentState();
+  return (
+    <span title={tips}>
+      <CharacterMark state={state} />
+    </span>
+  );
+}
+```
+
+`useAgentState` throws outside a provider, because there is no sensible default to fall back to. `useOptionalAgentState` returns `null` instead, for components that work either way — the channel hooks use it to find their default sink.
+
+### The HUD travels with the state
+
+A message may carry a `hud` alongside `tips` — see the [protocol](/design/protocol#hud). The arbiter keeps it on the winning session's `ArbiterResult`, and the value exposes it as `hud`, so the dial follows the same arbitration as the face: a session that loses on priority does not get to draw its progress ring over the winner's expression. Pass it straight to a character, or let [`AgentHud`](/components/agent-hud) read the provider for you.
+
+```tsx preview
+import { AgentStateProvider, CharacterMark, useAgentState } from '@aora-bot/react';
+
+function Face() {
+  const { state, hud, update } = useAgentState();
+  return (
+    <div className="site-demo site-demo--center">
+      <CharacterMark shape="tofu" color="blue" state={state} hud={hud ?? null} sizePx={110} />
+      <div className="site-controls">
+        <button
+          className="site-btn"
+          onClick={() => update({ sessionId: 's1', state: 'working', hud: { kind: 'progress', value: 0.4 } })}
+        >
+          working, 40%
+        </button>
+        <button
+          className="site-btn"
+          onClick={() => update({ sessionId: 's1', state: 'working', hud: { kind: 'progress', value: 0.9 } })}
+        >
+          working, 90%
+        </button>
+        <button className="site-btn" onClick={() => update({ sessionId: 's1', state: 'idle' })}>
+          idle, no dial
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default function Demo() {
+  return (
+    <AgentStateProvider minDisplayMs={0}>
+      <Face />
+    </AgentStateProvider>
+  );
+}
+```
+
+`useAgentHud()` returns the same dial, or `null` when there is no provider, for a component that only wants the ring.
+
+## Channels
+
+Two hooks carry messages in from outside the React tree. Without an explicit `onUpdate` both deliver to the nearest provider.
+
+```tsx
+// postMessage, for iframes and extension panels
+useStateChannel({ allowOrigin: 'https://app.example' });
+
+// server-sent events, for a local relay
+const status = useEventSourceChannel('http://127.0.0.1:27182/events');
+// 'idle' | 'connecting' | 'open' | 'error'
+```
+
+`useStateChannel` accepts only `{ type: 'aora:state', payload }` messages from `allowOrigin`, which defaults to the page's own origin. Pass `'*'` only when the page is itself a sandboxed widget. `useEventSourceChannel` parses each event's `data` as one protocol message; `EventSource` reconnects on its own, so the hook only reports status. Both take `enabled: false` to disconnect without unmounting.
+
+Both run every message through `normalize`, so a malformed one goes to `onError` and never reaches the arbiter.
+
+## Without React
+
+The provider is a thin wrapper. The same arbiter runs anywhere:
+
+```ts
+import { createArbiter } from '@aora-bot/engine/agent';
+import { createCharacter, getInkColorCss } from '@aora-bot/engine';
+
+const character = createCharacter(el, { shape: 'blob', ink: { flat: getInkColorCss('blue') } });
+const arbiter = createArbiter({ onApply: ({ state }) => character.update({ state }) });
+```
+
+## API
+
+<API component="AgentStateProvider" />
+
+### AgentStateValue
+
+```ts
+interface AgentStateValue {
+  arbiter: Arbiter;
+  current: ArbiterResult; // { state, emotionId, tips?, hud?, sessionId? }
+  state: CharacterState;
+  emotionId: EmotionId;
+  tips: string | undefined;
+  hud: HudSpec | undefined; // the winning session's dial; travels with tips
+  update(update: ArbiterUpdate): void; // arbiter.update
+  remove(sessionId: string): void; // arbiter.remove
+}
+```
+
+## Next
+
+- [AgentHud](/components/agent-hud) — character, dial and caption together
+- [Agent integration](/guide/agent-integration) — wiring an agent to a face

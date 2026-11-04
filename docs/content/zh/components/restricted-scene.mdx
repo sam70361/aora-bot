@@ -1,0 +1,94 @@
+import { API } from '@theme';
+
+# RestrictedScene
+
+被拒绝时你落到的那一页。
+
+> 属于 `@aora-bot/surfaces`，不在 `@aora-bot/react` 里：`pnpm add @aora-bot/surfaces @aora-bot/react`，并在 React 样式之后引入 `@aora-bot/surfaces/styles.css`。
+
+```tsx preview
+import { useState } from 'react';
+import { RestrictedScene, type RestrictedTone } from '@aora-bot/surfaces';
+
+const tones: RestrictedTone[] = ['restricted', 'offline', 'unauthorised'];
+
+export default function Demo() {
+  const [tone, setTone] = useState<RestrictedTone>('restricted');
+  return (
+    <div className="site-demo site-demo--column">
+      <RestrictedScene
+        tone={tone}
+        rotateMs={4000}
+        action={
+          <button className="site-btn" onClick={() => setTone('restricted')}>
+            返回
+          </button>
+        }
+      />
+      <div className="site-controls">
+        {tones.map((t) => (
+          <button key={t} className="site-btn" data-active={tone === t} onClick={() => setTone(t)}>
+            {t}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+## 角色成本最低的地方
+
+死胡同是角色价值最高、成本最低的地方：没人打算在这一屏干活，而一张明显在*拒绝*而不是*坏了*的脸，正是「我不被允许这么做」和「这个产品出故障了」之间的区别。默认状态是 `refusing`。
+
+形状每隔 `rotateMs`（默认 12 秒）换一次，因为这种页面会被人盯着看。间隔长到足以让它读作角色换了个姿势，而不是一段争抢注意力的动画；在减少动态效果模式下则完全停止——轮廓变形也是动，哪怕屏幕上没有东西在移动。`shapePool` 是轮换用的集合（默认 `AUTO_SHAPE_POOL`）；`rotateMs={0}` 固定在第一个。
+
+## 色调
+
+`tone` 决定文案和边框指示灯：`restricted`（警示灯）、`offline`（灯灭）、`unauthorised`（警示灯）。`title` 和 `body` 覆盖文案以传达具体信息；`action` 放出路——按钮、链接，什么合适放什么。
+
+## DeviceBezel
+
+围着角色的那个框：圆角外壳、内嵌屏幕、状态灯，全部程序化生成。在这种尺寸下，一张窗口截图需要三个变体——深色模式、高密度、窄栏——还会把界面钉死在截图时屏幕上的那个操作系统。
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+import { DeviceBezel } from '@aora-bot/surfaces';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {(['off', 'on', 'alert'] as const).map((light) => (
+        <div className="site-demo__cell" key={light}>
+          <DeviceBezel widthPx={150} light={light}>
+            <div style={{ display: 'grid', placeItems: 'center', height: '100%' }}>
+              <CharacterMark
+                shape="tofu"
+                color="cyan"
+                state={light === 'alert' ? 'alerting' : 'idle'}
+                sizePx={56}
+              />
+            </div>
+          </DeviceBezel>
+          <span className="site-demo__label">{light}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+`aspect` 是屏幕高度相对宽度的比例，默认 0.74——略低于 3:4，像一块小显示屏。子元素画在屏幕上并被裁到屏幕内。[`BootLoop`](/components/boot-loop) 围着角色画的就是同一个框。
+
+## API
+
+<API component="RestrictedScene" />
+
+### DeviceBezel
+
+<API component="DeviceBezel" />
+
+## 接下来
+
+- [拒绝与限制](/scenarios/restricted)——拒绝得不像坏掉了
+- [状态](/design/states)——全部动画状态，分组列出

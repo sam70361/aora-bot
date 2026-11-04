@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "types": ["@rspress/core/runtime"],
+    "paths": {
+      "i18n": ["./i18n.json"]
+    }
+  },
+  "include": ["app", "theme", "scripts", "api-schema.ts", "navigation.ts", "rspress.config.ts", "i18n.json"]
+}

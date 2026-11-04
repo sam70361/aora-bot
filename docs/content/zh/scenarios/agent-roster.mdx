@@ -1,0 +1,139 @@
+import { StateMatrix } from '@theme';
+
+# 智能体名册
+
+工作区侧边的二十个智能体，每个都有自己的脸。
+
+## 先看效果
+
+三行加一个群组。每一行从注册表读取状态，并根据宿主自己的数据显示状态点与徽标；按钮代替真实宿主会发布的事件。
+
+```tsx preview
+import { useState } from 'react';
+import {
+  AgentAvatar,
+  AvatarStack,
+  AvatarStatusDot,
+  MarkStageProvider,
+  UnreadBadge,
+  WorkingBadge,
+  useMarkCommand,
+  useMarkCommands,
+} from '@aora-bot/react';
+
+const agents = [
+  { id: 'nova', name: 'Nova' },
+  { id: 'atlas', name: 'Atlas' },
+  { id: 'iris', name: 'Iris' },
+];
+
+function Row({ agent }: { agent: (typeof agents)[number] }) {
+  const commands = useMarkCommands();
+  const snapshot = useMarkCommand(agent.id, 'avatar');
+  const [unread, setUnread] = useState(0);
+  const running = snapshot.facts?.running === true;
+
+  return (
+    <div className="site-demo__row">
+      <span className="site-demo__avatar">
+        <AgentAvatar agent={agent} state={snapshot.state} sizePx={40} />
+        <span className="site-demo__dot">
+          <AvatarStatusDot tone={running ? 'working' : 'online'} label={running ? '工作中' : '在线'} />
+        </span>
+        <span className="site-demo__count">
+          <UnreadBadge count={unread} />
+        </span>
+      </span>
+      <span className="site-demo__who">{agent.name}</span>
+      {running && <WorkingBadge />}
+      <span className="site-controls">
+        <button
+          className="site-btn"
+          onClick={() =>
+            running
+              ? commands.releaseFacts(agent.id)
+              : commands.holdFacts(agent.id, { running: true, activity: 'coding' })
+          }
+        >
+          {running ? '停止' : '开始'}
+        </button>
+        <button
+          className="site-btn"
+          onClick={() => {
+            setUnread((n) => n + 1);
+            commands.holdState(agent.id, 'notifying', { ttlMs: 1400 });
+          }}
+        >
+          来消息
+        </button>
+        <button
+          className="site-btn"
+          onClick={() => {
+            commands.releaseFacts(agent.id);
+            commands.holdState(agent.id, 'celebrate', { ttlMs: 1600 });
+          }}
+        >
+          完成
+        </button>
+      </span>
+    </div>
+  );
+}
+
+export default function Demo() {
+  return (
+    <MarkStageProvider>
+      <div className="site-demo site-demo--column">
+        {agents.map((agent) => (
+          <Row key={agent.id} agent={agent} />
+        ))}
+        <div className="site-demo__row">
+          <AvatarStack members={[...agents, { id: 'echo' }, { id: 'sol' }]} sizePx={40} />
+          <span>全体</span>
+        </div>
+      </div>
+    </MarkStageProvider>
+  );
+}
+```
+
+`holdState` 优先于事实，所以庆祝会盖在这一行已知的任何东西之上，存活时间一到就交还。`WorkingBadge` 有意与角色分开：一行可以在忙而脸不必表现出来，这正是让长列表保持安静的方法。
+
+## 什么时候用
+
+工作区侧边那一列智能体：有谁、谁在忙、谁有东西要给你。角色在这里首先是身份——由智能体 id 推导出的一张稳定的脸，什么都不用存——其次才是状态。二十行同时在屏幕上，任何会动的东西都得配得上它占的注意力，而且所有行共用一个舞台。
+
+## 用到的组件
+
+- [`AgentAvatar`](/components/agent-avatar)——照片、群组簇或角色，按智能体记录自动选择。
+- [`AvatarStack`](/components/avatar-stack)——群组成员，每一个都按自己的轮廓从后一个身上抠出。
+- [`AvatarStatusDot`](/components/avatar-chrome) 与 [`UnreadBadge`](/components/avatar-chrome)——角落里的在线状态与计数。
+- [`WorkingBadge`](/components/working-badge)——三个错相的点，给那些在忙、但脸不必动的行。
+- [`useMarkCommands`](/components/mark-commands)——`holdFacts`、`holdState`、`releaseState`；名册和对话读的是同一份注册表。
+- [`MarkStageProvider`](/components/mark-stage)——二十个空闲的果冻只花一个引擎。
+
+## 状态怎么走
+
+| 从        | 到          | 时机                                          |
+| --------- | ----------- | --------------------------------------------- |
+| —         | `idle`      | 对这个智能体一无所知                          |
+| `idle`    | `working`   | `holdFacts` 传入 `running: true`              |
+| `working` | `idle`      | 事实被释放                                    |
+| `idle`    | `notifying` | 有消息到达——`holdState` 带 `ttlMs`，编号 `50` |
+| 任一      | `waiting`   | 智能体需要用户——`characterStateForAgent`      |
+| 任一      | `celebrate` | 任务完成——`holdState` 带 `ttlMs`，编号 `33`   |
+| 任一      | `sleeping`  | 智能体离线；与 `offline` 状态点搭配           |
+
+用 `useMarkCommand(id, 'avatar')` 读取注册表。表面很重要：`composing` 的事实在头像上会解析为 `idle`，因为正在写的回复在对话里是重点，在二十张脸的列表里是噪音。
+
+## 每个状态的样子
+
+<StateMatrix states={['idle', 'working', 'waiting', 'notifying', 'celebrate', 'sleeping']} />
+
+`waiting` 把身体交给 `orbit` 腰带；`notifying` 保留身体，改为点亮角落的徽标。`idle` 在三条频率互不相关的正弦波上眨眼和张望，所以一行待上十分钟也不会出现循环。
+
+## 接下来
+
+- [AgentAvatar](/components/agent-avatar)——每个 id 一张固定的脸
+- [AvatarStack](/components/avatar-stack)——重叠的群组头像
+- [徽标与状态](/components/avatar-chrome)——未读数与状态点

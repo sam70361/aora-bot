@@ -1,0 +1,139 @@
+import { StateMatrix } from '@theme';
+
+# Agent roster
+
+Twenty agents down the side of a workspace, each with a face of its own.
+
+## See it
+
+Three rows and a group. Each row reads its state from the registry and shows the dot and badge the host's own data implies; the buttons stand in for the events a real host would publish.
+
+```tsx preview
+import { useState } from 'react';
+import {
+  AgentAvatar,
+  AvatarStack,
+  AvatarStatusDot,
+  MarkStageProvider,
+  UnreadBadge,
+  WorkingBadge,
+  useMarkCommand,
+  useMarkCommands,
+} from '@aora-bot/react';
+
+const agents = [
+  { id: 'nova', name: 'Nova' },
+  { id: 'atlas', name: 'Atlas' },
+  { id: 'iris', name: 'Iris' },
+];
+
+function Row({ agent }: { agent: (typeof agents)[number] }) {
+  const commands = useMarkCommands();
+  const snapshot = useMarkCommand(agent.id, 'avatar');
+  const [unread, setUnread] = useState(0);
+  const running = snapshot.facts?.running === true;
+
+  return (
+    <div className="site-demo__row">
+      <span className="site-demo__avatar">
+        <AgentAvatar agent={agent} state={snapshot.state} sizePx={40} />
+        <span className="site-demo__dot">
+          <AvatarStatusDot tone={running ? 'working' : 'online'} label={running ? 'working' : 'online'} />
+        </span>
+        <span className="site-demo__count">
+          <UnreadBadge count={unread} />
+        </span>
+      </span>
+      <span className="site-demo__who">{agent.name}</span>
+      {running && <WorkingBadge />}
+      <span className="site-controls">
+        <button
+          className="site-btn"
+          onClick={() =>
+            running
+              ? commands.releaseFacts(agent.id)
+              : commands.holdFacts(agent.id, { running: true, activity: 'coding' })
+          }
+        >
+          {running ? 'stop' : 'start'}
+        </button>
+        <button
+          className="site-btn"
+          onClick={() => {
+            setUnread((n) => n + 1);
+            commands.holdState(agent.id, 'notifying', { ttlMs: 1400 });
+          }}
+        >
+          message
+        </button>
+        <button
+          className="site-btn"
+          onClick={() => {
+            commands.releaseFacts(agent.id);
+            commands.holdState(agent.id, 'celebrate', { ttlMs: 1600 });
+          }}
+        >
+          done
+        </button>
+      </span>
+    </div>
+  );
+}
+
+export default function Demo() {
+  return (
+    <MarkStageProvider>
+      <div className="site-demo site-demo--column">
+        {agents.map((agent) => (
+          <Row key={agent.id} agent={agent} />
+        ))}
+        <div className="site-demo__row">
+          <AvatarStack members={[...agents, { id: 'echo' }, { id: 'sol' }]} sizePx={40} />
+          <span>Everyone</span>
+        </div>
+      </div>
+    </MarkStageProvider>
+  );
+}
+```
+
+`holdState` beats facts, so a celebration plays on top of whatever the row knows and hands back when its time to live runs out. The `WorkingBadge` is deliberately separate from the character: a row can be busy without its face having to say so, which is what keeps a long list calm.
+
+## When to use it
+
+The list of agents down the side of a workspace: who exists, who is busy, who has something for you. Here the character is an identity first — a consistent face derived from the agent's id, with nothing stored — and a status second. Twenty rows are on screen at once, so anything that moves has to earn it, and everything shares one stage.
+
+## Components
+
+- [`AgentAvatar`](/components/agent-avatar) — picture, group cluster or character, chosen from the agent record.
+- [`AvatarStack`](/components/avatar-stack) — a group's members, each punched out of the one behind it in its own silhouette.
+- [`AvatarStatusDot`](/components/avatar-chrome) and [`UnreadBadge`](/components/avatar-chrome) — presence and counts in the corner.
+- [`WorkingBadge`](/components/working-badge) — three dots out of phase, for a row that is busy but whose face should stay still.
+- [`useMarkCommands`](/components/mark-commands) — `holdFacts`, `holdState`, `releaseState`; the roster and the chat read the same registry.
+- [`MarkStageProvider`](/components/mark-stage) — twenty idle blobs cost one engine.
+
+## How the states move
+
+| From      | To          | When                                                    |
+| --------- | ----------- | ------------------------------------------------------- |
+| —         | `idle`      | nothing is known about the agent                        |
+| `idle`    | `working`   | `holdFacts` with `running: true`                        |
+| `working` | `idle`      | the facts are released                                  |
+| `idle`    | `notifying` | a message arrives — `holdState` with a `ttlMs`, id `50` |
+| any       | `waiting`   | the agent needs the user — `characterStateForAgent`     |
+| any       | `celebrate` | a task finished — `holdState` with a `ttlMs`, id `33`   |
+| any       | `sleeping`  | the agent is offline; pair it with the `offline` tone   |
+
+Read the registry with `useMarkCommand(id, 'avatar')`. The surface matters: `composing` facts resolve to `idle` on an avatar, because a reply that is being written is the point in a chat and noise in a list of twenty faces.
+
+## What each state looks like
+
+<StateMatrix states={['idle', 'working', 'waiting', 'notifying', 'celebrate', 'sleeping']} />
+
+`waiting` hands its body to the `orbit` belt; `notifying` keeps its body and lights the corner badge instead. `idle` blinks and glances on three unrelated sine waves, so a row that sits there for ten minutes never loops.
+
+## Next
+
+- [AgentAvatar](/components/agent-avatar) — a stable face per id
+- [AvatarStack](/components/avatar-stack) — overlapping group avatars
+- [Badges and status](/components/avatar-chrome) — unread counts and status dots

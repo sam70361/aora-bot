@@ -1,0 +1,91 @@
+import { API } from '@theme';
+
+# TemplateDialog
+
+Create or edit an agent template: a name, what it should do, who can use it.
+
+> Part of `@aora-bot/surfaces`, not `@aora-bot/react`: `pnpm add @aora-bot/surfaces @aora-bot/react`, and import `@aora-bot/surfaces/styles.css` after the React stylesheet.
+
+```tsx preview
+import { useState } from 'react';
+import { TemplateDialog, type TemplateDraft } from '@aora-bot/surfaces';
+
+export default function Demo() {
+  const [saved, setSaved] = useState<TemplateDraft | null>(null);
+  return (
+    <div className="site-demo site-demo--column">
+      <TemplateDialog
+        seed="tpl_7f3a"
+        value={{ name: 'Release notes', instructions: 'Summarise merged pull requests since the last tag.' }}
+        shareUrl={saved ? 'https://app.example/t/tpl_7f3a' : undefined}
+        onSave={async (draft) => {
+          await new Promise((r) => setTimeout(r, 900));
+          setSaved(draft);
+        }}
+      />
+    </div>
+  );
+}
+```
+
+Press Save. The character beside the name works while the promise is out, celebrates when it resolves, and a share card appears once `shareUrl` is given.
+
+## Appearance is not a field
+
+The form is deliberately short because the appearance is not something anyone has to fill in. `normalizeTemplateDraft` gives an unconfigured template a shape and an ink derived from `seed` — use the stored template's id, which does not change when the template is renamed — so the character beside the name is never a placeholder and a list of ten unconfigured templates is still ten distinguishable rows. Opening the avatar editor from the trigger is an optional flourish, not a step.
+
+## Saving
+
+`onSave` receives the normalised draft. Return a promise and the dialog's [`usePublishMark`](/components/use-publish-mark) does the rest: `working` while it is out, `celebrate` with confetti when it resolves, back to rest when it rejects — the form is about to show its own failure line, and a sad face next to it would read as the library editorialising.
+
+## normalizeTemplateDraft
+
+Pure, so a server action can validate a submission with the same call the dialog uses on every keystroke. It returns three things:
+
+```ts
+const { draft, errors, valid } = normalizeTemplateDraft(input, { seed: template.id });
+```
+
+- `draft` — trimmed, truncated to `TEMPLATE_LIMITS` (80 characters for the name, 4000 for the instructions), with an appearance filled in. This is what a live preview should render, so the character and the row behave while a field is still over its limit.
+- `errors` — `name-required`, `name-too-long`, `instructions-too-long`. This is what the Save button should respect. `TEMPLATE_ERROR_KEYS` maps each to a locale key.
+- `valid` — `errors.length === 0`.
+
+The name is whitespace-collapsed because a name pasted from a document arrives with a newline in it; instructions lose only trailing whitespace, because leading indentation in a pasted list is part of its meaning.
+
+## VisibilityControls and ShareCard
+
+```tsx preview
+import { useState } from 'react';
+import { ShareCard, VisibilityControls, type TemplateVisibility } from '@aora-bot/surfaces';
+
+export default function Demo() {
+  const [visibility, setVisibility] = useState<TemplateVisibility>('private');
+  return (
+    <div className="site-demo site-demo--column">
+      <VisibilityControls value={visibility} onSelect={setVisibility} />
+      <ShareCard name="Release notes" url="https://app.example/t/tpl_7f3a" shape="tofu" color="gray" />
+    </div>
+  );
+}
+```
+
+Visibility is two labelled choices rather than a switch: a switch needs one label that stays true in both positions, and the honest labels here — "only you" and "everyone in your workspace" — are two different sentences. `disabled` turns it into a read-only display for a template someone else owns.
+
+The share card shows the link in full rather than hiding it behind the copy button, so what is about to be handed out is visible before it is copied. `onCopy` fires after a successful copy for a host that wants its own toast.
+
+## API
+
+<API component="TemplateDialog" />
+
+### VisibilityControls
+
+<API component="VisibilityControls" />
+
+### ShareCard
+
+<API component="ShareCard" />
+
+## Next
+
+- [usePublishMark](/components/use-publish-mark) — work, celebrate, settle
+- [Character setup](/scenarios/character-setup) — choosing what an agent looks like

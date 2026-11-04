@@ -1,0 +1,95 @@
+/*
+ * Site tokens.
+ *
+ * The documentation site uses the kit's own tokens (`--aora-*`, from
+ * `@aora-bot/react/styles.css`) for colour, space, type, radius, shadow and
+ * motion. This file adds only what the kit has no reason to know about:
+ * the paper the site is printed on, the shell's geometry, and a few values
+ * that belong to one page. Every name here starts with `--site-`.
+ *
+ * ---- Layers -----------------------------------------------------------------
+ *
+ * The kit's layers come first and the site's after them, so a site rule
+ * overrides a kit rule without raising specificity:
+ *
+ *   aora.tokens, aora.base, aora.components     the kit
+ *   aora.surfaces                               the kit's product surfaces
+ *   site.shell                                  tokens, Rspress overrides, backdrop
+ *   site.components                             controls and docs-embedded components
+ *   site.pages                                  home, sponsor
+ *
+ * Rspress's own CSS is not layered, and an unlayered declaration beats a
+ * layered one whatever the specificity. That is why `rspress-overrides.css`
+ * is the one file that uses `!important`: inside a layer it is the only way to
+ * win against a stylesheet we do not own.
+ *
+ * `rp-base` is Rspress's reset layer; it is named first so that the site's
+ * layers always sit above it.
+ */
+@layer rp-base, aora.tokens, aora.base, aora.components, aora.surfaces, site.shell, site.components, site.pages;
+
+@layer site.shell {
+  :root {
+    /*
+     * The paper. A warm neutral a little deeper than the kit's default
+     * background, so white cards and sunken tiles both read against it. The
+     * kit's own `--aora-bg-base` is pointed here once, at the root: every
+     * character, every card and every eye cut-out on the site inherits it,
+     * and nothing below has to repeat the mapping.
+     */
+    --site-paper: light-dark(oklch(0.972 0.007 85), oklch(0.17 0.005 85));
+    --site-paper-soft: light-dark(oklch(0.948 0.009 85), oklch(0.21 0.006 85));
+    --site-paper-mute: light-dark(oklch(0.925 0.01 85), oklch(0.25 0.007 85));
+
+    --aora-bg-base: var(--site-paper);
+    --aora-surface-sunken: var(--site-paper-soft);
+
+    /* ---- shell geometry --------------------------------------------------- */
+
+    /* The gap between a floating capsule and the viewport edge, the same on all four sides. */
+    --site-capsule-gap: var(--aora-space-4);
+    --site-nav-inset: var(--site-capsule-gap);
+    --site-nav-height: 3.5rem;
+    /* What the layout reserves for the bar: its height and the gap above it. */
+    --site-nav-offset: calc(var(--site-nav-height) + var(--site-nav-inset));
+
+    /*
+     * One shell width for the whole site, so the floating navbar's ends line up
+     * with the sidebar's left edge and the outline's right edge. It has to be
+     * wide enough for the three-column document layout underneath: a 320px
+     * sidebar plus a 240px outline come off the top, and Rspress's own doc
+     * column wants up to 1000px.
+     */
+    --site-shell-gutter: var(--site-capsule-gap);
+    --site-shell-max: 1600px;
+    --site-shell-width: min(var(--site-shell-max), calc(100vw - var(--site-shell-gutter) * 2));
+    --site-nav-width: var(--site-shell-width);
+    --site-sidebar-width: 20rem;
+    --site-outline-width: 15rem;
+
+    /* The inline padding every page frame gives its content. */
+    --site-page-pad: clamp(12px, 3vw, 32px);
+
+    --site-anchor-offset: calc(var(--site-nav-height) + var(--site-nav-inset) + var(--aora-space-5));
+    /* The sticky "menu / outline" bar Rspress adds under the navbar below 1280px. */
+    --site-doc-menu-height: 2.875rem;
+
+    /*
+     * The capsule treatment, written once: a translucent paper that the page
+     * shows through, blurred, a 1px full ring and a soft drop shadow. The
+     * navbar (`.rp-nav`) and `.site-capsule` both read these four, so the two
+     * cannot drift apart.
+     */
+    --site-capsule-bg: color-mix(in oklab, var(--site-paper) 64%, transparent);
+    --site-capsule-bg-firm: color-mix(in oklab, var(--site-paper) 86%, transparent);
+    --site-capsule-blur: blur(20px) saturate(1.5);
+    --site-capsule-shadow:
+      0 0 0 1px light-dark(oklch(0.2 0.01 85 / 0.12), oklch(1 0 0 / 0.14)), 0 1px 2px var(--aora-shadow-c1),
+      0 10px 28px -10px var(--aora-shadow-c3);
+
+    /* The shadow under a primary button: the accent, cast down and far. */
+    --site-shadow-accent:
+      0 1px 2px color-mix(in oklab, var(--aora-accent) 40%, transparent),
+      0 6px 14px -6px color-mix(in oklab, var(--aora-accent) 60%, transparent);
+  }
+}

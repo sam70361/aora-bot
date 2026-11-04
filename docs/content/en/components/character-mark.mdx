@@ -1,0 +1,364 @@
+import { API } from '@theme';
+
+# CharacterMark
+
+A single animated character. Everything else in the library is built on it.
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  return <CharacterMark shape="blob" color="orange" state="excited" sizePx={150} />;
+}
+```
+
+## Paint styles
+
+`styleId` picks the style and `variant` picks a variant within it. The geometry, the animation and the face are identical across all of them — only the paint changes, so a new state or a new character arrives in every style at once. Each style has a page: [Vector](/design/styles/vector), [Pixel](/design/styles/pixel), [Kaomoji](/design/styles/kaomoji). Here is every vector variant:
+
+```tsx preview
+import { getStyle } from '@aora-bot/engine';
+import { CharacterMark } from '@aora-bot/react';
+
+const variants = getStyle('vector').variants;
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {variants.map((variant) => (
+        <div className="site-demo__cell" key={variant}>
+          <CharacterMark shape="mochi" color="blue" state="happy" sizePx={96} variant={variant} />
+          <span className="site-demo__label">{variant}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+`solid` is the default: the body is a flat filled mass and the `cute` face is white.
+
+`outline` and `glass` turn that around. When the body is no longer filled, a white face would vanish, so these two variants draw the face in the ink instead — the same silhouette read from the other side.
+
+```tsx preview
+import { CharacterMark, SHAPE_IDS } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {SHAPE_IDS.slice(0, 9).map((shape) => (
+        <CharacterMark key={shape} shape={shape} color="violet" sizePx={54} variant="outline" />
+      ))}
+    </div>
+  );
+}
+```
+
+The stroke is a constant width in shape space rather than in pixels, so it scales with the character. A stroke pinned to device pixels looks spindly on a large character and swamps a small one.
+
+## Faces
+
+`face` chooses among three faces: the default `cute`, and `eyes` and the [line face](/design/face) `line`, which adds a nose and a mouth as strokes at one shared weight. `nose` only applies to `line` and picks one of six; omit it for one derived from `seed`, or pass `null` for none.
+
+```tsx preview
+import { CharacterMark, NOSE_IDS } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      <div className="site-demo__cell">
+        <CharacterMark shape="bun" color="orange" state="happy" sizePx={96} />
+        <span className="site-demo__label">cute</span>
+      </div>
+      <div className="site-demo__cell">
+        <CharacterMark shape="bun" color="orange" state="happy" sizePx={96} face="eyes" />
+        <span className="site-demo__label">eyes</span>
+      </div>
+      {NOSE_IDS.slice(0, 3).map((nose) => (
+        <div className="site-demo__cell" key={nose}>
+          <CharacterMark shape="bun" color="orange" state="happy" sizePx={96} face="line" nose={nose} />
+          <span className="site-demo__label">line, {nose}</span>
+        </div>
+      ))}
+      <div className="site-demo__cell">
+        <CharacterMark shape="bun" color="orange" state="happy" sizePx={96} face="line" nose={null} />
+        <span className="site-demo__label">line, no nose</span>
+      </div>
+    </div>
+  );
+}
+```
+
+Both props can change on a mounted character: the face eases between styles and the nose crossfades. The root element carries `data-face` for styling.
+
+## When to use it
+
+Use `CharacterMark` for a character that is on its own — a hero, an empty state, a single avatar in a header. For several characters at once, prefer [`MarkStageProvider`](/components/mark-stage), which shares one animation between every character that looks the same.
+
+## Following the pointer
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo site-demo--center">
+      <CharacterMark shape="blob" color="violet" sizePx={120} followPointer />
+      <CharacterMark shape="egg" color="cyan" sizePx={120} followPointer />
+    </div>
+  );
+}
+```
+
+The mapping is not linear. Distance is passed through a square root, which keeps the eyes responsive to small movements near the character while still reaching their limit for anything far away — a linear mapping makes nearby motion feel unresponsive.
+
+## Emphasis
+
+```tsx preview
+import { useState } from 'react';
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  const [hover, setHover] = useState(false);
+  return (
+    <div
+      className="site-demo site-demo--center"
+      onPointerEnter={() => setHover(true)}
+      onPointerLeave={() => setHover(false)}
+    >
+      <CharacterMark shape="tofu" color="green" state="happy" sizePx={120} emphasis={hover} />
+      <span className="site-demo__label">hover me</span>
+    </div>
+  );
+}
+```
+
+## Pausing
+
+`paused` stops the character's subscription to the shared ticker and **holds the current frame**. It does not reset to a neutral pose, so a character scrolled out of view and back looks like it was waiting rather than like it restarted.
+
+```tsx preview
+import { useState } from 'react';
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  const [paused, setPaused] = useState(false);
+  return (
+    <div className="site-demo site-demo--center">
+      <CharacterMark shape="cloud" color="blue" state="celebrate" sizePx={110} paused={paused} />
+      <button className="site-btn" onClick={() => setPaused((p) => !p)}>
+        {paused ? 'Resume' : 'Pause'}
+      </button>
+    </div>
+  );
+}
+```
+
+## Imperative actions
+
+```tsx preview
+import { useRef } from 'react';
+import { CharacterMark, type CharacterHandle } from '@aora-bot/react';
+
+export default function Demo() {
+  const ref = useRef<CharacterHandle>(null);
+  return (
+    <div className="site-demo site-demo--center">
+      <CharacterMark ref={ref} shape="drop" color="magenta" state="playful" sizePx={110} />
+      <div className="site-controls">
+        <button className="site-btn" onClick={() => ref.current?.spin(1)}>
+          spin(1)
+        </button>
+        <button className="site-btn" onClick={() => ref.current?.spin(3)}>
+          spin(3)
+        </button>
+        <button className="site-btn" onClick={() => ref.current?.bounce()}>
+          bounce()
+        </button>
+        <button className="site-btn" onClick={() => ref.current?.burst(24)}>
+          burst(24)
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+`burst()` is suppressed under `prefers-reduced-motion`, since particles radiating from a centre point are a vestibular trigger.
+
+## Following a point the host already knows
+
+`followPointer` listens for the pointer itself. `followTarget` takes a point in viewport pixels instead — another element's centre, or a pointer position the host is already tracking for its own reasons — and the engine converts it with the same square-root mapping every frame. `gazeTarget` wins when both are set.
+
+```tsx preview
+import { useState } from 'react';
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  const [target, setTarget] = useState<{ x: number; y: number } | null>(null);
+  return (
+    <div
+      className="site-demo site-demo--center"
+      onPointerMove={(e) => setTarget({ x: e.clientX, y: e.clientY })}
+      onPointerLeave={() => setTarget(null)}
+    >
+      <CharacterMark shape="hex" color="green" sizePx={110} followTarget={target} />
+      <CharacterMark shape="bun" color="orange" sizePx={110} followTarget={target} />
+      <span className="site-demo__label">one listener, two characters</span>
+    </div>
+  );
+}
+```
+
+## Ink, eyes and line weight
+
+`ink` overrides the body paint with a flat colour or a two-stop gradient, for a character that has to match a brand swatch rather than the palette; `null` hands it back to the theme token. `eyeScale` is a static multiplier on eye size, applied on top of the emphasis spring. `lineWeight` scales the nose, the mouth and the HUD dials together, within `LINE_WEIGHT_RANGE` (0.8–1.25) — one pen per character, so the [face and the HUD](/design/face) stay one stroke.
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      <div className="site-demo__cell">
+        <CharacterMark shape="blob" color="blue" state="happy" sizePx={96} ink={{ flat: '#1d4ed8' }} />
+        <span className="site-demo__label">ink flat</span>
+      </div>
+      <div className="site-demo__cell">
+        <CharacterMark
+          shape="blob"
+          color="blue"
+          state="happy"
+          sizePx={96}
+          ink={{ from: '#f97316', to: '#db2777', angle: 30 }}
+        />
+        <span className="site-demo__label">ink gradient</span>
+      </div>
+      <div className="site-demo__cell">
+        <CharacterMark shape="blob" color="blue" state="happy" sizePx={96} eyeScale={1.35} />
+        <span className="site-demo__label">eyeScale 1.35</span>
+      </div>
+      <div className="site-demo__cell">
+        <CharacterMark
+          shape="blob"
+          color="blue"
+          state="happy"
+          sizePx={96}
+          face="line"
+          nose="curve"
+          lineWeight={0.8}
+        />
+        <span className="site-demo__label">lineWeight 0.8</span>
+      </div>
+      <div className="site-demo__cell">
+        <CharacterMark
+          shape="blob"
+          color="blue"
+          state="happy"
+          sizePx={96}
+          face="line"
+          nose="curve"
+          lineWeight={1.25}
+        />
+        <span className="site-demo__label">lineWeight 1.25</span>
+      </div>
+    </div>
+  );
+}
+```
+
+## HUD
+
+`hud` draws a dial in the ring outside the body; `null` removes it. While a HUD is on, the face is hidden — the body stays a silhouette, the ring is the reading. The spec is the same `HudSpec` the [protocol](/design/protocol) carries and [`HudPlate`](/components/hud-plate) validates, and the dial is stroked at the character's `lineWeight`.
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      <CharacterMark
+        shape="tofu"
+        color="violet"
+        state="working"
+        sizePx={110}
+        hud={{ kind: 'progress', value: 0.6 }}
+      />
+      <CharacterMark
+        shape="tofu"
+        color="violet"
+        state="waiting"
+        sizePx={110}
+        hud={{ kind: 'timer', remainingMs: 12_000, totalMs: 60_000 }}
+      />
+      <CharacterMark
+        shape="tofu"
+        color="violet"
+        state="notifying"
+        sizePx={110}
+        hud={{ kind: 'notify', count: 3 }}
+      />
+    </div>
+  );
+}
+```
+
+The spec is compared by value, not identity, so `hud={{ kind: 'progress', value }}` written inline does not restart the dial on every render.
+
+## Knowing when a state has settled
+
+Finite states — `spawning`, `waking` — run their course (see `STATE_SETTLE_TO`) and the engine moves on by itself. `onSettle(from, to)` fires at that moment, so a host's own idea of the state can follow without keeping a duplicate timer.
+
+```tsx preview
+import { useState } from 'react';
+import { CharacterMark, type CharacterState } from '@aora-bot/react';
+
+export default function Demo() {
+  const [state, setState] = useState<CharacterState>('idle');
+  const [log, setLog] = useState('—');
+  return (
+    <div className="site-demo site-demo--center">
+      <CharacterMark
+        shape="star"
+        color="yellow"
+        state={state}
+        sizePx={110}
+        onSettle={(from, to) => {
+          setLog(`${from} → ${to}`);
+          setState(to);
+        }}
+      />
+      <button className="site-btn" onClick={() => setState('waking')}>
+        waking
+      </button>
+      <span className="site-demo__label">
+        state {state}, settled {log}
+      </span>
+    </div>
+  );
+}
+```
+
+The opposite problem — an input that changes faster than the character can follow — is what [`useMarkSettle`](/components/mark-commands) is for.
+
+## Why it never re-renders
+
+React mounts an empty host element and the engine takes over. Prop changes are pushed into the controller imperatively rather than re-rendering:
+
+```tsx
+useEffect(() => {
+  controllerRef.current?.update({ shape, state, paused, emphasis });
+}, [shape, state, paused, emphasis]);
+```
+
+Going through the reconciler sixty times a second to set a dozen attributes would cost considerably more than the animation itself. The mount effect deliberately has no dependencies — recreating the controller on a prop change would restart the animation.
+
+## API
+
+<API component="CharacterMark" />
+
+## Next
+
+- [MarkStageProvider](/components/mark-stage) — share engines by appearance
+- [States](/design/states) — every animation state, grouped
+- [HudPlate](/components/hud-plate) — a figure beside the dial

@@ -1,0 +1,94 @@
+import { API } from '@theme';
+
+# RestrictedScene
+
+The page you land on when something says no.
+
+> Part of `@aora-bot/surfaces`, not `@aora-bot/react`: `pnpm add @aora-bot/surfaces @aora-bot/react`, and import `@aora-bot/surfaces/styles.css` after the React stylesheet.
+
+```tsx preview
+import { useState } from 'react';
+import { RestrictedScene, type RestrictedTone } from '@aora-bot/surfaces';
+
+const tones: RestrictedTone[] = ['restricted', 'offline', 'unauthorised'];
+
+export default function Demo() {
+  const [tone, setTone] = useState<RestrictedTone>('restricted');
+  return (
+    <div className="site-demo site-demo--column">
+      <RestrictedScene
+        tone={tone}
+        rotateMs={4000}
+        action={
+          <button className="site-btn" onClick={() => setTone('restricted')}>
+            Go back
+          </button>
+        }
+      />
+      <div className="site-controls">
+        {tones.map((t) => (
+          <button key={t} className="site-btn" data-active={tone === t} onClick={() => setTone(t)}>
+            {t}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+## Where a character costs least
+
+A dead end is where a character is worth the most and costs the least: nobody is trying to get work done on this screen, and a face that is clearly _declining_ rather than _broken_ is the difference between "I am not allowed to do that" and "this product is failing". The default state is `refusing`.
+
+The shape changes every `rotateMs` (12 s by default) because these screens get stared at. The interval is long enough to read as the character shifting position rather than as an animation demanding attention, and it stops entirely under reduced motion — a silhouette morph is motion even when nothing crosses the screen. `shapePool` is the set it rotates through (`AUTO_SHAPE_POOL` by default); `rotateMs={0}` holds the first.
+
+## Tones
+
+`tone` picks the copy and the bezel light: `restricted` (alert light), `offline` (light off) and `unauthorised` (alert light). `title` and `body` override the copy for a specific message; `action` takes the way out — a button, a link, whatever applies.
+
+## DeviceBezel
+
+The frame around the character: a rounded shell, an inset screen and a status light, all procedural. At these sizes a screenshot of a window would need three variants — dark mode, high density, a narrow column — and would pin the surface to whatever operating system was on screen when it was taken.
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+import { DeviceBezel } from '@aora-bot/surfaces';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {(['off', 'on', 'alert'] as const).map((light) => (
+        <div className="site-demo__cell" key={light}>
+          <DeviceBezel widthPx={150} light={light}>
+            <div style={{ display: 'grid', placeItems: 'center', height: '100%' }}>
+              <CharacterMark
+                shape="tofu"
+                color="cyan"
+                state={light === 'alert' ? 'alerting' : 'idle'}
+                sizePx={56}
+              />
+            </div>
+          </DeviceBezel>
+          <span className="site-demo__label">{light}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+`aspect` is the screen's height as a fraction of its width, 0.74 by default — just short of 3:4, like a small display. Children are drawn on the screen and clipped to it. The same frame is what [`BootLoop`](/components/boot-loop) draws around its character.
+
+## API
+
+<API component="RestrictedScene" />
+
+### DeviceBezel
+
+<API component="DeviceBezel" />
+
+## Next
+
+- [Refusals and limits](/scenarios/restricted) — declining without looking broken
+- [States](/design/states) — every animation state, grouped

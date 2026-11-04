@@ -1,0 +1,21 @@
+node_modules/
+dist/
+doc_build/
+.rspress/
+*.log
+*.tsbuildinfo
+.DS_Store
+.env
+.env.local
+coverage/
+test-results/
+playwright-report/
+
+# Generated from the packages' TypeScript by `pnpm --filter @aora-bot/docs api`
+# before every docs dev/build/typecheck. Never edited by hand.
+docs/theme/generated/
+
+# Local-only working material. Never committed, published or deployed.
+lab/
+BACKLOG.md
+packages/engine/*.html

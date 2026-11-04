@@ -1,0 +1,92 @@
+import { StateMatrix } from '@theme';
+
+# 庆祝
+
+表单拿到好消息的那一刻该做什么。
+
+## 先看效果
+
+一个发布按钮，旁边的角色先干活、再庆祝、然后交出一张分享卡。纸屑图层盖在角色上，成功时由 hook 触发。
+
+```tsx preview
+import { useRef, useState } from 'react';
+import { CharacterMark, ConfettiLayer, type ConfettiHandle } from '@aora-bot/react';
+import { ShareCard, usePublishMark } from '@aora-bot/surfaces';
+
+export default function Demo() {
+  const confetti = useRef<ConfettiHandle>(null);
+  const [shared, setShared] = useState(false);
+  const publish = usePublishMark({ confetti, onSettled: () => setShared(true) });
+
+  return (
+    <div className="site-demo site-demo--stack">
+      <span className="site-demo__avatar">
+        <CharacterMark shape="star" color="yellow" state={publish.characterState} sizePx={88} />
+        <ConfettiLayer ref={confetti} />
+      </span>
+      <div className="site-controls">
+        <button
+          className="site-btn"
+          disabled={publish.state !== 'idle'}
+          onClick={() => {
+            setShared(false);
+            publish.begin();
+          }}
+        >
+          发布
+        </button>
+        <button className="site-btn" disabled={publish.state !== 'publishing'} onClick={publish.succeed}>
+          成功
+        </button>
+        <button className="site-btn" disabled={publish.state !== 'publishing'} onClick={publish.fail}>
+          失败
+        </button>
+      </div>
+      {shared && (
+        <div className="site-demo__wide">
+          <ShareCard name="Nova" url="https://example.com/t/nova" shape="star" color="yellow" />
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+`usePublishMark` 接收纸屑的 ref 而不是返回一个：ref 属于它挂着的那个元素，由 hook 发出去的 ref 会诱使人在渲染期间读 `.current`。图层搭在共享的 ticker 上，只在有纸屑飞着的时候订阅，所以一个闲着的庆祝不会让页面多跑一个帧循环。
+
+## 什么时候用
+
+表单唯一值得做动画的时刻：发布成功了、一次运行结束了、上传落地了。有真实的等待、真实的结果，而且结果是好消息。请求在路上时角色在干活，落地时庆祝一次，然后自己收起来——需要人手动关掉的庆祝就不再是庆祝了。
+
+## 用到的组件
+
+- [`CharacterMark`](/components/character-mark)——`celebrate` 自带入场效果：原地转身一圈、甩出彩带，再加十六片纸屑，在转移那一刻只放一次。
+- [`ConfettiLayer`](/components/confetti-layer)——没有角色的纸屑，可以盖在任何东西上，通过 ref 驱动。
+- `createConfettiController`——同样的纸屑，给 React 之外的一个普通 SVG 用。
+- [`usePublishMark`](/components/use-publish-mark)——三个阶段和时序，宿主不必自己盯着那一刻。
+- `ShareCard` 与 [`TemplateDialog`](/components/template-dialog)——发布完成后交出去的东西。
+- [`HudPlate`](/components/hud-plate)——好消息配 `kpi` 表盘：一个数字、一个变化量、一段可以画成迷你折线的历史。数字落在铭牌上；环显示它是怎么来的。
+
+## 状态怎么走
+
+| 从          | 到          | 时机                                                           |
+| ----------- | ----------- | -------------------------------------------------------------- |
+| `idle`      | `working`   | `begin()`——请求发出                                            |
+| `working`   | `celebrate` | `succeed()`——入场效果触发，图层喷出纸屑，编号 `33`             |
+| `celebrate` | `idle`      | `celebrateMs` 之后（1.6 秒）；`onSettled` 是关闭对话框的好时机 |
+| `working`   | `idle`      | `fail()`——直接回到静止，不做难过的脸                           |
+| `celebrate` | `proud`     | 结果卡片；`ShareCard` 上的脸用的是 `proud`                     |
+
+失败回到静止而不是 `sad`——角色为什么不插嘴，见 [`usePublishMark`](/components/use-publish-mark)。
+
+## 每个状态的样子
+
+<StateMatrix states={['working', 'celebrate', 'proud', 'idle']} />
+
+`celebrate` 是 `STATE_ENTRY_EFFECTS` 里唯一既转圈又喷纸屑的状态。它每次转移只放一次、挂载时不放、减少动态效果下跳过——每一帧都喷纸屑是噪音，状态到来时的一次爆发才是这个转移需要的标点。眼睛在 `joyful`、`excited`、`wink` 和 `happy` 之间轮换，比任何别的状态都快。
+
+## 接下来
+
+- [usePublishMark](/components/use-publish-mark)——干活、庆祝、收敛
+- [ConfettiLayer](/components/confetti-layer)——盖在任何东西上的纸屑
+- [TemplateDialog](/components/template-dialog)——名称、说明与可见性

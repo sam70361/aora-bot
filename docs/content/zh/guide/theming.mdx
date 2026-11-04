@@ -1,0 +1,153 @@
+import { TokenTable } from '@theme';
+
+# 主题
+
+两个 CSS 自定义属性决定角色怎样上色，其余都是你可以覆盖的 token。
+
+## 画出角色的变量
+
+角色的颜色由几个 CSS 自定义属性决定。
+
+| 变量                  | 作用                                                            |
+| --------------------- | --------------------------------------------------------------- |
+| `--aora-fg`           | 墨色。由 `color` prop 按实例写入。                              |
+| `--aora-face`         | `cute` 脸的颜色，白色。`black` 不写，回落成挖空。               |
+| `--aora-face-soft`    | `soft` 变体的深色脸，只为 `black` 写。                          |
+| `--aora-face-sticker` | `sticker` 变体的脸，只为 `black` 写：暗色下随白色身体换成黑色。 |
+| `--aora-hair-shade`   | 实心身体上头发叠加的阴影色，默认 `#000000`。只为 `black` 写。   |
+| `--aora-ink2`         | `riso` 变体的第二种墨，只为 `pink` 写。                         |
+| `--aora-bg`           | 眼睛挖孔（`eyes`、`line` 脸）。默认等于 `--aora-bg-base`。      |
+
+组件会替你设置前几个，它们来自引擎的 `getInkVars(color)`。你可能需要改的是 `--aora-bg-base`。
+
+## 浅色与深色
+
+墨色写成一对 [`light-dark()`](https://developer.mozilla.org/zh-CN/docs/Web/CSS/color_value/light-dark)：
+
+```css
+--aora-fg: light-dark(#2a92fe, #0e74e0);
+```
+
+这就是引擎从不监听主题切换的原因。值只写一次，`color-scheme` 翻转时由浏览器重新解析。一千个角色换主题不需要 JavaScript、不需要重渲染、也不会闪。
+
+:::warning 不要把 `color-scheme` 钉成单一值
+样式表在 `:root` 上设置 `color-scheme: light dark`，让页面跟随系统。如果应用把它钉成 `light`，所有 `light-dark()` 都会冻在浅色值上，页面其余部分切到深色时角色也不会跟着变。让页面自己拥有 color-scheme。
+:::
+
+所有颜色 token 都是一对 `light-dark()`，由页面通过 `color-scheme` 选择取哪一半。这是唯一的深色机制，没有按主题复制的 token。下面这些选择器可以在任意元素上钉住配色，因此一棵子树可以与页面其余部分不同：
+
+```css
+.dark,
+[data-theme='dark'],
+.rp-dark {
+  color-scheme: dark;
+}
+.light,
+[data-theme='light'] {
+  color-scheme: light;
+}
+```
+
+支持多个 class 名，因为应用壳和文档框架对用哪一个意见不一。
+
+## 眼睛是孔
+
+默认的 `cute` 脸是画上去的白色，不依赖背景。`eyes` 和 `line` 脸的眼睛用 `--aora-bg` 填充并裁剪在身体内，所以在任何表面上都会读成透明；`black` 墨色的 `cute` 脸也是这样。这只有在 `--aora-bg-base` 与角色背后的真实颜色一致时才成立。
+
+在任意祖先上覆盖它，整棵子树都会跟随：
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+const surfaces = ['#0b1220', '#2b1a3d', '#12281f'];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {surfaces.map((bg) => (
+        <div
+          key={bg}
+          style={{
+            padding: 18,
+            borderRadius: 14,
+            background: bg,
+            ['--aora-bg-base' as string]: bg,
+          }}
+        >
+          <CharacterMark shape="tofu" color="yellow" face="eyes" sizePx={72} />
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+如果希望眼睛是实色而不是孔，传入 `eyeColor`。
+
+## 层叠层
+
+样式表把规则放在三个层里，优先级从低到高依次是 `aora.tokens`、`aora.base` 和 `aora.components`。
+
+有一点值得知道：你写在层**外面**的规则，无论选择器权重如何，都会压过层内的规则——覆盖组件样式因此从不需要 `!important`。
+
+```css
+/* 赢，尽管只是一个 class 对一个 class。 */
+.aora-badge {
+  border-radius: 4px;
+}
+```
+
+## Token
+
+点击任意 token 即可复制它的名字。
+
+<TokenTable />
+
+## 配色
+
+这些墨色是数据，不是 CSS。每种带三层，因为 20px 的选择器色块和大幅填色剪影需求相反：色块要和相邻的色块区分开，身体要在白页和近黑页上都可读。
+
+```tsx preview
+import { COLOR_SWATCHES, getSwatchHex, getInkColor } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>chip</th>
+          <th>ink（浅）</th>
+          <th>ink（深）</th>
+        </tr>
+      </thead>
+      <tbody>
+        {COLOR_SWATCHES.map((s) => (
+          <tr key={s.id}>
+            <td>
+              <code>{s.id}</code>
+            </td>
+            <td>
+              <code>{getSwatchHex(s.id)}</code>
+            </td>
+            <td>
+              <code>{getInkColor(s.id, 'light')}</code>
+            </td>
+            <td>
+              <code>{getInkColor(s.id, 'dark')}</code>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+```
+
+`black` 是唯一特例：深色模式下的墨色是白色，因此无论页面怎么换主题，中性角色永远是对比最强的那个。
+
+## 接下来
+
+- [自定义形状](/guide/custom-shapes)——注册自己的生成器
+- [配色](/design/palette)——每个色相三层
+- [渲染结构](/internals/rendering)——一个 SVG，所有属性手写

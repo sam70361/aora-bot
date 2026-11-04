@@ -1,0 +1,80 @@
+import { API } from '@theme';
+
+# BootLoop
+
+有东西正在启动，而没人知道要多久。
+
+> 属于 `@aora-bot/surfaces`，不在 `@aora-bot/react` 里：`pnpm add @aora-bot/surfaces @aora-bot/react`，并在 React 样式之后引入 `@aora-bot/surfaces/styles.css`。
+
+```tsx preview
+import { useState } from 'react';
+import { BootLoop } from '@aora-bot/surfaces';
+
+export default function Demo() {
+  const [cycles, setCycles] = useState(0);
+  return (
+    <div className="site-demo site-demo--column">
+      <BootLoop
+        title="正在启动工作区"
+        body={cycles >= 3 ? '比平时慢一些。' : '正在把一切接上线。'}
+        durationMs={1800}
+        onCycle={setCycles}
+      />
+      <span className="site-demo__label">已循环 {cycles} 次</span>
+    </div>
+  );
+}
+```
+
+## 展示活动，而不是进度
+
+不确定的等待是进度条唯一会说谎的场合，所以这个场景改为展示活动：角色在 `working` 和 `thinking` 之间交替——底层是一条旋涡腰带换成三颗游走的珠子——同时一条扫描线从屏幕后方划过。`durationMs` 是每个状态停留的时间；一对状态是一个循环。
+
+`onCycle` 的存在是为了让宿主能升级提示。两个循环只是启动慢；十二个循环就是值得说点什么的问题，而只有宿主知道该说哪句话。上面的示例在三次之后换了文案。
+
+`inFront` 让角色站在屏幕前面而不是后面，适合边框只是布景、而不是正在启动的东西本身的布局。
+
+## LoadingMark
+
+即将到来的那个角色形状的占位符。
+
+```tsx preview
+import { useEffect, useState } from 'react';
+import { LoadingMark } from '@aora-bot/surfaces';
+
+export default function Demo() {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    const timer = setInterval(() => setReady((r) => !r), 2200);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="site-demo">
+      {(['hex', 'cloud', 'star'] as const).map((shape) => (
+        <div className="site-demo__cell" key={shape}>
+          <LoadingMark shape={shape} color="violet" ready={ready} sizePx={48} />
+          <span className="site-demo__label">{ready ? '就绪' : '加载中'}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+六边形将要落下的地方放一个灰色圆形，就是一次待发生的布局抖动；头像槽里放一个转圈，则是在页面已有的动作之外再添一种动作。这里用的是轮廓本身——同一个形状生成器，做成 CSS mask——上面加一层闪光，于是占位符和角色占据完全相同的轮廓，`ready` 时的切换是交叉淡入而不是替换。
+
+淡入过程中两层都保持挂载。在 `ready` 时卸载占位符，会让角色的第一帧对着空白显示一帧，而那正是这个组件要避免的闪烁。
+
+## API
+
+<API component="BootLoop" />
+
+### LoadingMark
+
+<API component="LoadingMark" />
+
+## 接下来
+
+- [启动与加载](/scenarios/boot-loading)——两种不同的等待
+- [腰带与粒子](/internals/belts)——腰带状态怎样画出来

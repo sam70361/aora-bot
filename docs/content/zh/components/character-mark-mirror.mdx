@@ -1,0 +1,49 @@
+import { API } from '@theme';
+
+# CharacterMarkMirror
+
+把已经在运行的角色再画一遍，画到别处。
+
+```tsx preview
+import { CharacterMark, CharacterMarkMirror } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      <div className="site-demo__cell">
+        <CharacterMark sourceId="demo-source" shape="hex" color="blue" state="orbit" sizePx={92} />
+        <span className="site-demo__label">source</span>
+      </div>
+      {(['red', 'green', 'violet', 'orange'] as const).map((color) => (
+        <div className="site-demo__cell" key={color}>
+          <CharacterMarkMirror sourceId="demo-source" color={color} sizePx={92} />
+          <span className="site-demo__label">mirror</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+一个引擎，五个角色，五种墨色。镜像是指向源根分组的 `<use href>` 元素。
+
+## 换墨色不必再跑一份动画
+
+墨色是可继承的 CSS 自定义属性，所以它在 `<use>` 所在处解析，而不是在源的定义处。每个镜像设置自己的 `--aora-fg`，共享几何会捡起来。
+
+尺寸同理——它设在外层，而不是 SVG 内部。
+
+## 一页里 id 必须唯一
+
+`sourceId` 会变成 DOM id，`<use href="#id">` 解析到文档里的第一个匹配。同一页上两个相同 id 的源，意味着每个镜像都指向第一个。
+
+优先使用 [`MarkStageProvider`](/components/mark-stage)，它用 `useId` 推导 id，不会碰撞——即使一页上有好几个 Provider，而这正是带多个示例的文档站点会产生的情况。
+
+## API
+
+<API component="CharacterMarkMirror" />
+
+## 接下来
+
+- [MarkStageProvider](/components/mark-stage)——按外观共享引擎
+- [性能](/guide/performance)——怎样渲染上百个角色

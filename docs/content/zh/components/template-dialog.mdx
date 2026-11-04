@@ -1,0 +1,91 @@
+import { API } from '@theme';
+
+# TemplateDialog
+
+创建或编辑一个智能体模板：名字、它该做什么、谁可以用。
+
+> 属于 `@aora-bot/surfaces`，不在 `@aora-bot/react` 里：`pnpm add @aora-bot/surfaces @aora-bot/react`，并在 React 样式之后引入 `@aora-bot/surfaces/styles.css`。
+
+```tsx preview
+import { useState } from 'react';
+import { TemplateDialog, type TemplateDraft } from '@aora-bot/surfaces';
+
+export default function Demo() {
+  const [saved, setSaved] = useState<TemplateDraft | null>(null);
+  return (
+    <div className="site-demo site-demo--column">
+      <TemplateDialog
+        seed="tpl_7f3a"
+        value={{ name: '发布说明', instructions: '总结自上一个 tag 以来合并的 pull request。' }}
+        shareUrl={saved ? 'https://app.example/t/tpl_7f3a' : undefined}
+        onSave={async (draft) => {
+          await new Promise((r) => setTimeout(r, 900));
+          setSaved(draft);
+        }}
+      />
+    </div>
+  );
+}
+```
+
+点保存。名字旁边的角色在 promise 未返回时忙碌，返回时庆祝；给了 `shareUrl` 之后会出现分享卡片。
+
+## 外观不是一个字段
+
+表单刻意很短，因为外观不需要任何人去填。`normalizeTemplateDraft` 会给没配置外观的模板一个由 `seed` 推导出的形状和墨色——请用存储的模板 id，它不会因为改名而变——所以名字旁边的角色从来不是占位符，十个没配置的模板列成一排，仍然是十行能分辨的东西。从触发按钮打开头像编辑器只是可选的点缀，不是必经步骤。
+
+## 保存
+
+`onSave` 收到规范化后的草稿。返回一个 promise，对话框内部的 [`usePublishMark`](/components/use-publish-mark) 负责其余部分：未返回时 `working`，resolve 时 `celebrate` 并撒彩纸，reject 时回到静息——表单马上要显示自己的错误提示，旁边再来一张难过的脸，就像是这个库在替你发表意见。
+
+## normalizeTemplateDraft
+
+纯函数，所以服务端 action 校验提交时，和对话框每次按键时调用的是同一个函数。它返回三样东西：
+
+```ts
+const { draft, errors, valid } = normalizeTemplateDraft(input, { seed: template.id });
+```
+
+- `draft`——去空白、按 `TEMPLATE_LIMITS` 截断（名字 80 字符，指令 4000 字符）、补上外观。实时预览应当渲染的就是它，字段超限时角色和行依然正常。
+- `errors`——`name-required`、`name-too-long`、`instructions-too-long`。保存按钮应当尊重的是它。`TEMPLATE_ERROR_KEYS` 把每一项映射到本地化键。
+- `valid`——`errors.length === 0`。
+
+名字会折叠空白，因为从文档里粘过来的名字常带着换行；指令只去掉尾部空白，因为粘贴的列表里，行首缩进是含义的一部分。
+
+## VisibilityControls 与 ShareCard
+
+```tsx preview
+import { useState } from 'react';
+import { ShareCard, VisibilityControls, type TemplateVisibility } from '@aora-bot/surfaces';
+
+export default function Demo() {
+  const [visibility, setVisibility] = useState<TemplateVisibility>('private');
+  return (
+    <div className="site-demo site-demo--column">
+      <VisibilityControls value={visibility} onSelect={setVisibility} />
+      <ShareCard name="发布说明" url="https://app.example/t/tpl_7f3a" shape="tofu" color="gray" />
+    </div>
+  );
+}
+```
+
+可见性是两个带标签的选项，而不是一个开关：开关需要一个在两种位置都为真的标签，而这里诚实的标签——「只有你」和「工作区里的所有人」——是两句不同的话。`disabled` 让它变成只读展示，用于别人拥有的模板。
+
+分享卡片完整显示链接，而不是把它藏在复制按钮后面，这样即将递出去的东西在复制之前就看得见。复制成功后触发 `onCopy`，宿主想弹自己的提示就用它。
+
+## API
+
+<API component="TemplateDialog" />
+
+### VisibilityControls
+
+<API component="VisibilityControls" />
+
+### ShareCard
+
+<API component="ShareCard" />
+
+## 接下来
+
+- [usePublishMark](/components/use-publish-mark)——干活、庆祝、收敛
+- [角色设置](/scenarios/character-setup)——挑选智能体的外观

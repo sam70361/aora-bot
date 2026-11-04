@@ -1,0 +1,326 @@
+import { StyleParamsDemo } from '@theme';
+
+# 矢量风格
+
+`vector` 系列把角色画成平滑的 SVG 路径。它有七种变体，区别只在颜料：几何、动画和面部在所有变体里都一样，所以新状态或新形状会同时出现在每一种变体里。
+
+```tsx preview
+import { getStyle } from '@aora-bot/engine';
+import { CharacterMark } from '@aora-bot/react';
+
+const variants = getStyle('vector').variants;
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {variants.map((variant) => (
+        <div className="site-demo__cell" key={variant}>
+          <CharacterMark shape="mochi" color="blue" state="happy" sizePx={96} variant={variant} />
+          <span className="site-demo__label">{variant}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+| 变体      | 身体                                     | `cute` 脸的颜色            | 参数                                     |
+| --------- | ---------------------------------------- | -------------------------- | ---------------------------------------- |
+| `solid`   | 用墨色平涂                               | 白色（`--aora-face`）      | —                                        |
+| `outline` | 描边，里面染 8% 的墨色                   | 墨色                       | `strokeWidth`                            |
+| `glass`   | 半透明的身体，细边，顶部和内沿的光泽     | 墨色                       | `strokeWidth`                            |
+| `sticker` | 填色，外面一圈白边和阴影                 | 纸色（`--aora-paper`）     | `stickerWidth`、`stickerShadow`          |
+| `paper`   | 填色，下面垫一层更深的自己               | 白色                       | `paperOffset`、`paperAngle`、`paperTilt` |
+| `soft`    | 径向渐变，脚下一块地面阴影，可选小高光   | 深棕（`--aora-face-soft`） | `softShadow`、`softGloss`                |
+| `riso`    | 两色错位印刷，叠印处正片叠底，带半调网点 | 白色                       | `risoOffset`、`risoHalftone`             |
+
+`solid`、`outline`、`glass` 在 [`CharacterMark`](/components/character-mark) 里已有说明。本页讲其余几种变体，以及 `outline` 给出的单色线条画法。
+
+## 贴纸
+
+贴纸是在角色外面剪出一圈白边，底下加一个小而柔的投影，像是贴在页面上。白边把身体和通知徽标当成一个整体轮廓包住，并且画在身体自己的变换里，所以弹跳、旋转、腰带变形时，它跟着挤压、转动、淡出。
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  const surfaces = ['#fcfcfc', '#16161a', '#2b1a3d'];
+  return (
+    <div className="site-demo">
+      {surfaces.map((bg) => (
+        <div
+          key={bg}
+          style={{
+            padding: 18,
+            borderRadius: 16,
+            background: bg,
+            colorScheme: bg === '#fcfcfc' ? 'light' : 'dark',
+          }}
+        >
+          <CharacterMark shape="cloud" color="orange" state="happy" sizePx={96} variant="sticker" />
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+纸不跟随页面。贴纸是带着自己边缘的东西，所以在深色页面上它仍然是浅色的——正是这份对比把它从表面上托起来。同样的道理，它的眼睛也是纸色，而不是会透出页面的孔。想要奶油色或带色调的边，在任意祖先元素上设置 `--aora-paper`：
+
+```css
+.card {
+  --aora-paper: #fff7e6;
+}
+```
+
+`stickerWidth` 是白边超出身体的距离，单位是形状空间，所以它随角色缩放：24 像素的头像大约得到一像素宽的白边。`stickerShadow` 可以关掉投影，在花哨的背景或长列表里很有用。
+
+```tsx preview
+import { renderStaticSvgDataUrl } from '@aora-bot/react';
+
+const cases = [
+  { label: 'stickerWidth 4', styleOptions: { stickerWidth: 4 } },
+  { label: '默认', styleOptions: {} },
+  { label: 'stickerWidth 20', styleOptions: { stickerWidth: 20 } },
+  { label: 'stickerShadow false', styleOptions: { stickerShadow: false } },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {cases.map(({ label, styleOptions }) => (
+        <div className="site-demo__cell" key={label}>
+          <img
+            alt=""
+            width={96}
+            height={96}
+            src={renderStaticSvgDataUrl({
+              shape: 'bell',
+              color: 'red',
+              state: 'happy',
+              variant: 'sticker',
+              styleOptions,
+            })}
+          />
+          <span className="site-demo__label">{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## 剪纸
+
+剪纸躺在一层更深的自己上面，向下、向一侧偏移，没有模糊：一道硬阴影。`paperOffset` 是偏移距离（形状空间单位），`paperAngle` 是方向（度，从正右方顺时针计，`90` 是正下方）。
+
+```tsx preview
+import { renderStaticSvgDataUrl } from '@aora-bot/react';
+
+const cases = [
+  { label: 'offset 4', styleOptions: { paperOffset: 4 } },
+  { label: '默认', styleOptions: {} },
+  { label: 'offset 16', styleOptions: { paperOffset: 16 } },
+  { label: 'angle 0°', styleOptions: { paperAngle: 0 } },
+  { label: 'angle 225°', styleOptions: { paperAngle: 225 } },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {cases.map(({ label, styleOptions }) => (
+        <div className="site-demo__cell" key={label}>
+          <img
+            alt=""
+            width={96}
+            height={96}
+            src={renderStaticSvgDataUrl({
+              shape: 'tofu',
+              color: 'green',
+              state: 'happy',
+              variant: 'paper',
+              styleOptions,
+            })}
+          />
+          <span className="site-demo__label">{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+有两个取舍值得知道。
+
+- **阴影的深浅来自墨色，而不是第二种颜色。** 阴影是身体用同一份颜料画的副本，再盖上 32% 的黑，所以它就是变深的墨色。不管墨色是什么——`--aora-fg` 令牌、纯色还是渐变——都成立；而对渐变，用 `color-mix()` 去算一个颜色是做不到的。
+- **阴影方向不随身体转动。** 偏移施加在身体变换的外面。角色旋转时，阴影随之挤压、转动，但始终朝同一个方向落下，像是光源不动。
+
+角色本身保持端正。轻微倾斜属于姿态，而姿态归模拟（`poseHome`）管，不归颜料管，所以 `paper` 永远不会改变脸或腰带的位置。
+
+## 软糖
+
+`soft` 是一个圆润的玩具：平涂的身体上盖一层径向渐变（左上偏亮、右下偏暗），脚下一块不随身体弹跳的地面阴影。脸用深棕色，腮红偏粉。左上角的小高光默认关闭（`softGloss`），因为脸偏上的形状会让它正好落在眼睛上。渐变和高光都是叠在身体上的覆盖层，不是从墨色算出来的渐变，所以在令牌、纯色和渐变墨色上都成立。配件（耳朵这类）一起吃到渐变，明暗和它在整个形象上的位置一致。
+
+```tsx preview
+import { renderStaticSvgDataUrl } from '@aora-bot/react';
+
+const cases = [
+  { label: '默认', styleOptions: {} },
+  { label: 'softShadow false', styleOptions: { softShadow: false } },
+  { label: 'softGloss true', styleOptions: { softGloss: true } },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {cases.map(({ label, styleOptions }) => (
+        <div className="site-demo__cell" key={label}>
+          <img
+            alt=""
+            width={96}
+            height={96}
+            src={renderStaticSvgDataUrl({
+              shape: 'bunny',
+              color: 'pink',
+              state: 'happy',
+              variant: 'soft',
+              styleOptions,
+            })}
+          />
+          <span className="site-demo__label">{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## 孔版
+
+`riso` 模仿两色孔版印刷：身体用自己的墨色印在原位，底下垫一份用第二种墨（`--aora-ink2`，默认是粉红，粉色身体改用金色）印的副本，错开一点距离，两者正片叠底，表面再罩一层半调网点。两遍没对准的边缘就是这个变体的味道。`risoOffset` 是错位距离（形状空间单位），`risoHalftone` 控制网点。
+
+```tsx preview
+import { renderStaticSvgDataUrl } from '@aora-bot/react';
+
+const cases = [
+  { label: 'offset 0', styleOptions: { risoOffset: 0 } },
+  { label: '默认', styleOptions: {} },
+  { label: 'offset 20', styleOptions: { risoOffset: 20 } },
+  { label: 'risoHalftone false', styleOptions: { risoHalftone: false } },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {cases.map(({ label, styleOptions }) => (
+        <div className="site-demo__cell" key={label}>
+          <img
+            alt=""
+            width={96}
+            height={96}
+            src={renderStaticSvgDataUrl({
+              shape: 'star',
+              color: 'blue',
+              state: 'happy',
+              variant: 'riso',
+              styleOptions,
+            })}
+          />
+          <span className="site-demo__label">{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## 单线
+
+`outline` 变体本来就是单线画法。它是不是单色，取决于墨色。不给 `ink` 时，描边、眼睛和五官用的是 `--aora-fg`，而 `CharacterMark` 会把它设成调色板里的颜色——所以轮廓是蓝色、紫色，由 `color` 决定。想让它改用文字颜色，就给它 `currentColor`：
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+const surfaces = [
+  { bg: '#fcfcfc', fg: '#1f2937', scheme: 'light' },
+  { bg: '#16161a', fg: '#f4f4f5', scheme: 'dark' },
+  { bg: '#fde68a', fg: '#7c2d12', scheme: 'light' },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {surfaces.map(({ bg, fg, scheme }) => (
+        <div
+          key={bg}
+          style={{ padding: 18, borderRadius: 16, background: bg, color: fg, colorScheme: scheme }}
+        >
+          <CharacterMark
+            shape="bun"
+            state="happy"
+            face="line"
+            sizePx={96}
+            variant="outline"
+            ink={{ flat: 'currentColor' }}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+角色里的一切都取这个墨色：轮廓、眼睛、线条脸、HUD 刻度盘，以及（纯色墨色时）腰带的圆点和圆环。没有任何东西绑在调色板的某一项上，所以角色放进任何主题都不需要自己的颜色。
+
+在引擎里：
+
+```ts
+createCharacter(host, { variant: 'outline', ink: { flat: 'currentColor' } });
+```
+
+静态渲染接受同样的 `ink`：
+
+```ts
+const svg = renderStaticSvg({ variant: 'outline', ink: { flat: 'currentColor' } });
+```
+
+要把这段标记内联到页面里。通过 `<img>` 加载的 SVG 没有可继承的外围文字颜色，`currentColor` 会变成黑色。
+
+## 参数
+
+参数属于整个系列，每个变体只读自己的那部分。越界的数值会被夹到范围内并吸附到步长；类型不对则回落到默认值；未知的键会被丢弃。
+
+| 参数            | 变体             | 默认    | 范围          | 含义                           |
+| --------------- | ---------------- | ------- | ------------- | ------------------------------ |
+| `strokeWidth`   | outline 与 glass | 10      | 4–28，步长 1  | 线宽，形状空间单位             |
+| `stickerWidth`  | sticker          | 12      | 4–20，步长 1  | 白边超出身体的距离             |
+| `stickerShadow` | sticker          | `true`  | —             | 贴纸是否投下柔和的阴影         |
+| `paperOffset`   | paper            | 9       | 0–20，步长 1  | 硬阴影的距离                   |
+| `paperAngle`    | paper            | 55      | 0–360，步长 5 | 硬阴影的方向，从正右方顺时针计 |
+| `paperTilt`     | paper            | −3      | −8–8，步长 1  | 剪纸整体的倾斜角度（度）       |
+| `softShadow`    | soft             | `true`  | —             | 脚下是否有地面阴影             |
+| `softGloss`     | soft             | `false` | —             | 是否带一点高光                 |
+| `risoOffset`    | riso             | 10      | 0–20，步长 1  | 两遍印刷的错位距离             |
+| `risoHalftone`  | riso             | `true`  | —             | 是否罩半调网点                 |
+
+选一个变体，面板只列出该变体会读取的参数。它由注册表生成，所以和上面的表保持一致。
+
+<StyleParamsDemo style="vector" />
+
+```ts
+createCharacter(host, {
+  variant: 'sticker',
+  styleOptions: { stickerWidth: 14, stickerShadow: false },
+});
+
+character.update({ variant: 'paper', styleOptions: { paperOffset: 12, paperAngle: 90 } });
+```
+
+`variant` 可以在运行中的角色上切换；颜料会立刻重画，即使角色处于暂停。`styleOptions` 每次更新都是从默认值重新解析的，而不是合并进上一次的，所以想保留的值要全部传入。`validateStyleOptions(getStyle('vector'), options)` 会报告解析时被悄悄修正的问题。
+
+## 接下来
+
+- [CharacterMark](/components/character-mark) — 组件本身，以及前三种变体
+- [颜文字风格](/design/styles/kaomoji) — 把角色写成一行文字
+- [五官](/design/face) — 每种变体都能戴的三种脸
+- [主题](/guide/theming) — 给角色上色的变量

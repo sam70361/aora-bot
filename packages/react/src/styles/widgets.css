@@ -1,0 +1,541 @@
+/*
+ * The widgets the primitives ship with: shared controls, the HUD plate, the
+ * pickers, the avatar editor with its crop stage, and the avatar trigger.
+ *
+ * Kept apart from `components.css`, which styles marks and avatars — a handful
+ * of rules each, all of them about a character. These are forms and dialogs, and
+ * an application will want to override most of them; the split lets a host
+ * replace this file without losing the styles the engine depends on.
+ *
+ * Everything sits in the `aora.components` layer declared in `tokens.css`, so
+ * an application's own rules win by default without needing `!important`.
+ * Colour and size follow the same rules as the rest of the library: tokens
+ * only, and a container where the widget has a definite width.
+ */
+
+@layer aora.components {
+  /* ---- shared controls ------------------------------------------------- */
+
+  /*
+   * Deliberately plain.
+   *
+   * These are the buttons and fields the widgets need to exist, not a design
+   * system, and `@aora-bot/surfaces` uses them as they are. Sized and spaced
+   * to sit next to a host's own controls without arguing with them, and every
+   * colour comes from a token so they follow a theme they know nothing about.
+   */
+  .aora-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--aora-space-2);
+    min-height: var(--aora-control-h);
+    padding: 0 var(--aora-space-3);
+    border: 1px solid var(--aora-line);
+    border-radius: var(--aora-radius-sm);
+    background: var(--aora-surface);
+    box-shadow: var(--aora-shadow-xs);
+    color: var(--aora-text);
+    font: inherit;
+    font-size: var(--aora-text-sm);
+    font-weight: var(--aora-weight-medium);
+    cursor: pointer;
+    transition:
+      background-color var(--aora-duration-fast) var(--aora-ease-standard),
+      border-color var(--aora-duration-fast) var(--aora-ease-standard);
+
+    &:hover:not(:disabled) {
+      background: var(--aora-fill-hover);
+    }
+
+    &:active:not(:disabled) {
+      background: var(--aora-fill-active);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+  }
+
+  .aora-button--primary {
+    border-color: transparent;
+    background: var(--aora-accent);
+    box-shadow: none;
+    color: var(--aora-on-accent);
+
+    &:hover:not(:disabled) {
+      background: var(--aora-accent-hover);
+    }
+
+    &:active:not(:disabled) {
+      background: var(--aora-accent-active);
+    }
+  }
+
+  .aora-field {
+    width: 100%;
+    padding: var(--aora-space-2) var(--aora-space-3);
+    border: 1px solid var(--aora-line);
+    border-radius: var(--aora-radius-sm);
+    background: var(--aora-surface);
+    color: var(--aora-text);
+    font: inherit;
+    font-size: var(--aora-text-sm);
+    line-height: var(--aora-leading-snug);
+    resize: vertical;
+    transition: border-color var(--aora-duration-fast) var(--aora-ease-standard);
+
+    &:hover:not(:disabled) {
+      border-color: var(--aora-line-strong);
+    }
+
+    &::placeholder {
+      color: var(--aora-text-faint);
+    }
+  }
+
+  /*
+   * One focus ring for the widgets: the same ring, offset and colour on every
+   * control, so a keyboard user can tell where they are without learning a
+   * different treatment per component. The marks and pickers in
+   * `components.css` carry their own copy of the list.
+   */
+  :is(
+    .aora-button,
+    .aora-field,
+    .aora-avatar-trigger__button,
+    .aora-editable__button,
+    .aora-editor__tab
+  ):focus-visible,
+  .aora-editor__drop:has(:focus-visible) {
+    outline: var(--aora-focus-ring);
+    outline-offset: var(--aora-focus-offset);
+  }
+
+  /* ---- HUD plate ------------------------------------------------------- */
+
+  /*
+   * The four levels are a colour each and nothing else.
+   *
+   * No background, no border, no icon: a plate is text beside a character,
+   * and the character is already the loudest thing in the group. The three
+   * that are not the default read off the status tokens, so a product that
+   * rethemes its statuses gets its plates for free, and their dark halves come
+   * from the tokens' own `light-dark()` pairs.
+   */
+  .aora-hud-plate {
+    --aora-hud-ink: var(--aora-text-muted);
+    display: flex;
+    align-items: center;
+    gap: var(--aora-space-3);
+    color: var(--aora-text);
+  }
+
+  .aora-hud-plate[data-level='ok'] {
+    --aora-hud-ink: var(--aora-status-online);
+  }
+
+  .aora-hud-plate[data-level='warn'] {
+    --aora-hud-ink: var(--aora-status-away);
+  }
+
+  .aora-hud-plate[data-level='alert'] {
+    --aora-hud-ink: var(--aora-status-error);
+  }
+
+  .aora-hud-plate[data-placement='top'] {
+    flex-direction: column-reverse;
+  }
+
+  .aora-hud-plate[data-placement='bottom'] {
+    flex-direction: column;
+  }
+
+  .aora-hud-plate[data-placement='right'] {
+    flex-direction: row;
+  }
+
+  .aora-hud-plate__mark {
+    display: inline-flex;
+    flex: none;
+    width: var(--aora-hud-size, 72px);
+  }
+
+  .aora-hud-plate__text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--aora-space-0-5);
+    text-align: center;
+  }
+
+  .aora-hud-plate[data-placement='right'] .aora-hud-plate__text {
+    align-items: start;
+    text-align: start;
+  }
+
+  .aora-hud-plate__title {
+    color: var(--aora-text-muted);
+    font-size: var(--aora-text-xs);
+  }
+
+  /* `--aora-hud-value-size` is the hook for a host that wants a bigger figure
+     — set on any container above the plate. */
+  .aora-hud-plate__value {
+    color: var(--aora-hud-ink);
+    font-family: var(--aora-font-mono);
+    font-size: var(--aora-hud-value-size, var(--aora-text-xl));
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+    line-height: var(--aora-leading-tight);
+  }
+
+  .aora-hud-plate__unit {
+    margin-inline-start: var(--aora-space-0-5);
+    color: var(--aora-text-faint);
+    font-size: var(--aora-text-xs);
+  }
+
+  .aora-hud-plate__line {
+    color: var(--aora-text-muted);
+    font-size: var(--aora-text-xs);
+  }
+
+  /* ---- pickers --------------------------------------------------------- */
+
+  .aora-staged-picker {
+    display: flex;
+    flex-direction: column;
+    gap: var(--aora-space-3);
+  }
+
+  .aora-staged-picker__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: end;
+    gap: var(--aora-space-2);
+  }
+
+  .aora-picker--compact {
+    max-inline-size: min(18.75rem, 100%);
+    gap: var(--aora-space-3);
+  }
+
+  /* ---- avatar editor --------------------------------------------------- */
+
+  /*
+   * A size container with a definite width, capped by its parent. The width
+   * is a `rem` rather than a percentage on purpose: the editor is also
+   * dropped into an absolutely positioned popover, where a percentage would
+   * resolve against the avatar it hangs from.
+   */
+  .aora-editor {
+    container: aora-editor / inline-size;
+    display: flex;
+    flex-direction: column;
+    gap: var(--aora-space-3);
+    box-sizing: border-box;
+    inline-size: var(--aora-editor-width, 19rem);
+    max-inline-size: 100%;
+    padding: var(--aora-space-3);
+    border: 1px solid var(--aora-line);
+    border-radius: var(--aora-radius-lg);
+    background: var(--aora-surface-raised);
+    box-shadow: var(--aora-shadow-md);
+  }
+
+  .aora-editor__head {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: var(--aora-space-2);
+  }
+
+  .aora-editor__preview,
+  .aora-editor__preview img {
+    display: inline-flex;
+    border-radius: var(--aora-radius-pill);
+    overflow: hidden;
+  }
+
+  .aora-editor__preview img {
+    width: 4.5rem;
+    height: 4.5rem;
+    object-fit: cover;
+  }
+
+  .aora-editor__tabs {
+    display: flex;
+    gap: var(--aora-space-0-5);
+    padding: var(--aora-space-0-5);
+    border-radius: var(--aora-radius-sm);
+    background: var(--aora-surface-sunken);
+  }
+
+  .aora-editor__tab {
+    flex: 1;
+    min-height: var(--aora-control-h-sm);
+    border: 0;
+    border-radius: var(--aora-radius-xs);
+    background: transparent;
+    color: var(--aora-text-muted);
+    font: inherit;
+    font-size: var(--aora-text-sm);
+    font-weight: var(--aora-weight-medium);
+    cursor: pointer;
+    transition:
+      background-color var(--aora-duration-fast) var(--aora-ease-standard),
+      color var(--aora-duration-fast) var(--aora-ease-standard);
+
+    &[data-selected] {
+      background: var(--aora-surface-raised);
+      box-shadow: var(--aora-shadow-xs), var(--aora-shadow-line);
+      color: var(--aora-text);
+    }
+  }
+
+  .aora-editor__panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--aora-space-2);
+    min-height: 8.75rem;
+  }
+
+  .aora-editor__generate,
+  .aora-editor__upload {
+    display: flex;
+    flex-direction: column;
+    gap: var(--aora-space-2);
+  }
+
+  /* The whole area is the file input's label, so a click anywhere in the
+     dashed box opens the picker and the input itself can be hidden. */
+  .aora-editor__drop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--aora-space-1);
+    min-height: 8rem;
+    padding: var(--aora-space-3);
+    border: 1px dashed var(--aora-line-strong);
+    border-radius: var(--aora-radius-md);
+    background: var(--aora-surface-sunken);
+    text-align: center;
+    cursor: pointer;
+    transition: border-color var(--aora-duration-fast) var(--aora-ease-standard);
+
+    &:hover,
+    &:focus-within {
+      border-color: var(--aora-accent);
+    }
+
+    & input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+
+  .aora-editor__dropText {
+    color: var(--aora-text);
+    font-size: var(--aora-text-sm);
+  }
+
+  .aora-editor__dropHint {
+    color: var(--aora-text-faint);
+    font-size: var(--aora-text-xs);
+  }
+
+  .aora-editor__error {
+    margin: 0;
+    color: var(--aora-status-error);
+    font-size: var(--aora-text-sm);
+  }
+
+  .aora-editor__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--aora-space-2);
+  }
+
+  .aora-editor__spacer {
+    flex: 1;
+  }
+
+  /* A narrow editor drops the preview above its tabs instead of squeezing
+     both into one row. */
+  @container aora-editor (inline-size < 15rem) {
+    .aora-editor__head {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .aora-editor__actions {
+      justify-content: stretch;
+
+      & .aora-button {
+        flex: 1;
+      }
+    }
+  }
+
+  /* A wide one gives the generate panel's picker room for more columns, which
+     it does by being allowed to fill the editor. */
+  @container aora-editor (inline-size >= 24rem) {
+    .aora-editor__panel .aora-picker--grid {
+      --aora-picker-width: 100%;
+    }
+  }
+
+  /* ---- crop stage ------------------------------------------------------ */
+
+  .aora-crop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--aora-space-2);
+  }
+
+  .aora-crop__stage {
+    position: relative;
+    border-radius: var(--aora-radius-pill);
+    background: var(--aora-surface-sunken);
+    overflow: hidden;
+    cursor: grab;
+    touch-action: none;
+
+    &:active {
+      cursor: grabbing;
+    }
+
+    & img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      max-width: none;
+      user-select: none;
+    }
+  }
+
+  .aora-crop__hint {
+    color: var(--aora-text-faint);
+    font-size: var(--aora-text-xs);
+  }
+
+  .aora-crop__zoom {
+    display: flex;
+    align-items: center;
+    gap: var(--aora-space-2);
+    width: 100%;
+
+    & input {
+      flex: 1;
+      accent-color: var(--aora-accent);
+    }
+  }
+
+  /* ---- trigger and editable avatar ------------------------------------- */
+
+  .aora-avatar-trigger,
+  .aora-editable {
+    position: relative;
+    display: inline-flex;
+  }
+
+  .aora-avatar-trigger__button,
+  .aora-editable__button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    border-radius: var(--aora-radius-pill);
+    background: transparent;
+    cursor: pointer;
+
+    & img {
+      border-radius: var(--aora-radius-pill);
+      object-fit: cover;
+    }
+  }
+
+  /*
+   * The pencil appears on hover and on focus, and it covers the avatar rather
+   * than sitting in a corner: at 72px a corner badge is four pixels of pencil,
+   * and the affordance has to be legible to be one.
+   */
+  .aora-editable__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--aora-radius-pill);
+    background: var(--aora-scrim);
+    color: var(--aora-on-scrim);
+    opacity: 0;
+    transition: opacity var(--aora-duration-fast) var(--aora-ease-out);
+  }
+
+  .aora-editable__button:hover .aora-editable__overlay,
+  .aora-editable__button:focus-visible .aora-editable__overlay {
+    opacity: 1;
+  }
+
+  /*
+   * The popover. `max-inline-size: none` on the editor inside it: the
+   * wrapper is as wide as the avatar, so the editor's `100%` cap would
+   * otherwise fold it down to the avatar's width.
+   */
+  .aora-avatar-trigger__editor,
+  .aora-editable__editor {
+    position: absolute;
+    top: calc(100% + var(--aora-space-2));
+    left: 50%;
+    z-index: var(--aora-z-popover);
+    transform: translateX(-50%);
+
+    & > .aora-editor {
+      max-inline-size: none;
+    }
+  }
+
+  /*
+   * Forced colours. Backgrounds and shadows are dropped by the platform, so
+   * every widget that was told apart by fill alone gets a system-colour edge,
+   * and every selected state gets one that is not a colour difference.
+   */
+  @media (forced-colors: active) {
+    .aora-button,
+    .aora-field,
+    .aora-editor {
+      border-color: ButtonText;
+    }
+
+    .aora-button--primary {
+      border: 1px solid ButtonText;
+      background: ButtonFace;
+      color: ButtonText;
+    }
+
+    .aora-editor__tab[data-selected] {
+      outline: 2px solid Highlight;
+      outline-offset: -2px;
+    }
+
+    .aora-editor__drop {
+      border-color: ButtonText;
+    }
+
+    .aora-editable__overlay {
+      background: Canvas;
+      color: CanvasText;
+    }
+  }
+}

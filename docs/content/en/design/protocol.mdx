@@ -1,0 +1,93 @@
+import { ProtocolTable } from '@theme';
+
+# Emotion protocol
+
+Agents do not speak in state names. They speak in two-digit ids.
+
+```json
+{ "session_id": "s1", "aoraBotId": "34", "tips": "Build failed" }
+```
+
+A shell hook can emit `34` without knowing what the character on the other end calls an error, and state names can change without breaking a relay script written against the ids. The digits are grouped by decade, so a receiver that has never seen an id can still tell what kind of thing it is.
+
+## The table
+
+<ProtocolTable />
+
+The underlined id in each segment is what an unknown id in that range falls back to. Rows marked _event_ describe a moment rather than a condition; see [events and conditions](#events-and-conditions).
+
+## Segments
+
+| Range   | Segment    | Fallback | What lives here                             |
+| ------- | ---------- | -------- | ------------------------------------------- |
+| `00–09` | Lifecycle  | `02`     | Asleep, waking, idle, booting, powering off |
+| `10–29` | Feeling    | `02`     | Moods, from happy to bouncing               |
+| `30–49` | Agent work | `32`     | Thinking, searching, replying, done, error  |
+| `50–59` | Signalling | `50`     | Alerts and notifications aimed at the user  |
+
+An id outside every segment resolves to idle. Nothing ever throws: the channel is fed by other people's scripts, and a typo must degrade, not take the character down.
+
+```ts
+stateForEmotion('34'); // 'alerting'
+stateForEmotion('47'); // 'progress'
+stateForEmotion('29'); // 'idle'      — unassigned feeling id → segment fallback
+stateForEmotion('99'); // 'idle'      — outside every segment
+stateForEmotion(3); //    'curious'   — numbers and single digits are normalised
+```
+
+## Ids are never renumbered
+
+An id keeps its number and meaning for good, because scripts in the wild already send it. The gaps in each decade hold `03` curious, `09` dragging, `26` bouncing, `27` humming, `38` refusing and `42`–`49`, the finer-grained tool states — so the two-digit budget is never exceeded and no number changes meaning. `09` is a lifecycle id because being picked up and moved is something that happens _to_ the character, not a mood; `27` is a feeling, the small contentment of something working away on its own.
+
+Several ids share a state: `15` _Tired_ and `06` _Dormant_ both drowse, `30` _Thinking_ is the agent-work counterpart of nothing in particular. That is intentional. The id records what the sender meant; the state is how Aora Bot chooses to show it. `emotionIdForState` returns the lowest id for a state, which is the one a host built on Aora Bot should emit.
+
+## Events and conditions
+
+Most ids describe a **condition**: the agent _is_ thinking, _is_ searching. A few describe an **event**: it _finished_, it _errored_, it _was surprised_. The [arbiter](/guide/agent-integration#arbitration) treats them differently — an event is queued and always played, a condition is re-resolved when its dwell ends because the situation may have moved on.
+
+## Both forms of address
+
+Everything that accepts an id also accepts a state name, and the parser takes either as a bare string or inside an object:
+
+```ts
+parseAgentMessage('34'); //                     { emotionId: '34', state: 'alerting' }
+parseAgentMessage('thinking'); //               { emotionId: '30', state: 'thinking' }
+parseAgentMessage({ aoraBotId: 33, tips: 'ok' }); // { emotionId: '33', state: 'celebrate', tips: 'ok' }
+parseAgentMessage('{"emotionId":"40"}'); //     { emotionId: '40', state: 'searching' }
+parseAgentMessage('nope'); //                   null
+```
+
+React components take `emotionId` as an alternative to `state`:
+
+```tsx
+<CharacterMark emotionId="30" />
+<SpriteMark src="/sprites/bao/manifest.json" emotionId="33" />
+```
+
+## HUD
+
+A message may carry a third, optional field: a dial to draw in the ring outside the body.
+
+```json
+{
+  "session_id": "s1",
+  "aoraBotId": "32",
+  "tips": "Indexing 3 of 5",
+  "hud": { "kind": "progress", "value": 0.6 }
+}
+```
+
+`hud` is a `HudSpec` — `{ kind, ...fields }`, where `kind` is one of `HUD_KINDS` and the fields are what that kind needs: `progress` wants `value` in `0..1`, `timer` wants `remainingMs` and `totalMs`, `context` wants `used` and `total`, `voice` wants `level`. The full set is on the [HudPlate](/components/hud-plate) page.
+
+A malformed `hud` is dropped and the rest of the message is still delivered: a message that also says something about the state is worth having without its dial, and a half-right spec — `{ "kind": "progress" }` with no value — would draw an empty ring and look like a stalled job rather than a bug. `isHudSpec` is the guard the parser uses; hosts can call it themselves.
+
+The [arbiter](/guide/agent-integration#arbitration) carries `hud` on its result beside `tips`, so the dial follows the same session the face does.
+
+## Sprites speak the same protocol
+
+A [`SpriteMark`](/components/sprite-mark) manifest keys its frames by these ids, and resolves a missing one through the same segment fallback. A host can swap a procedural character for a painted one without touching its state logic.
+
+## Next
+
+- [Agent integration](/guide/agent-integration) — wiring an agent to a face
+- [AgentStateProvider](/components/agent-state) — arbitrating sessions into one face

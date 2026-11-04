@@ -1,0 +1,108 @@
+import { API } from '@theme';
+
+# CastStage
+
+多个角色按脚本编排的一场戏。
+
+> 属于 `@aora-bot/surfaces`，不在 `@aora-bot/react` 里：`pnpm add @aora-bot/surfaces @aora-bot/react`，并在 React 样式之后引入 `@aora-bot/surfaces/styles.css`。
+
+```tsx preview
+import { AgentAvatar, MarkStageProvider } from '@aora-bot/react';
+import { AvatarSlot, CastStage, useCastScene, type CastStep } from '@aora-bot/surfaces';
+
+const members = [
+  { id: 'lead', shape: 'blob', color: 'blue', bobPx: 4 },
+  { id: 'helper', shape: 'hex', color: 'green', bobPx: 3, bobMs: 2600 },
+  { id: 'scout', shape: 'star', color: 'orange', sizePx: 56 },
+] as const;
+
+const steps: CastStep[] = [
+  { id: 'enter', positions: { lead: { x: 0, y: -40, state: 'waking' } }, durationMs: 1400 },
+  {
+    id: 'meet',
+    positions: { lead: { x: -60, y: 0 }, helper: { x: 60, y: 10, state: 'happy' } },
+    durationMs: 1600,
+  },
+  {
+    id: 'work',
+    positions: {
+      lead: { x: -80, y: -20, state: 'thinking' },
+      helper: { x: 0, y: 30, state: 'working' },
+      scout: { x: 80, y: -30, state: 'searching' },
+    },
+    durationMs: 2000,
+  },
+  { id: 'land', positions: { lead: { x: 110, y: 90, scale: 0.7, state: 'happy' } }, durationMs: 1800 },
+];
+
+export default function Demo() {
+  const scene = useCastScene(steps, { autoplay: true, loop: true });
+  const landed = scene.step?.id === 'land';
+  return (
+    <MarkStageProvider>
+      <div className="site-demo site-demo--column">
+        <CastStage members={members} steps={steps} stepIndex={scene.stepIndex} widthPx={320} heightPx={260}>
+          <div style={{ position: 'absolute', right: 16, bottom: 16 }}>
+            <AvatarSlot arrived={landed} sizePx={56} label="你的智能体">
+              <AgentAvatar agent={{ id: 'lead', shape: 'blob', color: 'blue' }} sizePx={56} state="happy" />
+            </AvatarSlot>
+          </div>
+        </CastStage>
+        <div className="site-controls">
+          <button className="site-btn" onClick={scene.prev}>
+            ‹
+          </button>
+          <button className="site-btn" onClick={scene.playing ? scene.pause : scene.play}>
+            {scene.playing ? '暂停' : '播放'}
+          </button>
+          <button className="site-btn" onClick={scene.next}>
+            ›
+          </button>
+          <span className="site-demo__label">
+            {scene.stepIndex + 1}/{steps.length}, {scene.step?.id}
+          </span>
+        </div>
+      </div>
+    </MarkStageProvider>
+  );
+}
+```
+
+## 脚本就是数据
+
+一场戏由一组 `members` 和一组 `steps` 组成。每一步说明每个人站在哪里——`x`、`y` 是相对舞台中心的像素，可选的 `scale`，以及这一步要采用的可选 `state`——以及停留多久。某一步的 `positions` 里没有列出的成员，在这一步就是下场：缩小并淡出，而不是凭空消失。
+
+因为两半都是普通数据，宿主自己写编排，这个组件永远不知道这场戏讲的是什么。引导流程可以重排它的场次，而任何移动逻辑都不必知情。
+
+## 没有帧循环的弹簧
+
+移动是 CSS transition，但缓动曲线是从引擎自己的弹簧采样成 `linear()` 函数得到的。真正的弹簧需要一个帧循环，而给四个只是在滑行的成员开帧循环，会和它们各自已经在为脸跑的动画抢资源。对解析解采样能得到同一条曲线——包括过冲——代价只是一个字符串。`spring` 调节刚度（`omega`）和阻尼（`zeta`）；`moveMs` 是过渡时长。
+
+`onArrive(memberId, stepIndex)` 在某个成员的 transform 结束时触发，每个成员每一步一次，所以宿主可以恰好在角色落地时触发下一件事，而不是靠一个只能猜的定时器。
+
+## useCastScene
+
+这个 hook 只决定*何时*，从不决定*何处*。它持有当前的 `stepIndex`，在 `playing` 时于每一步的 `durationMs` 之后前进，并在最后一步停下，除非设置了 `loop`。`next`、`prev`、`play`、`pause`、`goTo` 是播放控制；`onStep` 报告每次变化。`autoplay` 让它在挂载时就开始跑。
+
+## CastMember 与 AvatarSlot
+
+`CastMember` 是嵌套在两个盒子里的一个角色：外层盒子负责旅程——位置、缩放、透明度在同一个 transition 里——内层盒子负责原地起伏（`bobPx`、`bobMs`），所以一个成员可以在滑过舞台的同时原地漂浮。请给每个成员不同的 `bobMs`，让这群人不要同步呼吸。成员都是 [`StagedMark`](/components/mark-stage)，所以舞台上方要有 `MarkStageProvider`。
+
+`AvatarSlot` 是角色最后飞进去的那个空圆：一圈虚线轮廓在戏还在演时说「这里该有个东西」，`arrived` 置真后交叉淡入到 `children`——两层结构，中间的盒子永远不会空着。它不知道自己在哪里；用普通 CSS 去定位，放在舞台里或旁边的表单里都行。
+
+## API
+
+<API component="CastStage" />
+
+### CastMember
+
+<API component="CastMember" />
+
+### AvatarSlot
+
+<API component="AvatarSlot" />
+
+## 接下来
+
+- [角色阵容](/design/cast)——有名字的角色
+- [新手引导](/scenarios/onboarding)——有剧本的第一次运行

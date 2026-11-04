@@ -1,0 +1,103 @@
+import { StateMatrix } from '@theme';
+
+# 桌面伙伴
+
+在屏幕上待几个小时又不变成噪音的角色。
+
+## 先看效果
+
+伙伴本身。这里把睡眠计时缩短了，让整个周期能在一次访问里看完；产品里请保留默认值。按住角色可以拖动它，把指针移开让它打盹，再回来。
+
+```tsx preview
+import { useRef, useState } from 'react';
+import { CharacterMark, useIdleSleep, type CharacterHandle, type CharacterState } from '@aora-bot/react';
+
+export default function Demo() {
+  const idle = useIdleSleep({ drowsyAfterMs: 5_000, sleepAfterMs: 10_000 });
+  const [mood, setMood] = useState<CharacterState>('idle');
+  const [held, setHeld] = useState(false);
+  const handle = useRef<CharacterHandle>(null);
+
+  const state: CharacterState = held ? 'dragging' : (idle.state ?? mood);
+
+  return (
+    <div className="site-demo site-demo--stack">
+      <span
+        style={{ display: 'inline-flex', cursor: held ? 'grabbing' : 'grab', touchAction: 'none' }}
+        onPointerDown={() => setHeld(true)}
+        onPointerUp={() => setHeld(false)}
+        onPointerCancel={() => setHeld(false)}
+      >
+        <CharacterMark
+          ref={handle}
+          shape="bun"
+          color="orange"
+          state={state}
+          followPointer
+          antics
+          sizePx={112}
+        />
+      </span>
+      <div className="site-controls">
+        {(['idle', 'humming', 'bored'] as const).map((option) => (
+          <button
+            key={option}
+            className="site-btn"
+            data-active={mood === option}
+            onClick={() => setMood(option)}
+          >
+            {option}
+          </button>
+        ))}
+        <button className="site-btn" onClick={idle.wake}>
+          唤醒
+        </button>
+        <button className="site-btn" onClick={() => handle.current?.bounce()}>
+          蹦一下
+        </button>
+        <span className="site-demo__label">
+          {idle.phase}，显示 {state}
+        </span>
+      </div>
+    </div>
+  );
+}
+```
+
+`followPointer` 监听的是 window，所以眼睛会跟着页面上任何位置的指针，而不只是角色上方。`followTarget` 则接收一个视口像素坐标——另一个元素的中心，或宿主本来就在跟踪的位置——并使用和引擎相同的 `mapPointerToGaze` 曲线，因此两个被给了同一个点的角色会看向同一个像素。
+
+## 什么时候用
+
+一个在屏幕角落里待上几个小时的角色。大部分时间它并不在向用户传达任何东西，所以它的工作是活着而不吵闹：跟着指针看、人走神时它也打盹、人回来时醒过来、偶尔自己蹦一下。任何看得出循环的动作在这里都是错的，这正是为什么空闲运动建立在互不相关的正弦波上，花活也很少见。
+
+## 用到的组件
+
+- [`CharacterMark`](/components/character-mark)——`followPointer`、`followTarget`、`antics`、`entryEffects`，以及提供 `spin`、`bounce`、`burst` 的 `CharacterHandle`。
+- [`useIdleSleep`](/components/use-idle-sleep)——45 秒无输入困倦，120 秒入睡，第一次输入后唤醒 1.2 秒；标签页隐藏时立刻入睡。
+- [`HudPlate`](/components/hud-plate)——角色旁边的时钟或倒计时：`clock` 把钟面折进环里，`timer` 为一次休息倒数，`gauge` 是专注读数，`notify` 说你离开时有东西到了。
+
+## 状态怎么走
+
+| 从         | 到         | 时机                                      |
+| ---------- | ---------- | ----------------------------------------- |
+| —          | `idle`     | 无事可做；三条永远对不齐的正弦波          |
+| `idle`     | `drowsy`   | `drowsyAfterMs` 内没有输入                |
+| `drowsy`   | `sleeping` | `sleepAfterMs` 内没有输入，或标签页被隐藏 |
+| `sleeping` | `waking`   | 第一次输入，或来消息时调用 `wake()`       |
+| `waking`   | `idle`     | `wakeMs` 之后——刚够那一下醒来的弹跳落地   |
+| `idle`     | `humming`  | 宿主选定的心情；线条脸模式下嘴会泛起波纹  |
+| `idle`     | `dragging` | 指针按在角色上；眼睛先看向将要去的方向    |
+
+把这个 hook 的状态放在最后展开：`state={idle.state ?? mood}`。用户活跃时它返回 `null`，显示的是宿主自己的状态；用户不在时，睡眠周期接管，不管宿主原本想说什么。
+
+## 每个状态的样子
+
+<StateMatrix states={['idle', 'drowsy', 'sleeping', 'waking', 'humming', 'dragging', 'bored']} />
+
+这些状态都不用腰带——伙伴要保住自己的轮廓。`sleeping` 和 `drowsy` 不眨眼，因为眼睛本来就是闭着的；`dragging` 看向它即将移动的方向。`antics` 只在 `idle`、`happy`、`proud` 下触发，所以睡着或正被拖动的角色绝不会自己蹦起来。
+
+## 接下来
+
+- [useIdleSleep](/components/use-idle-sleep)——访客走神时它也打盹
+- [useMarkCommands](/components/mark-commands)——hold / release / poke / spin
+- [CharacterMark](/components/character-mark)——一个会动的角色

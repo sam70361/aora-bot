@@ -1,0 +1,91 @@
+# useIdleSleep
+
+A character that nods off when the visitor does.
+
+```tsx preview
+import { useIdleSleep, CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  const idle = useIdleSleep({ drowsyAfterMs: 3000, sleepAfterMs: 6000 });
+  return (
+    <div className="site-demo site-demo--column" style={{ alignItems: 'center' }}>
+      <CharacterMark shape="blob" color="violet" state={idle.state ?? 'idle'} sizePx={150} />
+      <p style={{ margin: 0, fontSize: 13 }}>
+        phase: <code>{idle.phase}</code>, state: <code>{idle.state ?? 'null (yours)'}</code>
+      </p>
+      <button className="site-btn" onClick={idle.wake}>
+        wake()
+      </button>
+    </div>
+  );
+}
+```
+
+Stop moving the pointer. After three seconds the character droops; after six it is asleep. Touch anything and it hops awake, then hands the state back.
+
+## The contract
+
+The hook returns `state: null` while the visitor is active. That is the whole design: it does not know what your character should be doing, so it says nothing until it has something to add, and composes by falling back.
+
+```tsx
+const idle = useIdleSleep();
+const { state } = useAgentState();
+
+<CharacterMark state={idle.state ?? state} />;
+```
+
+Phases and what they yield:
+
+| Phase    | After                                                 | `state`    |
+| -------- | ----------------------------------------------------- | ---------- |
+| `awake`  | any input                                             | `null`     |
+| `drowsy` | `drowsyAfterMs` without input (45 s)                  | `drowsy`   |
+| `asleep` | `sleepAfterMs` without input (120 s)                  | `sleeping` |
+| `waking` | first input after drowsy/asleep, for `wakeMs` (1.2 s) | `waking`   |
+
+`waking` exists so the wake-up hop has time to land before the host's own state takes over; without it the character would snap from asleep to "searching" with no transition.
+
+## What counts as activity
+
+`pointerdown`, `pointermove`, `keydown`, `wheel` and `touchstart` on the document, all passive. Pass `events` to change the list — a kiosk might listen for `click` only.
+
+A hidden tab counts as inactivity: the character is put straight to sleep on `visibilitychange` and wakes when the tab returns. A character left in a background tab is therefore asleep when the visitor comes back, which reads as having waited rather than having been frozen.
+
+## Waking on purpose
+
+`wake()` forces the awake sequence without any input — call it when a message arrives, so the character is up before the reply is shown.
+
+```tsx
+useEffect(() => {
+  if (incoming) idle.wake();
+}, [incoming, idle]);
+```
+
+## When not to use it
+
+An avatar in a list of twenty agents should not nod off individually; the list is not about the visitor. Use this for the one character that represents the product to the person in front of it — a sidebar companion, a floating helper — where sleeping while ignored is the polite thing to do.
+
+Under `prefers-reduced-motion` the states still change; they just render as their reduced-motion poses.
+
+## Options
+
+```ts
+interface UseIdleSleepOptions {
+  drowsyAfterMs?: number; // 45_000
+  sleepAfterMs?: number; // 120_000
+  wakeMs?: number; // 1200
+  events?: readonly (keyof DocumentEventMap)[];
+  enabled?: boolean; // true
+}
+
+interface IdleSleep {
+  phase: 'awake' | 'drowsy' | 'asleep' | 'waking';
+  state: CharacterState | null;
+  wake(): void;
+}
+```
+
+## Next
+
+- [Desktop companion](/scenarios/desktop-companion) — alive for hours without being noisy
+- [Mark commands](/components/mark-commands) — hold, release, poke, spin

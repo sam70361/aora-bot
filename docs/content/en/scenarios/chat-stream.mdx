@@ -1,0 +1,126 @@
+import { StateMatrix } from '@theme';
+
+# Chat stream
+
+A character as the status line of a conversation.
+
+## See it
+
+A transcript row driven from facts: the row publishes what it knows through `facts`, the turn's end is an explicit hold with a time to live, and a click on the character pokes it. Below it, a group row cycles through its members.
+
+```tsx preview
+import { useState } from 'react';
+import { ActivityMark, GroupActivityMark, MarkStageProvider, useMarkCommands } from '@aora-bot/react';
+
+const agent = { id: 'nova', name: 'Nova' };
+const team = [{ id: 'ada' }, { id: 'grace' }, { id: 'alan' }];
+
+const TURN = [
+  { running: true, activity: 'thinking' },
+  { running: true, activity: 'searching' },
+  { running: true, activity: 'running-commands' },
+  { running: true, composing: true },
+];
+
+function Transcript() {
+  const commands = useMarkCommands();
+  const [step, setStep] = useState(0);
+  const [visible, setVisible] = useState(true);
+  const finished = step >= TURN.length;
+
+  const finish = (state: 'celebrate' | 'alerting') => {
+    commands.holdState(agent.id, state, { ttlMs: 1600 });
+    setStep(TURN.length);
+    // The activity line leaves once the reply has landed.
+    setTimeout(() => setVisible(false), 1600);
+  };
+
+  return (
+    <div className="site-demo site-demo--column">
+      <ActivityMark
+        agent={agent}
+        activityMode="facts"
+        facts={finished ? undefined : TURN[step]}
+        visible={visible}
+        bubble
+        onPoke={() => {}}
+      />
+      <GroupActivityMark members={team} tool="run" />
+      <div className="site-controls">
+        <button
+          className="site-btn"
+          disabled={finished}
+          onClick={() => (step + 1 < TURN.length ? setStep(step + 1) : finish('celebrate'))}
+        >
+          next
+        </button>
+        <button className="site-btn" disabled={finished} onClick={() => finish('alerting')}>
+          fail
+        </button>
+        <button
+          className="site-btn"
+          onClick={() => {
+            commands.releaseState(agent.id);
+            setStep(0);
+            setVisible(true);
+          }}
+        >
+          new turn
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default function Demo() {
+  return (
+    <MarkStageProvider>
+      <Transcript />
+    </MarkStageProvider>
+  );
+}
+```
+
+`surface` defaults to `chat` on an `ActivityMark`, which is why the fourth step shows `composing`: the same facts read on an `avatar` surface stay `idle`, because twenty avatars flicking between two faces every few hundred milliseconds is noise rather than information.
+
+## When to use it
+
+The line under the last message that says what the agent is doing right now. The character replaces "Thinking…" and a spinner: searching does not look like writing, and the verb comes from the same table as the animation, so the words and the face cannot disagree.
+
+## Components
+
+- [`ActivityMark`](/components/activity-mark) — one agent, one row: the character and the verb. `activityMode="facts"` reads the shared registry instead of a tool name.
+- [`GroupActivityMark`](/components/activity-mark#groups) — several agents taking turns in one slot, so a group does not become a wall of characters.
+- [`ActivityTicker`](/components/activity-ticker) — the verb, swapped rather than rewritten, so the row keeps its height.
+- [`MarkStageProvider`](/components/mark-stage) — one engine per distinct appearance, and the home of the command registry.
+- [`useMarkCommands`](/components/mark-commands) — `holdFacts`, `holdState` and `poke`, so the roster and the transcript talk about the same agent.
+- [`HudPlate`](/components/hud-plate) — when a turn has a known length (the third of five tool calls), the figure beside the character, where it can be read and announced.
+
+## How the states move
+
+| From        | To          | When                                    |
+| ----------- | ----------- | --------------------------------------- |
+| —           | `spawning`  | first appearance this session           |
+| `spawning`  | `thinking`  | settles by itself after 2 s             |
+| `thinking`  | `searching` | a tool call starts                      |
+| `searching` | `working`   | `run`, `shell`                          |
+| `working`   | `composing` | the reply is streaming                  |
+| `composing` | `celebrate` | the turn finished (held with a `ttlMs`) |
+| `working`   | `alerting`  | a tool failed (held with a `ttlMs`)     |
+| either      | row leaves  | the hold expires                        |
+
+`spawning` is played by `useSpawnEntrance` the first time an agent appears in a session and never again — a row that scrolls out and back did not arrive twice. The engine settles it to `idle` after `STATE_SETTLE_TO.spawning.afterMs` (2 s), so the host does not keep a timer.
+
+`celebrate` and `alerting` are events, not conditions: protocol ids `33` and `34` are one-shot. Hold them with a `ttlMs` so a row cannot stay celebrating after the reply has landed.
+
+## What each state looks like
+
+<StateMatrix states={['thinking', 'searching', 'working', 'composing', 'celebrate', 'alerting']} />
+
+Two of these hand their body to a belt: `thinking` to the three travelling beads of `dots`, `alerting` to the `bang` glyph. The rest animate as a whole body, and `composing` also pulses its mouth in line-face mode.
+
+## Next
+
+- [ActivityMark](/components/activity-mark) — what a tool call looks like
+- [ActivityTicker](/components/activity-ticker) — a line of rolling verbs
+- [AgentStateProvider](/components/agent-state) — arbitrating sessions into one face

@@ -1,0 +1,55 @@
+import { API } from '@theme';
+
+# AgentCharacterPicker
+
+先暂存、确认后才生效的 [`CharacterPicker`](/components/character-picker)。
+
+```tsx preview
+import { useState } from 'react';
+import { AgentAvatar, AgentCharacterPicker, type CharacterChoice } from '@aora-bot/react';
+
+export default function Demo() {
+  const [committed, setCommitted] = useState<CharacterChoice>({ shape: 'hex', color: 'blue' });
+  const [writes, setWrites] = useState(0);
+  return (
+    <div className="site-demo site-demo--column">
+      <div className="site-demo">
+        <AgentAvatar agent={{ id: 'nova', ...committed }} size="xl" />
+        <span className="site-demo__label">
+          已提交 {committed.shape}、{committed.color}——写入 {writes} 次
+        </span>
+      </div>
+      <AgentCharacterPicker
+        value={committed}
+        shapes={['blob', 'hex', 'cloud', 'star', 'tofu', 'drop']}
+        colors={['blue', 'green', 'orange', 'violet', 'red']}
+        onCommit={(next) => {
+          setCommitted(next);
+          setWrites((n) => n + 1);
+        }}
+      />
+    </div>
+  );
+}
+```
+
+## 一次点击是一个提议
+
+普通选择器是受控的：每次点击都由宿主去应用。这在设置表单里是对的，在对话框里就错了——那里一次点击只是提议，取消必须有意义。这个组件把提议留在本地，确认时只交出一个值，于是宿主对存储的写入是每个对话框一次，而不是每次点击一次——页头的头像也不会在某人犹豫时闪过五种形状。
+
+`onCommit` 在确认时收到暂存的 `CharacterChoice`；`onCancel` 在放弃时触发，暂存的修改重置回 `value`。`immediate` 关掉暂存、每次选择立即提交，供设置表单的场合使用，宿主不必换组件。
+
+## 图片与操作按钮
+
+`hasPicture` 表示智能体有自己的照片。此时网格不显示选中环，因为下面的角色并不是屏幕上显示的东西——给一个没人看得见的六边形打高亮是在说谎。选中状态仍会播报给辅助技术。
+
+`actions={false}` 隐藏确认和放弃按钮，给把按钮放在对话框底栏的宿主用；保持 `immediate` 关闭、把选择器放进你自己控制提交的表单里，就能用自己的按钮完成提交。
+
+## API
+
+<API component="AgentCharacterPicker" />
+
+## 接下来
+
+- [CompactCharacterPicker](/components/compact-character-picker)——注册表单用的精简版
+- [角色设置](/scenarios/character-setup)——挑选智能体的外观

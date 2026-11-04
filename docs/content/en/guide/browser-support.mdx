@@ -1,0 +1,86 @@
+# Browser support
+
+Aora Bot targets browsers released from roughly mid-2024 onward. The binding constraint is `light-dark()`, which the entire ink system is built on.
+
+| Browser       | Minimum |
+| ------------- | ------- |
+| Chrome / Edge | 123     |
+| Safari        | 17.5    |
+| Firefox       | 128     |
+
+All three paint styles below are running in the browser you are reading this in — plain SVG, one `light-dark()` ink per character, no canvas and no WebGL.
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+const variants = ['solid', 'outline', 'glass'] as const;
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {variants.map((variant) => (
+        <div className="site-demo__cell" key={variant}>
+          <CharacterMark shape="tofu" color="cyan" state="happy" variant={variant} sizePx={96} />
+          <span className="site-demo__label">{variant}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## What each feature is used for
+
+### `light-dark()` — required
+
+Every ink value is a `light-dark()` pair. This is what lets a character re-theme with no JavaScript and no re-render.
+
+Below the minimum, `--aora-fg` fails to parse and characters fall back to `currentColor`. They still render and still animate; they lose their ink. If you must support older browsers, set the ink yourself:
+
+```css
+.aora-mark {
+  --aora-fg: #2a92fe;
+}
+:root.dark .aora-mark {
+  --aora-fg: #0e74e0;
+}
+```
+
+### `@property` — graceful
+
+Three custom properties are registered so ink can transition between two colours. Without registration the properties still hold their values; the transition snaps instead of interpolating.
+
+### CSS masks — required for two components
+
+`AvatarStack` punches each disc out of the one behind it, and `CharacterPicker` draws its selection ring, using `mask-image`. Both ship the `-webkit-` prefixed properties alongside the standard ones.
+
+Without mask support the stack still renders, but the discs overlap without a visible gap.
+
+### Cascade layers — graceful
+
+Used to make the stylesheet overridable without `!important`. In a browser without `@layer`, the rules are ignored entirely rather than applied at the wrong precedence, so you would need to import the CSS yourself.
+
+### Container queries — graceful
+
+`CharacterPicker` in its grid layout counts its columns from its own width, and `AvatarEditor` and `TemplateDialog` rearrange themselves when they are narrow. Without container queries the picker keeps six columns and the other two keep their default arrangement.
+
+### `:has()` — graceful
+
+`AvatarEditor`'s drop zone draws the focus ring while the file input inside it has keyboard focus. Without `:has()` the zone shows no ring of its own.
+
+## What is not used
+
+No `View Transitions`, no `Houdini` worklets, no WebGL. The character is plain SVG driven by `setAttribute`, which works everywhere SVG does.
+
+The documentation site's background uses WebGL, but that is the site, not the library, and it falls back to a CSS gradient.
+
+## Checking at runtime
+
+```ts
+const supportsLightDark = CSS.supports('color', 'light-dark(#000, #fff)');
+```
+
+## Next
+
+- [Theming](/guide/theming) — the two variables that draw a character
+- [Performance](/guide/performance) — how to render hundreds of characters

@@ -1,0 +1,158 @@
+import { PaletteGrid } from '@theme';
+
+# Palette
+
+Every hue carries three layers: a chip value for pickers, a body ink per colour scheme, and a gradient pair for static avatars.
+
+<PaletteGrid />
+
+## Three layers per hue
+
+A picker chip and a rendered character have opposite problems. The chip is a 20-pixel square that has to be told apart from its neighbours. The character is a large filled silhouette that has to stay readable on both a white and a near-black page. One value cannot do both jobs: tuned for the chip it makes the bodies glaring, tuned for the body it makes the chips muddy.
+
+So each hue carries three layers.
+
+| Layer      | Purpose                                               |
+| ---------- | ----------------------------------------------------- |
+| `value`    | Flat chip colour, tuned for recognition at small size |
+| `ink`      | Two values, one per scheme, for the character body    |
+| `gradient` | Two pairs, for static avatars                         |
+
+```tsx preview
+import { COLOR_SWATCHES, getSwatchHex, getInkColor } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {COLOR_SWATCHES.map((s) => (
+        <div className="site-demo__cell" key={s.id} style={{ minWidth: 92 }}>
+          <div style={{ display: 'flex', gap: 2 }}>
+            <span style={{ width: 26, height: 26, borderRadius: 6, background: getSwatchHex(s.id) }} />
+            <span
+              style={{ width: 26, height: 26, borderRadius: 6, background: getInkColor(s.id, 'light') }}
+            />
+            <span style={{ width: 26, height: 26, borderRadius: 6, background: getInkColor(s.id, 'dark') }} />
+          </div>
+          <span className="site-demo__label">{s.id}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## Automatic light and dark
+
+Ink is emitted as a `light-dark()` pair and written into a CSS custom property once:
+
+```ts
+getInkColorCss('blue'); // → light-dark(#2B8FFF, #2884EB)
+```
+
+The browser re-resolves it when `color-scheme` changes. That is the whole theme-switching mechanism — no listener, no re-render, no flash, and it costs the same for one character as for a thousand.
+
+## black inverts
+
+`black` is the only hue whose dark-mode ink is not a darker version of its light-mode ink — it becomes white. The neutral character is meant to be the one with the most contrast against the page, and on a dark page that means going the other way.
+
+## Variables beyond the ink
+
+The body ink is `--aora-fg`, but the face and a couple of variants need colours of their own. When you style a character yourself, write them all with `getInkVars(color)` rather than `--aora-fg` alone; `CharacterMark` and `StagedMark` do exactly that.
+
+| Variable              | Used for                                  | Value                                                                                                                                             |
+| --------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--aora-fg`           | The body ink                              | The hue's `light-dark()` pair                                                                                                                     |
+| `--aora-face`         | The colour of the `cute` face             | White on every hue; left unset for `black`, so it falls back to the page background and the face reads as a cut-out                               |
+| `--aora-face-soft`    | The `soft` variant's dark face            | Only written for `black`: its body flips with the scheme, so this dark face flips with it                                                         |
+| `--aora-face-sticker` | The `sticker` variant's face              | Only written for `black`: on a dark page the body turns white, so the face turns from paper white to black                                        |
+| `--aora-hair-shade`   | The shade laid over hair on a filled body | `#000000` by default; for `black`, `getInkVars` writes `light-dark(#FFFFFF, #000000)`, so a black character's hair stays readable on a light page |
+| `--aora-ink2`         | The `riso` variant's second ink           | Gold on a pink body, the stylesheet default otherwise                                                                                             |
+
+```tsx preview
+import { getInkVars } from '@aora-bot/engine';
+
+export default function Demo() {
+  return (
+    <table>
+      <tbody>
+        {(['blue', 'pink', 'black'] as const).map((id) => (
+          <tr key={id}>
+            <td>
+              <code>getInkVars('{id}')</code>
+            </td>
+            <td>
+              <code>{Object.keys(getInkVars(id)).join(', ')}</code>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+```
+
+## Deterministic assignment
+
+Any string maps to a stable colour and shape.
+
+```tsx preview
+import { autoColorForKey, autoShapeForKey, renderStaticSvgDataUrl } from '@aora-bot/react';
+
+const keys = ['ada', 'grace', 'alan', 'edsger', 'barbara', 'donald'];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {keys.map((key) => (
+        <div className="site-demo__cell" key={key}>
+          <img
+            src={renderStaticSvgDataUrl({ shape: autoShapeForKey(key), color: autoColorForKey(key) })}
+            width={54}
+            height={54}
+            alt=""
+          />
+          <span className="site-demo__label">{key}</span>
+          <span className="site-demo__label">{autoColorForKey(key)}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+Assignment uses FNV-1a followed by an avalanche step, so keys that differ by one character land far apart in the pool rather than adjacent to each other. `black` is excluded from assignment — it is reserved as the explicit default, so an assigned character is always visibly "chosen".
+
+## Halo
+
+`haloBackground` composes a soft multi-stop wash from a hue, for use behind an avatar.
+
+```tsx preview
+import { COLOR_IDS, haloBackground, renderAvatarDataUrl } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {COLOR_IDS.slice(0, 6).map((id) => (
+        <span
+          key={id}
+          style={{
+            display: 'grid',
+            placeItems: 'center',
+            width: 74,
+            height: 74,
+            borderRadius: 18,
+            background: haloBackground(id),
+          }}
+        >
+          <img src={renderAvatarDataUrl(id, { color: id })} width={46} height={46} alt="" />
+        </span>
+      ))}
+    </div>
+  );
+}
+```
+
+## Next
+
+- [Rendering structure](/internals/rendering) — one SVG, every attribute written by hand
+- [Theming](/guide/theming) — the two variables that draw a character

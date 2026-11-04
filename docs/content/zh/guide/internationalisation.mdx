@@ -1,0 +1,85 @@
+# 国际化
+
+组件画出的每一句文案都来自一张语言表，由一个 provider 整体替换。
+
+## 一个 Provider，而不是每个组件一个 prop
+
+```tsx preview
+import { LocaleProvider, ActivityMark, CharacterPicker } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo site-demo--column">
+      <LocaleProvider locale="zh-CN">
+        <ActivityMark agent={{ id: 'nova' }} tool="search" />
+        <CharacterPicker shape="blob" color="blue" shapes={['blob', 'hex', 'cloud']} layout="row" />
+      </LocaleProvider>
+    </div>
+  );
+}
+```
+
+语言不是每个组件上的 prop。逐个组件传 prop 必须手工贯穿每一层，而且会应用得不一致——有的组件接受它，有的忽略它，同一对话框里的两个组件完全可能各说各话。
+
+## 内置语言
+
+`en-US` 与 `zh-CN`。英语是默认值也是回退：另一个语言里缺的键会落到英文文案，而不是把原始 key 渲染出来。
+
+## 覆盖单条文案
+
+```tsx
+<LocaleProvider locale="en-US" overrides={{ 'activity.working': 'Crunching' }}>
+  {children}
+</LocaleProvider>
+```
+
+## 产品面的文案
+
+`@aora-bot/surfaces` 有自己的文案表（`template.*`、`walkthrough.*`、`restricted.*` 等），这些键不在 `@aora-bot/react` 里。语言仍由唯一的 `LocaleProvider` 决定，所以一个产品面和它里面的原语不会各说各话。只有覆盖文案走 `SurfaceLocaleProvider`，因为 React 的 `overrides` 只认它自己的键。
+
+```tsx
+import { SurfaceLocaleProvider } from '@aora-bot/surfaces';
+
+<SurfaceLocaleProvider overrides={{ 'template.title': '新建模板' }}>{children}</SurfaceLocaleProvider>;
+```
+
+## 新增一种语言
+
+英文表是键集合的唯一来源，所以新语言就是同一组键上的一份 `Record`。TypeScript 会强制补全。
+
+```ts
+import { enUS, type Locale } from '@aora-bot/react';
+
+const frFR: Locale = {
+  ...enUS,
+  'picker.shape': 'Forme',
+  'picker.color': 'Couleur',
+  // …
+};
+
+<LocaleProvider locale="en-US" overrides={frFR}>{children}</LocaleProvider>;
+```
+
+## 自己读取文案
+
+```tsx
+import { useLocale } from '@aora-bot/react';
+
+function Label() {
+  const { t, id } = useLocale();
+  return <span lang={id}>{t('activity.thinking')}</span>;
+}
+```
+
+`useLocale` 在没有 Provider 时也能工作，并回退到英语，所以使用它的组件从不需要空值检查。
+
+## 什么不会被翻译
+
+形状、墨色与状态标识符是稳定的英文字符串，属于 API 的一部分——`'blob'`、`'blue'`、`'thinking'`。它们是标识符，不是文案；翻译标识符会让每个应用保存的数据都变成语言相关的。
+
+真要在界面上展示时，用 `useLabel()` 取当前语言的显示名——`label.shape('blob')`、`label.state('thinking')`、`label.hud('progress')`——标识符留在数据里，词留在语言表里。见 [LocaleProvider](/components/locale-provider)。
+
+## 接下来
+
+- [无障碍](/guide/accessibility)——角色旁边该写什么
+- [LocaleProvider](/components/locale-provider)——所有文案的 provider

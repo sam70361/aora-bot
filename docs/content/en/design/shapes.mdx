@@ -1,0 +1,130 @@
+import { ShapeGrid } from '@theme';
+
+# Shapes
+
+A character is a drawing: one body outline, plus optional extras such as ears, leaves and antennae. Click any of them below to enlarge it.
+
+<ShapeGrid />
+
+The default shape is `mochi`. Under each heading is one family, in the order of `SHAPE_FAMILIES` in the engine. A character is filed in exactly one family, so when the engine gains one, this page grows with it.
+
+```tsx
+<CharacterMark shape="mochi" state="happy" />
+<CharacterMark shape="bunny" state="happy" />
+```
+
+## What a drawing holds
+
+Each character has an entry in the engine's `shapes/characters/`, one file per family (`round.ts`, `critter.ts`, …):
+
+- **The body**: one closed outline. An SVG path that was good as drawn goes in as is; a dense outline is sampled into a ring of points and rebuilt with a Catmull-Rom spline.
+- **Where the face goes**: when the body's mass is not at the centre of its bounding box (a character with ears sits low), the entry says where to put the face.
+- **Parts** (optional): ears, leaves, antennae. See the next section.
+
+A shape is derived the first time it is used: the outline is scaled to 228.44 units on its longer side and re-centred. Registering a shape gets you far more than an outline.
+
+| Property     | Used for                                          |
+| ------------ | ------------------------------------------------- |
+| `path`       | The body                                          |
+| `face`       | Where the eyes go and how big they are            |
+| `radius`     | Farthest distance from the centre                 |
+| `beltRadius` | Radius of the particle orbit                      |
+| `tiltScale`  | How far the body may rotate                       |
+| `spanAt(y)`  | Clamps the face inside the outline                |
+| `ring`       | Morphing between shapes, and collapsing to a core |
+| `parts`      | The pieces outside the body                       |
+
+```tsx preview
+import { getShape, SHAPE_IDS } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>shape</th>
+          <th>radius</th>
+          <th>beltRadius</th>
+          <th>tiltScale</th>
+          <th>face.eye</th>
+          <th>parts</th>
+        </tr>
+      </thead>
+      <tbody>
+        {SHAPE_IDS.map((id) => {
+          const s = getShape(id);
+          return (
+            <tr key={id}>
+              <td>
+                <code>{id}</code>
+              </td>
+              <td>{s.radius.toFixed(1)}</td>
+              <td>{s.beltRadius.toFixed(1)}</td>
+              <td>{s.tiltScale.toFixed(2)}</td>
+              <td>{s.face.eye.toFixed(2)}</td>
+              <td>{s.parts.length || '—'}</td>
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  );
+}
+```
+
+## Parts
+
+Ears, leaves and antennae stay out of the body's main ring. `ring` (96 points) is the only basis for morphing, face fitting, belts and `spanAt`; the extras live in `ShapeDef.parts` and share the body's normalisation (the box is the union of body and parts, the area is the body's alone), so a part never pushes into the margin the animation needs.
+
+Parts ride the body's pose and never morph. When the shape changes, the old parts fade out and the new ones fade in, so an ear does not vanish halfway through a morph.
+
+Each part is painted one of four ways:
+
+| `tone`  | Painted as                                                                                                                 |
+| ------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `body`  | The body's own ink, as if part of the outline (bunny ears, antenna, the cactus's arms)                                     |
+| `leaf`  | Green, read from `--aora-leaf` (a lighter green on a green body)                                                           |
+| `inner` | Half ink, half white, for the inside of an ear and the bun's creases                                                       |
+| `hair`  | A step darker than the ink on a filled variant (lighter on a black body in light mode), solid ink in `outline` and `glass` |
+
+`hair` also steers the face fitter: no eye goes where the bangs are, so a person's face always sits below the hairline.
+
+Every vector variant draws parts: `outline` and `glass` merge them into the body outline and stroke it once, with no seam; the `sticker` border and the `paper` hard shadow wrap them too. The pixel series rasterises them onto the same grid.
+
+```tsx preview
+import { CharacterMark, SHAPE_IDS, getShape } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {SHAPE_IDS.filter((id) => getShape(id).parts.length > 0).map((id) => (
+        <div className="site-demo__cell" key={id}>
+          <CharacterMark shape={id} color="orange" state="happy" sizePx={84} />
+          <span className="site-demo__label">{id}</span>
+          <span className="site-demo__label" style={{ opacity: 0.6 }}>
+            {getShape(id)
+              .parts.map((part) => part.tone)
+              .join(', ')}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+`defineShape` takes a `parts` option too, with the same four tones. See [Custom shapes](/guide/custom-shapes).
+
+## Why flat-bottomed shapes barely tilt
+
+A flat-bottomed shape looks wrong when it tips — the base lifts and the sense of weight goes with it. So `tiltScale` is measured from the outline, not configured: `tofu`, `cloud`, `star`, `bell` and `bot` come out at 0.15 and rock rather than topple; `ghost` and `onigiri` land just above, and `mochi` and `blob` come out at 1 and tilt freely; no shape carries a hand-set tilt coefficient. How it is measured: [Shape derivation](/internals/shape-derivation).
+
+## Adding your own
+
+Register a function that returns points with `defineShape`, and everything in the table above is derived for you. The full walkthrough is in [Custom shapes](/guide/custom-shapes).
+
+## Next
+
+- [Shape derivation](/internals/shape-derivation) — from outline to face position
+- [Custom shapes](/guide/custom-shapes) — register your own outline
+- [Cast](/design/cast) — the named character for every shape

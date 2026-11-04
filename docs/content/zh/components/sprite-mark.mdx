@@ -1,0 +1,121 @@
+import { API } from '@theme';
+
+# SpriteMark
+
+用与矢量角色相同的状态驱动的手绘角色。
+
+```tsx preview
+import { useState } from 'react';
+import { SpriteMark, CharacterMark, EMOTION_IDS, getEmotion } from '@aora-bot/react';
+
+const ids = ['02', '30', '32', '33', '34', '10', '13', '21', '00'];
+
+export default function Demo() {
+  const [id, setId] = useState('02');
+  return (
+    <div className="site-demo site-demo--column" style={{ alignItems: 'center' }}>
+      <div className="site-demo">
+        <SpriteMark src="/sprites/bao/manifest.json" emotionId={id} sizePx={120} />
+        <SpriteMark src="/sprites/tapkin/manifest.json" emotionId={id} sizePx={120} />
+        <CharacterMark shape="bun" color="orange" emotionId={id} sizePx={120} />
+      </div>
+      <div className="site-controls">
+        {ids.map((i) => (
+          <button key={i} className="site-btn" aria-pressed={i === id} onClick={() => setId(i)}>
+            {i} {getEmotion(i)?.name.zh}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+两套精灵图和一个程序化角色，都响应同一个[协议编号](/design/protocol)。已经基于 `CharacterMark` 写好状态逻辑的宿主，可以换成吉祥物而不用碰那些逻辑。
+
+## 什么时候用
+
+矢量角色是 Aora Bot 的核心：程序化、可主题化、零重量。`SpriteMark` 是给它们做不到的那一件事留的逃生口——一张特定的插画。品牌吉祥物、手绘的宠物、从照片衍生的生物：那些无法生成的外观。
+
+代价是实在的。一套图是几十个 PNG 文件而不是几 KB 的数学；它不会跟随主题换色；它只有别人画过的那些状态。把它当作资源，而不是可配置的组件。
+
+## 清单文件
+
+`sprite-mate` 清单是一个 PNG 帧文件夹加一个按协议编号索引的 `manifest.json`：
+
+```json
+{
+  "kind": "sprite-mate",
+  "formatVersion": 1,
+  "id": "tapkin",
+  "name": { "en": "Tapkin", "zh": "塔皮" },
+  "frameSize": [320, 320],
+  "fps": 1,
+  "anchor": [0.5, 0.94],
+  "license": "Aora Bot License",
+  "frames": {
+    "00": ["00.png"],
+    "02": ["02.png"],
+    "10": ["10.png"],
+    "30": ["30.png"],
+    "33": ["33.png"]
+  },
+  "fallback": { "03": "02", "11": "30", "20": "30" }
+}
+```
+
+- `frames` 把编号映射到一个或多个相对于清单的文件名。一个文件是静帧；多个按 `fps` 播放。
+- `fallback` 让一套图通过指向已画的编号来回答没画的编号。链最多跟随四跳，所以一个笔误不会挂起页面。
+- `anchor` 是角色在帧内站立的位置，以比例表示。图片按 `object-fit: contain` 并据此定位，所以高的图集脚仍落在盒子的脚上。
+
+一个编号的解析顺序：编号本身；清单的 `fallback` 链；[分段回退](/design/protocol#分段)——未知的代理工作编号显示这套图的「处理中」帧，未知的情绪显示待机；最后是待机（`02`），每套合法的图都必须有它。
+
+`spriteCoverage(manifest, EMOTION_IDS)` 审计一套图：直接服务多少编号、回退服务多少、完全没有多少，以及所有制作问题（缺待机、悬空回退、循环）。在测试里对你自己的图集跑一遍。
+
+## 加载
+
+给 `src` 时清单在客户端获取，并按 URL 缓存到页面结束。在它到达之前——以及失败时——标记显示一个同状态的程序化角色，所以布局永远不会有洞、状态也不会丢。传 `fallback="none"` 则显示空盒子。
+
+```tsx
+<SpriteMark src="/sprites/bao/manifest.json" state="thinking" />
+```
+
+服务端渲染，或清单已打包时，直接传入清单和帧所在目录。第一帧作为纯标记输出。
+
+导入的 JSON 文件会把 `kind` 推断为 `string`，所以先用 `isSpriteManifest` 收窄类型：
+
+```tsx
+import { SpriteMark, isSpriteManifest } from '@aora-bot/react';
+import manifest from './sprites/bao/manifest.json';
+
+if (!isSpriteManifest(manifest)) throw new Error('不是 sprite-mate 清单');
+
+<SpriteMark manifest={manifest} baseUrl="/sprites/bao/" state="thinking" />;
+```
+
+## 动效
+
+帧用单个 `<img>` 显示，其 `src` 按定时器切换。没有 canvas，除了这一次赋值之外没有逐帧 JavaScript，而且片段的其余帧会预加载，所以切换从不闪出空盒子。在 `prefers-reduced-motion` 下只显示第一帧。`paused` 停在第一帧；`fps` 覆盖清单的帧率。
+
+## 内置图集
+
+文档在 `/sprites/` 下带了两套用于演示，都是项目原创，遵循 Aora Bot 许可协议：`bao`，32 个编号，每个 2 帧，由程序化的 `bao` 角色（`bun` 形状）渲染而来；`tapkin`，12 个编号，每个 1 帧，一只提示词设计的仓鼠。它们的 `provenance` 块记录了各自的制作过程。
+
+## API
+
+<API component="SpriteMark" />
+
+### 辅助函数
+
+```ts
+loadSpriteManifest(url): Promise<SpriteManifest>; // 获取 + 校验，带缓存
+useSpriteManifest(url): { manifest, error, loading };
+isSpriteManifest(value): value is SpriteManifest;
+resolveSpriteFrames(manifest, id): SpriteClip | null;
+spriteCoverage(manifest, ids): SpriteCoverage;
+```
+
+## 接下来
+
+- [角色阵容](/design/cast)——有名字的角色
+- [智能体集成](/guide/agent-integration)——把智能体接到一张脸上

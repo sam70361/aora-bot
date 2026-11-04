@@ -1,0 +1,189 @@
+import { StyleParamsDemo } from '@theme';
+
+# 像素风格
+
+同一个角色，画在网格上。每个状态、形状和脸（包括默认的 `cute` 脸和身旁的特效）在这个系列里都有，因为像素系列读的是和 vector 系列同一份帧，只负责决定填哪些格子。
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {['blob', 'hex', 'cloud', 'star'].map((shape) => (
+        <CharacterMark key={shape} styleId="pixel" shape={shape} color="blue" state="happy" sizePx={96} />
+      ))}
+    </div>
+  );
+}
+```
+
+```tsx
+<CharacterMark styleId="pixel" shape="blob" />
+<CharacterMark styleId="pixel" variant="dot" styleOptions={{ grid: 32 }} />
+```
+
+默认系列是 `vector`；没有指定风格的角色用它来画。
+
+## 变体
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+const variants = ['crisp', 'dot', 'block'] as const;
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {variants.map((variant) => (
+        <div className="site-demo__cell" key={variant}>
+          <CharacterMark
+            styleId="pixel"
+            variant={variant}
+            shape="blob"
+            color="orange"
+            state="curious"
+            sizePx={110}
+          />
+          <span className="site-demo__label">{variant}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+| 变体    | 画法                                                                 |
+| ------- | -------------------------------------------------------------------- |
+| `crisp` | 实心方块，默认值。相邻同色格子合并成一条边缘锐利的路径。             |
+| `dot`   | LED 面板：深色底板上暗淡的未点亮圆点，角色所在处是亮点，带一点辉光。 |
+| `block` | 格子之间留缝的方块，所以即使颜色是平的也能看出网格。                 |
+
+`dot` 背后的底板是画面的一部分，不跟随主题：LED 面板在浅色页面上也是深色的。它的眼睛是白色 LED，除非用 `eyeColor` 指定。
+
+## 参数
+
+参数放在 `styleOptions` 里。引擎把它们合并到默认值上，数值夹到范围内并吸附到步长，所以滑块和手输的值一致。未知的键会被丢弃。
+
+| 参数      | 默认值 | 范围     | 含义                                                |
+| --------- | ------ | -------- | --------------------------------------------------- |
+| `grid`    | `24`   | 8 到 64  | 角色横跨的格数。相对 shape space，不是像素。        |
+| `gap`     | `0.16` | 0 到 0.5 | 格子之间的缝，占一格的比例。`block` 和 `dot` 读取。 |
+| `shades`  | `3`    | 1 到 5   | 明暗阶数。`1` 是纯平。                              |
+| `fps`     | `12`   | 0 到 60  | 运动按这个时钟采样。`0` 表示每一帧都跟。            |
+| `outline` | `true` | 开或关   | 把身体边缘的格子压暗。                              |
+| `glow`    | `true` | 开或关   | 亮点背后的模糊。`dot` 读取。                        |
+
+选一个变体，面板只列出该变体会读取的参数。它由注册表生成，所以和上面的表保持一致。
+
+<StyleParamsDemo style="pixel" />
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+const grids = [12, 16, 24, 32, 48] as const;
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {grids.map((grid) => (
+        <div className="site-demo__cell" key={grid}>
+          <CharacterMark
+            styleId="pixel"
+            shape="tofu"
+            color="violet"
+            state="idle"
+            sizePx={96}
+            styleOptions={{ grid }}
+          />
+          <span className="site-demo__label">grid {grid}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+因为 `grid` 以 shape space 为单位，格子数不随 `sizePx` 变化。16px 的标记和 120px 的标记是同一个像素角色的两种尺寸，而不是两张不同的画。
+
+风格参数从不影响模拟。同一个 `seed` 在每个系列里眨眼的时机相同，改 `grid` 也不会让任何东西重新开始。
+
+## 一个格子怎么定
+
+网格是铺在 shape space 上的固定点阵，锚定在中心，所以对称的形状无论奇数还是偶数格都能对称地栅格化。每一帧按画家顺序栅格化进一块小缓冲，里面存的是 paint id：
+
+1. 腰带的环和后层拖尾，以及特效里描边的弧和环。
+2. 身体：把每个格子的中心和轮廓比对。
+3. 脸：眼睛，然后是 `cute` 脸的嘴和腮红或线条脸的鼻子和嘴，然后是徽标。
+4. 腰带的点和字形、特效的点和铅笔字形、HUD 图元、前层拖尾和粒子。
+
+缓冲里不存颜色。一个 paint id 代表一种色调加一个不透明度，所以"画面有没有变"就是比较两个整数数组。live 渲染器每收到一帧都会栅格化并比较，只有某个格子不同时才构建并写入 DOM。
+
+### 低分辨率下的眼睛
+
+画面只有几十格宽时，最吃亏的是眼睛，所以它们不像身体那样采样。
+
+- 两只眼睛按子格覆盖率测量，再与另一只的镜像取平均，合成一个字形，在两侧各印一次。因此天然左右对称。
+- 阈值随字形的最佳覆盖率自适应；像闭眼这样的细笔画退回到每列一格，所以不会消失，也不会变成两行。
+- 眼睛永远不会为空，两只眼睛之间至少隔一格。
+- 线条脸的鼻子和嘴会与眼睛、彼此之间各留一格空隙。
+
+### 明暗
+
+`shades` 选一组色调阶梯。每个格子按邻居分类：在边缘上，在左上侧被照亮，或在右下侧处于阴影里。
+
+| `shades` | 色调                     |
+| -------- | ------------------------ |
+| 1        | 纯平。                   |
+| 2        | 边缘更暗。               |
+| 3        | 边缘更暗，左上更亮。     |
+| 4        | 同 3，右下加一层阴影。   |
+| 5        | 同 4，左上再加一点高光。 |
+
+`dot` 省掉了暗的两档，边缘和阴影：它们会消失在底板里。亮的几档保留，其余的质感来自辉光。
+
+渐变 `ink` 会沿渐变角度按格子位置量化成 `shades` 条色带。不引入新的颜色 id：每一阶都是 ink 与黑或白的 `color-mix`，所以角色跟随主题和调色板。
+
+## 在引擎里
+
+```ts
+import { createCharacter, renderStaticSvg } from '@aora-bot/engine';
+
+const mark = createCharacter(host, {
+  style: 'pixel',
+  variant: 'dot',
+  styleOptions: { grid: 32 },
+});
+
+// 之后切换系列：换掉 renderer，不换模拟。
+mark.update({ style: 'vector' });
+
+const svg = renderStaticSvg({ style: 'pixel', shape: 'hex', state: 'thinking' });
+```
+
+静态输出是确定的，不需要 DOM，服务端渲染时可以放心用。live 和 static 共用同一套场景构建。
+
+系列里没有的变体会回落到它的默认值，所以把 `outline` 的 `vector` 角色切到 `pixel` 会画成 `crisp`。
+
+## 在 React 里
+
+`CharacterMark`、`CharacterMarkMirror` 和 `StagedMark` 接受 `styleId`、`variant` 和 `styleOptions`，并在根元素上输出 `data-style` 和 `data-variant`。prop 叫 `styleId`，因为标记上的 `style` 已经是内联 CSS。
+
+`AppearanceProvider` 为整棵子树设置它们。标记自己的 prop 优先于它，嵌套的 Provider 逐字段合并。
+
+```tsx
+import { AppearanceProvider, CharacterMark, StagedMark } from '@aora-bot/react';
+
+<AppearanceProvider styleId="pixel" variant="block" styleOptions={{ grid: 20 }}>
+  <CharacterMark shape="blob" />
+  <StagedMark shape="hex" />
+</AppearanceProvider>;
+```
+
+`StagedMark` 让所有外观相同的标记共用一个运行中的引擎。风格、变体以及与默认值不同的参数都属于这个外观，所以像素源绝不会被 vector 标记镜像，`{}` 和 `{ grid: 24 }` 共用一个源。
+
+## 限制
+
+- HUD 表盘上印的数字不会画。在网格上它们小到读不出来；表盘本身会画。
+- 半透明被量化成四分之一档，并且是替换下面的格子，而不是与之混合。
+- 小网格下，有些眼睛之间的差别很细微：24 格时，开心、难过和睡着的眼睛各自只差一两行。

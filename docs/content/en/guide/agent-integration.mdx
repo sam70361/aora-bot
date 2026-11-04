@@ -1,0 +1,329 @@
+# Agent integration
+
+Show what an AI agent is doing, as a face.
+
+The pieces: a [numeric protocol](/design/protocol) any script can emit; an **arbiter** that turns several noisy sources into one calm state; **channels** that carry messages over HTTP, stdin, `postMessage` or server-sent events; and React hooks that wire the result into a character.
+
+```tsx preview
+import { AgentStateProvider, useAgentState, CharacterMark, ActivityTicker } from '@aora-bot/react';
+
+function Face() {
+  const { state, tips, update, remove } = useAgentState();
+  const report = (sessionId: string, emotionId: string, tips?: string) =>
+    update({ sessionId, emotionId, tips });
+  return (
+    <div className="site-demo site-demo--column" style={{ alignItems: 'center' }}>
+      <CharacterMark shape="blob" color="blue" state={state} sizePx={120} />
+      <ActivityTicker text={tips ?? state} />
+      <div className="site-controls">
+        <button className="site-btn" onClick={() => report('a', '30', 'Thinking about it')}>
+          a: 30 thinking
+        </button>
+        <button className="site-btn" onClick={() => report('a', '40', 'Searching the codebase')}>
+          a: 40 searching
+        </button>
+        <button className="site-btn" onClick={() => report('b', '34', 'Tests failed')}>
+          b: 34 error
+        </button>
+        <button className="site-btn" onClick={() => report('a', '33', 'Done')}>
+          a: 33 done
+        </button>
+        <button className="site-btn" onClick={() => (remove('a'), remove('b'))}>
+          end sessions
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default function Demo() {
+  return (
+    <AgentStateProvider>
+      <Face />
+    </AgentStateProvider>
+  );
+}
+```
+
+Press _b: 34 error_ while _a_ is searching: the error wins. Press _a: 33 done_ immediately after _a: 30_: the completion is queued behind the dwell and plays anyway, because it is an event. End both sessions and the face returns to idle.
+
+## The wire format
+
+One message shape, every transport:
+
+```json
+{ "session_id": "s1", "aoraBotId": "32", "tips": "Editing src/app.ts" }
+{ "session_id": "s1", "agent_id": "claude-code", "event": "PreToolUse" }
+{ "session_id": "s1", "state": "thinking" }
+{ "session_id": "s1", "aoraBotId": "47", "tips": "Indexing 3 of 8", "hud": { "kind": "progress", "value": 0.375 } }
+```
+
+- `session_id` is required. Later messages with the same id update the same session.
+- Then **one** of: a protocol id (`aoraBotId` or `emotionId`), a state name (`state`), or an `agent_id` plus the tool's own `event` name, translated through an [adapter](#adapters).
+- `tips` is an optional caption the host may show beside the character.
+- `hud` is an optional dial — a [`HudSpec`](/design/protocol#hud) drawn in the ring outside the body. It is validated with `isHudSpec`; a malformed one is dropped and the message still applies.
+- `headless: true` marks a session that should be tracked but never shown — a background job that must not take over the face.
+
+`normalize(message)` turns any of these into an arbiter update, or an error string. It never throws.
+
+```ts
+import { normalize } from '@aora-bot/engine/agent';
+
+normalize({ session_id: 's1', aoraBotId: '32' });
+// { ok: true, update: { sessionId: 's1', emotionId: '32', state: 'working', headless: false } }
+
+normalize({ session_id: 's1', agent_id: 'claude-code', event: 'Stop' });
+// { ok: true, update: { …, emotionId: '33', state: 'celebrate' } }
+
+normalize({ aoraBotId: '32' });
+// { ok: false, error: 'missing session_id' }
+```
+
+`@aora-bot/engine/agent` is a separate entry with no DOM or animation code, so it loads in a Node relay as readily as in the browser.
+
+## Arbitration
+
+One character, several sources: a coding agent with three sub-agents, or a chat window and a background build. Each reports its own state; the arbiter decides what the character shows. Four rules:
+
+1. **Priority.** Among visible sessions the highest-priority state wins. One session erroring while three work shows the error. Errors and refusals beat everything because they need a human; completion beats ongoing work because it is the result; work beats idling.
+2. **Minimum dwell.** A state holds the screen for `minDisplayMs` (900 ms by default) before it can be replaced. Without this a burst of tool events makes the face flicker; with it each expression lands and is read.
+3. **Events and conditions.** A one-shot id — done, error, surprised — is an event and is never dropped: arriving during a dwell it is queued and played when the dwell ends. A continuous state is a condition: when its dwell ends the arbiter re-resolves, because the situation may have moved on.
+4. **Expiry.** A session silent for `sessionTtlMs` (two minutes) is forgotten, so a tool with no end-of-session hook cannot pin the character forever.
+
+```ts
+import { createArbiter } from '@aora-bot/engine/agent';
+
+const arbiter = createArbiter({
+  minDisplayMs: { defaultMs: 900, byState: { celebrate: 2000, alerting: 1500 } },
+  priority: { searching: 45 }, // override one state
+  onApply: ({ state, tips }) => character.update({ state }),
+});
+
+arbiter.update({ sessionId: 'a', emotionId: '30' });
+arbiter.update({ sessionId: 'b', emotionId: '34', tips: 'Build failed' });
+arbiter.resolve(); // { state: 'alerting', emotionId: '34', tips: 'Build failed', sessionId: 'b' }: the winner by priority
+arbiter.current(); // { state: 'thinking', … }: what is on screen; the 900 ms dwell of `thinking` has not ended
+
+arbiter.update({
+  sessionId: 'b',
+  emotionId: '47',
+  tips: 'Rebuilding',
+  hud: { kind: 'progress', value: 0.2 },
+});
+arbiter.resolve().hud; // { kind: 'progress', value: 0.2 }: the winner's dial, beside its tips
+```
+
+`resolve()` ignores dwell and returns the session that wins on priority; `current()` returns what the character is showing, which catches up (through `onApply`) once the dwell ends.
+
+`tips` and `hud` belong to a session and travel with it: the result carries the winning session's caption and dial, and nothing from the sessions that lost. A background job cannot draw its progress ring over the foreground agent's face.
+
+The clock and timers are injectable, so the whole thing runs deterministically in a test.
+
+In React, [`useArbiter`](/components/agent-state) runs one for the lifetime of a component and `AgentStateProvider` shares it with a subtree; `hud` is on the value beside `tips`, and [`AgentHud`](/components/agent-hud) renders the character, the dial and the caption from the provider with no wiring.
+
+## Adapters
+
+An adapter maps one tool's event vocabulary onto the protocol. It is pure data: supporting another agent is a new object, not new logic.
+
+```tsx preview
+import { AGENT_ADAPTERS, stateForEmotion } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo" style={{ alignItems: 'flex-start' }}>
+      {AGENT_ADAPTERS.map((adapter) => (
+        <table key={adapter.id} style={{ margin: 0 }}>
+          <thead>
+            <tr>
+              <th colSpan={3}>
+                {adapter.name} <code>{adapter.id}</code>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.entries(adapter.events).map(([event, id]) => (
+              <tr key={event}>
+                <td>
+                  <code>{event}</code>
+                </td>
+                <td>
+                  <code>{id}</code>
+                </td>
+                <td>{stateForEmotion(id)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ))}
+    </div>
+  );
+}
+```
+
+For hosts that know which _tool_ is running rather than which lifecycle event fired, `stateForTool('grep')` reads a second table, `TOOL_STATES`, which is the one [`ActivityMark`](/components/activity-mark) uses.
+
+### Activity verbs and roster facts
+
+A third table answers a third question. `TOOL_STATES` answers "which tool is running"; `ACTIVITY_VERBS` answers "what would you tell the user it is doing" — the sentence already on screen next to the character. `stateForActivity('coding')` resolves a verb to a state, and anything unrecognised is generic work, so a host that has only the sentence — "Running commands…" — can still drive a character. The lookup uses `Object.hasOwn`, because the verb comes off the wire and `"constructor"` must not find something on the prototype.
+
+```tsx preview
+import { ACTIVITY_VERB_IDS, MarkStageProvider, StagedMark, stateForActivity } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <MarkStageProvider>
+      <div className="site-demo">
+        {ACTIVITY_VERB_IDS.map((verb) => (
+          <div className="site-demo__cell" key={verb}>
+            <StagedMark shape="pebble" color="blue" state={stateForActivity(verb)} sizePx={40} />
+            <span className="site-demo__label">{verb}</span>
+          </div>
+        ))}
+      </div>
+    </MarkStageProvider>
+  );
+}
+```
+
+A roster row usually knows a little more than one verb: whether the agent is `running`, whether it is `composing` a reply, and what `activity` it named. `characterStateForRoster(facts, surface)` resolves those `RosterFacts` to a state, and the answer depends on where the character is drawn. In a `chat` row the composing state is the point — the reply is being written in front of you. On an `avatar` surface, composing comes and goes every few hundred milliseconds, and twenty faces flicking between two states is noise, so the avatar stays idle until there is something worth showing. `ActivityMark` with `activityMode="facts"` and the [mark commands](/components/mark-commands) registry both go through this function, so every surface for one agent agrees.
+
+```ts
+characterStateForRoster({ running: true, composing: true }, 'chat'); // 'composing'
+characterStateForRoster({ running: true, composing: true }, 'avatar'); // 'working'
+characterStateForRoster({ running: true, activity: 'searching' }, 'list'); // 'searching'
+characterStateForRoster({}, 'list'); // 'idle'
+```
+
+## Recipes
+
+### A relay
+
+Agents run in a terminal; the character runs in a page. Something has to carry messages between them. The repository ships one in `examples/agent-relay`: a zero-dependency Node script that accepts `POST /state` and newline-delimited JSON on stdin, normalises both, and broadcasts the result to browsers over server-sent events.
+
+```bash
+node examples/agent-relay/relay.mjs            # http://127.0.0.1:27182
+my-agent --emit-json | node examples/agent-relay/relay.mjs --stdin
+```
+
+The whole of it is `normalize`, `readLineStream` and a `Set` of response streams. Adapt it rather than depending on it.
+
+A message may carry a `hud` block. The relay validates it like the rest of the payload — an invalid `hud` is dropped, the message still applies — and it rides along with the winning session's state, so `/events` and the relay's `/preview.svg` both show it:
+
+```bash
+curl -X POST http://127.0.0.1:27182/state \
+  -H 'content-type: application/json' \
+  -d '{"session_id":"s1","aoraBotId":"47","tips":"Indexing 3 of 8","hud":{"kind":"progress","value":0.375}}'
+```
+
+```tsx
+import {
+  AgentStateProvider,
+  useEventSourceChannel,
+  useAgentState,
+  CharacterMark,
+  AgentHud,
+} from '@aora-bot/react';
+
+function Pet() {
+  const status = useEventSourceChannel('http://127.0.0.1:27182/events');
+  const { state, hud } = useAgentState();
+  return (
+    <span data-connection={status}>
+      <CharacterMark state={state} hud={hud ?? null} />
+    </span>
+  );
+}
+
+// or, for the character, the dial and the caption together:
+function Panel() {
+  useEventSourceChannel('http://127.0.0.1:27182/events');
+  return <AgentHud agent={{ id: 'relay' }} />;
+}
+
+<AgentStateProvider>
+  <Pet />
+</AgentStateProvider>;
+```
+
+### Claude Code hooks
+
+Claude Code fires shell hooks on lifecycle events. Each one posts to the relay with the adapter id and the event name; the adapter does the translation. Put them in `~/.claude/settings.json`:
+
+```json
+{
+  "hooks": {
+    "UserPromptSubmit": [{ "hooks": [{ "type": "command", "command": "aora-report UserPromptSubmit" }] }],
+    "PreToolUse": [{ "hooks": [{ "type": "command", "command": "aora-report PreToolUse" }] }],
+    "PostToolUse": [{ "hooks": [{ "type": "command", "command": "aora-report PostToolUse" }] }],
+    "PostToolUseFailure": [{ "hooks": [{ "type": "command", "command": "aora-report PostToolUseFailure" }] }],
+    "Notification": [{ "hooks": [{ "type": "command", "command": "aora-report Notification" }] }],
+    "Stop": [{ "hooks": [{ "type": "command", "command": "aora-report Stop" }] }],
+    "SessionEnd": [{ "hooks": [{ "type": "command", "command": "aora-report SessionEnd" }] }]
+  }
+}
+```
+
+```bash
+#!/bin/sh
+# aora-report — hooks receive JSON on stdin; session_id is in it.
+SESSION=$(jq -r .session_id)
+curl -s -o /dev/null -X POST http://127.0.0.1:27182/state \
+  -H 'Content-Type: application/json' \
+  -d "{\"session_id\":\"$SESSION\",\"agent_id\":\"claude-code\",\"event\":\"$1\"}"
+```
+
+Sub-agents report under their own `session_id`, so three of them working while the parent waits is three working sessions and the face works.
+
+### Cursor hooks
+
+The same shape with `agent_id: "cursor"` and Cursor's event names — `toolCall`, `fileEdit`, `shellCommand`, `webSearch`, `awaitingApproval`, `responding`, `taskComplete`, `error`. Anything the adapter does not list can send an id directly:
+
+```bash
+curl -X POST http://127.0.0.1:27182/state -H 'Content-Type: application/json' \
+  -d '{"session_id":"cursor-1","aoraBotId":"39","tips":"Writing the answer"}'
+```
+
+### An iframe or extension panel
+
+When the agent lives in another document, post to the frame:
+
+```ts
+// host document
+frame.contentWindow.postMessage(
+  { type: 'aora:state', payload: { session_id: 'host', state: 'thinking' } },
+  'https://widget.example',
+);
+```
+
+```tsx
+// inside the frame
+function Widget() {
+  useStateChannel({ allowOrigin: 'https://app.example' });
+  const { state } = useAgentState();
+  return <CharacterMark state={state} />;
+}
+```
+
+`useStateChannel` accepts messages of type `aora:state` from the allowed origin only — the page's own origin by default — and feeds the nearest `AgentStateProvider`.
+
+## Sleeping when the visitor does
+
+A character in a sidebar should not stare for an hour. `useIdleSleep` tracks input on the document and yields `drowsy`, then `sleeping`, then a brief `waking` when input resumes. It returns `null` while the visitor is active, so it composes with the agent state by falling back:
+
+```tsx
+const idle = useIdleSleep({ drowsyAfterMs: 45_000, sleepAfterMs: 120_000 });
+const { state } = useAgentState();
+<CharacterMark state={idle.state ?? state} />;
+```
+
+See [`useIdleSleep`](/components/use-idle-sleep).
+
+## Sprites
+
+A painted mascot can stand in for the procedural character without any change to the above: [`SpriteMark`](/components/sprite-mark) takes the same `state` or `emotionId` and resolves frames through the same protocol.
+
+## Next
+
+- [Emotion protocol](/design/protocol) — two-digit ids over the wire
+- [AgentStateProvider](/components/agent-state) — arbitrating sessions into one face
+- [AgentHud](/components/agent-hud) — character, dial and caption together

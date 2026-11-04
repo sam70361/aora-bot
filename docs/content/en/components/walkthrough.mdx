@@ -1,0 +1,150 @@
+import { API } from '@theme';
+
+# Walkthrough surfaces
+
+Six pieces for showing an agent product without being the product: a window frame, work in flight, starting points, a waiting screen, a hand-off and a message field.
+
+> Part of `@aora-bot/surfaces`, not `@aora-bot/react`: `pnpm add @aora-bot/surfaces @aora-bot/react`, and import `@aora-bot/surfaces/styles.css` after the React stylesheet.
+
+```tsx preview
+import { MarkStageProvider } from '@aora-bot/react';
+import { Composer, DemoDesktop, JobBubbles } from '@aora-bot/surfaces';
+
+export default function Demo() {
+  return (
+    <MarkStageProvider>
+      <div className="site-demo site-demo--center">
+        <DemoDesktop
+          title="Workspace"
+          widthPx={380}
+          toolbar={<span style={{ opacity: 0.6 }}>app.example/inbox</span>}
+        >
+          <div style={{ display: 'grid', gap: 16, padding: '24px 16px 12px' }}>
+            <JobBubbles
+              shape="blob"
+              color="blue"
+              radiusPx={84}
+              jobs={['Read the brief', 'Draft a reply', 'Check the numbers', 'Open a pull request']}
+            />
+            <Composer placeholder="Ask for anything" onSubmit={() => {}} />
+          </div>
+        </DemoDesktop>
+      </div>
+    </MarkStageProvider>
+  );
+}
+```
+
+## DemoDesktop
+
+A window frame. Onboarding has to show software without being the software, and a plain card does not read as an application — the window bar is what tells someone "this is a picture of a thing happening elsewhere" in no words at all. The frame is presentational: `aria-hidden` chrome around whatever the host puts in it, so the content keeps its own semantics. `toolbar` takes small chrome below the title bar — tabs, a fake URL.
+
+## JobBubbles
+
+Work in flight, as words around a character. Bubbles rather than a list, because the claim is "several things at once" and a list reads as a queue. Each bubble drifts on its own period with a negative delay so they are never in phase — a ring of labels bobbing in unison looks like one object rotating. The ring uses real angles rather than a rotating container: a container that turns takes its text with it, and labels passing upside-down are unreadable. `jobs` defaults to four from the locale; `radiusPx` sets the ring.
+
+## SuggestionCards
+
+```tsx preview
+import { useState } from 'react';
+import { SuggestionCards, type SuggestionCard } from '@aora-bot/surfaces';
+
+const cards: SuggestionCard[] = [
+  { id: 'triage', title: 'Triage the inbox', body: 'Sort what arrived overnight by who needs to see it.' },
+  { id: 'standup', title: 'Write the standup', body: "Three lines from yesterday's commits." },
+  { id: 'audit', title: 'Audit dependencies', body: 'Find what is out of date and say how risky it is.' },
+];
+
+export default function Demo() {
+  const [picked, setPicked] = useState<string | null>(null);
+  return (
+    <div className="site-demo site-demo--column">
+      <SuggestionCards cards={cards} onPick={(card) => setPicked(card.title)} />
+      <span className="site-demo__label">{picked ?? 'pick one'}</span>
+    </div>
+  );
+}
+```
+
+Three starting points, each with a face. The characters are derived from the card ids rather than chosen, which is what makes the component generic: a host passing its own cards gets three distinguishable agents without picking shapes, and the same card always looks the same because the derivation is a hash, not a shuffle. Set `shape` and `color` on a card to override.
+
+## LandingWait
+
+```tsx preview
+import { LandingWait } from '@aora-bot/surfaces';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      <LandingWait title="Ready when you are" body="Give it the first task and it will get going." />
+      <LandingWait
+        title="Approval window"
+        body="The run continues on its own after this."
+        waitMs={90_000}
+        action={<button className="site-btn">Approve now</button>}
+      />
+    </div>
+  );
+}
+```
+
+The screen before anything has happened. A blank state with a waiting character says the product is ready and not broken, which is the one thing an empty screen otherwise fails to say. Without `waitMs` the plate counts how long it has been waiting; with one it becomes a deadline, the character wears a `timer` dial and the plate counts down. The clock is on the plate rather than in the dial because a number is a number: the ring can show _that_ time is passing, only text can say how much. `since` starts the clock from a moment the host already knows about.
+
+## HandOff
+
+```tsx preview
+import { MarkStageProvider } from '@aora-bot/react';
+import { HandOff } from '@aora-bot/surfaces';
+
+export default function Demo() {
+  return (
+    <MarkStageProvider>
+      <div className="site-demo site-demo--center">
+        <HandOff
+          from={{ id: 'ada', name: 'Ada' }}
+          to={{ id: 'grace', name: 'Grace' }}
+          label="Release notes"
+          loop
+        />
+      </div>
+    </MarkStageProvider>
+  );
+}
+```
+
+One agent handing work to another. `sending` and `receiving` are a matched pair in the engine — one leans away as the other catches — so the hand-off needs no travelling object between the two to read; the bodies already describe the direction. Three beats rather than a continuous animation, because the sequence has a meaning and an end: before, during, after. `loop` is opt-in, for a marketing page where nobody is waiting for it to finish.
+
+## Composer
+
+A message field with a character that pays attention to it. Three states, driven by what the field is doing rather than by a timer: `listening` on focus, `composing` while typing, back to `idle` `idleMs` after the typing stops. A character beside an input is only worth having if it reacts to the input, and the reaction has to be immediate enough to feel like attention and quiet enough not to distract from writing. Uncontrolled unless `value` is given, so it drops into a demo without state around it. The props table below is generated from `ComposerProps`; `sendButton` hides the send control for a host that has its own.
+
+## API
+
+### DemoDesktop
+
+<API component="DemoDesktop" />
+
+### JobBubbles
+
+<API component="JobBubbles" />
+
+### SuggestionCards
+
+<API component="SuggestionCards" />
+
+### LandingWait
+
+<API component="LandingWait" />
+
+### HandOff
+
+<API component="HandOff" />
+
+### Composer
+
+<API component="Composer" />
+
+## Next
+
+- [Onboarding](/scenarios/onboarding) — a scripted first run
+- [CastStage](/components/cast-stage) — several characters entering in turn

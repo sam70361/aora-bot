@@ -1,0 +1,31 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "pnpm run build",
+  "outputDirectory": "docs/doc_build",
+  "installCommand": "pnpm install --frozen-lockfile",
+  "framework": null,
+  "cleanUrls": true,
+  "github": {
+    "silent": true
+  },
+  "redirects": [
+    {
+      "source": "/(emotion-ball|mood-mates)(/.*)?",
+      "destination": "https://sam70361.github.io/aora-bot/$1$2",
+      "permanent": true
+    },
+    {
+      "source": "/(.*)",
+      "has": [{ "type": "host", "value": "emotion-balls.vercel.app" }],
+      "destination": "https://aora-bot.vercel.app/$1",
+      "permanent": true
+    }
+  ],
+  "rewrites": [{ "source": "/avatar/:id", "destination": "/api/avatar?id=:id" }],
+  "headers": [
+    {
+      "source": "/static/(.*)",
+      "headers": [{ "key": "cache-control", "value": "public, max-age=31536000, immutable" }]
+    }
+  ]
+}

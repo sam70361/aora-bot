@@ -1,0 +1,186 @@
+import {
+  FaceStyleDemo,
+  FaceStyleRow,
+  MouthGrid,
+  MouthTable,
+  NoseGrid,
+  LineExpressionGrid,
+  LineStateGrid,
+  LineShapeRow,
+} from '@theme';
+
+# 五官
+
+脸是角色的一部分，不属于某个画风。三种脸在向量、像素、颜文字各系列里都能画，共用同一套状态、姿态和眨眼。默认是 `cute`。
+
+<FaceStyleDemo />
+
+```tsx
+<CharacterMark shape="mochi" />
+<CharacterMark shape="mochi" face="eyes" />
+<CharacterMark shape="mochi" face="line" nose="hook" />
+```
+
+<FaceStyleRow />
+
+| `face`         | 画法                                                                                              |
+| -------------- | ------------------------------------------------------------------------------------------------- |
+| `cute`（默认） | 白色圆点眼、小嘴、粉色腮红，涂在身体上；部分状态还会带出情绪特效。见[表情](/design/expressions)。 |
+| `eyes`         | 两个挖空的眼睛，剩下的交给轮廓。                                                                  |
+| `line`         | 在眼睛之外加上鼻子和嘴，全部是同一线宽的笔画。                                                    |
+
+默认脸是 `cute`；传 `face="eyes"` 或 `face="line"` 选择另外两种。`eyes` 和 `line` 有各自的几何与眼型表。运行中切换 `face` 不会跳变：`cute` 与它们之间用 `cuteBlend` 弹簧过渡。
+
+## cute：默认的脸
+
+`cute` 的脸涂在身体上，颜色是 `--aora-face`（所有色相都是白色，见[配色](/design/palette#墨色之外的变量)）。每个状态各有一组眼型、嘴型和腮红，眼型会按间隔轮播。所有表和演示在[表情](/design/expressions)，状态上的情绪特效和活动特效在[状态](/design/states)。
+
+在 `cute` 脸下，腰带状态不把身体缩成一个小圆点：整个角色连同脸都留着，其他脸下由腰带说的话，改由身旁的特效来说。
+
+## 线条脸
+
+`line` 在 `eyes` 之外加上鼻子和嘴。下面几节讲的是它：怎么保持一种墨、一种线宽，嘴和鼻子是什么，怎么随状态变化。
+
+## 一种墨，一种线宽
+
+`eyes` 脸之所以成立，是因为它只有一个视觉概念：一个实心身体和两个抠洞。加上鼻子和嘴，就有风险变成一张画着好几种线的图。线条脸靠坚持一条规则来避免这一点：
+
+- 每个五官都是眼睛颜色的一道笔画——`solid` 上是背景色，`outline` 和 `glass` 上是墨色。
+- 每道笔画同一线宽：`LINE_WEIGHT` 乘以眼睛半径，因此和眼睛一样随身体缩放。
+- 眼睛向点状比例收缩（`LINE_FACE_TUNE`），让三个五官共用一块脸盘而不是挤在一起；细的表情——`closed`、`happy`、`sleepy`——被抬到线宽的下限，所以读起来和嘴是同一道笔画。
+- 没有眉毛，没有腮红，没有第二种颜色。
+
+<LineExpressionGrid />
+
+`eyes` 脸的全部眼睛拓扑在线条脸里都能用；线条脸只改变它们的尺寸和下限。`wink` 是唯一一种两只眼睛不同的拓扑——一边是开心的弧，另一边是中性的眼。
+
+## 嘴是六个数字
+
+```ts
+interface MouthSpec {
+  width: number; // 半宽，单位为眼睛半径
+  bend: number; // 唇线的弯曲；正数微笑，负数下撇
+  open: number; // 张开的高度；0 是一条闭合的线
+  wave: number; // 沿唇线的一个正弦波纹，表示不安
+  skew: number; // 把顶点推向一侧嘴角，−1..1
+  dy: number; // 相对静止位置的竖直偏移
+}
+```
+
+唇线是一条穿过两个嘴角的抛物线，被 `bend` 弯曲、顶点被 `skew` 推向一侧，再叠一个振幅为 `wave` 的波纹。张口是一个不对称的透镜——下唇下落得比上唇上抬得更多，真实的嘴就是这样张开的。`open` 为 0 时两片唇重合，只剩笔画可见，所以从闭嘴张成 "o" 是一个连续的形状，而不是一次替换。
+
+<MouthGrid />
+
+<MouthTable />
+
+和眼睛一样，嘴之所以是参数化的，原因是**形变**。每个字段独立插值，每个中间值都是合法的嘴，因此状态切换时会在弹簧上从 `frown` 缓到 `grin`，而不是在两个轮廓之间硬切。
+
+```ts
+morphMouth(MOUTHS.frown, MOUTHS.grin, t); // 永远是一张嘴
+```
+
+## 鼻子只选一次
+
+鼻子不是表情。它是特征，像形状一样，所以每个角色只选一次，眼睛和嘴在变的时候它保持不动。
+
+<NoseGrid />
+
+六条折线。每一条都是沿鼻梁向下的一道开放笔画，末端一个小转折做鼻尖，以眼睛半径为单位存成 16 个点。传 `nose={null}` 不画鼻子——只有眼睛和嘴的素线条脸。
+
+没有给鼻子时，会像形状和墨色一样从角色的 key 推导一个：`autoNoseForKey('agent-42')` 稳定，并且把 key 均匀分布在六种之间。`AgentAvatar` 用的就是它，所以每个智能体都有固定的鼻子，而你不需要存任何东西。
+
+## 每个状态都有一张嘴
+
+`STATE_MOUTH` 给每个状态指定一张嘴，方式和 `STATE_EYE_TOPOLOGIES` 指定眼睛一样。眼睛已经承担了大部分表情，所以嘴的任务是和它们一致——`sad` 下撇、`surprised` 张成 "o"、`confused` 画波浪线——而不是自己另说一句。
+
+<LineStateGrid />
+
+有两张嘴是为另外十一张嘴说不诚实的状态而设的。`hum` 闭着、满足，唇上跑着一道波纹：微笑说的是「高兴」，而 `humming` 的重点是嘴闭着、却还有什么正在出来。它被刻意收窄，十六像素下不会读成咧嘴笑。`tight` 是紧闭——短、平、比 `flat` 略低一点——`suspicious` 用它而不是 `smirk`：怀疑是嘴闭着、由眼睛来质疑，而斜笑挨着眯起的眼读起来像是在觉得好笑。`refusing` 保留下撇的嘴；那是拒绝，不只是保留意见。
+
+六个状态会说话：`composing`、`dictating`、`messaging`、`sending`、`laughing` 和 `humming`。它们的嘴在两个不可通约的正弦波上一开一合，读起来像说话而不是节拍器。`prefers-reduced-motion` 下脉动关闭。
+
+## 一块脸盘
+
+鼻子和嘴用和眼睛相同的姿态矩阵投影，并按比例跟随同一个视线偏移——鼻子 60%，嘴 50%。转头时整张脸作为一个整体压缩；侧目时五官一起倾斜。没有这一点，眼睛会摆动而嘴留在原地，读起来像一张面具在球上滑动。
+
+<LineShapeRow />
+
+两个五官都在各自的高度上被夹在轮廓之内，在矮胖的身体上还被托在下巴之上，所以 `tofu` 或 `onigiri` 得到的是一张装得下的脸，而不是挂在底边外面的脸。投影细节见[面部与姿态](/internals/face-and-pose#脸盘)。
+
+## 实时切换
+
+已挂载的角色可以改变 `face`。眼睛尺寸、笔画下限和五官透明度都在同一个 `lineBlend` 弹簧上缓动，所以嘴随眼睛收缩而淡入，而不是一切同时跳变。改变 `nose` 会把旧鼻子淡出、新鼻子淡入。
+
+```tsx preview
+import { useState } from 'react';
+import { CharacterMark, FACE_STYLES, NOSE_IDS } from '@aora-bot/react';
+
+export default function Demo() {
+  const [face, setFace] = useState(0);
+  const [nose, setNose] = useState(0);
+  return (
+    <div className="site-demo site-demo--center">
+      <CharacterMark
+        shape="pear"
+        color="green"
+        state="happy"
+        face={FACE_STYLES[face]}
+        nose={NOSE_IDS[nose]}
+        sizePx={130}
+      />
+      <div className="site-controls">
+        <button className="site-btn" onClick={() => setFace((f) => (f + 1) % FACE_STYLES.length)}>
+          face: {FACE_STYLES[face]}
+        </button>
+        <button className="site-btn" onClick={() => setNose((n) => (n + 1) % NOSE_IDS.length)}>
+          nose: {NOSE_IDS[nose]}
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+## 适用范围
+
+所有绘制角色的组件都接受 `face` 和 `nose`：[`CharacterMark`](/components/character-mark)、`StagedMark`、[`AgentAvatar`](/components/agent-avatar)（也可通过 agent 对象和 cast 预设传入）、[`AvatarStack`](/components/avatar-stack) 以及静态渲染函数。带 `onSelectFace` 的 [`CharacterPicker`](/components/character-picker) 会显示脸型切换，线条脸激活时再显示一行鼻子。
+
+在[共享舞台](/components/mark-stage)上，脸型和鼻子是外观 key 的一部分，因此带 `line` 脸和 `hook` 鼻子的 `blob`，与同样带 `line` 脸但鼻子是 `bow` 的 `blob`，是两个源，而两个鼻子不同的 `cute` blob 是同一个——只有线条脸会画鼻子，其余脸型上的鼻子没有意义，不会拆分舞台。
+
+## 线条脸在各个面上
+
+每一个把角色放到某个面上的组件——[`HudPlate`](/components/hud-plate) 与 [`AgentHud`](/components/agent-hud)、[编辑器](/components/avatar-editor)及其触发器、[模板对话框](/components/template-dialog)与分享卡、[`OccupancyList`](/components/occupancy-list)、[受限场景](/components/restricted-scene)与[启动序列](/components/boot-loop)、[`CastStage`](/components/cast-stage) 及其成员、[引导页组件](/components/walkthrough)，以及两个[选择器](/components/agent-character-picker)——都接受 `face`、`nose`、`lineWeight`，并原样向下传递。名册里是 `hook` 鼻子线条脸 `bun` 的角色，在编辑器预览、分享卡和启动序列里还是那只线条脸 bun。
+
+`lineWeight` 是第三个特征，和鼻子一样每个角色只选一次。它是 `LINE_WEIGHT` 的倍数，被夹在 `LINE_WEIGHT_RANGE`（0.8–1.25）之内，一个数字同时到达鼻子、嘴**和 HUD 表盘**：身体外那圈环用与身体内五官相同的线宽描边，于是脸和它的表盘是同一幅画，而不是一张脸旁边摆了一张图表。范围刻意很窄。这个线宽是决定一个角色读起来像钢笔画还是马克笔画的唯一数字；放开让宿主随意设置，列表里就会有一个角色的线宽和邻居不同，整套就破了。
+
+```tsx preview
+import { CharacterMark, HudPlate } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {[0.8, 1, 1.25].map((weight) => (
+        <HudPlate key={weight} title="lineWeight" value={String(weight)}>
+          <CharacterMark
+            shape="bun"
+            color="orange"
+            state="working"
+            face="line"
+            nose="hook"
+            lineWeight={weight}
+            hud={{ kind: 'progress', value: 0.65 }}
+            sizePx={88}
+          />
+        </HudPlate>
+      ))}
+    </div>
+  );
+}
+```
+
+[`CharacterPicker`](/components/character-picker) 也接受 `lineWeight`，网格里的预览就用和正在编辑的角色相同的那支笔来画。
+
+## 接下来
+
+- [表情](/design/expressions)——cute 脸的眼型、嘴型、腮红和特效
+- [面部与姿态投影](/internals/face-and-pose)——头是怎么转的

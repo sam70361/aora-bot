@@ -1,0 +1,131 @@
+import { StateMatrix } from '@theme';
+
+# 进度 HUD
+
+一个长任务：身体说正在发生什么，外环说进行到哪一步。
+
+## 先看效果
+
+一个向仲裁器报告比例的会话。`AgentHud` 从同一个结果里读出状态、表盘和提示，三者不可能在描述不同的任务。到达终点时发送 `celebrate`，这是仲裁器永不丢弃的事件。
+
+```tsx preview
+import { useState } from 'react';
+import { AgentHud, AgentStateProvider, useAgentState } from '@aora-bot/react';
+
+function Job() {
+  const { update } = useAgentState();
+  const [value, setValue] = useState(0.35);
+
+  const report = (next: number) => {
+    setValue(next);
+    update({
+      sessionId: 'export',
+      state: next >= 1 ? 'celebrate' : 'working',
+      hud: { kind: 'progress', value: next },
+      tips: next >= 1 ? '导出完成' : `${Math.round(next * 100)}%，第 2 / 6 个文件`,
+    });
+  };
+
+  return (
+    <div className="site-demo site-demo--stack">
+      <AgentHud agent={{ id: 'exporter', name: '导出器' }} sizePx={88} />
+      <div className="site-controls">
+        <label className="site-field">
+          进度
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.01}
+            value={value}
+            onChange={(event) => report(Number(event.target.value))}
+          />
+        </label>
+        <button className="site-btn" onClick={() => report(1)}>
+          完成
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default function Demo() {
+  return (
+    <AgentStateProvider>
+      <Job />
+    </AgentStateProvider>
+  );
+}
+```
+
+滑块移动之前仲裁器什么都没听到，所以 `AgentHud` 画的是一个没有表盘的空闲角色——HUD 是页面上的装饰，页面在任何智能体连上之前就得先渲染出来。`useHudSpec('progress', { value })` 给手工组装 spec 的宿主同样的保护：首次渲染时还是 `undefined` 的比例会变成 `null`，而 `hud={null}` 就是一个没有表盘的角色。
+
+## 什么时候用
+
+一个长任务——导出、建索引、一批上传——旁边站着一个整段时间都有东西可展示的角色。两层各司其职。身体说明智能体*在做什么*：`working`，或者当任务是可度量的东西时用 `progress`。身体外侧的环说明它*知道什么*：一个比例、一个上限、一个同步状态。两者有意分开，所以一个角色可以一边工作一边显示 83%，而不会为同一块像素争抢。
+
+## 用到的组件
+
+- [`CharacterMark`](/components/character-mark)——`hud={...}`，一个宿主已经掌握数据的 `HudSpec`。
+- [`HudPlate`](/components/hud-plate)——把数字作为文字放在表盘旁边，在一个 polite 的实时区域里，因为环说不出"83%"。
+- [`AgentHud`](/components/agent-hud)——把仲裁器当前的状态、表盘和说明合成一个组件，一个会话的表盘不可能站在另一个会话的脸旁边。
+- [`useHudSpec`](/components/agent-hud)——用实时数值构造 spec，数值还站不住时得到 `null`。
+- [`AgentStateProvider`](/components/agent-state)——数字到达的地方。
+
+## 状态怎么走
+
+| 从        | 到          | 时机                               |
+| --------- | ----------- | ---------------------------------- |
+| —         | `working`   | 任务开始，长度未知                 |
+| `working` | `progress`  | 任务报告了一个比例；数值由表盘承载 |
+| `working` | `uploading` | 字节在往外走；与 `sync` 搭配       |
+| `working` | `loading`   | 字节在往里来                       |
+| 任一      | `celebrate` | 任务到达终点——一次性编号 `33`      |
+| 任一      | `alerting`  | 任务失败——一次性编号 `34`          |
+
+`progress` 状态的腰带是不定长的：一个以四秒为周期填满再重置的环，意思是"一件可度量的事正在进行"。度量值本身始终放在 HUD 里，HUD 的 `progress` 环才是那个数值。比例重要时用 `working` 的身体配 `progress` 表盘；只能说"它在动"时用 `progress` 的身体。
+
+## 每个状态的样子
+
+<StateMatrix states={['working', 'progress', 'uploading', 'loading', 'celebrate', 'alerting']} />
+
+在 `eyes` 和 `line` 脸下，其中四个把身体交给了腰带。由于 HUD 画在身体外侧的环里，腰带状态和表盘可以共存：身体收缩成核心，腰带围着它转，表盘在更外面一圈。
+
+## 六种表盘
+
+给可度量事物的六种表盘。`progress` 与 `gauge` 是相对上限的比例；`context` 数格子而不是填弧线，因为最后几个格子才是要紧的；`balance` 只表现量级，数字留给 plate；`kpi` 把一组序列画成折线；`sync` 是一个生命周期。每一种都是 `(spec, time)` 的纯函数，所以暂停的角色、服务端渲染和截图三者一致。
+
+```tsx preview
+import { CharacterMark, HudPlate, type HudSpec } from '@aora-bot/react';
+
+const dials: { spec: HudSpec; title: string; value: string | number; unit?: string }[] = [
+  { spec: { kind: 'progress', value: 0.83 }, title: '导出', value: 83, unit: '%' },
+  { spec: { kind: 'gauge', value: 62, max: 100 }, title: 'CPU', value: 62, unit: '%' },
+  { spec: { kind: 'sync', state: 'syncing' }, title: '同步', value: '…' },
+  {
+    spec: { kind: 'kpi', value: 412, delta: 38, series: [280, 310, 296, 350, 374, 412] },
+    title: '运行次数',
+    value: 412,
+  },
+  { spec: { kind: 'context', used: 13_400, total: 15_000 }, title: '上下文', value: '13.4k', unit: '/ 15k' },
+  { spec: { kind: 'balance', value: 1240, low: true, unit: 'credits' }, title: '余额', value: 1240 },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {dials.map((dial) => (
+        <HudPlate key={dial.spec.kind} title={dial.title} value={dial.value} unit={dial.unit} sizePx={64}>
+          <CharacterMark shape="tofu" color="blue" state="working" hud={dial.spec} sizePx={64} />
+        </HudPlate>
+      ))}
+    </div>
+  );
+}
+```
+
+## 接下来
+
+- [HudPlate](/components/hud-plate)——表盘旁边的一个数字
+- [AgentHud](/components/agent-hud)——角色、表盘与说明一起
+- [状态](/design/states)——全部动画状态，分组列出

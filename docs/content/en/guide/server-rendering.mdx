@@ -1,0 +1,88 @@
+# Server rendering
+
+What renders without a DOM, and how a character reaches the HTML before any JavaScript does.
+
+## The two entry points
+
+| Import                   | Contains                        | Safe without a DOM |
+| ------------------------ | ------------------------------- | ------------------ |
+| `@aora-bot/react`        | Every component and hook        | No                 |
+| `@aora-bot/react/static` | Rendering functions and hashing | Yes                |
+
+The static entry deliberately excludes the animation runtime. Nothing it exports touches `window`, `document` or `requestAnimationFrame`, so it works in a React Server Component, during static generation, or in a worker.
+
+```ts
+import { renderAvatarDataUrl } from '@aora-bot/react/static';
+
+export default async function Page() {
+  return <img src={renderAvatarDataUrl('ada@example.com')} width={40} height={40} alt="" />;
+}
+```
+
+## Next.js App Router
+
+The component package ships with a `'use client'` banner, so importing it from a server component is fine — the boundary is already declared.
+
+```tsx
+// app/page.tsx — a server component
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Page() {
+  return <CharacterMark shape="blob" color="blue" />;
+}
+```
+
+Import the stylesheet once in the root layout:
+
+```tsx
+// app/layout.tsx
+import '@aora-bot/react/styles.css';
+```
+
+### Prefer the static entry where you can
+
+Characters in a long list, in an email, or in metadata do not need to animate. Using the static entry keeps the animation runtime out of the client bundle entirely.
+
+## What server rendering produces
+
+Components render markup with no animation applied. The character appears in its rest pose, and the engine takes over on hydration. This means no layout shift: the server-rendered SVG occupies exactly the box the animated one will.
+
+```tsx preview
+import { renderStaticSvg } from '@aora-bot/react';
+
+export default function Demo() {
+  const svg = renderStaticSvg({ shape: 'hex', color: 'green', expression: 'happy' });
+  return (
+    <div className="site-demo site-demo--column">
+      <div dangerouslySetInnerHTML={{ __html: svg }} style={{ width: 90 }} />
+      <pre style={{ maxHeight: 180, overflow: 'auto', fontSize: 12 }}>
+        <code>{svg.slice(0, 400)}…</code>
+      </pre>
+    </div>
+  );
+}
+```
+
+## Light and dark ink
+
+A static SVG is its own document as far as CSS goes, so it cannot read your application's theme class. `renderStaticSvg` therefore embeds the light and dark values of the palette ink, and `colorScheme` chooses what switches them:
+
+| `colorScheme`        | Mechanism                                                | Use it for                                                                           |
+| -------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `'system'` (default) | A `prefers-color-scheme` media query in the SVG          | `<img src="data:…">`, files, e-mail: the image is isolated from the page             |
+| `'page'`             | `light-dark()`, resolved by the inherited `color-scheme` | Markup inlined into a page that has its own theme switch (`dangerouslySetInnerHTML`) |
+
+`system` follows the operating system, which is what an isolated image can see. Inlined into a page whose theme the reader can switch, it would follow the OS instead of the page: a dark OS with a light site turns black ink near-white on a light card. `page` follows the same `color-scheme` the rest of your UI does. The default output is unchanged. The two modes use different class names, so both can appear in one document.
+
+```tsx
+renderStaticSvg({ shape: 'hex', color: 'black', colorScheme: 'page' });
+```
+
+## Data URLs
+
+`renderStaticSvgDataUrl` percent-encodes rather than base64-encodes. The output is smaller, and it stays readable in devtools. One detail it handles for you: a raw `#` in an SVG data URL terminates it at the fragment, which is the classic way inline SVG silently breaks.
+
+## Next
+
+- [Internationalisation](/guide/internationalisation) — one provider, every label
+- [API index](/components/api-index) — every export in one place

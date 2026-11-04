@@ -1,0 +1,364 @@
+import { API } from '@theme';
+
+# CharacterMark
+
+单个动画角色。库里其余一切都建立在它之上。
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  return <CharacterMark shape="blob" color="orange" state="excited" sizePx={150} />;
+}
+```
+
+## 绘制风格
+
+`styleId` 选画风，`variant` 选这个画风里的变体。几何、动画和脸在它们之间完全相同——只有颜料变了，所以新状态或新角色会同时出现在每一种风格里。每个画风有一页：[Vector](/design/styles/vector)、[Pixel](/design/styles/pixel)、[Kaomoji](/design/styles/kaomoji)。下面是 vector 的全部变体：
+
+```tsx preview
+import { getStyle } from '@aora-bot/engine';
+import { CharacterMark } from '@aora-bot/react';
+
+const variants = getStyle('vector').variants;
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {variants.map((variant) => (
+        <div className="site-demo__cell" key={variant}>
+          <CharacterMark shape="mochi" color="blue" state="happy" sizePx={96} variant={variant} />
+          <span className="site-demo__label">{variant}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+`solid` 是默认：身体是平涂的填色块，`cute` 脸是白色。
+
+`outline` 和 `glass` 把这种关系反过来。身体不再填满时，白色的脸会看不见，所以这两种变体的脸改用墨色画——同一剪影从另一面读。
+
+```tsx preview
+import { CharacterMark, SHAPE_IDS } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {SHAPE_IDS.slice(0, 9).map((shape) => (
+        <CharacterMark key={shape} shape={shape} color="violet" sizePx={54} variant="outline" />
+      ))}
+    </div>
+  );
+}
+```
+
+描边宽度在形状空间里是常量，而不是像素，所以它随角色缩放。钉在设备像素上的描边在大角色上会细得像线，在小角色上又会把它淹没。
+
+## 脸
+
+`face` 在三种脸里选：默认的 `cute`，以及 `eyes` 和[线条脸](/design/face) `line`，后者用同一线宽的笔画加上鼻子和嘴。`nose` 只对 `line` 有效，从六种里挑一种；省略则由 `seed` 推导，传 `null` 则不画。
+
+```tsx preview
+import { CharacterMark, NOSE_IDS } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      <div className="site-demo__cell">
+        <CharacterMark shape="bun" color="orange" state="happy" sizePx={96} />
+        <span className="site-demo__label">cute</span>
+      </div>
+      <div className="site-demo__cell">
+        <CharacterMark shape="bun" color="orange" state="happy" sizePx={96} face="eyes" />
+        <span className="site-demo__label">eyes</span>
+      </div>
+      {NOSE_IDS.slice(0, 3).map((nose) => (
+        <div className="site-demo__cell" key={nose}>
+          <CharacterMark shape="bun" color="orange" state="happy" sizePx={96} face="line" nose={nose} />
+          <span className="site-demo__label">line, {nose}</span>
+        </div>
+      ))}
+      <div className="site-demo__cell">
+        <CharacterMark shape="bun" color="orange" state="happy" sizePx={96} face="line" nose={null} />
+        <span className="site-demo__label">line，无鼻子</span>
+      </div>
+    </div>
+  );
+}
+```
+
+两个 prop 都可以在已挂载的角色上改变：脸在样式间缓动，鼻子交叉淡入。根元素带有 `data-face` 供样式使用。
+
+## 什么时候用它
+
+角色独自出现时用 `CharacterMark`——英雄区、空状态、页头里的单个头像。一次要好几个角色时，优先用 [`MarkStageProvider`](/components/mark-stage)，它让长得一样的角色共享一份动画。
+
+## 跟随指针
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo site-demo--center">
+      <CharacterMark shape="blob" color="violet" sizePx={120} followPointer />
+      <CharacterMark shape="egg" color="cyan" sizePx={120} followPointer />
+    </div>
+  );
+}
+```
+
+映射不是线性的。距离经过平方根，这样靠近角色的小动作仍然灵敏，远处也能到达极限——线性映射会让近处的运动显得迟钝。
+
+## 强调
+
+```tsx preview
+import { useState } from 'react';
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  const [hover, setHover] = useState(false);
+  return (
+    <div
+      className="site-demo site-demo--center"
+      onPointerEnter={() => setHover(true)}
+      onPointerLeave={() => setHover(false)}
+    >
+      <CharacterMark shape="tofu" color="green" state="happy" sizePx={120} emphasis={hover} />
+      <span className="site-demo__label">悬停我</span>
+    </div>
+  );
+}
+```
+
+## 暂停
+
+`paused` 取消角色对共享 ticker 的订阅，并**冻结当前帧**。它不会重置到中性姿态，所以滚出视口再滚回来的角色看起来像是一直在等，而不是重新开始。
+
+```tsx preview
+import { useState } from 'react';
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  const [paused, setPaused] = useState(false);
+  return (
+    <div className="site-demo site-demo--center">
+      <CharacterMark shape="cloud" color="blue" state="celebrate" sizePx={110} paused={paused} />
+      <button className="site-btn" onClick={() => setPaused((p) => !p)}>
+        {paused ? '继续' : '暂停'}
+      </button>
+    </div>
+  );
+}
+```
+
+## 命令式动作
+
+```tsx preview
+import { useRef } from 'react';
+import { CharacterMark, type CharacterHandle } from '@aora-bot/react';
+
+export default function Demo() {
+  const ref = useRef<CharacterHandle>(null);
+  return (
+    <div className="site-demo site-demo--center">
+      <CharacterMark ref={ref} shape="drop" color="magenta" state="playful" sizePx={110} />
+      <div className="site-controls">
+        <button className="site-btn" onClick={() => ref.current?.spin(1)}>
+          spin(1)
+        </button>
+        <button className="site-btn" onClick={() => ref.current?.spin(3)}>
+          spin(3)
+        </button>
+        <button className="site-btn" onClick={() => ref.current?.bounce()}>
+          bounce()
+        </button>
+        <button className="site-btn" onClick={() => ref.current?.burst(24)}>
+          burst(24)
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+`burst()` 在 `prefers-reduced-motion` 下会被抑制，因为从中心向外辐射的粒子是前庭刺激。
+
+## 跟随宿主已知的一个点
+
+`followPointer` 自己监听指针。`followTarget` 则接受一个视口像素坐标——另一个元素的中心，或者宿主出于自己的原因已经在跟踪的指针位置——引擎每帧用同一套平方根映射去换算。两者都设时 `gazeTarget` 优先。
+
+```tsx preview
+import { useState } from 'react';
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  const [target, setTarget] = useState<{ x: number; y: number } | null>(null);
+  return (
+    <div
+      className="site-demo site-demo--center"
+      onPointerMove={(e) => setTarget({ x: e.clientX, y: e.clientY })}
+      onPointerLeave={() => setTarget(null)}
+    >
+      <CharacterMark shape="hex" color="green" sizePx={110} followTarget={target} />
+      <CharacterMark shape="bun" color="orange" sizePx={110} followTarget={target} />
+      <span className="site-demo__label">一个监听器，两个角色</span>
+    </div>
+  );
+}
+```
+
+## 墨色、眼睛与线宽
+
+`ink` 用一个纯色或两段渐变覆盖身体的颜料，给必须匹配品牌色而不是调色板的角色用；`null` 交还给主题 token。`eyeScale` 是眼睛大小的静态倍数，叠在强调弹簧之上。`lineWeight` 把鼻子、嘴和 HUD 表盘一起缩放，范围是 `LINE_WEIGHT_RANGE`（0.8–1.25）——一个角色一支笔，于是[脸和 HUD](/design/face) 始终是同一笔画。
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      <div className="site-demo__cell">
+        <CharacterMark shape="blob" color="blue" state="happy" sizePx={96} ink={{ flat: '#1d4ed8' }} />
+        <span className="site-demo__label">ink 纯色</span>
+      </div>
+      <div className="site-demo__cell">
+        <CharacterMark
+          shape="blob"
+          color="blue"
+          state="happy"
+          sizePx={96}
+          ink={{ from: '#f97316', to: '#db2777', angle: 30 }}
+        />
+        <span className="site-demo__label">ink 渐变</span>
+      </div>
+      <div className="site-demo__cell">
+        <CharacterMark shape="blob" color="blue" state="happy" sizePx={96} eyeScale={1.35} />
+        <span className="site-demo__label">eyeScale 1.35</span>
+      </div>
+      <div className="site-demo__cell">
+        <CharacterMark
+          shape="blob"
+          color="blue"
+          state="happy"
+          sizePx={96}
+          face="line"
+          nose="curve"
+          lineWeight={0.8}
+        />
+        <span className="site-demo__label">lineWeight 0.8</span>
+      </div>
+      <div className="site-demo__cell">
+        <CharacterMark
+          shape="blob"
+          color="blue"
+          state="happy"
+          sizePx={96}
+          face="line"
+          nose="curve"
+          lineWeight={1.25}
+        />
+        <span className="site-demo__label">lineWeight 1.25</span>
+      </div>
+    </div>
+  );
+}
+```
+
+## HUD
+
+`hud` 在身体外的环上画一个表盘；`null` 移除它。HUD 开着时五官会收掉——身体留成剪影，读数在环上。规格就是[协议](/design/protocol)携带、[`HudPlate`](/components/hud-plate) 校验的那个 `HudSpec`，表盘按角色的 `lineWeight` 描边。
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      <CharacterMark
+        shape="tofu"
+        color="violet"
+        state="working"
+        sizePx={110}
+        hud={{ kind: 'progress', value: 0.6 }}
+      />
+      <CharacterMark
+        shape="tofu"
+        color="violet"
+        state="waiting"
+        sizePx={110}
+        hud={{ kind: 'timer', remainingMs: 12_000, totalMs: 60_000 }}
+      />
+      <CharacterMark
+        shape="tofu"
+        color="violet"
+        state="notifying"
+        sizePx={110}
+        hud={{ kind: 'notify', count: 3 }}
+      />
+    </div>
+  );
+}
+```
+
+规格按值比较而不是按引用，所以内联写 `hud={{ kind: 'progress', value }}` 不会每次渲染都重启表盘。
+
+## 知道状态何时落定
+
+有限状态——`spawning`、`waking`（见 `STATE_SETTLE_TO`）——走完自己的流程后，引擎会自行前进。`onSettle(from, to)` 在那一刻触发，宿主对状态的认知可以跟着走，而不必再维护一份重复的计时器。
+
+```tsx preview
+import { useState } from 'react';
+import { CharacterMark, type CharacterState } from '@aora-bot/react';
+
+export default function Demo() {
+  const [state, setState] = useState<CharacterState>('idle');
+  const [log, setLog] = useState('—');
+  return (
+    <div className="site-demo site-demo--center">
+      <CharacterMark
+        shape="star"
+        color="yellow"
+        state={state}
+        sizePx={110}
+        onSettle={(from, to) => {
+          setLog(`${from} → ${to}`);
+          setState(to);
+        }}
+      />
+      <button className="site-btn" onClick={() => setState('waking')}>
+        waking
+      </button>
+      <span className="site-demo__label">
+        state {state}，落定 {log}
+      </span>
+    </div>
+  );
+}
+```
+
+相反的问题——输入变化得比角色能跟上的速度还快——由 [`useMarkSettle`](/components/mark-commands) 处理。
+
+## 为什么它从不重渲染
+
+React 挂载一个空的宿主元素，然后引擎接管。prop 变化被命令式地推进控制器，而不是重渲染：
+
+```tsx
+useEffect(() => {
+  controllerRef.current?.update({ shape, state, paused, emphasis });
+}, [shape, state, paused, emphasis]);
+```
+
+每秒六十次走 reconciler 去设十几个属性，代价远高于动画本身。挂载 effect 故意没有依赖——在 prop 变化时重建控制器会重启动画。
+
+## API
+
+<API component="CharacterMark" />
+
+## 接下来
+
+- [MarkStageProvider](/components/mark-stage)——按外观共享引擎
+- [状态](/design/states)——全部动画状态，分组列出
+- [HudPlate](/components/hud-plate)——表盘旁边的一个数字

@@ -1,0 +1,100 @@
+import { StateMatrix } from '@theme';
+
+# Boot and loading
+
+Two waits: a record that is about to arrive, and a start-up with no known duration.
+
+## See it
+
+Left: three avatar slots that load and arrive. `LoadingMark` holds the silhouette until `ready`; the live mark underneath is mounted the whole time, paused, so the swap is a cross-fade and not a first frame against nothing. Right: a boot that has been going on long enough to say so.
+
+```tsx preview
+import { useEffect, useState } from 'react';
+import { MarkStageProvider } from '@aora-bot/react';
+import { BootLoop, LoadingMark } from '@aora-bot/surfaces';
+
+function Slot({
+  shape,
+  color,
+  delay,
+}: {
+  shape: 'pebble' | 'hex' | 'cloud';
+  color: 'cyan' | 'violet' | 'green';
+  delay: number;
+}) {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setReady(true), delay);
+    return () => clearTimeout(timer);
+  }, [delay]);
+
+  return (
+    <span className="site-demo__cell">
+      <LoadingMark ready={ready} shape={shape} color={color} state="spawning" sizePx={48} />
+      <span className="site-demo__label">{ready ? 'ready' : 'loading'}</span>
+    </span>
+  );
+}
+
+export default function Demo() {
+  const [cycles, setCycles] = useState(0);
+
+  return (
+    <MarkStageProvider>
+      <div className="site-demo">
+        <div className="site-demo__row">
+          <Slot shape="pebble" color="cyan" delay={900} />
+          <Slot shape="hex" color="violet" delay={1800} />
+          <Slot shape="cloud" color="green" delay={2700} />
+        </div>
+        <BootLoop
+          widthPx={220}
+          sizePx={64}
+          durationMs={1800}
+          onCycle={setCycles}
+          body={cycles < 3 ? undefined : 'This is taking longer than usual.'}
+        />
+      </div>
+    </MarkStageProvider>
+  );
+}
+```
+
+The slots are given `state="spawning"` and nothing else: the live mark is paused until `ready`, so its state clock starts at the cross-fade, the `gather` belt plays, and two seconds later the renderer moves to `idle` on its own. `LoadingMark` does not forward `onSettle`; a host that needs to know uses a `CharacterMark` directly once the record is in hand. `BootLoop` reports the cycle count from an effect rather than the interval, so a host that re-renders on the callback cannot restart the timer mid-cycle.
+
+## When to use it
+
+Two different waits. The first is the agent's own record arriving — a few hundred milliseconds where the avatar slot is empty and the layout is about to shift. The second is something starting up with no known duration, where a progress bar would lie. The character handles both: a silhouette of the face that is coming, then an arrival; or steady activity that is honest about not knowing when it will end.
+
+## Components
+
+- [`LoadingMark`](/components/boot-loop) — the character's own silhouette as a shimmering mask, cross-fading to the live mark on `ready`.
+- [`BootLoop`](/components/boot-loop) — an indeterminate wait inside a device bezel; `onCycle` lets the host escalate.
+- [`CharacterMark`](/components/character-mark) — `loading`, `spawning`, `onSettle`.
+- [`MarkStageProvider`](/components/mark-stage) — a page of placeholders that all flip at once should share one engine when they do.
+- [`HudPlate`](/components/hud-plate) — the `sync` dial is the one for a boot: a lifecycle rather than a fraction. `idle` until the connection is attempted, `syncing` while it is, `done` or `error` when it lands. Use `progress` only if the host has a real fraction; a ring that fills at a made-up rate is a progress bar that lies with extra steps.
+
+## How the states move
+
+| From       | To         | When                                                     |
+| ---------- | ---------- | -------------------------------------------------------- |
+| —          | `loading`  | the request is out; `whirl` drifts the body, id `12`     |
+| `loading`  | `spawning` | the record landed; the `gather` belt draws the body in   |
+| `spawning` | `idle`     | settles by itself after 2 s — `STATE_SETTLE_TO.spawning` |
+| —          | `working`  | `BootLoop` opens                                         |
+| `working`  | `thinking` | every `durationMs`; the pair is one cycle                |
+| `thinking` | `working`  | …and back; `onCycle(n)` fires at each full turn          |
+
+`spawning` is a moment, not a condition. A host would otherwise write the same timeout to leave it, so the renderer owns the clock and reports the move through `onSettle(from, to)`. Reduced motion skips the flourish and still fires the settle.
+
+## What each state looks like
+
+<StateMatrix states={['loading', 'spawning', 'working', 'thinking', 'idle']} />
+
+`whirl` is two incommensurate sines on each axis, so the drift never repeats within the time anyone waits. `gather` spirals five particles in over two seconds and then behaves like `progress`. `working` has no belt at all — its eyes narrow and its body leans — which is why `BootLoop` pairs it with `thinking`: the alternation between a belt and no belt is the activity.
+
+## Next
+
+- [BootLoop](/components/boot-loop) — a procedurally generated start-up
+- [Belts and particles](/internals/belts) — how belt states are drawn

@@ -1,0 +1,97 @@
+import { StateMatrix } from '@theme';
+
+# 拒绝与限制
+
+说「不」的那些页面，以及怎样拒绝得不像是坏掉了。
+
+## 先看效果
+
+三种 tone，以及各自配套的名册状态点。切换 tone 会换掉文案和边框指示灯；`action` 插槽放的是出口，不管出口是什么。
+
+```tsx preview
+import { useState } from 'react';
+import { AgentAvatar, AvatarStatusDot, MarkStageProvider } from '@aora-bot/react';
+import { RestrictedScene, type RestrictedTone } from '@aora-bot/surfaces';
+
+const tones: RestrictedTone[] = ['restricted', 'unauthorised', 'offline'];
+const dot: Record<RestrictedTone, { tone: 'error' | 'offline'; label: string }> = {
+  restricted: { tone: 'error', label: '受限' },
+  unauthorised: { tone: 'error', label: '需要登录' },
+  offline: { tone: 'offline', label: '离线' },
+};
+
+export default function Demo() {
+  const [tone, setTone] = useState<RestrictedTone>('restricted');
+
+  return (
+    <MarkStageProvider>
+      <div className="site-demo site-demo--stack">
+        <RestrictedScene
+          tone={tone}
+          state={tone === 'offline' ? 'sleeping' : 'refusing'}
+          color="orange"
+          rotateMs={0}
+          action={
+            <button
+              className="site-btn"
+              onClick={() => setTone(tones[(tones.indexOf(tone) + 1) % tones.length]!)}
+            >
+              下一个 tone
+            </button>
+          }
+        />
+        <div className="site-demo__row">
+          <span className="site-demo__avatar">
+            <AgentAvatar
+              agent={{ id: 'ledger', name: 'Ledger' }}
+              state={tone === 'offline' ? 'sleeping' : 'idle'}
+              sizePx={40}
+            />
+            <span className="site-demo__dot">
+              <AvatarStatusDot tone={dot[tone].tone} label={dot[tone].label} />
+            </span>
+          </span>
+          <span className="site-demo__label">Ledger, {dot[tone].label}</span>
+        </div>
+      </div>
+    </MarkStageProvider>
+  );
+}
+```
+
+`rotateMs={0}` 固定在第一个形状；默认每十二秒换一次，并在减少动态效果下停止，因为轮廓变形也是动，即便屏幕上没有东西在移动。名册状态点对策略性拒绝用 `error`，对宕掉的服务用 `offline`——和场景用边框指示灯画出的是同一条界线。
+
+## 什么时候用
+
+当某个东西说"不"时你落到的那一页：套餐限额、地区封锁、过期的登录、宕掉的服务。这也是放角色成本最低的一屏，理由见 [`RestrictedScene`](/components/restricted-scene)。
+
+## 用到的组件
+
+- [`RestrictedScene`](/components/restricted-scene)——整个死胡同：边框、角色、标题、正文、出口。`tone` 决定文案和边框指示灯。
+- `DeviceBezel`——只要边框，版面自己排的时候用。
+- [`CharacterMark`](/components/character-mark)——拒绝用 `refusing`，出了问题用 `alerting`。
+- [`AvatarStatusDot`](/components/avatar-chrome)——`error` 和 `offline` 两个 tone，在名册角落说同一件事。
+- [`HudPlate`](/components/hud-plate)——限制会自己解除时（限流、冷却）配 `timer` 表盘，流失的环告诉人等一下而不是走开；服务宕机时配 `sync` 的 `error`，说生命周期失败了，而不编造一个数字。
+
+## 状态怎么走
+
+| 从         | 到         | 时机                                          |
+| ---------- | ---------- | --------------------------------------------- |
+| 任意       | `alerting` | 请求失败；`bang` 腰带啪地弹入，协议编号 `47`  |
+| `alerting` | `refusing` | 失败是策略而不是意外——编号 `49`               |
+| `alerting` | `idle`     | 只是暂时的，重试成功了                        |
+| `refusing` | `idle`     | 拿到权限、升级了或者登录了                    |
+| 任意       | `sleeping` | 服务下线；`tone="offline"` 会把边框指示灯关掉 |
+
+`alerting` 故意很响，但应该很短。`refusing` 是会被盯着看的状态，所以它安静：皱眉、眯眼、没有腰带，而且场景每十二秒换一次轮廓，长时间盯着不会像卡住了。
+
+## 每个状态的样子
+
+<StateMatrix states={['alerting', 'refusing', 'sleeping', 'idle']} />
+
+`bang` 进场时过冲一次，然后以两秒为周期缓慢脉动而不是闪烁：一眼看过去，这就是"看这里"和错误指示灯的区别。`refusing` 在线条脸模式下也保留皱眉——多数负面状态在线条脸里会松成一条平线——因为不皱眉的拒绝读起来像无所谓。
+
+## 接下来
+
+- [RestrictedScene](/components/restricted-scene)——整个死胡同
+- [徽标与状态](/components/avatar-chrome)——未读数与状态点

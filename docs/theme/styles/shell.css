@@ -1,0 +1,150 @@
+/*
+ * Shell.
+ *
+ * What the site draws around the pages and shares between all of them: the
+ * ambient backdrop, the focus ring, and the stage light that the home page
+ * and the docs demos put behind a character. Rules that
+ * restyle Rspress's own elements are in `rspress-overrides.css`.
+ */
+
+@layer site.shell {
+  /* Short and long pages keep the same content width under a classic scrollbar. */
+  html {
+    scrollbar-gutter: stable;
+  }
+
+  /*
+   * The home page is one fixed screen with capsules at its four edges. The
+   * right-hand capsule would sit a scrollbar's width further in than the left
+   * one if the gutter stayed reserved. The navbar keeps the shell's width, and
+   * the home layout holds its capsules to the same track.
+   */
+  :root:has(.site-home) {
+    scrollbar-gutter: auto;
+    --site-nav-width: min(var(--site-shell-max), calc(100% - var(--site-capsule-gap) * 2));
+  }
+
+  /* ---- capsule --------------------------------------------------------------- */
+
+  /*
+   * A floating pill: fully rounded, translucent and blurred so the page shows
+   * through softly, ringed and shadowed with full-ring shadows only. Detached
+   * from the viewport edge by `--site-capsule-gap`, which the placing rule
+   * (not this one) applies. The navbar takes the same four custom properties
+   * in `rspress-overrides.css`.
+   */
+  .site-capsule {
+    border-radius: var(--aora-radius-pill);
+    background: var(--site-capsule-bg);
+    -webkit-backdrop-filter: var(--site-capsule-blur);
+    backdrop-filter: var(--site-capsule-blur);
+    box-shadow: var(--site-capsule-shadow);
+  }
+
+  /* ---- backdrop -------------------------------------------------------------- */
+
+  .site-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.4;
+  }
+
+  .site-backdrop canvas,
+  .site-backdrop__fallback {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Two tints of the one brand hue: the page has no second colour to explain. */
+  .site-backdrop__fallback {
+    background:
+      radial-gradient(at 20% 15%, color-mix(in oklab, var(--aora-accent) 16%, transparent), transparent 55%),
+      radial-gradient(at 80% 30%, color-mix(in oklab, var(--aora-blue-300) 26%, transparent), transparent 55%);
+    animation: site-breathe 9s ease-in-out infinite;
+  }
+
+  @keyframes site-breathe {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.45;
+    }
+  }
+
+  /* ---- focus ----------------------------------------------------------------- */
+
+  /*
+   * One focus ring for everything on the site that can be focused, written
+   * once as a selector on the elements themselves instead of a list of the
+   * classes that happen to need it. A list would repeat the ring with several
+   * offsets and miss one-off buttons such as the timeline's micro-controls.
+   *
+   * `:where()` keeps the specificity at zero, so a component that wants a
+   * different treatment (the composer's whole-row ring, say) wins by writing
+   * a selector.
+   */
+  :where(
+    a,
+    button,
+    summary,
+    input,
+    select,
+    textarea,
+    [role='button'],
+    [role='radio'],
+    [role='option']
+  ):focus-visible {
+    outline: var(--aora-focus-ring);
+    outline-offset: var(--aora-focus-offset);
+  }
+
+  /* ---- stage light ----------------------------------------------------------- */
+
+  /*
+   * One soft pool of the character's own ink behind it: the whole set, with no
+   * card, no frame and no wordmark, so the body's edge is the only line on its
+   * side of the page.
+   *
+   * The pages differ only in size and where the pool sits, and say so through
+   * custom properties on the element that frames the character:
+   *
+   *   --site-glow-w   its width (it is a circle, so this is also its height)
+   *   --site-glow-y   the vertical offset of its centre
+   *   --site-glow-z   behind the page (`-1`) or between background and character
+   *
+   * `--site-swatch` is the preset's ink, set on the page element.
+   */
+  .site-glow {
+    --_ink: var(--site-swatch, var(--aora-accent));
+    --_core: light-dark(
+      color-mix(in oklab, var(--_ink) 16%, transparent),
+      color-mix(in oklab, var(--_ink) 22%, transparent)
+    );
+    --_edge: light-dark(
+      color-mix(in oklab, var(--_ink) 6%, transparent),
+      color-mix(in oklab, var(--_ink) 7%, transparent)
+    );
+    position: absolute;
+    z-index: var(--site-glow-z, -1);
+    display: block;
+    left: 50%;
+    top: 50%;
+    width: var(--site-glow-w, min(140%, 760px));
+    aspect-ratio: 1;
+    transform: translate(-50%, var(--site-glow-y, -46%));
+    border-radius: 50%;
+    background: radial-gradient(closest-side, var(--_core), var(--_edge) 55%, transparent 100%);
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-backdrop__fallback {
+      animation: none;
+    }
+  }
+}

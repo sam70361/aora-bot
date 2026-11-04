@@ -1,0 +1,2124 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`paper: static snapshots > blob / happy 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a1g4wv85" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a1g4wv85 { --a1g4wv85-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a1g4wv85 { --a1g4wv85-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g transform="rotate(-3 114.5 114.5)"><g transform="translate(5.16 7.37)"><path d="7670:563g4j" fill="var(--a1g4wv85-ink, #846BEC)"/><path d="7670:563g4j" fill="#000" fill-opacity="0.32"/></g><path d="7670:563g4j" fill="var(--a1g4wv85-ink, #846BEC)"/><g data-aora-face="">
+      <path d="257:7gwocp" transform="translate(33.6387 130.3855) matrix(0.706 0.0647 0.0529 0.9882 0 0) translate(-53.214 -137.2534)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="277:b3vqlq" transform="translate(143.3655 127.7157) matrix(0.9664 -0.0816 0.0503 0.99 0 0) translate(-167.0195 -137.2534)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="1076:gibt7j" transform="translate(52.9889 118.6515) matrix(0.843 -0.0079 0.0262 0.9993 0 0) translate(-76.1059 -127.045)" fill="#FFFFFF" opacity="1"/>
+      <path d="1155:did44c" transform="translate(118.6491 117.0846) matrix(0.999 -0.0263 0.0255 0.9994 0 0) translate(-144.1276 -127.045)" fill="#FFFFFF" opacity="1"/>
+      <path d="436:5q6awh" transform="translate(85.6631 139.3161) matrix(0.9654 -0.0113 0.0671 0.9762 0 0) translate(-110.1168 -148.634)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g></g>
+    <g data-aora-fx=""><path d="88:qzomwk" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`paper: static snapshots > blob / idle 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="ach1lqo" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .ach1lqo { --ach1lqo-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .ach1lqo { --ach1lqo-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g transform="rotate(-3 114.5 114.5)"><g transform="translate(5.16 7.37)"><path d="7670:563g4j" fill="var(--ach1lqo-ink, #846BEC)"/><path d="7670:563g4j" fill="#000" fill-opacity="0.32"/></g><path d="7670:563g4j" fill="var(--ach1lqo-ink, #846BEC)"/><g data-aora-face="">
+      <path d="1083:bfsm54" transform="translate(52.8329 108.9546) matrix(0.8426 -0.038 0.006 0.9981 0 0) translate(-76.1059 -117.3702)" fill="#FFFFFF" opacity="1"/>
+      <path d="1165:yvt6ec" transform="translate(118.4969 107.3891) matrix(0.9994 -0.0037 0.0058 0.9981 0 0) translate(-144.1276 -117.3702)" fill="#FFFFFF" opacity="1"/>
+    </g></g></g>
+</svg>"
+`;
+
+exports[`paper: static snapshots > blob / powering-down 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="ach1lqo" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .ach1lqo { --ach1lqo-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .ach1lqo { --ach1lqo-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g transform="rotate(-3 114.5 114.5)"><g transform="translate(5.16 7.37)"><path d="7670:563g4j" fill="var(--ach1lqo-ink, #846BEC)" fill-opacity="0.85"/><path d="7670:563g4j" fill="#000" fill-opacity="0.27"/></g><path d="7670:563g4j" fill="var(--ach1lqo-ink, #846BEC)" fill-opacity="0.85"/><g data-aora-face="">
+      <path d="1083:bfsm54" transform="translate(52.8329 108.9546) matrix(0.8426 -0.038 0.006 0.9981 0 0) translate(-76.1059 -117.3702)" fill="#FFFFFF" opacity="1"/>
+      <path d="1165:yvt6ec" transform="translate(118.4969 107.3891) matrix(0.9994 -0.0037 0.0058 0.9981 0 0) translate(-144.1276 -117.3702)" fill="#FFFFFF" opacity="1"/>
+    </g></g></g>
+</svg>"
+`;
+
+exports[`paper: static snapshots > blob / thinking 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="alwbvv3" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .alwbvv3 { --alwbvv3-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .alwbvv3 { --alwbvv3-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g transform="rotate(-3 114.5 114.5)"><g transform="translate(5.16 7.37)"><path d="7670:563g4j" fill="var(--alwbvv3-ink, #846BEC)"/><path d="7670:563g4j" fill="#000" fill-opacity="0.32"/></g><path d="7670:563g4j" fill="var(--alwbvv3-ink, #846BEC)"/><g data-aora-face="">
+      <path d="1041:192kt5t" transform="translate(61.6471 97.7751) matrix(0.8869 -0.0581 -0.0161 0.9876 0 0) translate(-85.7807 -106.5704)" fill="#FFFFFF" opacity="1"/>
+      <path d="1158:bw9lct" transform="translate(128.6689 96.7221) matrix(0.9922 0.0359 -0.0166 0.9872 0 0) translate(-153.8024 -106.5704)" fill="#FFFFFF" opacity="1"/>
+      <path d="445:1i6ixot" transform="translate(85.6631 139.3161) matrix(0.9654 -0.0113 0.0671 0.9762 0 0) translate(-110.1168 -148.634)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g></g>
+    <g data-aora-fx=""><circle cx="189.06" cy="39.94" r="5.06" fill="var(--alwbvv3-ink, #846BEC)" opacity="1"/><circle cx="207.7" cy="19.97" r="7.19" fill="var(--alwbvv3-ink, #846BEC)" opacity="1"/><circle cx="229" cy="-2.66" r="9.32" fill="var(--alwbvv3-ink, #846BEC)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`paper: static snapshots > bunny / happy 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a1q9pxry" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a1q9pxry { --a1q9pxry-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a1q9pxry { --a1q9pxry-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g transform="rotate(-3 114.5 114.5)"><g transform="translate(5.16 7.37)"><path d="6412:d5r94c" fill="var(--a1q9pxry-ink, #846BEC)"/><path d="6412:d5r94c" fill="#000" fill-opacity="0.32"/><path d="2379:5e6m4o" fill="var(--a1q9pxry-ink, #846BEC)"/><path d="2379:5e6m4o" fill="#000" fill-opacity="0.32"/><path d="2554:72toee" fill="var(--a1q9pxry-ink, #846BEC)"/><path d="2554:72toee" fill="#000" fill-opacity="0.32"/><path d="1331:1oi7vr5" fill="var(--a1q9pxry-ink, #846BEC)"/><path d="1331:1oi7vr5" fill="#000" fill-opacity="0.32"/><path d="1428:14rodk7" fill="var(--a1q9pxry-ink, #846BEC)"/><path d="1428:14rodk7" fill="#000" fill-opacity="0.32"/></g><path d="2379:5e6m4o" fill="var(--a1q9pxry-ink, #846BEC)"/><path d="2554:72toee" fill="var(--a1q9pxry-ink, #846BEC)"/><path d="6412:d5r94c" fill="var(--a1q9pxry-ink, #846BEC)"/><path d="1331:1oi7vr5" fill="var(--a1q9pxry-ink, #846BEC)"/><path d="1331:1oi7vr5" fill="#fff" fill-opacity="0.45"/><path d="1428:14rodk7" fill="var(--a1q9pxry-ink, #846BEC)"/><path d="1428:14rodk7" fill="#fff" fill-opacity="0.45"/><g data-aora-face="">
+      <path d="257:1fk099p" transform="translate(49.3081 158.7516) matrix(0.8147 0.1472 0.11 0.9105 0 0) translate(-68.7289 -165.824)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="277:1urori7" transform="translate(138.5041 156.9569) matrix(0.9716 -0.1831 0.11 0.9105 0 0) translate(-160.2711 -165.824)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="1084:1ckoy9n" transform="translate(64.7897 149.2817) matrix(0.8966 0.0546 0.0872 0.9512 0 0) translate(-87.1426 -157.6126)" fill="#FFFFFF" opacity="1"/>
+      <path d="1158:1dz841l" transform="translate(118.1022 148.2089) matrix(0.9957 -0.0926 0.0872 0.9512 0 0) translate(-141.8574 -157.6126)" fill="#FFFFFF" opacity="1"/>
+      <path d="443:r1yxo7" transform="translate(92.6292 166.4916) matrix(0.9744 -0.0196 0.1188 0.8907 0 0) translate(-114.5 -174.9782)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="6.84" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g></g>
+    <g data-aora-fx=""><path d="88:qzomwk" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`paper: static snapshots > bunny / idle 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a87u5fr" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a87u5fr { --a87u5fr-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a87u5fr { --a87u5fr-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g transform="rotate(-3 114.5 114.5)"><g transform="translate(5.16 7.37)"><path d="6412:d5r94c" fill="var(--a87u5fr-ink, #846BEC)"/><path d="6412:d5r94c" fill="#000" fill-opacity="0.32"/><path d="2379:5e6m4o" fill="var(--a87u5fr-ink, #846BEC)"/><path d="2379:5e6m4o" fill="#000" fill-opacity="0.32"/><path d="2554:72toee" fill="var(--a87u5fr-ink, #846BEC)"/><path d="2554:72toee" fill="#000" fill-opacity="0.32"/><path d="1331:1oi7vr5" fill="var(--a87u5fr-ink, #846BEC)"/><path d="1331:1oi7vr5" fill="#000" fill-opacity="0.32"/><path d="1428:14rodk7" fill="var(--a87u5fr-ink, #846BEC)"/><path d="1428:14rodk7" fill="#000" fill-opacity="0.32"/></g><path d="2379:5e6m4o" fill="var(--a87u5fr-ink, #846BEC)"/><path d="2554:72toee" fill="var(--a87u5fr-ink, #846BEC)"/><path d="6412:d5r94c" fill="var(--a87u5fr-ink, #846BEC)"/><path d="1331:1oi7vr5" fill="var(--a87u5fr-ink, #846BEC)"/><path d="1331:1oi7vr5" fill="#fff" fill-opacity="0.45"/><path d="1428:14rodk7" fill="var(--a87u5fr-ink, #846BEC)"/><path d="1428:14rodk7" fill="#fff" fill-opacity="0.45"/><g data-aora-face="">
+      <path d="1072:qnb2eb" transform="translate(64.1292 141.2798) matrix(0.8952 0.0374 0.0715 0.9715 0 0) translate(-87.1426 -149.8304)" fill="#FFFFFF" opacity="1"/>
+      <path d="1156:1o8y1n9" transform="translate(117.4417 140.2071) matrix(0.9971 -0.0754 0.0715 0.9715 0 0) translate(-141.8574 -149.8304)" fill="#FFFFFF" opacity="1"/>
+    </g></g></g>
+</svg>"
+`;
+
+exports[`paper: static snapshots > bunny / powering-down 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a87u5fr" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a87u5fr { --a87u5fr-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a87u5fr { --a87u5fr-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g transform="rotate(-3 114.5 114.5)"><g transform="translate(5.16 7.37)"><path d="6412:d5r94c" fill="var(--a87u5fr-ink, #846BEC)" fill-opacity="0.85"/><path d="6412:d5r94c" fill="#000" fill-opacity="0.27"/><path d="2379:5e6m4o" fill="var(--a87u5fr-ink, #846BEC)"/><path d="2379:5e6m4o" fill="#000" fill-opacity="0.32"/><path d="2554:72toee" fill="var(--a87u5fr-ink, #846BEC)"/><path d="2554:72toee" fill="#000" fill-opacity="0.32"/><path d="1331:1oi7vr5" fill="var(--a87u5fr-ink, #846BEC)"/><path d="1331:1oi7vr5" fill="#000" fill-opacity="0.32"/><path d="1428:14rodk7" fill="var(--a87u5fr-ink, #846BEC)"/><path d="1428:14rodk7" fill="#000" fill-opacity="0.32"/></g><path d="2379:5e6m4o" fill="var(--a87u5fr-ink, #846BEC)"/><path d="2554:72toee" fill="var(--a87u5fr-ink, #846BEC)"/><path d="6412:d5r94c" fill="var(--a87u5fr-ink, #846BEC)" fill-opacity="0.85"/><path d="1331:1oi7vr5" fill="var(--a87u5fr-ink, #846BEC)"/><path d="1331:1oi7vr5" fill="#fff" fill-opacity="0.45"/><path d="1428:14rodk7" fill="var(--a87u5fr-ink, #846BEC)"/><path d="1428:14rodk7" fill="#fff" fill-opacity="0.45"/><g data-aora-face="">
+      <path d="1072:qnb2eb" transform="translate(64.1292 141.2798) matrix(0.8952 0.0374 0.0715 0.9715 0 0) translate(-87.1426 -149.8304)" fill="#FFFFFF" opacity="1"/>
+      <path d="1156:1o8y1n9" transform="translate(117.4417 140.2071) matrix(0.9971 -0.0754 0.0715 0.9715 0 0) translate(-141.8574 -149.8304)" fill="#FFFFFF" opacity="1"/>
+    </g></g></g>
+</svg>"
+`;
+
+exports[`paper: static snapshots > bunny / thinking 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="aswk0g6" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .aswk0g6 { --aswk0g6-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .aswk0g6 { --aswk0g6-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g transform="rotate(-3 114.5 114.5)"><g transform="translate(5.16 7.37)"><path d="6412:d5r94c" fill="var(--aswk0g6-ink, #846BEC)"/><path d="6412:d5r94c" fill="#000" fill-opacity="0.32"/><path d="2379:5e6m4o" fill="var(--aswk0g6-ink, #846BEC)"/><path d="2379:5e6m4o" fill="#000" fill-opacity="0.32"/><path d="2554:72toee" fill="var(--aswk0g6-ink, #846BEC)"/><path d="2554:72toee" fill="#000" fill-opacity="0.32"/><path d="1331:1oi7vr5" fill="var(--aswk0g6-ink, #846BEC)"/><path d="1331:1oi7vr5" fill="#000" fill-opacity="0.32"/><path d="1428:14rodk7" fill="var(--aswk0g6-ink, #846BEC)"/><path d="1428:14rodk7" fill="#000" fill-opacity="0.32"/></g><path d="2379:5e6m4o" fill="var(--aswk0g6-ink, #846BEC)"/><path d="2554:72toee" fill="var(--aswk0g6-ink, #846BEC)"/><path d="6412:d5r94c" fill="var(--aswk0g6-ink, #846BEC)"/><path d="1331:1oi7vr5" fill="var(--aswk0g6-ink, #846BEC)"/><path d="1331:1oi7vr5" fill="#fff" fill-opacity="0.45"/><path d="1428:14rodk7" fill="var(--aswk0g6-ink, #846BEC)"/><path d="1428:14rodk7" fill="#fff" fill-opacity="0.45"/><g data-aora-face="">
+      <path d="1091:15pnfwd" transform="translate(70.7666 132.1164) matrix(0.9227 0.0068 0.0531 0.9881 0 0) translate(-94.9247 -141.1434)" fill="#FFFFFF" opacity="1"/>
+      <path d="1163:1uxk464" transform="translate(124.969 131.3796) matrix(0.9943 -0.0681 0.055 0.9867 0 0) translate(-149.6396 -141.1434)" fill="#FFFFFF" opacity="1"/>
+      <path d="417:1b3k2so" transform="translate(92.6292 166.4916) matrix(0.9744 -0.0196 0.1188 0.8907 0 0) translate(-114.5 -174.9782)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="6.84" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g></g>
+    <g data-aora-fx=""><circle cx="189.06" cy="39.94" r="5.06" fill="var(--aswk0g6-ink, #846BEC)" opacity="1"/><circle cx="207.7" cy="19.97" r="7.19" fill="var(--aswk0g6-ink, #846BEC)" opacity="1"/><circle cx="229" cy="-2.66" r="9.32" fill="var(--aswk0g6-ink, #846BEC)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`paper: static snapshots > cat / happy 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a18tjcem" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a18tjcem { --a18tjcem-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a18tjcem { --a18tjcem-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g transform="rotate(-3 114.5 114.5)"><g transform="translate(5.16 7.37)"><path d="7681:19gfjyr" fill="var(--a18tjcem-ink, #846BEC)"/><path d="7681:19gfjyr" fill="#000" fill-opacity="0.32"/></g><path d="7681:19gfjyr" fill="var(--a18tjcem-ink, #846BEC)"/><g data-aora-face="">
+      <path d="258:1q8gyy5" transform="translate(33.9582 152.7309) matrix(0.7031 0.1971 0.1044 0.9218 0 0) translate(-51.373 -158.8471)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="278:zyzy3r" transform="translate(156.9763 150.2556) matrix(0.9228 -0.2299 0.1044 0.9218 0 0) translate(-177.627 -158.8471)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="1069:1rrixqq" transform="translate(54.58 139.3944) matrix(0.8494 0.0551 0.0687 0.9745 0 0) translate(-76.7689 -147.5219)" fill="#FFFFFF" opacity="1"/>
+      <path d="1153:1dw3atz" transform="translate(128.1081 137.9149) matrix(0.9905 -0.0921 0.0687 0.9745 0 0) translate(-152.2311 -147.5219)" fill="#FFFFFF" opacity="1"/>
+      <path d="436:6utijo" transform="translate(92.1579 162.8213) matrix(0.9744 -0.0196 0.1119 0.9064 0 0) translate(-114.5 -171.4725)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="9.43" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g></g>
+    <g data-aora-fx=""><path d="88:qzomwk" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`paper: static snapshots > cat / idle 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="anozhyv" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .anozhyv { --anozhyv-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .anozhyv { --anozhyv-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g transform="rotate(-3 114.5 114.5)"><g transform="translate(5.16 7.37)"><path d="7681:19gfjyr" fill="var(--anozhyv-ink, #846BEC)"/><path d="7681:19gfjyr" fill="#000" fill-opacity="0.32"/></g><path d="7681:19gfjyr" fill="var(--anozhyv-ink, #846BEC)"/><g data-aora-face="">
+      <path d="1075:1ip1533" transform="translate(53.9402 128.4606) matrix(0.8474 0.0218 0.0464 0.9923 0 0) translate(-76.7689 -136.7889)" fill="#FFFFFF" opacity="1"/>
+      <path d="1159:1f2d8bl" transform="translate(127.4683 126.9811) matrix(0.9925 -0.0588 0.0464 0.9923 0 0) translate(-152.2311 -136.7889)" fill="#FFFFFF" opacity="1"/>
+    </g></g></g>
+</svg>"
+`;
+
+exports[`paper: static snapshots > cat / powering-down 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="anozhyv" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .anozhyv { --anozhyv-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .anozhyv { --anozhyv-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g transform="rotate(-3 114.5 114.5)"><g transform="translate(5.16 7.37)"><path d="7681:19gfjyr" fill="var(--anozhyv-ink, #846BEC)" fill-opacity="0.85"/><path d="7681:19gfjyr" fill="#000" fill-opacity="0.27"/></g><path d="7681:19gfjyr" fill="var(--anozhyv-ink, #846BEC)" fill-opacity="0.85"/><g data-aora-face="">
+      <path d="1075:1ip1533" transform="translate(53.9402 128.4606) matrix(0.8474 0.0218 0.0464 0.9923 0 0) translate(-76.7689 -136.7889)" fill="#FFFFFF" opacity="1"/>
+      <path d="1159:1f2d8bl" transform="translate(127.4683 126.9811) matrix(0.9925 -0.0588 0.0464 0.9923 0 0) translate(-152.2311 -136.7889)" fill="#FFFFFF" opacity="1"/>
+    </g></g></g>
+</svg>"
+`;
+
+exports[`paper: static snapshots > cat / thinking 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a1t3j112" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a1t3j112 { --a1t3j112-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a1t3j112 { --a1t3j112-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g transform="rotate(-3 114.5 114.5)"><g transform="translate(5.16 7.37)"><path d="7681:19gfjyr" fill="var(--a1t3j112-ink, #846BEC)"/><path d="7681:19gfjyr" fill="#000" fill-opacity="0.32"/></g><path d="7681:19gfjyr" fill="var(--a1t3j112-ink, #846BEC)"/><g data-aora-face="">
+      <path d="1116:1bflyr0" transform="translate(63.2709 115.8892) matrix(0.8941 -0.0172 0.0208 0.9998 0 0) translate(-87.502 -124.8078)" fill="#FFFFFF" opacity="1"/>
+      <path d="1171:16xm0p4" transform="translate(138.5016 115.0524) matrix(0.9775 -0.0239 0.0224 0.9997 0 0) translate(-162.9641 -124.8078)" fill="#FFFFFF" opacity="1"/>
+      <path d="447:1di4xh5" transform="translate(92.1579 162.8213) matrix(0.9744 -0.0196 0.1119 0.9064 0 0) translate(-114.5 -171.4725)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="9.43" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g></g>
+    <g data-aora-fx=""><circle cx="189.06" cy="39.94" r="5.06" fill="var(--a1t3j112-ink, #846BEC)" opacity="1"/><circle cx="207.7" cy="19.97" r="7.19" fill="var(--a1t3j112-ink, #846BEC)" opacity="1"/><circle cx="229" cy="-2.66" r="9.32" fill="var(--a1t3j112-ink, #846BEC)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`paper: static snapshots > sprout / happy 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a16r9khd" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a16r9khd { --a16r9khd-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a16r9khd { --a16r9khd-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g transform="rotate(-3 114.5 114.5)"><g transform="translate(5.16 7.37)"><path d="6367:1jftfwv" fill="var(--a16r9khd-ink, #846BEC)"/><path d="6367:1jftfwv" fill="#000" fill-opacity="0.32"/><path d="2283:1x6oprj" fill="var(--a16r9khd-ink, #846BEC)"/><path d="2283:1x6oprj" fill="#000" fill-opacity="0.32"/><path d="1240:1jtzno" fill="var(--a16r9khd-ink, #846BEC)"/><path d="1240:1jtzno" fill="#000" fill-opacity="0.32"/></g><path d="6367:1jftfwv" fill="var(--a16r9khd-ink, #846BEC)"/><path d="2283:1x6oprj" fill="#34B36B"/><path d="1240:1jtzno" fill="#34B36B"/><g data-aora-face="">
+      <path d="248:1bcdacj" transform="translate(46.322 155.2364) matrix(0.7967 0.1457 0.1037 0.9231 0 0) translate(-65.7535 -162.2698)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="268:1hd9a7g" transform="translate(141.3162 153.325) matrix(0.9666 -0.1812 0.1037 0.9231 0 0) translate(-163.2465 -162.2698)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="1083:8w8dbe" transform="translate(62.8 145.1472) matrix(0.8887 0.0502 0.0793 0.9622 0 0) translate(-85.3642 -153.5246)" fill="#FFFFFF" opacity="1"/>
+      <path d="1159:1lyapyu" transform="translate(119.5782 144.0047) matrix(0.9959 -0.0881 0.0793 0.9622 0 0) translate(-143.6358 -153.5246)" fill="#FFFFFF" opacity="1"/>
+      <path d="442:1ybg90n" transform="translate(92.2289 163.3926) matrix(0.9744 -0.0196 0.113 0.904 0 0) translate(-114.5 -172.0191)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="7.28" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g></g>
+    <g data-aora-fx=""><path d="88:qzomwk" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`paper: static snapshots > sprout / idle 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="agr4lis" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .agr4lis { --agr4lis-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .agr4lis { --agr4lis-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g transform="rotate(-3 114.5 114.5)"><g transform="translate(5.16 7.37)"><path d="6367:1jftfwv" fill="var(--agr4lis-ink, #846BEC)"/><path d="6367:1jftfwv" fill="#000" fill-opacity="0.32"/><path d="2283:1x6oprj" fill="var(--agr4lis-ink, #846BEC)"/><path d="2283:1x6oprj" fill="#000" fill-opacity="0.32"/><path d="1240:1jtzno" fill="var(--agr4lis-ink, #846BEC)"/><path d="1240:1jtzno" fill="#000" fill-opacity="0.32"/></g><path d="6367:1jftfwv" fill="var(--agr4lis-ink, #846BEC)"/><path d="2283:1x6oprj" fill="#34B36B"/><path d="1240:1jtzno" fill="#34B36B"/><g data-aora-face="">
+      <path d="1083:111i9iu" transform="translate(62.1807 136.6569) matrix(0.8873 0.0306 0.0624 0.9806 0 0) translate(-85.3642 -145.2366)" fill="#FFFFFF" opacity="1"/>
+      <path d="1167:zcezae" transform="translate(118.9589 135.5144) matrix(0.9973 -0.0686 0.0624 0.9806 0 0) translate(-143.6358 -145.2366)" fill="#FFFFFF" opacity="1"/>
+    </g></g></g>
+</svg>"
+`;
+
+exports[`paper: static snapshots > sprout / powering-down 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="agr4lis" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .agr4lis { --agr4lis-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .agr4lis { --agr4lis-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g transform="rotate(-3 114.5 114.5)"><g transform="translate(5.16 7.37)"><path d="6367:1jftfwv" fill="var(--agr4lis-ink, #846BEC)" fill-opacity="0.85"/><path d="6367:1jftfwv" fill="#000" fill-opacity="0.27"/><path d="2283:1x6oprj" fill="var(--agr4lis-ink, #846BEC)"/><path d="2283:1x6oprj" fill="#000" fill-opacity="0.32"/><path d="1240:1jtzno" fill="var(--agr4lis-ink, #846BEC)"/><path d="1240:1jtzno" fill="#000" fill-opacity="0.32"/></g><path d="6367:1jftfwv" fill="var(--agr4lis-ink, #846BEC)" fill-opacity="0.85"/><path d="2283:1x6oprj" fill="#34B36B"/><path d="1240:1jtzno" fill="#34B36B"/><g data-aora-face="">
+      <path d="1083:111i9iu" transform="translate(62.1807 136.6569) matrix(0.8873 0.0306 0.0624 0.9806 0 0) translate(-85.3642 -145.2366)" fill="#FFFFFF" opacity="1"/>
+      <path d="1167:zcezae" transform="translate(118.9589 135.5144) matrix(0.9973 -0.0686 0.0624 0.9806 0 0) translate(-143.6358 -145.2366)" fill="#FFFFFF" opacity="1"/>
+    </g></g></g>
+</svg>"
+`;
+
+exports[`paper: static snapshots > sprout / thinking 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a192bxdf" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a192bxdf { --a192bxdf-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a192bxdf { --a192bxdf-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g transform="rotate(-3 114.5 114.5)"><g transform="translate(5.16 7.37)"><path d="6367:1jftfwv" fill="var(--a192bxdf-ink, #846BEC)"/><path d="6367:1jftfwv" fill="#000" fill-opacity="0.32"/><path d="2283:1x6oprj" fill="var(--a192bxdf-ink, #846BEC)"/><path d="2283:1x6oprj" fill="#000" fill-opacity="0.32"/><path d="1240:1jtzno" fill="var(--a192bxdf-ink, #846BEC)"/><path d="1240:1jtzno" fill="#000" fill-opacity="0.32"/></g><path d="6367:1jftfwv" fill="var(--a192bxdf-ink, #846BEC)"/><path d="2283:1x6oprj" fill="#34B36B"/><path d="1240:1jtzno" fill="#34B36B"/><g data-aora-face="">
+      <path d="1108:1nitdzr" transform="translate(69.3256 126.9265) matrix(0.9179 0.0002 0.0429 0.9941 0 0) translate(-93.6522 -135.9848)" fill="#FFFFFF" opacity="1"/>
+      <path d="1149:7wacmh" transform="translate(127.107 126.1628) matrix(0.9929 -0.056 0.0447 0.9932 0 0) translate(-151.9238 -135.9848)" fill="#FFFFFF" opacity="1"/>
+      <path d="447:1wy4cmf" transform="translate(92.2289 163.3926) matrix(0.9744 -0.0196 0.113 0.904 0 0) translate(-114.5 -172.0191)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="7.28" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g></g>
+    <g data-aora-fx=""><circle cx="189.06" cy="39.94" r="5.06" fill="var(--a192bxdf-ink, #846BEC)" opacity="1"/><circle cx="207.7" cy="19.97" r="7.19" fill="var(--a192bxdf-ink, #846BEC)" opacity="1"/><circle cx="229" cy="-2.66" r="9.32" fill="var(--a192bxdf-ink, #846BEC)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`paper: static snapshots > star / happy 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a15snm6i" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a15snm6i { --a15snm6i-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a15snm6i { --a15snm6i-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g transform="rotate(-3 114.5 114.5)"><g transform="translate(5.16 7.37)"><path d="8970:e17huj" fill="var(--a15snm6i-ink, #846BEC)"/><path d="8970:e17huj" fill="#000" fill-opacity="0.32"/></g><path d="8970:e17huj" fill="var(--a15snm6i-ink, #846BEC)"/><g data-aora-face="">
+      <path d="259:1t0xlvp" transform="translate(36.6481 134.7008) matrix(0.7306 0.0809 0.062 0.981 0 0) translate(-56.5097 -141.7266)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="279:1j285xk" transform="translate(149.656 132.4269) matrix(0.9497 -0.1147 0.062 0.981 0 0) translate(-172.4903 -141.7266)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="1084:o1h3rq" transform="translate(56.4928 123.3563) matrix(0.8614 0.004 0.0359 0.997 0 0) translate(-79.8391 -131.8919)" fill="#FFFFFF" opacity="1"/>
+      <path d="1168:sdirrt" transform="translate(124.0379 121.9972) matrix(0.9959 -0.0414 0.0359 0.997 0 0) translate(-149.1609 -131.8919)" fill="#FFFFFF" opacity="1"/>
+      <path d="428:uaqnau" transform="translate(90.269 144.0294) matrix(0.9744 -0.0196 0.0763 0.966 0 0) translate(-114.5 -153.3247)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="8.67" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g></g>
+    <g data-aora-fx=""><path d="88:qzomwk" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`paper: static snapshots > star / idle 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a1joaraz" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a1joaraz { --a1joaraz-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a1joaraz { --a1joaraz-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g transform="rotate(-3 114.5 114.5)"><g transform="translate(5.16 7.37)"><path d="8970:e17huj" fill="var(--a1joaraz-ink, #846BEC)"/><path d="8970:e17huj" fill="#000" fill-opacity="0.32"/></g><path d="8970:e17huj" fill="var(--a1joaraz-ink, #846BEC)"/><g data-aora-face="">
+      <path d="1083:1u7aaci" transform="translate(56.2291 112.8679) matrix(0.8607 -0.0251 0.0144 0.9996 0 0) translate(-79.8391 -121.4634)" fill="#FFFFFF" opacity="1"/>
+      <path d="1167:tb6e08" transform="translate(123.7741 111.5088) matrix(0.9966 -0.0123 0.0144 0.9996 0 0) translate(-149.1609 -121.4634)" fill="#FFFFFF" opacity="1"/>
+    </g></g></g>
+</svg>"
+`;
+
+exports[`paper: static snapshots > star / powering-down 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a1joaraz" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a1joaraz { --a1joaraz-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a1joaraz { --a1joaraz-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g transform="rotate(-3 114.5 114.5)"><g transform="translate(5.16 7.37)"><path d="8970:e17huj" fill="var(--a1joaraz-ink, #846BEC)" fill-opacity="0.85"/><path d="8970:e17huj" fill="#000" fill-opacity="0.27"/></g><path d="8970:e17huj" fill="var(--a1joaraz-ink, #846BEC)" fill-opacity="0.85"/><g data-aora-face="">
+      <path d="1083:1u7aaci" transform="translate(56.2291 112.8679) matrix(0.8607 -0.0251 0.0144 0.9996 0 0) translate(-79.8391 -121.4634)" fill="#FFFFFF" opacity="1"/>
+      <path d="1167:tb6e08" transform="translate(123.7741 111.5088) matrix(0.9966 -0.0123 0.0144 0.9996 0 0) translate(-149.1609 -121.4634)" fill="#FFFFFF" opacity="1"/>
+    </g></g></g>
+</svg>"
+`;
+
+exports[`paper: static snapshots > star / thinking 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="aty5fju" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .aty5fju { --aty5fju-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .aty5fju { --aty5fju-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g transform="rotate(-3 114.5 114.5)"><g transform="translate(5.16 7.37)"><path d="8970:e17huj" fill="var(--aty5fju-ink, #846BEC)"/><path d="8970:e17huj" fill="#000" fill-opacity="0.32"/></g><path d="8970:e17huj" fill="var(--aty5fju-ink, #846BEC)"/><g data-aora-face="">
+      <path d="1082:1so9el1" transform="translate(65.7373 100.8201) matrix(0.9047 -0.0459 -0.0094 0.9918 0 0) translate(-90.2677 -109.8222)" fill="#FFFFFF" opacity="1"/>
+      <path d="1158:165sltt" transform="translate(134.7814 100.027) matrix(0.9841 0.0328 -0.01 0.9914 0 0) translate(-159.5894 -109.8222)" fill="#FFFFFF" opacity="1"/>
+      <path d="439:1dosjz7" transform="translate(90.269 144.0294) matrix(0.9744 -0.0196 0.0763 0.966 0 0) translate(-114.5 -153.3247)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="8.67" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g></g>
+    <g data-aora-fx=""><circle cx="189.06" cy="39.94" r="5.06" fill="var(--aty5fju-ink, #846BEC)" opacity="1"/><circle cx="207.7" cy="19.97" r="7.19" fill="var(--aty5fju-ink, #846BEC)" opacity="1"/><circle cx="229" cy="-2.66" r="9.32" fill="var(--aty5fju-ink, #846BEC)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`paper: static snapshots > takes the parameters of its variant 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a28iket" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a28iket { --a28iket-ink: #1F1F1F; }
+    @media (prefers-color-scheme: dark) {
+      .a28iket { --a28iket-ink: #FFFFFF; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g transform="rotate(-3 114.5 114.5)"><g transform="translate(-7 12.12)"><path d="6985:pvg2bx" fill="var(--a28iket-ink, #1F1F1F)"/><path d="6985:pvg2bx" fill="#000" fill-opacity="0.32"/></g><path d="6985:pvg2bx" fill="var(--a28iket-ink, #1F1F1F)"/><g data-aora-face="">
+      <path d="1085:1liific" transform="translate(58.6336 104.549) matrix(0.8729 -0.0457 -0.0025 0.9952 0 0) translate(-82.5467 -113.2544)" fill="var(--aora-face, var(--aora-bg, var(--aora-bg-base, #fcfcfc)))" opacity="1"/>
+      <path d="1169:4qt9x2" transform="translate(120.9023 103.296) matrix(0.9984 0.008 -0.0025 0.9952 0 0) translate(-146.4533 -113.2544)" fill="var(--aora-face, var(--aora-bg, var(--aora-bg-base, #fcfcfc)))" opacity="1"/>
+    </g></g></g>
+</svg>"
+`;
+
+exports[`paper: static snapshots > tofu / happy 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="ah0dxs2" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .ah0dxs2 { --ah0dxs2-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .ah0dxs2 { --ah0dxs2-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g transform="rotate(-3 114.5 114.5)"><g transform="translate(5.16 7.37)"><path d="6985:pvg2bx" fill="var(--ah0dxs2-ink, #846BEC)"/><path d="6985:pvg2bx" fill="#000" fill-opacity="0.32"/></g><path d="6985:pvg2bx" fill="var(--ah0dxs2-ink, #846BEC)"/><g data-aora-face="">
+      <path d="259:uc9leh" transform="translate(39.973 124.4464) matrix(0.7582 0.0237 0.0387 0.9959 0 0) translate(-61.0397 -131.9348)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="279:1qfuluu" transform="translate(144.1533 122.3501) matrix(0.9651 -0.0584 0.0387 0.9959 0 0) translate(-167.9603 -131.9348)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="1076:1kkeebo" transform="translate(58.6951 113.6271) matrix(0.873 -0.0226 0.016 0.9997 0 0) translate(-82.5467 -122.3439)" fill="#FFFFFF" opacity="1"/>
+      <path d="1156:1cjo75" transform="translate(120.9637 112.3741) matrix(0.9983 -0.015 0.016 0.9997 0 0) translate(-146.4533 -122.3439)" fill="#FFFFFF" opacity="1"/>
+      <path d="434:18h8fzi" transform="translate(89.5323 133.0942) matrix(0.9744 -0.0196 0.0553 0.9865 0 0) translate(-114.5 -142.6269)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="7.99" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g></g>
+    <g data-aora-fx=""><path d="88:qzomwk" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`paper: static snapshots > tofu / idle 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a6ra0sj" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a6ra0sj { --a6ra0sj-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a6ra0sj { --a6ra0sj-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g transform="rotate(-3 114.5 114.5)"><g transform="translate(5.16 7.37)"><path d="6985:pvg2bx" fill="var(--a6ra0sj-ink, #846BEC)"/><path d="6985:pvg2bx" fill="#000" fill-opacity="0.32"/></g><path d="6985:pvg2bx" fill="var(--a6ra0sj-ink, #846BEC)"/><g data-aora-face="">
+      <path d="1085:1liific" transform="translate(58.6336 104.549) matrix(0.8729 -0.0457 -0.0025 0.9952 0 0) translate(-82.5467 -113.2544)" fill="#FFFFFF" opacity="1"/>
+      <path d="1169:4qt9x2" transform="translate(120.9023 103.296) matrix(0.9984 0.008 -0.0025 0.9952 0 0) translate(-146.4533 -113.2544)" fill="#FFFFFF" opacity="1"/>
+    </g></g></g>
+</svg>"
+`;
+
+exports[`paper: static snapshots > tofu / powering-down 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a6ra0sj" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a6ra0sj { --a6ra0sj-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a6ra0sj { --a6ra0sj-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g transform="rotate(-3 114.5 114.5)"><g transform="translate(5.16 7.37)"><path d="6985:pvg2bx" fill="var(--a6ra0sj-ink, #846BEC)" fill-opacity="0.85"/><path d="6985:pvg2bx" fill="#000" fill-opacity="0.27"/></g><path d="6985:pvg2bx" fill="var(--a6ra0sj-ink, #846BEC)" fill-opacity="0.85"/><g data-aora-face="">
+      <path d="1085:1liific" transform="translate(58.6336 104.549) matrix(0.8729 -0.0457 -0.0025 0.9952 0 0) translate(-82.5467 -113.2544)" fill="#FFFFFF" opacity="1"/>
+      <path d="1169:4qt9x2" transform="translate(120.9023 103.296) matrix(0.9984 0.008 -0.0025 0.9952 0 0) translate(-146.4533 -113.2544)" fill="#FFFFFF" opacity="1"/>
+    </g></g></g>
+</svg>"
+`;
+
+exports[`paper: static snapshots > tofu / thinking 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="aizc3pe" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .aizc3pe { --aizc3pe-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .aizc3pe { --aizc3pe-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g transform="rotate(-3 114.5 114.5)"><g transform="translate(5.16 7.37)"><path d="6985:pvg2bx" fill="var(--aizc3pe-ink, #846BEC)"/><path d="6985:pvg2bx" fill="#000" fill-opacity="0.32"/></g><path d="6985:pvg2bx" fill="var(--aizc3pe-ink, #846BEC)"/><g data-aora-face="">
+      <path d="1097:10kxrie" transform="translate(67.1145 94.1212) matrix(0.9101 -0.0563 -0.0228 0.9824 0 0) translate(-91.6362 -103.108)" fill="#FFFFFF" opacity="1"/>
+      <path d="1152:1v7p2bu" transform="translate(130.5825 93.321) matrix(0.9898 0.05 -0.024 0.9815 0 0) translate(-155.5428 -103.108)" fill="#FFFFFF" opacity="1"/>
+      <path d="435:x2djs9" transform="translate(89.5323 133.0942) matrix(0.9744 -0.0196 0.0553 0.9865 0 0) translate(-114.5 -142.6269)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="7.99" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g></g>
+    <g data-aora-fx=""><circle cx="189.06" cy="39.94" r="5.06" fill="var(--aizc3pe-ink, #846BEC)" opacity="1"/><circle cx="207.7" cy="19.97" r="7.19" fill="var(--aizc3pe-ink, #846BEC)" opacity="1"/><circle cx="229" cy="-2.66" r="9.32" fill="var(--aizc3pe-ink, #846BEC)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`riso: static snapshots > blob / happy 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a1g4wv85" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a1g4wv85 { --a1g4wv85-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a1g4wv85 { --a1g4wv85-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><pattern id="a1g4wv85-halftone" width="7.8" height="7.8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="3.9" cy="3.9" r="1.7" fill="#fff" fill-opacity="0.42"/></pattern></defs>
+    <g style="isolation:isolate"><g transform="translate(7.94 6.08)"><path d="7670:563g4j" fill="var(--aora-ink2, #FF78A6)"/></g><g opacity="0.92" style="mix-blend-mode:multiply"><path d="7670:563g4j" fill="var(--a1g4wv85-ink, #846BEC)"/><path d="7670:563g4j" fill="#fff" fill-opacity="0.18"/></g><path d="7670:563g4j" fill="url(#a1g4wv85-halftone)"/></g>
+    <g data-aora-face="">
+      <path d="257:7gwocp" transform="translate(33.6387 130.3855) matrix(0.706 0.0647 0.0529 0.9882 0 0) translate(-53.214 -137.2534)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="277:b3vqlq" transform="translate(143.3655 127.7157) matrix(0.9664 -0.0816 0.0503 0.99 0 0) translate(-167.0195 -137.2534)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="1076:gibt7j" transform="translate(52.9889 118.6515) matrix(0.843 -0.0079 0.0262 0.9993 0 0) translate(-76.1059 -127.045)" fill="#FFFFFF" opacity="1"/>
+      <path d="1155:did44c" transform="translate(118.6491 117.0846) matrix(0.999 -0.0263 0.0255 0.9994 0 0) translate(-144.1276 -127.045)" fill="#FFFFFF" opacity="1"/>
+      <path d="436:5q6awh" transform="translate(85.6631 139.3161) matrix(0.9654 -0.0113 0.0671 0.9762 0 0) translate(-110.1168 -148.634)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><path d="88:qzomwk" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`riso: static snapshots > blob / idle 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="ach1lqo" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .ach1lqo { --ach1lqo-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .ach1lqo { --ach1lqo-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><pattern id="ach1lqo-halftone" width="7.8" height="7.8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="3.9" cy="3.9" r="1.7" fill="#fff" fill-opacity="0.42"/></pattern></defs>
+    <g style="isolation:isolate"><g transform="translate(7.94 6.08)"><path d="7670:563g4j" fill="var(--aora-ink2, #FF78A6)"/></g><g opacity="0.92" style="mix-blend-mode:multiply"><path d="7670:563g4j" fill="var(--ach1lqo-ink, #846BEC)"/><path d="7670:563g4j" fill="#fff" fill-opacity="0.18"/></g><path d="7670:563g4j" fill="url(#ach1lqo-halftone)"/></g>
+    <g data-aora-face="">
+      <path d="1083:bfsm54" transform="translate(52.8329 108.9546) matrix(0.8426 -0.038 0.006 0.9981 0 0) translate(-76.1059 -117.3702)" fill="#FFFFFF" opacity="1"/>
+      <path d="1165:yvt6ec" transform="translate(118.4969 107.3891) matrix(0.9994 -0.0037 0.0058 0.9981 0 0) translate(-144.1276 -117.3702)" fill="#FFFFFF" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`riso: static snapshots > blob / powering-down 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="ach1lqo" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .ach1lqo { --ach1lqo-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .ach1lqo { --ach1lqo-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><pattern id="ach1lqo-halftone" width="7.8" height="7.8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="3.9" cy="3.9" r="1.7" fill="#fff" fill-opacity="0.42"/></pattern></defs>
+    <g style="isolation:isolate"><g transform="translate(7.94 6.08)"><path d="7670:563g4j" fill="var(--aora-ink2, #FF78A6)" fill-opacity="0.85"/></g><g opacity="0.92" style="mix-blend-mode:multiply"><path d="7670:563g4j" fill="var(--ach1lqo-ink, #846BEC)" fill-opacity="0.85"/><path d="7670:563g4j" fill="#fff" fill-opacity="0.15"/></g><path d="7670:563g4j" fill="url(#ach1lqo-halftone)" opacity="0.85"/></g>
+    <g data-aora-face="">
+      <path d="1083:bfsm54" transform="translate(52.8329 108.9546) matrix(0.8426 -0.038 0.006 0.9981 0 0) translate(-76.1059 -117.3702)" fill="#FFFFFF" opacity="1"/>
+      <path d="1165:yvt6ec" transform="translate(118.4969 107.3891) matrix(0.9994 -0.0037 0.0058 0.9981 0 0) translate(-144.1276 -117.3702)" fill="#FFFFFF" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`riso: static snapshots > blob / thinking 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="alwbvv3" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .alwbvv3 { --alwbvv3-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .alwbvv3 { --alwbvv3-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><pattern id="alwbvv3-halftone" width="7.8" height="7.8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="3.9" cy="3.9" r="1.7" fill="#fff" fill-opacity="0.42"/></pattern></defs>
+    <g style="isolation:isolate"><g transform="translate(7.94 6.08)"><path d="7670:563g4j" fill="var(--aora-ink2, #FF78A6)"/></g><g opacity="0.92" style="mix-blend-mode:multiply"><path d="7670:563g4j" fill="var(--alwbvv3-ink, #846BEC)"/><path d="7670:563g4j" fill="#fff" fill-opacity="0.18"/></g><path d="7670:563g4j" fill="url(#alwbvv3-halftone)"/></g>
+    <g data-aora-face="">
+      <path d="1041:192kt5t" transform="translate(61.6471 97.7751) matrix(0.8869 -0.0581 -0.0161 0.9876 0 0) translate(-85.7807 -106.5704)" fill="#FFFFFF" opacity="1"/>
+      <path d="1158:bw9lct" transform="translate(128.6689 96.7221) matrix(0.9922 0.0359 -0.0166 0.9872 0 0) translate(-153.8024 -106.5704)" fill="#FFFFFF" opacity="1"/>
+      <path d="445:1i6ixot" transform="translate(85.6631 139.3161) matrix(0.9654 -0.0113 0.0671 0.9762 0 0) translate(-110.1168 -148.634)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><circle cx="189.06" cy="39.94" r="5.06" fill="var(--alwbvv3-ink, #846BEC)" opacity="1"/><circle cx="207.7" cy="19.97" r="7.19" fill="var(--alwbvv3-ink, #846BEC)" opacity="1"/><circle cx="229" cy="-2.66" r="9.32" fill="var(--alwbvv3-ink, #846BEC)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`riso: static snapshots > bunny / happy 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a1q9pxry" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a1q9pxry { --a1q9pxry-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a1q9pxry { --a1q9pxry-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><pattern id="a1q9pxry-halftone" width="7.8" height="7.8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="3.9" cy="3.9" r="1.7" fill="#fff" fill-opacity="0.42"/></pattern></defs>
+    <g style="isolation:isolate"><g transform="translate(7.94 6.08)"><path d="6412:d5r94c" fill="var(--aora-ink2, #FF78A6)"/><path d="2379:5e6m4o" fill="var(--aora-ink2, #FF78A6)"/><path d="2554:72toee" fill="var(--aora-ink2, #FF78A6)"/></g><g opacity="0.92" style="mix-blend-mode:multiply"><path d="2379:5e6m4o" fill="var(--a1q9pxry-ink, #846BEC)"/><path d="2554:72toee" fill="var(--a1q9pxry-ink, #846BEC)"/><path d="6412:d5r94c" fill="var(--a1q9pxry-ink, #846BEC)"/><path d="6412:d5r94c" fill="#fff" fill-opacity="0.18"/><path d="2379:5e6m4o" fill="#fff" fill-opacity="0.18"/><path d="2554:72toee" fill="#fff" fill-opacity="0.18"/></g><path d="6412:d5r94c" fill="url(#a1q9pxry-halftone)"/><path d="2379:5e6m4o" fill="url(#a1q9pxry-halftone)"/><path d="2554:72toee" fill="url(#a1q9pxry-halftone)"/></g>
+    <path d="1331:1oi7vr5" fill="var(--a1q9pxry-ink, #846BEC)"/>
+    <path d="1331:1oi7vr5" fill="#fff" fill-opacity="0.45"/>
+    <path d="1428:14rodk7" fill="var(--a1q9pxry-ink, #846BEC)"/>
+    <path d="1428:14rodk7" fill="#fff" fill-opacity="0.45"/>
+    <g data-aora-face="">
+      <path d="257:1fk099p" transform="translate(49.3081 158.7516) matrix(0.8147 0.1472 0.11 0.9105 0 0) translate(-68.7289 -165.824)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="277:1urori7" transform="translate(138.5041 156.9569) matrix(0.9716 -0.1831 0.11 0.9105 0 0) translate(-160.2711 -165.824)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="1084:1ckoy9n" transform="translate(64.7897 149.2817) matrix(0.8966 0.0546 0.0872 0.9512 0 0) translate(-87.1426 -157.6126)" fill="#FFFFFF" opacity="1"/>
+      <path d="1158:1dz841l" transform="translate(118.1022 148.2089) matrix(0.9957 -0.0926 0.0872 0.9512 0 0) translate(-141.8574 -157.6126)" fill="#FFFFFF" opacity="1"/>
+      <path d="443:r1yxo7" transform="translate(92.6292 166.4916) matrix(0.9744 -0.0196 0.1188 0.8907 0 0) translate(-114.5 -174.9782)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="6.84" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><path d="88:qzomwk" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`riso: static snapshots > bunny / idle 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a87u5fr" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a87u5fr { --a87u5fr-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a87u5fr { --a87u5fr-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><pattern id="a87u5fr-halftone" width="7.8" height="7.8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="3.9" cy="3.9" r="1.7" fill="#fff" fill-opacity="0.42"/></pattern></defs>
+    <g style="isolation:isolate"><g transform="translate(7.94 6.08)"><path d="6412:d5r94c" fill="var(--aora-ink2, #FF78A6)"/><path d="2379:5e6m4o" fill="var(--aora-ink2, #FF78A6)"/><path d="2554:72toee" fill="var(--aora-ink2, #FF78A6)"/></g><g opacity="0.92" style="mix-blend-mode:multiply"><path d="2379:5e6m4o" fill="var(--a87u5fr-ink, #846BEC)"/><path d="2554:72toee" fill="var(--a87u5fr-ink, #846BEC)"/><path d="6412:d5r94c" fill="var(--a87u5fr-ink, #846BEC)"/><path d="6412:d5r94c" fill="#fff" fill-opacity="0.18"/><path d="2379:5e6m4o" fill="#fff" fill-opacity="0.18"/><path d="2554:72toee" fill="#fff" fill-opacity="0.18"/></g><path d="6412:d5r94c" fill="url(#a87u5fr-halftone)"/><path d="2379:5e6m4o" fill="url(#a87u5fr-halftone)"/><path d="2554:72toee" fill="url(#a87u5fr-halftone)"/></g>
+    <path d="1331:1oi7vr5" fill="var(--a87u5fr-ink, #846BEC)"/>
+    <path d="1331:1oi7vr5" fill="#fff" fill-opacity="0.45"/>
+    <path d="1428:14rodk7" fill="var(--a87u5fr-ink, #846BEC)"/>
+    <path d="1428:14rodk7" fill="#fff" fill-opacity="0.45"/>
+    <g data-aora-face="">
+      <path d="1072:qnb2eb" transform="translate(64.1292 141.2798) matrix(0.8952 0.0374 0.0715 0.9715 0 0) translate(-87.1426 -149.8304)" fill="#FFFFFF" opacity="1"/>
+      <path d="1156:1o8y1n9" transform="translate(117.4417 140.2071) matrix(0.9971 -0.0754 0.0715 0.9715 0 0) translate(-141.8574 -149.8304)" fill="#FFFFFF" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`riso: static snapshots > bunny / powering-down 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a87u5fr" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a87u5fr { --a87u5fr-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a87u5fr { --a87u5fr-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><pattern id="a87u5fr-halftone" width="7.8" height="7.8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="3.9" cy="3.9" r="1.7" fill="#fff" fill-opacity="0.42"/></pattern></defs>
+    <g style="isolation:isolate"><g transform="translate(7.94 6.08)"><path d="6412:d5r94c" fill="var(--aora-ink2, #FF78A6)" fill-opacity="0.85"/><path d="2379:5e6m4o" fill="var(--aora-ink2, #FF78A6)" fill-opacity="0.85"/><path d="2554:72toee" fill="var(--aora-ink2, #FF78A6)" fill-opacity="0.85"/></g><g opacity="0.92" style="mix-blend-mode:multiply"><path d="2379:5e6m4o" fill="var(--a87u5fr-ink, #846BEC)"/><path d="2554:72toee" fill="var(--a87u5fr-ink, #846BEC)"/><path d="6412:d5r94c" fill="var(--a87u5fr-ink, #846BEC)" fill-opacity="0.85"/><path d="6412:d5r94c" fill="#fff" fill-opacity="0.15"/><path d="2379:5e6m4o" fill="#fff" fill-opacity="0.15"/><path d="2554:72toee" fill="#fff" fill-opacity="0.15"/></g><path d="6412:d5r94c" fill="url(#a87u5fr-halftone)" opacity="0.85"/><path d="2379:5e6m4o" fill="url(#a87u5fr-halftone)" opacity="0.85"/><path d="2554:72toee" fill="url(#a87u5fr-halftone)" opacity="0.85"/></g>
+    <path d="1331:1oi7vr5" fill="var(--a87u5fr-ink, #846BEC)"/>
+    <path d="1331:1oi7vr5" fill="#fff" fill-opacity="0.45"/>
+    <path d="1428:14rodk7" fill="var(--a87u5fr-ink, #846BEC)"/>
+    <path d="1428:14rodk7" fill="#fff" fill-opacity="0.45"/>
+    <g data-aora-face="">
+      <path d="1072:qnb2eb" transform="translate(64.1292 141.2798) matrix(0.8952 0.0374 0.0715 0.9715 0 0) translate(-87.1426 -149.8304)" fill="#FFFFFF" opacity="1"/>
+      <path d="1156:1o8y1n9" transform="translate(117.4417 140.2071) matrix(0.9971 -0.0754 0.0715 0.9715 0 0) translate(-141.8574 -149.8304)" fill="#FFFFFF" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`riso: static snapshots > bunny / thinking 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="aswk0g6" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .aswk0g6 { --aswk0g6-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .aswk0g6 { --aswk0g6-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><pattern id="aswk0g6-halftone" width="7.8" height="7.8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="3.9" cy="3.9" r="1.7" fill="#fff" fill-opacity="0.42"/></pattern></defs>
+    <g style="isolation:isolate"><g transform="translate(7.94 6.08)"><path d="6412:d5r94c" fill="var(--aora-ink2, #FF78A6)"/><path d="2379:5e6m4o" fill="var(--aora-ink2, #FF78A6)"/><path d="2554:72toee" fill="var(--aora-ink2, #FF78A6)"/></g><g opacity="0.92" style="mix-blend-mode:multiply"><path d="2379:5e6m4o" fill="var(--aswk0g6-ink, #846BEC)"/><path d="2554:72toee" fill="var(--aswk0g6-ink, #846BEC)"/><path d="6412:d5r94c" fill="var(--aswk0g6-ink, #846BEC)"/><path d="6412:d5r94c" fill="#fff" fill-opacity="0.18"/><path d="2379:5e6m4o" fill="#fff" fill-opacity="0.18"/><path d="2554:72toee" fill="#fff" fill-opacity="0.18"/></g><path d="6412:d5r94c" fill="url(#aswk0g6-halftone)"/><path d="2379:5e6m4o" fill="url(#aswk0g6-halftone)"/><path d="2554:72toee" fill="url(#aswk0g6-halftone)"/></g>
+    <path d="1331:1oi7vr5" fill="var(--aswk0g6-ink, #846BEC)"/>
+    <path d="1331:1oi7vr5" fill="#fff" fill-opacity="0.45"/>
+    <path d="1428:14rodk7" fill="var(--aswk0g6-ink, #846BEC)"/>
+    <path d="1428:14rodk7" fill="#fff" fill-opacity="0.45"/>
+    <g data-aora-face="">
+      <path d="1091:15pnfwd" transform="translate(70.7666 132.1164) matrix(0.9227 0.0068 0.0531 0.9881 0 0) translate(-94.9247 -141.1434)" fill="#FFFFFF" opacity="1"/>
+      <path d="1163:1uxk464" transform="translate(124.969 131.3796) matrix(0.9943 -0.0681 0.055 0.9867 0 0) translate(-149.6396 -141.1434)" fill="#FFFFFF" opacity="1"/>
+      <path d="417:1b3k2so" transform="translate(92.6292 166.4916) matrix(0.9744 -0.0196 0.1188 0.8907 0 0) translate(-114.5 -174.9782)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="6.84" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><circle cx="189.06" cy="39.94" r="5.06" fill="var(--aswk0g6-ink, #846BEC)" opacity="1"/><circle cx="207.7" cy="19.97" r="7.19" fill="var(--aswk0g6-ink, #846BEC)" opacity="1"/><circle cx="229" cy="-2.66" r="9.32" fill="var(--aswk0g6-ink, #846BEC)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`riso: static snapshots > cat / happy 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a18tjcem" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a18tjcem { --a18tjcem-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a18tjcem { --a18tjcem-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><pattern id="a18tjcem-halftone" width="7.8" height="7.8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="3.9" cy="3.9" r="1.7" fill="#fff" fill-opacity="0.42"/></pattern></defs>
+    <g style="isolation:isolate"><g transform="translate(7.94 6.08)"><path d="7681:19gfjyr" fill="var(--aora-ink2, #FF78A6)"/></g><g opacity="0.92" style="mix-blend-mode:multiply"><path d="7681:19gfjyr" fill="var(--a18tjcem-ink, #846BEC)"/><path d="7681:19gfjyr" fill="#fff" fill-opacity="0.18"/></g><path d="7681:19gfjyr" fill="url(#a18tjcem-halftone)"/></g>
+    <g data-aora-face="">
+      <path d="258:1q8gyy5" transform="translate(33.9582 152.7309) matrix(0.7031 0.1971 0.1044 0.9218 0 0) translate(-51.373 -158.8471)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="278:zyzy3r" transform="translate(156.9763 150.2556) matrix(0.9228 -0.2299 0.1044 0.9218 0 0) translate(-177.627 -158.8471)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="1069:1rrixqq" transform="translate(54.58 139.3944) matrix(0.8494 0.0551 0.0687 0.9745 0 0) translate(-76.7689 -147.5219)" fill="#FFFFFF" opacity="1"/>
+      <path d="1153:1dw3atz" transform="translate(128.1081 137.9149) matrix(0.9905 -0.0921 0.0687 0.9745 0 0) translate(-152.2311 -147.5219)" fill="#FFFFFF" opacity="1"/>
+      <path d="436:6utijo" transform="translate(92.1579 162.8213) matrix(0.9744 -0.0196 0.1119 0.9064 0 0) translate(-114.5 -171.4725)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="9.43" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><path d="88:qzomwk" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`riso: static snapshots > cat / idle 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="anozhyv" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .anozhyv { --anozhyv-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .anozhyv { --anozhyv-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><pattern id="anozhyv-halftone" width="7.8" height="7.8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="3.9" cy="3.9" r="1.7" fill="#fff" fill-opacity="0.42"/></pattern></defs>
+    <g style="isolation:isolate"><g transform="translate(7.94 6.08)"><path d="7681:19gfjyr" fill="var(--aora-ink2, #FF78A6)"/></g><g opacity="0.92" style="mix-blend-mode:multiply"><path d="7681:19gfjyr" fill="var(--anozhyv-ink, #846BEC)"/><path d="7681:19gfjyr" fill="#fff" fill-opacity="0.18"/></g><path d="7681:19gfjyr" fill="url(#anozhyv-halftone)"/></g>
+    <g data-aora-face="">
+      <path d="1075:1ip1533" transform="translate(53.9402 128.4606) matrix(0.8474 0.0218 0.0464 0.9923 0 0) translate(-76.7689 -136.7889)" fill="#FFFFFF" opacity="1"/>
+      <path d="1159:1f2d8bl" transform="translate(127.4683 126.9811) matrix(0.9925 -0.0588 0.0464 0.9923 0 0) translate(-152.2311 -136.7889)" fill="#FFFFFF" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`riso: static snapshots > cat / powering-down 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="anozhyv" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .anozhyv { --anozhyv-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .anozhyv { --anozhyv-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><pattern id="anozhyv-halftone" width="7.8" height="7.8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="3.9" cy="3.9" r="1.7" fill="#fff" fill-opacity="0.42"/></pattern></defs>
+    <g style="isolation:isolate"><g transform="translate(7.94 6.08)"><path d="7681:19gfjyr" fill="var(--aora-ink2, #FF78A6)" fill-opacity="0.85"/></g><g opacity="0.92" style="mix-blend-mode:multiply"><path d="7681:19gfjyr" fill="var(--anozhyv-ink, #846BEC)" fill-opacity="0.85"/><path d="7681:19gfjyr" fill="#fff" fill-opacity="0.15"/></g><path d="7681:19gfjyr" fill="url(#anozhyv-halftone)" opacity="0.85"/></g>
+    <g data-aora-face="">
+      <path d="1075:1ip1533" transform="translate(53.9402 128.4606) matrix(0.8474 0.0218 0.0464 0.9923 0 0) translate(-76.7689 -136.7889)" fill="#FFFFFF" opacity="1"/>
+      <path d="1159:1f2d8bl" transform="translate(127.4683 126.9811) matrix(0.9925 -0.0588 0.0464 0.9923 0 0) translate(-152.2311 -136.7889)" fill="#FFFFFF" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`riso: static snapshots > cat / thinking 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a1t3j112" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a1t3j112 { --a1t3j112-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a1t3j112 { --a1t3j112-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><pattern id="a1t3j112-halftone" width="7.8" height="7.8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="3.9" cy="3.9" r="1.7" fill="#fff" fill-opacity="0.42"/></pattern></defs>
+    <g style="isolation:isolate"><g transform="translate(7.94 6.08)"><path d="7681:19gfjyr" fill="var(--aora-ink2, #FF78A6)"/></g><g opacity="0.92" style="mix-blend-mode:multiply"><path d="7681:19gfjyr" fill="var(--a1t3j112-ink, #846BEC)"/><path d="7681:19gfjyr" fill="#fff" fill-opacity="0.18"/></g><path d="7681:19gfjyr" fill="url(#a1t3j112-halftone)"/></g>
+    <g data-aora-face="">
+      <path d="1116:1bflyr0" transform="translate(63.2709 115.8892) matrix(0.8941 -0.0172 0.0208 0.9998 0 0) translate(-87.502 -124.8078)" fill="#FFFFFF" opacity="1"/>
+      <path d="1171:16xm0p4" transform="translate(138.5016 115.0524) matrix(0.9775 -0.0239 0.0224 0.9997 0 0) translate(-162.9641 -124.8078)" fill="#FFFFFF" opacity="1"/>
+      <path d="447:1di4xh5" transform="translate(92.1579 162.8213) matrix(0.9744 -0.0196 0.1119 0.9064 0 0) translate(-114.5 -171.4725)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="9.43" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><circle cx="189.06" cy="39.94" r="5.06" fill="var(--a1t3j112-ink, #846BEC)" opacity="1"/><circle cx="207.7" cy="19.97" r="7.19" fill="var(--a1t3j112-ink, #846BEC)" opacity="1"/><circle cx="229" cy="-2.66" r="9.32" fill="var(--a1t3j112-ink, #846BEC)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`riso: static snapshots > sprout / happy 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a16r9khd" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a16r9khd { --a16r9khd-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a16r9khd { --a16r9khd-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><pattern id="a16r9khd-halftone" width="7.8" height="7.8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="3.9" cy="3.9" r="1.7" fill="#fff" fill-opacity="0.42"/></pattern></defs>
+    <g style="isolation:isolate"><g transform="translate(7.94 6.08)"><path d="6367:1jftfwv" fill="var(--aora-ink2, #FF78A6)"/></g><g opacity="0.92" style="mix-blend-mode:multiply"><path d="6367:1jftfwv" fill="var(--a16r9khd-ink, #846BEC)"/><path d="6367:1jftfwv" fill="#fff" fill-opacity="0.18"/></g><path d="6367:1jftfwv" fill="url(#a16r9khd-halftone)"/></g>
+    <path d="2283:1x6oprj" fill="#34B36B"/>
+    <path d="1240:1jtzno" fill="#34B36B"/>
+    <g data-aora-face="">
+      <path d="248:1bcdacj" transform="translate(46.322 155.2364) matrix(0.7967 0.1457 0.1037 0.9231 0 0) translate(-65.7535 -162.2698)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="268:1hd9a7g" transform="translate(141.3162 153.325) matrix(0.9666 -0.1812 0.1037 0.9231 0 0) translate(-163.2465 -162.2698)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="1083:8w8dbe" transform="translate(62.8 145.1472) matrix(0.8887 0.0502 0.0793 0.9622 0 0) translate(-85.3642 -153.5246)" fill="#FFFFFF" opacity="1"/>
+      <path d="1159:1lyapyu" transform="translate(119.5782 144.0047) matrix(0.9959 -0.0881 0.0793 0.9622 0 0) translate(-143.6358 -153.5246)" fill="#FFFFFF" opacity="1"/>
+      <path d="442:1ybg90n" transform="translate(92.2289 163.3926) matrix(0.9744 -0.0196 0.113 0.904 0 0) translate(-114.5 -172.0191)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="7.28" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><path d="88:qzomwk" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`riso: static snapshots > sprout / idle 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="agr4lis" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .agr4lis { --agr4lis-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .agr4lis { --agr4lis-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><pattern id="agr4lis-halftone" width="7.8" height="7.8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="3.9" cy="3.9" r="1.7" fill="#fff" fill-opacity="0.42"/></pattern></defs>
+    <g style="isolation:isolate"><g transform="translate(7.94 6.08)"><path d="6367:1jftfwv" fill="var(--aora-ink2, #FF78A6)"/></g><g opacity="0.92" style="mix-blend-mode:multiply"><path d="6367:1jftfwv" fill="var(--agr4lis-ink, #846BEC)"/><path d="6367:1jftfwv" fill="#fff" fill-opacity="0.18"/></g><path d="6367:1jftfwv" fill="url(#agr4lis-halftone)"/></g>
+    <path d="2283:1x6oprj" fill="#34B36B"/>
+    <path d="1240:1jtzno" fill="#34B36B"/>
+    <g data-aora-face="">
+      <path d="1083:111i9iu" transform="translate(62.1807 136.6569) matrix(0.8873 0.0306 0.0624 0.9806 0 0) translate(-85.3642 -145.2366)" fill="#FFFFFF" opacity="1"/>
+      <path d="1167:zcezae" transform="translate(118.9589 135.5144) matrix(0.9973 -0.0686 0.0624 0.9806 0 0) translate(-143.6358 -145.2366)" fill="#FFFFFF" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`riso: static snapshots > sprout / powering-down 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="agr4lis" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .agr4lis { --agr4lis-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .agr4lis { --agr4lis-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><pattern id="agr4lis-halftone" width="7.8" height="7.8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="3.9" cy="3.9" r="1.7" fill="#fff" fill-opacity="0.42"/></pattern></defs>
+    <g style="isolation:isolate"><g transform="translate(7.94 6.08)"><path d="6367:1jftfwv" fill="var(--aora-ink2, #FF78A6)" fill-opacity="0.85"/></g><g opacity="0.92" style="mix-blend-mode:multiply"><path d="6367:1jftfwv" fill="var(--agr4lis-ink, #846BEC)" fill-opacity="0.85"/><path d="6367:1jftfwv" fill="#fff" fill-opacity="0.15"/></g><path d="6367:1jftfwv" fill="url(#agr4lis-halftone)" opacity="0.85"/></g>
+    <path d="2283:1x6oprj" fill="#34B36B"/>
+    <path d="1240:1jtzno" fill="#34B36B"/>
+    <g data-aora-face="">
+      <path d="1083:111i9iu" transform="translate(62.1807 136.6569) matrix(0.8873 0.0306 0.0624 0.9806 0 0) translate(-85.3642 -145.2366)" fill="#FFFFFF" opacity="1"/>
+      <path d="1167:zcezae" transform="translate(118.9589 135.5144) matrix(0.9973 -0.0686 0.0624 0.9806 0 0) translate(-143.6358 -145.2366)" fill="#FFFFFF" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`riso: static snapshots > sprout / thinking 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a192bxdf" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a192bxdf { --a192bxdf-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a192bxdf { --a192bxdf-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><pattern id="a192bxdf-halftone" width="7.8" height="7.8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="3.9" cy="3.9" r="1.7" fill="#fff" fill-opacity="0.42"/></pattern></defs>
+    <g style="isolation:isolate"><g transform="translate(7.94 6.08)"><path d="6367:1jftfwv" fill="var(--aora-ink2, #FF78A6)"/></g><g opacity="0.92" style="mix-blend-mode:multiply"><path d="6367:1jftfwv" fill="var(--a192bxdf-ink, #846BEC)"/><path d="6367:1jftfwv" fill="#fff" fill-opacity="0.18"/></g><path d="6367:1jftfwv" fill="url(#a192bxdf-halftone)"/></g>
+    <path d="2283:1x6oprj" fill="#34B36B"/>
+    <path d="1240:1jtzno" fill="#34B36B"/>
+    <g data-aora-face="">
+      <path d="1108:1nitdzr" transform="translate(69.3256 126.9265) matrix(0.9179 0.0002 0.0429 0.9941 0 0) translate(-93.6522 -135.9848)" fill="#FFFFFF" opacity="1"/>
+      <path d="1149:7wacmh" transform="translate(127.107 126.1628) matrix(0.9929 -0.056 0.0447 0.9932 0 0) translate(-151.9238 -135.9848)" fill="#FFFFFF" opacity="1"/>
+      <path d="447:1wy4cmf" transform="translate(92.2289 163.3926) matrix(0.9744 -0.0196 0.113 0.904 0 0) translate(-114.5 -172.0191)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="7.28" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><circle cx="189.06" cy="39.94" r="5.06" fill="var(--a192bxdf-ink, #846BEC)" opacity="1"/><circle cx="207.7" cy="19.97" r="7.19" fill="var(--a192bxdf-ink, #846BEC)" opacity="1"/><circle cx="229" cy="-2.66" r="9.32" fill="var(--a192bxdf-ink, #846BEC)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`riso: static snapshots > star / happy 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a15snm6i" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a15snm6i { --a15snm6i-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a15snm6i { --a15snm6i-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><pattern id="a15snm6i-halftone" width="7.8" height="7.8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="3.9" cy="3.9" r="1.7" fill="#fff" fill-opacity="0.42"/></pattern></defs>
+    <g style="isolation:isolate"><g transform="translate(7.94 6.08)"><path d="8970:e17huj" fill="var(--aora-ink2, #FF78A6)"/></g><g opacity="0.92" style="mix-blend-mode:multiply"><path d="8970:e17huj" fill="var(--a15snm6i-ink, #846BEC)"/><path d="8970:e17huj" fill="#fff" fill-opacity="0.18"/></g><path d="8970:e17huj" fill="url(#a15snm6i-halftone)"/></g>
+    <g data-aora-face="">
+      <path d="259:1t0xlvp" transform="translate(36.6481 134.7008) matrix(0.7306 0.0809 0.062 0.981 0 0) translate(-56.5097 -141.7266)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="279:1j285xk" transform="translate(149.656 132.4269) matrix(0.9497 -0.1147 0.062 0.981 0 0) translate(-172.4903 -141.7266)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="1084:o1h3rq" transform="translate(56.4928 123.3563) matrix(0.8614 0.004 0.0359 0.997 0 0) translate(-79.8391 -131.8919)" fill="#FFFFFF" opacity="1"/>
+      <path d="1168:sdirrt" transform="translate(124.0379 121.9972) matrix(0.9959 -0.0414 0.0359 0.997 0 0) translate(-149.1609 -131.8919)" fill="#FFFFFF" opacity="1"/>
+      <path d="428:uaqnau" transform="translate(90.269 144.0294) matrix(0.9744 -0.0196 0.0763 0.966 0 0) translate(-114.5 -153.3247)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="8.67" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><path d="88:qzomwk" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`riso: static snapshots > star / idle 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a1joaraz" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a1joaraz { --a1joaraz-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a1joaraz { --a1joaraz-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><pattern id="a1joaraz-halftone" width="7.8" height="7.8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="3.9" cy="3.9" r="1.7" fill="#fff" fill-opacity="0.42"/></pattern></defs>
+    <g style="isolation:isolate"><g transform="translate(7.94 6.08)"><path d="8970:e17huj" fill="var(--aora-ink2, #FF78A6)"/></g><g opacity="0.92" style="mix-blend-mode:multiply"><path d="8970:e17huj" fill="var(--a1joaraz-ink, #846BEC)"/><path d="8970:e17huj" fill="#fff" fill-opacity="0.18"/></g><path d="8970:e17huj" fill="url(#a1joaraz-halftone)"/></g>
+    <g data-aora-face="">
+      <path d="1083:1u7aaci" transform="translate(56.2291 112.8679) matrix(0.8607 -0.0251 0.0144 0.9996 0 0) translate(-79.8391 -121.4634)" fill="#FFFFFF" opacity="1"/>
+      <path d="1167:tb6e08" transform="translate(123.7741 111.5088) matrix(0.9966 -0.0123 0.0144 0.9996 0 0) translate(-149.1609 -121.4634)" fill="#FFFFFF" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`riso: static snapshots > star / powering-down 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a1joaraz" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a1joaraz { --a1joaraz-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a1joaraz { --a1joaraz-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><pattern id="a1joaraz-halftone" width="7.8" height="7.8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="3.9" cy="3.9" r="1.7" fill="#fff" fill-opacity="0.42"/></pattern></defs>
+    <g style="isolation:isolate"><g transform="translate(7.94 6.08)"><path d="8970:e17huj" fill="var(--aora-ink2, #FF78A6)" fill-opacity="0.85"/></g><g opacity="0.92" style="mix-blend-mode:multiply"><path d="8970:e17huj" fill="var(--a1joaraz-ink, #846BEC)" fill-opacity="0.85"/><path d="8970:e17huj" fill="#fff" fill-opacity="0.15"/></g><path d="8970:e17huj" fill="url(#a1joaraz-halftone)" opacity="0.85"/></g>
+    <g data-aora-face="">
+      <path d="1083:1u7aaci" transform="translate(56.2291 112.8679) matrix(0.8607 -0.0251 0.0144 0.9996 0 0) translate(-79.8391 -121.4634)" fill="#FFFFFF" opacity="1"/>
+      <path d="1167:tb6e08" transform="translate(123.7741 111.5088) matrix(0.9966 -0.0123 0.0144 0.9996 0 0) translate(-149.1609 -121.4634)" fill="#FFFFFF" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`riso: static snapshots > star / thinking 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="aty5fju" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .aty5fju { --aty5fju-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .aty5fju { --aty5fju-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><pattern id="aty5fju-halftone" width="7.8" height="7.8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="3.9" cy="3.9" r="1.7" fill="#fff" fill-opacity="0.42"/></pattern></defs>
+    <g style="isolation:isolate"><g transform="translate(7.94 6.08)"><path d="8970:e17huj" fill="var(--aora-ink2, #FF78A6)"/></g><g opacity="0.92" style="mix-blend-mode:multiply"><path d="8970:e17huj" fill="var(--aty5fju-ink, #846BEC)"/><path d="8970:e17huj" fill="#fff" fill-opacity="0.18"/></g><path d="8970:e17huj" fill="url(#aty5fju-halftone)"/></g>
+    <g data-aora-face="">
+      <path d="1082:1so9el1" transform="translate(65.7373 100.8201) matrix(0.9047 -0.0459 -0.0094 0.9918 0 0) translate(-90.2677 -109.8222)" fill="#FFFFFF" opacity="1"/>
+      <path d="1158:165sltt" transform="translate(134.7814 100.027) matrix(0.9841 0.0328 -0.01 0.9914 0 0) translate(-159.5894 -109.8222)" fill="#FFFFFF" opacity="1"/>
+      <path d="439:1dosjz7" transform="translate(90.269 144.0294) matrix(0.9744 -0.0196 0.0763 0.966 0 0) translate(-114.5 -153.3247)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="8.67" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><circle cx="189.06" cy="39.94" r="5.06" fill="var(--aty5fju-ink, #846BEC)" opacity="1"/><circle cx="207.7" cy="19.97" r="7.19" fill="var(--aty5fju-ink, #846BEC)" opacity="1"/><circle cx="229" cy="-2.66" r="9.32" fill="var(--aty5fju-ink, #846BEC)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`riso: static snapshots > takes the parameters of its variant 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a28iket" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a28iket { --a28iket-ink: #1F1F1F; }
+    @media (prefers-color-scheme: dark) {
+      .a28iket { --a28iket-ink: #FFFFFF; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><pattern id="a28iket-halftone" width="7.8" height="7.8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="3.9" cy="3.9" r="1.7" fill="#fff" fill-opacity="0.42"/></pattern></defs>
+    <g style="isolation:isolate"><g transform="translate(7.94 6.08)"><path d="6985:pvg2bx" fill="var(--aora-ink2, #FF78A6)"/></g><g opacity="0.92" style="mix-blend-mode:multiply"><path d="6985:pvg2bx" fill="var(--a28iket-ink, #1F1F1F)"/><path d="6985:pvg2bx" fill="#fff" fill-opacity="0.18"/></g><path d="6985:pvg2bx" fill="url(#a28iket-halftone)"/></g>
+    <g data-aora-face="">
+      <path d="1085:1liific" transform="translate(58.6336 104.549) matrix(0.8729 -0.0457 -0.0025 0.9952 0 0) translate(-82.5467 -113.2544)" fill="var(--aora-face, var(--aora-bg, var(--aora-bg-base, #fcfcfc)))" opacity="1"/>
+      <path d="1169:4qt9x2" transform="translate(120.9023 103.296) matrix(0.9984 0.008 -0.0025 0.9952 0 0) translate(-146.4533 -113.2544)" fill="var(--aora-face, var(--aora-bg, var(--aora-bg-base, #fcfcfc)))" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`riso: static snapshots > tofu / happy 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="ah0dxs2" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .ah0dxs2 { --ah0dxs2-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .ah0dxs2 { --ah0dxs2-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><pattern id="ah0dxs2-halftone" width="7.8" height="7.8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="3.9" cy="3.9" r="1.7" fill="#fff" fill-opacity="0.42"/></pattern></defs>
+    <g style="isolation:isolate"><g transform="translate(7.94 6.08)"><path d="6985:pvg2bx" fill="var(--aora-ink2, #FF78A6)"/></g><g opacity="0.92" style="mix-blend-mode:multiply"><path d="6985:pvg2bx" fill="var(--ah0dxs2-ink, #846BEC)"/><path d="6985:pvg2bx" fill="#fff" fill-opacity="0.18"/></g><path d="6985:pvg2bx" fill="url(#ah0dxs2-halftone)"/></g>
+    <g data-aora-face="">
+      <path d="259:uc9leh" transform="translate(39.973 124.4464) matrix(0.7582 0.0237 0.0387 0.9959 0 0) translate(-61.0397 -131.9348)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="279:1qfuluu" transform="translate(144.1533 122.3501) matrix(0.9651 -0.0584 0.0387 0.9959 0 0) translate(-167.9603 -131.9348)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="1076:1kkeebo" transform="translate(58.6951 113.6271) matrix(0.873 -0.0226 0.016 0.9997 0 0) translate(-82.5467 -122.3439)" fill="#FFFFFF" opacity="1"/>
+      <path d="1156:1cjo75" transform="translate(120.9637 112.3741) matrix(0.9983 -0.015 0.016 0.9997 0 0) translate(-146.4533 -122.3439)" fill="#FFFFFF" opacity="1"/>
+      <path d="434:18h8fzi" transform="translate(89.5323 133.0942) matrix(0.9744 -0.0196 0.0553 0.9865 0 0) translate(-114.5 -142.6269)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="7.99" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><path d="88:qzomwk" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`riso: static snapshots > tofu / idle 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a6ra0sj" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a6ra0sj { --a6ra0sj-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a6ra0sj { --a6ra0sj-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><pattern id="a6ra0sj-halftone" width="7.8" height="7.8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="3.9" cy="3.9" r="1.7" fill="#fff" fill-opacity="0.42"/></pattern></defs>
+    <g style="isolation:isolate"><g transform="translate(7.94 6.08)"><path d="6985:pvg2bx" fill="var(--aora-ink2, #FF78A6)"/></g><g opacity="0.92" style="mix-blend-mode:multiply"><path d="6985:pvg2bx" fill="var(--a6ra0sj-ink, #846BEC)"/><path d="6985:pvg2bx" fill="#fff" fill-opacity="0.18"/></g><path d="6985:pvg2bx" fill="url(#a6ra0sj-halftone)"/></g>
+    <g data-aora-face="">
+      <path d="1085:1liific" transform="translate(58.6336 104.549) matrix(0.8729 -0.0457 -0.0025 0.9952 0 0) translate(-82.5467 -113.2544)" fill="#FFFFFF" opacity="1"/>
+      <path d="1169:4qt9x2" transform="translate(120.9023 103.296) matrix(0.9984 0.008 -0.0025 0.9952 0 0) translate(-146.4533 -113.2544)" fill="#FFFFFF" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`riso: static snapshots > tofu / powering-down 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a6ra0sj" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a6ra0sj { --a6ra0sj-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a6ra0sj { --a6ra0sj-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><pattern id="a6ra0sj-halftone" width="7.8" height="7.8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="3.9" cy="3.9" r="1.7" fill="#fff" fill-opacity="0.42"/></pattern></defs>
+    <g style="isolation:isolate"><g transform="translate(7.94 6.08)"><path d="6985:pvg2bx" fill="var(--aora-ink2, #FF78A6)" fill-opacity="0.85"/></g><g opacity="0.92" style="mix-blend-mode:multiply"><path d="6985:pvg2bx" fill="var(--a6ra0sj-ink, #846BEC)" fill-opacity="0.85"/><path d="6985:pvg2bx" fill="#fff" fill-opacity="0.15"/></g><path d="6985:pvg2bx" fill="url(#a6ra0sj-halftone)" opacity="0.85"/></g>
+    <g data-aora-face="">
+      <path d="1085:1liific" transform="translate(58.6336 104.549) matrix(0.8729 -0.0457 -0.0025 0.9952 0 0) translate(-82.5467 -113.2544)" fill="#FFFFFF" opacity="1"/>
+      <path d="1169:4qt9x2" transform="translate(120.9023 103.296) matrix(0.9984 0.008 -0.0025 0.9952 0 0) translate(-146.4533 -113.2544)" fill="#FFFFFF" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`riso: static snapshots > tofu / thinking 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="aizc3pe" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .aizc3pe { --aizc3pe-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .aizc3pe { --aizc3pe-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><pattern id="aizc3pe-halftone" width="7.8" height="7.8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="3.9" cy="3.9" r="1.7" fill="#fff" fill-opacity="0.42"/></pattern></defs>
+    <g style="isolation:isolate"><g transform="translate(7.94 6.08)"><path d="6985:pvg2bx" fill="var(--aora-ink2, #FF78A6)"/></g><g opacity="0.92" style="mix-blend-mode:multiply"><path d="6985:pvg2bx" fill="var(--aizc3pe-ink, #846BEC)"/><path d="6985:pvg2bx" fill="#fff" fill-opacity="0.18"/></g><path d="6985:pvg2bx" fill="url(#aizc3pe-halftone)"/></g>
+    <g data-aora-face="">
+      <path d="1097:10kxrie" transform="translate(67.1145 94.1212) matrix(0.9101 -0.0563 -0.0228 0.9824 0 0) translate(-91.6362 -103.108)" fill="#FFFFFF" opacity="1"/>
+      <path d="1152:1v7p2bu" transform="translate(130.5825 93.321) matrix(0.9898 0.05 -0.024 0.9815 0 0) translate(-155.5428 -103.108)" fill="#FFFFFF" opacity="1"/>
+      <path d="435:x2djs9" transform="translate(89.5323 133.0942) matrix(0.9744 -0.0196 0.0553 0.9865 0 0) translate(-114.5 -142.6269)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="7.99" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><circle cx="189.06" cy="39.94" r="5.06" fill="var(--aizc3pe-ink, #846BEC)" opacity="1"/><circle cx="207.7" cy="19.97" r="7.19" fill="var(--aizc3pe-ink, #846BEC)" opacity="1"/><circle cx="229" cy="-2.66" r="9.32" fill="var(--aizc3pe-ink, #846BEC)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`soft: static snapshots > blob / happy 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a1g4wv85" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a1g4wv85 { --a1g4wv85-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a1g4wv85 { --a1g4wv85-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <ellipse cx="114.5" cy="206.01" rx="95.94" ry="12.76" fill="#000" opacity="0.12"/>
+    <defs><radialGradient id="a1g4wv85-soft" cx="0.36" cy="0.3" r="0.78" gradientUnits="userSpaceOnUse" gradientTransform="translate(0.28 19.99) scale(228.44 189.02)"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.52" stop-color="#fff" stop-opacity="0"/><stop offset="0.52" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.22"/></radialGradient></defs>
+    <path d="7670:563g4j" fill="var(--a1g4wv85-ink, #846BEC)"/>
+    <path d="7670:563g4j" fill="url(#a1g4wv85-soft)"/>
+    <g data-aora-face="">
+      <path d="257:7gwocp" transform="translate(33.6387 130.3855) matrix(0.706 0.0647 0.0529 0.9882 0 0) translate(-53.214 -137.2534)" fill="#FF7E9D" opacity="0.45"/>
+      <path d="277:b3vqlq" transform="translate(143.3655 127.7157) matrix(0.9664 -0.0816 0.0503 0.99 0 0) translate(-167.0195 -137.2534)" fill="#FF7E9D" opacity="0.45"/>
+      <path d="1076:gibt7j" transform="translate(52.9889 118.6515) matrix(0.843 -0.0079 0.0262 0.9993 0 0) translate(-76.1059 -127.045)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="1155:did44c" transform="translate(118.6491 117.0846) matrix(0.999 -0.0263 0.0255 0.9994 0 0) translate(-144.1276 -127.045)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="436:5q6awh" transform="translate(85.6631 139.3161) matrix(0.9654 -0.0113 0.0671 0.9762 0 0) translate(-110.1168 -148.634)" fill="var(--aora-face-soft, #2B2420)" stroke="var(--aora-face-soft, #2B2420)" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><path d="88:qzomwk" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`soft: static snapshots > blob / idle 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="ach1lqo" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .ach1lqo { --ach1lqo-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .ach1lqo { --ach1lqo-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <ellipse cx="114.5" cy="206.01" rx="95.94" ry="12.76" fill="#000" opacity="0.12"/>
+    <defs><radialGradient id="ach1lqo-soft" cx="0.36" cy="0.3" r="0.78" gradientUnits="userSpaceOnUse" gradientTransform="translate(0.28 19.99) scale(228.44 189.02)"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.52" stop-color="#fff" stop-opacity="0"/><stop offset="0.52" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.22"/></radialGradient></defs>
+    <path d="7670:563g4j" fill="var(--ach1lqo-ink, #846BEC)"/>
+    <path d="7670:563g4j" fill="url(#ach1lqo-soft)"/>
+    <g data-aora-face="">
+      <path d="1083:bfsm54" transform="translate(52.8329 108.9546) matrix(0.8426 -0.038 0.006 0.9981 0 0) translate(-76.1059 -117.3702)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="1165:yvt6ec" transform="translate(118.4969 107.3891) matrix(0.9994 -0.0037 0.0058 0.9981 0 0) translate(-144.1276 -117.3702)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`soft: static snapshots > blob / powering-down 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="ach1lqo" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .ach1lqo { --ach1lqo-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .ach1lqo { --ach1lqo-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <ellipse cx="114.5" cy="206.01" rx="95.94" ry="12.76" fill="#000" opacity="0.12"/>
+    <defs><radialGradient id="ach1lqo-soft" cx="0.36" cy="0.3" r="0.78" gradientUnits="userSpaceOnUse" gradientTransform="translate(0.28 19.99) scale(228.44 189.02)"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.52" stop-color="#fff" stop-opacity="0"/><stop offset="0.52" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.22"/></radialGradient></defs>
+    <path d="7670:563g4j" fill="var(--ach1lqo-ink, #846BEC)" fill-opacity="0.85"/>
+    <path d="7670:563g4j" fill="url(#ach1lqo-soft)" opacity="0.85"/>
+    <g data-aora-face="">
+      <path d="1083:bfsm54" transform="translate(52.8329 108.9546) matrix(0.8426 -0.038 0.006 0.9981 0 0) translate(-76.1059 -117.3702)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="1165:yvt6ec" transform="translate(118.4969 107.3891) matrix(0.9994 -0.0037 0.0058 0.9981 0 0) translate(-144.1276 -117.3702)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`soft: static snapshots > blob / thinking 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="alwbvv3" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .alwbvv3 { --alwbvv3-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .alwbvv3 { --alwbvv3-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <ellipse cx="114.5" cy="206.01" rx="95.94" ry="12.76" fill="#000" opacity="0.12"/>
+    <defs><radialGradient id="alwbvv3-soft" cx="0.36" cy="0.3" r="0.78" gradientUnits="userSpaceOnUse" gradientTransform="translate(0.28 19.99) scale(228.44 189.02)"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.52" stop-color="#fff" stop-opacity="0"/><stop offset="0.52" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.22"/></radialGradient></defs>
+    <path d="7670:563g4j" fill="var(--alwbvv3-ink, #846BEC)"/>
+    <path d="7670:563g4j" fill="url(#alwbvv3-soft)"/>
+    <g data-aora-face="">
+      <path d="1041:192kt5t" transform="translate(61.6471 97.7751) matrix(0.8869 -0.0581 -0.0161 0.9876 0 0) translate(-85.7807 -106.5704)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="1158:bw9lct" transform="translate(128.6689 96.7221) matrix(0.9922 0.0359 -0.0166 0.9872 0 0) translate(-153.8024 -106.5704)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="445:1i6ixot" transform="translate(85.6631 139.3161) matrix(0.9654 -0.0113 0.0671 0.9762 0 0) translate(-110.1168 -148.634)" fill="var(--aora-face-soft, #2B2420)" stroke="var(--aora-face-soft, #2B2420)" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><circle cx="189.06" cy="39.94" r="5.06" fill="var(--alwbvv3-ink, #846BEC)" opacity="1"/><circle cx="207.7" cy="19.97" r="7.19" fill="var(--alwbvv3-ink, #846BEC)" opacity="1"/><circle cx="229" cy="-2.66" r="9.32" fill="var(--alwbvv3-ink, #846BEC)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`soft: static snapshots > bunny / happy 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a1q9pxry" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a1q9pxry { --a1q9pxry-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a1q9pxry { --a1q9pxry-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <ellipse cx="114.5" cy="225.72" rx="86.65" ry="11.52" fill="#000" opacity="0.12"/>
+    <defs><radialGradient id="a1q9pxry-soft" cx="0.36" cy="0.3" r="0.78" gradientUnits="userSpaceOnUse" gradientTransform="translate(11.34 73.98) scale(206.32 154.74)"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.52" stop-color="#fff" stop-opacity="0"/><stop offset="0.52" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.22"/></radialGradient></defs>
+    <path d="2379:5e6m4o" fill="var(--a1q9pxry-ink, #846BEC)"/>
+    <path d="2554:72toee" fill="var(--a1q9pxry-ink, #846BEC)"/>
+    <path d="6412:d5r94c" fill="var(--a1q9pxry-ink, #846BEC)"/>
+    <path d="6412:d5r94c" fill="url(#a1q9pxry-soft)"/>
+    <path d="2379:5e6m4o" fill="url(#a1q9pxry-soft)"/>
+    <path d="2554:72toee" fill="url(#a1q9pxry-soft)"/>
+    <path d="1331:1oi7vr5" fill="var(--a1q9pxry-ink, #846BEC)"/>
+    <path d="1331:1oi7vr5" fill="#fff" fill-opacity="0.45"/>
+    <path d="1428:14rodk7" fill="var(--a1q9pxry-ink, #846BEC)"/>
+    <path d="1428:14rodk7" fill="#fff" fill-opacity="0.45"/>
+    <g data-aora-face="">
+      <path d="257:1fk099p" transform="translate(49.3081 158.7516) matrix(0.8147 0.1472 0.11 0.9105 0 0) translate(-68.7289 -165.824)" fill="#FF7E9D" opacity="0.45"/>
+      <path d="277:1urori7" transform="translate(138.5041 156.9569) matrix(0.9716 -0.1831 0.11 0.9105 0 0) translate(-160.2711 -165.824)" fill="#FF7E9D" opacity="0.45"/>
+      <path d="1084:1ckoy9n" transform="translate(64.7897 149.2817) matrix(0.8966 0.0546 0.0872 0.9512 0 0) translate(-87.1426 -157.6126)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="1158:1dz841l" transform="translate(118.1022 148.2089) matrix(0.9957 -0.0926 0.0872 0.9512 0 0) translate(-141.8574 -157.6126)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="443:r1yxo7" transform="translate(92.6292 166.4916) matrix(0.9744 -0.0196 0.1188 0.8907 0 0) translate(-114.5 -174.9782)" fill="var(--aora-face-soft, #2B2420)" stroke="var(--aora-face-soft, #2B2420)" stroke-width="6.84" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><path d="88:qzomwk" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`soft: static snapshots > bunny / idle 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a87u5fr" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a87u5fr { --a87u5fr-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a87u5fr { --a87u5fr-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <ellipse cx="114.5" cy="225.72" rx="86.65" ry="11.52" fill="#000" opacity="0.12"/>
+    <defs><radialGradient id="a87u5fr-soft" cx="0.36" cy="0.3" r="0.78" gradientUnits="userSpaceOnUse" gradientTransform="translate(11.34 73.98) scale(206.32 154.74)"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.52" stop-color="#fff" stop-opacity="0"/><stop offset="0.52" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.22"/></radialGradient></defs>
+    <path d="2379:5e6m4o" fill="var(--a87u5fr-ink, #846BEC)"/>
+    <path d="2554:72toee" fill="var(--a87u5fr-ink, #846BEC)"/>
+    <path d="6412:d5r94c" fill="var(--a87u5fr-ink, #846BEC)"/>
+    <path d="6412:d5r94c" fill="url(#a87u5fr-soft)"/>
+    <path d="2379:5e6m4o" fill="url(#a87u5fr-soft)"/>
+    <path d="2554:72toee" fill="url(#a87u5fr-soft)"/>
+    <path d="1331:1oi7vr5" fill="var(--a87u5fr-ink, #846BEC)"/>
+    <path d="1331:1oi7vr5" fill="#fff" fill-opacity="0.45"/>
+    <path d="1428:14rodk7" fill="var(--a87u5fr-ink, #846BEC)"/>
+    <path d="1428:14rodk7" fill="#fff" fill-opacity="0.45"/>
+    <g data-aora-face="">
+      <path d="1072:qnb2eb" transform="translate(64.1292 141.2798) matrix(0.8952 0.0374 0.0715 0.9715 0 0) translate(-87.1426 -149.8304)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="1156:1o8y1n9" transform="translate(117.4417 140.2071) matrix(0.9971 -0.0754 0.0715 0.9715 0 0) translate(-141.8574 -149.8304)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`soft: static snapshots > bunny / powering-down 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a87u5fr" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a87u5fr { --a87u5fr-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a87u5fr { --a87u5fr-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <ellipse cx="114.5" cy="225.72" rx="86.65" ry="11.52" fill="#000" opacity="0.12"/>
+    <defs><radialGradient id="a87u5fr-soft" cx="0.36" cy="0.3" r="0.78" gradientUnits="userSpaceOnUse" gradientTransform="translate(11.34 73.98) scale(206.32 154.74)"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.52" stop-color="#fff" stop-opacity="0"/><stop offset="0.52" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.22"/></radialGradient></defs>
+    <path d="2379:5e6m4o" fill="var(--a87u5fr-ink, #846BEC)"/>
+    <path d="2554:72toee" fill="var(--a87u5fr-ink, #846BEC)"/>
+    <path d="6412:d5r94c" fill="var(--a87u5fr-ink, #846BEC)" fill-opacity="0.85"/>
+    <path d="6412:d5r94c" fill="url(#a87u5fr-soft)" opacity="0.85"/>
+    <path d="2379:5e6m4o" fill="url(#a87u5fr-soft)" opacity="0.85"/>
+    <path d="2554:72toee" fill="url(#a87u5fr-soft)" opacity="0.85"/>
+    <path d="1331:1oi7vr5" fill="var(--a87u5fr-ink, #846BEC)"/>
+    <path d="1331:1oi7vr5" fill="#fff" fill-opacity="0.45"/>
+    <path d="1428:14rodk7" fill="var(--a87u5fr-ink, #846BEC)"/>
+    <path d="1428:14rodk7" fill="#fff" fill-opacity="0.45"/>
+    <g data-aora-face="">
+      <path d="1072:qnb2eb" transform="translate(64.1292 141.2798) matrix(0.8952 0.0374 0.0715 0.9715 0 0) translate(-87.1426 -149.8304)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="1156:1o8y1n9" transform="translate(117.4417 140.2071) matrix(0.9971 -0.0754 0.0715 0.9715 0 0) translate(-141.8574 -149.8304)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`soft: static snapshots > bunny / thinking 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="aswk0g6" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .aswk0g6 { --aswk0g6-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .aswk0g6 { --aswk0g6-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <ellipse cx="114.5" cy="225.72" rx="86.65" ry="11.52" fill="#000" opacity="0.12"/>
+    <defs><radialGradient id="aswk0g6-soft" cx="0.36" cy="0.3" r="0.78" gradientUnits="userSpaceOnUse" gradientTransform="translate(11.34 73.98) scale(206.32 154.74)"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.52" stop-color="#fff" stop-opacity="0"/><stop offset="0.52" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.22"/></radialGradient></defs>
+    <path d="2379:5e6m4o" fill="var(--aswk0g6-ink, #846BEC)"/>
+    <path d="2554:72toee" fill="var(--aswk0g6-ink, #846BEC)"/>
+    <path d="6412:d5r94c" fill="var(--aswk0g6-ink, #846BEC)"/>
+    <path d="6412:d5r94c" fill="url(#aswk0g6-soft)"/>
+    <path d="2379:5e6m4o" fill="url(#aswk0g6-soft)"/>
+    <path d="2554:72toee" fill="url(#aswk0g6-soft)"/>
+    <path d="1331:1oi7vr5" fill="var(--aswk0g6-ink, #846BEC)"/>
+    <path d="1331:1oi7vr5" fill="#fff" fill-opacity="0.45"/>
+    <path d="1428:14rodk7" fill="var(--aswk0g6-ink, #846BEC)"/>
+    <path d="1428:14rodk7" fill="#fff" fill-opacity="0.45"/>
+    <g data-aora-face="">
+      <path d="1091:15pnfwd" transform="translate(70.7666 132.1164) matrix(0.9227 0.0068 0.0531 0.9881 0 0) translate(-94.9247 -141.1434)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="1163:1uxk464" transform="translate(124.969 131.3796) matrix(0.9943 -0.0681 0.055 0.9867 0 0) translate(-149.6396 -141.1434)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="417:1b3k2so" transform="translate(92.6292 166.4916) matrix(0.9744 -0.0196 0.1188 0.8907 0 0) translate(-114.5 -174.9782)" fill="var(--aora-face-soft, #2B2420)" stroke="var(--aora-face-soft, #2B2420)" stroke-width="6.84" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><circle cx="189.06" cy="39.94" r="5.06" fill="var(--aswk0g6-ink, #846BEC)" opacity="1"/><circle cx="207.7" cy="19.97" r="7.19" fill="var(--aswk0g6-ink, #846BEC)" opacity="1"/><circle cx="229" cy="-2.66" r="9.32" fill="var(--aswk0g6-ink, #846BEC)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`soft: static snapshots > cat / happy 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a18tjcem" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a18tjcem { --a18tjcem-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a18tjcem { --a18tjcem-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <ellipse cx="114.5" cy="218.21" rx="95.94" ry="12.76" fill="#000" opacity="0.12"/>
+    <defs><radialGradient id="a18tjcem-soft" cx="0.36" cy="0.3" r="0.78" gradientUnits="userSpaceOnUse" gradientTransform="translate(0.28 7.79) scale(228.44 213.41)"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.52" stop-color="#fff" stop-opacity="0"/><stop offset="0.52" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.22"/></radialGradient></defs>
+    <path d="7681:19gfjyr" fill="var(--a18tjcem-ink, #846BEC)"/>
+    <path d="7681:19gfjyr" fill="url(#a18tjcem-soft)"/>
+    <g data-aora-face="">
+      <path d="258:1q8gyy5" transform="translate(33.9582 152.7309) matrix(0.7031 0.1971 0.1044 0.9218 0 0) translate(-51.373 -158.8471)" fill="#FF7E9D" opacity="0.45"/>
+      <path d="278:zyzy3r" transform="translate(156.9763 150.2556) matrix(0.9228 -0.2299 0.1044 0.9218 0 0) translate(-177.627 -158.8471)" fill="#FF7E9D" opacity="0.45"/>
+      <path d="1069:1rrixqq" transform="translate(54.58 139.3944) matrix(0.8494 0.0551 0.0687 0.9745 0 0) translate(-76.7689 -147.5219)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="1153:1dw3atz" transform="translate(128.1081 137.9149) matrix(0.9905 -0.0921 0.0687 0.9745 0 0) translate(-152.2311 -147.5219)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="436:6utijo" transform="translate(92.1579 162.8213) matrix(0.9744 -0.0196 0.1119 0.9064 0 0) translate(-114.5 -171.4725)" fill="var(--aora-face-soft, #2B2420)" stroke="var(--aora-face-soft, #2B2420)" stroke-width="9.43" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><path d="88:qzomwk" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`soft: static snapshots > cat / idle 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="anozhyv" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .anozhyv { --anozhyv-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .anozhyv { --anozhyv-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <ellipse cx="114.5" cy="218.21" rx="95.94" ry="12.76" fill="#000" opacity="0.12"/>
+    <defs><radialGradient id="anozhyv-soft" cx="0.36" cy="0.3" r="0.78" gradientUnits="userSpaceOnUse" gradientTransform="translate(0.28 7.79) scale(228.44 213.41)"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.52" stop-color="#fff" stop-opacity="0"/><stop offset="0.52" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.22"/></radialGradient></defs>
+    <path d="7681:19gfjyr" fill="var(--anozhyv-ink, #846BEC)"/>
+    <path d="7681:19gfjyr" fill="url(#anozhyv-soft)"/>
+    <g data-aora-face="">
+      <path d="1075:1ip1533" transform="translate(53.9402 128.4606) matrix(0.8474 0.0218 0.0464 0.9923 0 0) translate(-76.7689 -136.7889)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="1159:1f2d8bl" transform="translate(127.4683 126.9811) matrix(0.9925 -0.0588 0.0464 0.9923 0 0) translate(-152.2311 -136.7889)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`soft: static snapshots > cat / powering-down 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="anozhyv" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .anozhyv { --anozhyv-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .anozhyv { --anozhyv-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <ellipse cx="114.5" cy="218.21" rx="95.94" ry="12.76" fill="#000" opacity="0.12"/>
+    <defs><radialGradient id="anozhyv-soft" cx="0.36" cy="0.3" r="0.78" gradientUnits="userSpaceOnUse" gradientTransform="translate(0.28 7.79) scale(228.44 213.41)"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.52" stop-color="#fff" stop-opacity="0"/><stop offset="0.52" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.22"/></radialGradient></defs>
+    <path d="7681:19gfjyr" fill="var(--anozhyv-ink, #846BEC)" fill-opacity="0.85"/>
+    <path d="7681:19gfjyr" fill="url(#anozhyv-soft)" opacity="0.85"/>
+    <g data-aora-face="">
+      <path d="1075:1ip1533" transform="translate(53.9402 128.4606) matrix(0.8474 0.0218 0.0464 0.9923 0 0) translate(-76.7689 -136.7889)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="1159:1f2d8bl" transform="translate(127.4683 126.9811) matrix(0.9925 -0.0588 0.0464 0.9923 0 0) translate(-152.2311 -136.7889)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`soft: static snapshots > cat / thinking 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a1t3j112" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a1t3j112 { --a1t3j112-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a1t3j112 { --a1t3j112-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <ellipse cx="114.5" cy="218.21" rx="95.94" ry="12.76" fill="#000" opacity="0.12"/>
+    <defs><radialGradient id="a1t3j112-soft" cx="0.36" cy="0.3" r="0.78" gradientUnits="userSpaceOnUse" gradientTransform="translate(0.28 7.79) scale(228.44 213.41)"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.52" stop-color="#fff" stop-opacity="0"/><stop offset="0.52" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.22"/></radialGradient></defs>
+    <path d="7681:19gfjyr" fill="var(--a1t3j112-ink, #846BEC)"/>
+    <path d="7681:19gfjyr" fill="url(#a1t3j112-soft)"/>
+    <g data-aora-face="">
+      <path d="1116:1bflyr0" transform="translate(63.2709 115.8892) matrix(0.8941 -0.0172 0.0208 0.9998 0 0) translate(-87.502 -124.8078)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="1171:16xm0p4" transform="translate(138.5016 115.0524) matrix(0.9775 -0.0239 0.0224 0.9997 0 0) translate(-162.9641 -124.8078)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="447:1di4xh5" transform="translate(92.1579 162.8213) matrix(0.9744 -0.0196 0.1119 0.9064 0 0) translate(-114.5 -171.4725)" fill="var(--aora-face-soft, #2B2420)" stroke="var(--aora-face-soft, #2B2420)" stroke-width="9.43" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><circle cx="189.06" cy="39.94" r="5.06" fill="var(--a1t3j112-ink, #846BEC)" opacity="1"/><circle cx="207.7" cy="19.97" r="7.19" fill="var(--a1t3j112-ink, #846BEC)" opacity="1"/><circle cx="229" cy="-2.66" r="9.32" fill="var(--a1t3j112-ink, #846BEC)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`soft: static snapshots > sprout / happy 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a16r9khd" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a16r9khd { --a16r9khd-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a16r9khd { --a16r9khd-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <ellipse cx="114.5" cy="225.72" rx="92.29" ry="12.27" fill="#000" opacity="0.12"/>
+    <defs><radialGradient id="a16r9khd-soft" cx="0.36" cy="0.3" r="0.78" gradientUnits="userSpaceOnUse" gradientTransform="translate(4.64 63.92) scale(219.73 164.8)"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.52" stop-color="#fff" stop-opacity="0"/><stop offset="0.52" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.22"/></radialGradient></defs>
+    <path d="6367:1jftfwv" fill="var(--a16r9khd-ink, #846BEC)"/>
+    <path d="6367:1jftfwv" fill="url(#a16r9khd-soft)"/>
+    <path d="2283:1x6oprj" fill="#34B36B"/>
+    <path d="1240:1jtzno" fill="#34B36B"/>
+    <g data-aora-face="">
+      <path d="248:1bcdacj" transform="translate(46.322 155.2364) matrix(0.7967 0.1457 0.1037 0.9231 0 0) translate(-65.7535 -162.2698)" fill="#FF7E9D" opacity="0.45"/>
+      <path d="268:1hd9a7g" transform="translate(141.3162 153.325) matrix(0.9666 -0.1812 0.1037 0.9231 0 0) translate(-163.2465 -162.2698)" fill="#FF7E9D" opacity="0.45"/>
+      <path d="1083:8w8dbe" transform="translate(62.8 145.1472) matrix(0.8887 0.0502 0.0793 0.9622 0 0) translate(-85.3642 -153.5246)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="1159:1lyapyu" transform="translate(119.5782 144.0047) matrix(0.9959 -0.0881 0.0793 0.9622 0 0) translate(-143.6358 -153.5246)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="442:1ybg90n" transform="translate(92.2289 163.3926) matrix(0.9744 -0.0196 0.113 0.904 0 0) translate(-114.5 -172.0191)" fill="var(--aora-face-soft, #2B2420)" stroke="var(--aora-face-soft, #2B2420)" stroke-width="7.28" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><path d="88:qzomwk" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`soft: static snapshots > sprout / idle 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="agr4lis" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .agr4lis { --agr4lis-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .agr4lis { --agr4lis-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <ellipse cx="114.5" cy="225.72" rx="92.29" ry="12.27" fill="#000" opacity="0.12"/>
+    <defs><radialGradient id="agr4lis-soft" cx="0.36" cy="0.3" r="0.78" gradientUnits="userSpaceOnUse" gradientTransform="translate(4.64 63.92) scale(219.73 164.8)"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.52" stop-color="#fff" stop-opacity="0"/><stop offset="0.52" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.22"/></radialGradient></defs>
+    <path d="6367:1jftfwv" fill="var(--agr4lis-ink, #846BEC)"/>
+    <path d="6367:1jftfwv" fill="url(#agr4lis-soft)"/>
+    <path d="2283:1x6oprj" fill="#34B36B"/>
+    <path d="1240:1jtzno" fill="#34B36B"/>
+    <g data-aora-face="">
+      <path d="1083:111i9iu" transform="translate(62.1807 136.6569) matrix(0.8873 0.0306 0.0624 0.9806 0 0) translate(-85.3642 -145.2366)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="1167:zcezae" transform="translate(118.9589 135.5144) matrix(0.9973 -0.0686 0.0624 0.9806 0 0) translate(-143.6358 -145.2366)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`soft: static snapshots > sprout / powering-down 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="agr4lis" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .agr4lis { --agr4lis-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .agr4lis { --agr4lis-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <ellipse cx="114.5" cy="225.72" rx="92.29" ry="12.27" fill="#000" opacity="0.12"/>
+    <defs><radialGradient id="agr4lis-soft" cx="0.36" cy="0.3" r="0.78" gradientUnits="userSpaceOnUse" gradientTransform="translate(4.64 63.92) scale(219.73 164.8)"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.52" stop-color="#fff" stop-opacity="0"/><stop offset="0.52" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.22"/></radialGradient></defs>
+    <path d="6367:1jftfwv" fill="var(--agr4lis-ink, #846BEC)" fill-opacity="0.85"/>
+    <path d="6367:1jftfwv" fill="url(#agr4lis-soft)" opacity="0.85"/>
+    <path d="2283:1x6oprj" fill="#34B36B"/>
+    <path d="1240:1jtzno" fill="#34B36B"/>
+    <g data-aora-face="">
+      <path d="1083:111i9iu" transform="translate(62.1807 136.6569) matrix(0.8873 0.0306 0.0624 0.9806 0 0) translate(-85.3642 -145.2366)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="1167:zcezae" transform="translate(118.9589 135.5144) matrix(0.9973 -0.0686 0.0624 0.9806 0 0) translate(-143.6358 -145.2366)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`soft: static snapshots > sprout / thinking 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a192bxdf" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a192bxdf { --a192bxdf-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a192bxdf { --a192bxdf-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <ellipse cx="114.5" cy="225.72" rx="92.29" ry="12.27" fill="#000" opacity="0.12"/>
+    <defs><radialGradient id="a192bxdf-soft" cx="0.36" cy="0.3" r="0.78" gradientUnits="userSpaceOnUse" gradientTransform="translate(4.64 63.92) scale(219.73 164.8)"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.52" stop-color="#fff" stop-opacity="0"/><stop offset="0.52" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.22"/></radialGradient></defs>
+    <path d="6367:1jftfwv" fill="var(--a192bxdf-ink, #846BEC)"/>
+    <path d="6367:1jftfwv" fill="url(#a192bxdf-soft)"/>
+    <path d="2283:1x6oprj" fill="#34B36B"/>
+    <path d="1240:1jtzno" fill="#34B36B"/>
+    <g data-aora-face="">
+      <path d="1108:1nitdzr" transform="translate(69.3256 126.9265) matrix(0.9179 0.0002 0.0429 0.9941 0 0) translate(-93.6522 -135.9848)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="1149:7wacmh" transform="translate(127.107 126.1628) matrix(0.9929 -0.056 0.0447 0.9932 0 0) translate(-151.9238 -135.9848)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="447:1wy4cmf" transform="translate(92.2289 163.3926) matrix(0.9744 -0.0196 0.113 0.904 0 0) translate(-114.5 -172.0191)" fill="var(--aora-face-soft, #2B2420)" stroke="var(--aora-face-soft, #2B2420)" stroke-width="7.28" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><circle cx="189.06" cy="39.94" r="5.06" fill="var(--a192bxdf-ink, #846BEC)" opacity="1"/><circle cx="207.7" cy="19.97" r="7.19" fill="var(--a192bxdf-ink, #846BEC)" opacity="1"/><circle cx="229" cy="-2.66" r="9.32" fill="var(--a192bxdf-ink, #846BEC)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`soft: static snapshots > star / happy 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a15snm6i" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a15snm6i { --a15snm6i-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a15snm6i { --a15snm6i-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <ellipse cx="114.5" cy="221.44" rx="95.94" ry="12.76" fill="#000" opacity="0.12"/>
+    <defs><radialGradient id="a15snm6i-soft" cx="0.36" cy="0.3" r="0.78" gradientUnits="userSpaceOnUse" gradientTransform="translate(0.28 4.56) scale(228.44 219.87)"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.52" stop-color="#fff" stop-opacity="0"/><stop offset="0.52" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.22"/></radialGradient></defs>
+    <path d="8970:e17huj" fill="var(--a15snm6i-ink, #846BEC)"/>
+    <path d="8970:e17huj" fill="url(#a15snm6i-soft)"/>
+    <g data-aora-face="">
+      <path d="259:1t0xlvp" transform="translate(36.6481 134.7008) matrix(0.7306 0.0809 0.062 0.981 0 0) translate(-56.5097 -141.7266)" fill="#FF7E9D" opacity="0.45"/>
+      <path d="279:1j285xk" transform="translate(149.656 132.4269) matrix(0.9497 -0.1147 0.062 0.981 0 0) translate(-172.4903 -141.7266)" fill="#FF7E9D" opacity="0.45"/>
+      <path d="1084:o1h3rq" transform="translate(56.4928 123.3563) matrix(0.8614 0.004 0.0359 0.997 0 0) translate(-79.8391 -131.8919)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="1168:sdirrt" transform="translate(124.0379 121.9972) matrix(0.9959 -0.0414 0.0359 0.997 0 0) translate(-149.1609 -131.8919)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="428:uaqnau" transform="translate(90.269 144.0294) matrix(0.9744 -0.0196 0.0763 0.966 0 0) translate(-114.5 -153.3247)" fill="var(--aora-face-soft, #2B2420)" stroke="var(--aora-face-soft, #2B2420)" stroke-width="8.67" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><path d="88:qzomwk" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`soft: static snapshots > star / idle 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a1joaraz" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a1joaraz { --a1joaraz-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a1joaraz { --a1joaraz-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <ellipse cx="114.5" cy="221.44" rx="95.94" ry="12.76" fill="#000" opacity="0.12"/>
+    <defs><radialGradient id="a1joaraz-soft" cx="0.36" cy="0.3" r="0.78" gradientUnits="userSpaceOnUse" gradientTransform="translate(0.28 4.56) scale(228.44 219.87)"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.52" stop-color="#fff" stop-opacity="0"/><stop offset="0.52" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.22"/></radialGradient></defs>
+    <path d="8970:e17huj" fill="var(--a1joaraz-ink, #846BEC)"/>
+    <path d="8970:e17huj" fill="url(#a1joaraz-soft)"/>
+    <g data-aora-face="">
+      <path d="1083:1u7aaci" transform="translate(56.2291 112.8679) matrix(0.8607 -0.0251 0.0144 0.9996 0 0) translate(-79.8391 -121.4634)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="1167:tb6e08" transform="translate(123.7741 111.5088) matrix(0.9966 -0.0123 0.0144 0.9996 0 0) translate(-149.1609 -121.4634)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`soft: static snapshots > star / powering-down 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a1joaraz" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a1joaraz { --a1joaraz-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a1joaraz { --a1joaraz-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <ellipse cx="114.5" cy="221.44" rx="95.94" ry="12.76" fill="#000" opacity="0.12"/>
+    <defs><radialGradient id="a1joaraz-soft" cx="0.36" cy="0.3" r="0.78" gradientUnits="userSpaceOnUse" gradientTransform="translate(0.28 4.56) scale(228.44 219.87)"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.52" stop-color="#fff" stop-opacity="0"/><stop offset="0.52" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.22"/></radialGradient></defs>
+    <path d="8970:e17huj" fill="var(--a1joaraz-ink, #846BEC)" fill-opacity="0.85"/>
+    <path d="8970:e17huj" fill="url(#a1joaraz-soft)" opacity="0.85"/>
+    <g data-aora-face="">
+      <path d="1083:1u7aaci" transform="translate(56.2291 112.8679) matrix(0.8607 -0.0251 0.0144 0.9996 0 0) translate(-79.8391 -121.4634)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="1167:tb6e08" transform="translate(123.7741 111.5088) matrix(0.9966 -0.0123 0.0144 0.9996 0 0) translate(-149.1609 -121.4634)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`soft: static snapshots > star / thinking 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="aty5fju" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .aty5fju { --aty5fju-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .aty5fju { --aty5fju-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <ellipse cx="114.5" cy="221.44" rx="95.94" ry="12.76" fill="#000" opacity="0.12"/>
+    <defs><radialGradient id="aty5fju-soft" cx="0.36" cy="0.3" r="0.78" gradientUnits="userSpaceOnUse" gradientTransform="translate(0.28 4.56) scale(228.44 219.87)"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.52" stop-color="#fff" stop-opacity="0"/><stop offset="0.52" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.22"/></radialGradient></defs>
+    <path d="8970:e17huj" fill="var(--aty5fju-ink, #846BEC)"/>
+    <path d="8970:e17huj" fill="url(#aty5fju-soft)"/>
+    <g data-aora-face="">
+      <path d="1082:1so9el1" transform="translate(65.7373 100.8201) matrix(0.9047 -0.0459 -0.0094 0.9918 0 0) translate(-90.2677 -109.8222)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="1158:165sltt" transform="translate(134.7814 100.027) matrix(0.9841 0.0328 -0.01 0.9914 0 0) translate(-159.5894 -109.8222)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="439:1dosjz7" transform="translate(90.269 144.0294) matrix(0.9744 -0.0196 0.0763 0.966 0 0) translate(-114.5 -153.3247)" fill="var(--aora-face-soft, #2B2420)" stroke="var(--aora-face-soft, #2B2420)" stroke-width="8.67" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><circle cx="189.06" cy="39.94" r="5.06" fill="var(--aty5fju-ink, #846BEC)" opacity="1"/><circle cx="207.7" cy="19.97" r="7.19" fill="var(--aty5fju-ink, #846BEC)" opacity="1"/><circle cx="229" cy="-2.66" r="9.32" fill="var(--aty5fju-ink, #846BEC)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`soft: static snapshots > takes the parameters of its variant 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a28iket" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a28iket { --a28iket-ink: #1F1F1F; --a28iket-soft: #FFFFFF; }
+    @media (prefers-color-scheme: dark) {
+      .a28iket { --a28iket-ink: #FFFFFF; --a28iket-soft: #2B2420; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <ellipse cx="114.5" cy="200.34" rx="95.94" ry="12.76" fill="#000" opacity="0.12"/>
+    <defs><radialGradient id="a28iket-soft" cx="0.36" cy="0.3" r="0.78" gradientUnits="userSpaceOnUse" gradientTransform="translate(0.28 25.66) scale(228.44 177.68)"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.52" stop-color="#fff" stop-opacity="0"/><stop offset="0.52" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.22"/></radialGradient></defs>
+    <path d="6985:pvg2bx" fill="var(--a28iket-ink, #1F1F1F)"/>
+    <path d="6985:pvg2bx" fill="url(#a28iket-soft)"/>
+    <g data-aora-face="">
+      <path d="1085:1liific" transform="translate(58.6336 104.549) matrix(0.8729 -0.0457 -0.0025 0.9952 0 0) translate(-82.5467 -113.2544)" fill="var(--a28iket-soft, #FFFFFF)" opacity="1"/>
+      <path d="1169:4qt9x2" transform="translate(120.9023 103.296) matrix(0.9984 0.008 -0.0025 0.9952 0 0) translate(-146.4533 -113.2544)" fill="var(--a28iket-soft, #FFFFFF)" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`soft: static snapshots > tofu / happy 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="ah0dxs2" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .ah0dxs2 { --ah0dxs2-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .ah0dxs2 { --ah0dxs2-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <ellipse cx="114.5" cy="200.34" rx="95.94" ry="12.76" fill="#000" opacity="0.12"/>
+    <defs><radialGradient id="ah0dxs2-soft" cx="0.36" cy="0.3" r="0.78" gradientUnits="userSpaceOnUse" gradientTransform="translate(0.28 25.66) scale(228.44 177.68)"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.52" stop-color="#fff" stop-opacity="0"/><stop offset="0.52" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.22"/></radialGradient></defs>
+    <path d="6985:pvg2bx" fill="var(--ah0dxs2-ink, #846BEC)"/>
+    <path d="6985:pvg2bx" fill="url(#ah0dxs2-soft)"/>
+    <g data-aora-face="">
+      <path d="259:uc9leh" transform="translate(39.973 124.4464) matrix(0.7582 0.0237 0.0387 0.9959 0 0) translate(-61.0397 -131.9348)" fill="#FF7E9D" opacity="0.45"/>
+      <path d="279:1qfuluu" transform="translate(144.1533 122.3501) matrix(0.9651 -0.0584 0.0387 0.9959 0 0) translate(-167.9603 -131.9348)" fill="#FF7E9D" opacity="0.45"/>
+      <path d="1076:1kkeebo" transform="translate(58.6951 113.6271) matrix(0.873 -0.0226 0.016 0.9997 0 0) translate(-82.5467 -122.3439)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="1156:1cjo75" transform="translate(120.9637 112.3741) matrix(0.9983 -0.015 0.016 0.9997 0 0) translate(-146.4533 -122.3439)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="434:18h8fzi" transform="translate(89.5323 133.0942) matrix(0.9744 -0.0196 0.0553 0.9865 0 0) translate(-114.5 -142.6269)" fill="var(--aora-face-soft, #2B2420)" stroke="var(--aora-face-soft, #2B2420)" stroke-width="7.99" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><path d="88:qzomwk" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`soft: static snapshots > tofu / idle 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a6ra0sj" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a6ra0sj { --a6ra0sj-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a6ra0sj { --a6ra0sj-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <ellipse cx="114.5" cy="200.34" rx="95.94" ry="12.76" fill="#000" opacity="0.12"/>
+    <defs><radialGradient id="a6ra0sj-soft" cx="0.36" cy="0.3" r="0.78" gradientUnits="userSpaceOnUse" gradientTransform="translate(0.28 25.66) scale(228.44 177.68)"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.52" stop-color="#fff" stop-opacity="0"/><stop offset="0.52" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.22"/></radialGradient></defs>
+    <path d="6985:pvg2bx" fill="var(--a6ra0sj-ink, #846BEC)"/>
+    <path d="6985:pvg2bx" fill="url(#a6ra0sj-soft)"/>
+    <g data-aora-face="">
+      <path d="1085:1liific" transform="translate(58.6336 104.549) matrix(0.8729 -0.0457 -0.0025 0.9952 0 0) translate(-82.5467 -113.2544)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="1169:4qt9x2" transform="translate(120.9023 103.296) matrix(0.9984 0.008 -0.0025 0.9952 0 0) translate(-146.4533 -113.2544)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`soft: static snapshots > tofu / powering-down 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a6ra0sj" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a6ra0sj { --a6ra0sj-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a6ra0sj { --a6ra0sj-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <ellipse cx="114.5" cy="200.34" rx="95.94" ry="12.76" fill="#000" opacity="0.12"/>
+    <defs><radialGradient id="a6ra0sj-soft" cx="0.36" cy="0.3" r="0.78" gradientUnits="userSpaceOnUse" gradientTransform="translate(0.28 25.66) scale(228.44 177.68)"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.52" stop-color="#fff" stop-opacity="0"/><stop offset="0.52" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.22"/></radialGradient></defs>
+    <path d="6985:pvg2bx" fill="var(--a6ra0sj-ink, #846BEC)" fill-opacity="0.85"/>
+    <path d="6985:pvg2bx" fill="url(#a6ra0sj-soft)" opacity="0.85"/>
+    <g data-aora-face="">
+      <path d="1085:1liific" transform="translate(58.6336 104.549) matrix(0.8729 -0.0457 -0.0025 0.9952 0 0) translate(-82.5467 -113.2544)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="1169:4qt9x2" transform="translate(120.9023 103.296) matrix(0.9984 0.008 -0.0025 0.9952 0 0) translate(-146.4533 -113.2544)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`soft: static snapshots > tofu / thinking 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="aizc3pe" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .aizc3pe { --aizc3pe-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .aizc3pe { --aizc3pe-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <ellipse cx="114.5" cy="200.34" rx="95.94" ry="12.76" fill="#000" opacity="0.12"/>
+    <defs><radialGradient id="aizc3pe-soft" cx="0.36" cy="0.3" r="0.78" gradientUnits="userSpaceOnUse" gradientTransform="translate(0.28 25.66) scale(228.44 177.68)"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="0.52" stop-color="#fff" stop-opacity="0"/><stop offset="0.52" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.22"/></radialGradient></defs>
+    <path d="6985:pvg2bx" fill="var(--aizc3pe-ink, #846BEC)"/>
+    <path d="6985:pvg2bx" fill="url(#aizc3pe-soft)"/>
+    <g data-aora-face="">
+      <path d="1097:10kxrie" transform="translate(67.1145 94.1212) matrix(0.9101 -0.0563 -0.0228 0.9824 0 0) translate(-91.6362 -103.108)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="1152:1v7p2bu" transform="translate(130.5825 93.321) matrix(0.9898 0.05 -0.024 0.9815 0 0) translate(-155.5428 -103.108)" fill="var(--aora-face-soft, #2B2420)" opacity="1"/>
+      <path d="435:x2djs9" transform="translate(89.5323 133.0942) matrix(0.9744 -0.0196 0.0553 0.9865 0 0) translate(-114.5 -142.6269)" fill="var(--aora-face-soft, #2B2420)" stroke="var(--aora-face-soft, #2B2420)" stroke-width="7.99" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><circle cx="189.06" cy="39.94" r="5.06" fill="var(--aizc3pe-ink, #846BEC)" opacity="1"/><circle cx="207.7" cy="19.97" r="7.19" fill="var(--aizc3pe-ink, #846BEC)" opacity="1"/><circle cx="229" cy="-2.66" r="9.32" fill="var(--aizc3pe-ink, #846BEC)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`solid, outline and glass, as restyled with the cute face > glass static output is pinned 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a4p2r4" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a4p2r4 { --a4p2r4-ink: #2B8FFF; --a4p2r4-shift: #000; }
+    @media (prefers-color-scheme: dark) {
+      .a4p2r4 { --a4p2r4-ink: #2884EB; --a4p2r4-shift: #fff; }
+    }
+  </style>
+  <defs>
+    <linearGradient id="a4p2r4-ink" x1="0" y1="0" x2="1" y2="1">
+      <stop class="a4p2r4-from" offset="0%" stop-color="#4DA3FF"/>
+      <stop class="a4p2r4-to" offset="100%" stop-color="#0A6AD6"/>
+    </linearGradient>
+  </defs>
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .a4p2r4-from { stop-color: #2884EB; }
+      .a4p2r4-to { stop-color: #1F67B8; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><linearGradient id="a4p2r4-soft" x1="0" y1="19.99" x2="0" y2="209.01" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset="0.55" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="a4p2r4-gloss"><path d="7670:563g4j"/></clipPath></defs>
+    <path d="7670:563g4j" fill="url(#a4p2r4-ink)" fill-opacity="0.34" stroke="url(#a4p2r4-ink)" stroke-width="4.2" stroke-opacity="0.9" stroke-linejoin="round"/>
+    <g clip-path="url(#a4p2r4-gloss)"><path d="7670:563g4j" fill="url(#a4p2r4-soft)" opacity="0.3"/><path d="7670:563g4j" fill="none" stroke="url(#a4p2r4-soft)" stroke-width="9" opacity="0.9"/></g>
+    <g data-aora-face="">
+      <path d="257:7gwocp" transform="translate(33.6387 130.3855) matrix(0.706 0.0647 0.0529 0.9882 0 0) translate(-53.214 -137.2534)" fill="var(--a4p2r4-ink, #2B8FFF)" opacity="0.16"/>
+      <path d="277:b3vqlq" transform="translate(143.3655 127.7157) matrix(0.9664 -0.0816 0.0503 0.99 0 0) translate(-167.0195 -137.2534)" fill="var(--a4p2r4-ink, #2B8FFF)" opacity="0.16"/>
+      <path d="1076:gibt7j" transform="translate(52.9889 118.6515) matrix(0.843 -0.0079 0.0262 0.9993 0 0) translate(-76.1059 -127.045)" fill="color-mix(in oklab, var(--a4p2r4-ink, #2B8FFF), var(--a4p2r4-shift, #000) 22%)" opacity="1"/>
+      <path d="1155:did44c" transform="translate(118.6491 117.0846) matrix(0.999 -0.0263 0.0255 0.9994 0 0) translate(-144.1276 -127.045)" fill="color-mix(in oklab, var(--a4p2r4-ink, #2B8FFF), var(--a4p2r4-shift, #000) 22%)" opacity="1"/>
+      <path d="436:5q6awh" transform="translate(85.6631 139.3161) matrix(0.9654 -0.0113 0.0671 0.9762 0 0) translate(-110.1168 -148.634)" fill="none" stroke="color-mix(in oklab, var(--a4p2r4-ink, #2B8FFF), var(--a4p2r4-shift, #000) 22%)" stroke-width="7.4" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><path d="88:qzomwk" fill="var(--a4p2r4-ink, #2B8FFF)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`solid, outline and glass, as restyled with the cute face > glass static output is pinned 2`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="aevgm65" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .aevgm65 { --aevgm65-ink: #28B06C; --aevgm65-shift: #000; }
+    @media (prefers-color-scheme: dark) {
+      .aevgm65 { --aevgm65-ink: #25A263; --aevgm65-shift: #fff; }
+    }
+  </style>
+  <defs>
+    <linearGradient id="aevgm65-ink" x1="0" y1="0" x2="1" y2="1">
+      <stop class="aevgm65-from" offset="0%" stop-color="#3EC484"/>
+      <stop class="aevgm65-to" offset="100%" stop-color="#147A48"/>
+    </linearGradient>
+  </defs>
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .aevgm65-from { stop-color: #25A263; }
+      .aevgm65-to { stop-color: #1D7F4E; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><linearGradient id="aevgm65-soft" x1="0" y1="40.26" x2="0" y2="188.74" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset="0.55" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="aevgm65-gloss"><path d="6571:p1pv7j"/></clipPath></defs>
+    <path d="6571:p1pv7j" fill="url(#aevgm65-ink)" fill-opacity="0.34" stroke="url(#aevgm65-ink)" stroke-width="4.2" stroke-opacity="0.9" stroke-linejoin="round"/>
+    <g clip-path="url(#aevgm65-gloss)"><path d="6571:p1pv7j" fill="url(#aevgm65-soft)" opacity="0.3"/><path d="6571:p1pv7j" fill="none" stroke="url(#aevgm65-soft)" stroke-width="9" opacity="0.9"/></g>
+    <g data-aora-face="">
+      <path d="1121:1l1whzl" transform="translate(72.6928 100.1462) matrix(0.9309 -0.0384 -0.0101 0.9914 0 0) translate(-97.7155 -109.4066)" fill="color-mix(in oklab, var(--aevgm65-ink, #28B06C), var(--aevgm65-shift, #000) 22%)" opacity="1"/>
+      <path d="1166:18f7847" transform="translate(124.86 99.4975) matrix(0.9958 0.0224 -0.0105 0.9911 0 0) translate(-150.2201 -109.4066)" fill="color-mix(in oklab, var(--aevgm65-ink, #28B06C), var(--aevgm65-shift, #000) 22%)" opacity="1"/>
+      <path d="411:1nc3stz" transform="translate(91.4428 132.2912) matrix(0.978 -0.0223 0.0538 0.9876 0 0) translate(-116.5 -141.8747)" fill="none" stroke="color-mix(in oklab, var(--aevgm65-ink, #28B06C), var(--aevgm65-shift, #000) 22%)" stroke-width="5.71" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><circle cx="189.06" cy="39.94" r="5.06" fill="var(--aevgm65-ink, #28B06C)" opacity="1"/><circle cx="207.7" cy="19.97" r="7.19" fill="var(--aevgm65-ink, #28B06C)" opacity="1"/><circle cx="229" cy="-2.66" r="9.32" fill="var(--aevgm65-ink, #28B06C)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`solid, outline and glass, as restyled with the cute face > glass static output is pinned 3`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" viewBox="-24 -24 277 277" fill="none" aria-hidden="true">
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <defs><linearGradient id="auf8odp-soft" x1="0" y1="4.56" x2="0" y2="224.44" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset="0.55" stop-color="#fff" stop-opacity="0"/></linearGradient><clipPath id="auf8odp-gloss"><path d="8970:e17huj"/></clipPath></defs>
+    <path d="8970:e17huj" fill="#1F1F1F" fill-opacity="0.34" stroke="#1F1F1F" stroke-width="4.2" stroke-opacity="0.9" stroke-linejoin="round"/>
+    <g clip-path="url(#auf8odp-gloss)"><path d="8970:e17huj" fill="url(#auf8odp-soft)" opacity="0.3"/><path d="8970:e17huj" fill="none" stroke="url(#auf8odp-soft)" stroke-width="9" opacity="0.9"/></g>
+    <g data-aora-face="">
+      <path d="1090:bi2l8j" transform="translate(58.2763 101.0078) matrix(0.8711 -0.0552 -0.0099 0.9915 0 0) translate(-82.1289 -109.6727)" fill="color-mix(in oklab, #1F1F1F, light-dark(#000, #fff) 22%)" opacity="1"/>
+      <path d="1165:176dfkw" transform="translate(121.3592 99.7385) matrix(0.9982 0.0176 -0.0099 0.9915 0 0) translate(-146.8711 -109.6727)" fill="color-mix(in oklab, #1F1F1F, light-dark(#000, #fff) 22%)" opacity="1"/>
+      <path d="221:kqrinz" transform="translate(89.0384 122.1107) matrix(0.9744 -0.0196 0.034 0.9976 0 0) translate(-114.5 -131.7885)" fill="none" stroke="color-mix(in oklab, #1F1F1F, light-dark(#000, #fff) 22%)" stroke-width="8.74" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+      <path d="442:1akpvvw" transform="translate(91.8261 160.0534) matrix(0.9744 -0.0196 0.1067 0.9172 0 0) translate(-114.5 -168.8198)" fill="none" stroke="color-mix(in oklab, #1F1F1F, light-dark(#000, #fff) 22%)" stroke-width="8.74" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`solid, outline and glass, as restyled with the cute face > outline static output is pinned 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a4p2r4" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a4p2r4 { --a4p2r4-ink: #2B8FFF; --a4p2r4-shift: #000; }
+    @media (prefers-color-scheme: dark) {
+      .a4p2r4 { --a4p2r4-ink: #2884EB; --a4p2r4-shift: #fff; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <path d="7670:563g4j" fill="var(--a4p2r4-ink, #2B8FFF)" fill-opacity="0.08" stroke="var(--a4p2r4-ink, #2B8FFF)" stroke-width="10" stroke-linejoin="round"/>
+    <g data-aora-face="">
+      <path d="257:7gwocp" transform="translate(33.6387 130.3855) matrix(0.706 0.0647 0.0529 0.9882 0 0) translate(-53.214 -137.2534)" fill="var(--a4p2r4-ink, #2B8FFF)" opacity="0.16"/>
+      <path d="277:b3vqlq" transform="translate(143.3655 127.7157) matrix(0.9664 -0.0816 0.0503 0.99 0 0) translate(-167.0195 -137.2534)" fill="var(--a4p2r4-ink, #2B8FFF)" opacity="0.16"/>
+      <path d="1076:gibt7j" transform="translate(52.9889 118.6515) matrix(0.843 -0.0079 0.0262 0.9993 0 0) translate(-76.1059 -127.045)" fill="color-mix(in oklab, var(--a4p2r4-ink, #2B8FFF), var(--a4p2r4-shift, #000) 22%)" opacity="1"/>
+      <path d="1155:did44c" transform="translate(118.6491 117.0846) matrix(0.999 -0.0263 0.0255 0.9994 0 0) translate(-144.1276 -127.045)" fill="color-mix(in oklab, var(--a4p2r4-ink, #2B8FFF), var(--a4p2r4-shift, #000) 22%)" opacity="1"/>
+      <path d="436:5q6awh" transform="translate(85.6631 139.3161) matrix(0.9654 -0.0113 0.0671 0.9762 0 0) translate(-110.1168 -148.634)" fill="none" stroke="color-mix(in oklab, var(--a4p2r4-ink, #2B8FFF), var(--a4p2r4-shift, #000) 22%)" stroke-width="7.4" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><path d="88:qzomwk" fill="var(--a4p2r4-ink, #2B8FFF)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`solid, outline and glass, as restyled with the cute face > outline static output is pinned 2`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="aevgm65" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .aevgm65 { --aevgm65-ink: #28B06C; --aevgm65-shift: #000; }
+    @media (prefers-color-scheme: dark) {
+      .aevgm65 { --aevgm65-ink: #25A263; --aevgm65-shift: #fff; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <path d="6571:p1pv7j" fill="var(--aevgm65-ink, #28B06C)" fill-opacity="0.08" stroke="var(--aevgm65-ink, #28B06C)" stroke-width="10" stroke-linejoin="round"/>
+    <g data-aora-face="">
+      <path d="1121:1l1whzl" transform="translate(72.6928 100.1462) matrix(0.9309 -0.0384 -0.0101 0.9914 0 0) translate(-97.7155 -109.4066)" fill="color-mix(in oklab, var(--aevgm65-ink, #28B06C), var(--aevgm65-shift, #000) 22%)" opacity="1"/>
+      <path d="1166:18f7847" transform="translate(124.86 99.4975) matrix(0.9958 0.0224 -0.0105 0.9911 0 0) translate(-150.2201 -109.4066)" fill="color-mix(in oklab, var(--aevgm65-ink, #28B06C), var(--aevgm65-shift, #000) 22%)" opacity="1"/>
+      <path d="411:1nc3stz" transform="translate(91.4428 132.2912) matrix(0.978 -0.0223 0.0538 0.9876 0 0) translate(-116.5 -141.8747)" fill="none" stroke="color-mix(in oklab, var(--aevgm65-ink, #28B06C), var(--aevgm65-shift, #000) 22%)" stroke-width="5.71" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><circle cx="189.06" cy="39.94" r="5.06" fill="var(--aevgm65-ink, #28B06C)" opacity="1"/><circle cx="207.7" cy="19.97" r="7.19" fill="var(--aevgm65-ink, #28B06C)" opacity="1"/><circle cx="229" cy="-2.66" r="9.32" fill="var(--aevgm65-ink, #28B06C)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`solid, outline and glass, as restyled with the cute face > outline static output is pinned 3`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" viewBox="-24 -24 277 277" fill="none" aria-hidden="true">
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <path d="8970:e17huj" fill="#1F1F1F" fill-opacity="0.08" stroke="#1F1F1F" stroke-width="10" stroke-linejoin="round"/>
+    <g data-aora-face="">
+      <path d="1090:bi2l8j" transform="translate(58.2763 101.0078) matrix(0.8711 -0.0552 -0.0099 0.9915 0 0) translate(-82.1289 -109.6727)" fill="color-mix(in oklab, #1F1F1F, light-dark(#000, #fff) 22%)" opacity="1"/>
+      <path d="1165:176dfkw" transform="translate(121.3592 99.7385) matrix(0.9982 0.0176 -0.0099 0.9915 0 0) translate(-146.8711 -109.6727)" fill="color-mix(in oklab, #1F1F1F, light-dark(#000, #fff) 22%)" opacity="1"/>
+      <path d="221:kqrinz" transform="translate(89.0384 122.1107) matrix(0.9744 -0.0196 0.034 0.9976 0 0) translate(-114.5 -131.7885)" fill="none" stroke="color-mix(in oklab, #1F1F1F, light-dark(#000, #fff) 22%)" stroke-width="8.74" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+      <path d="442:1akpvvw" transform="translate(91.8261 160.0534) matrix(0.9744 -0.0196 0.1067 0.9172 0 0) translate(-114.5 -168.8198)" fill="none" stroke="color-mix(in oklab, #1F1F1F, light-dark(#000, #fff) 22%)" stroke-width="8.74" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`solid, outline and glass, as restyled with the cute face > solid static output is pinned 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a4p2r4" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a4p2r4 { --a4p2r4-ink: #2B8FFF; }
+    @media (prefers-color-scheme: dark) {
+      .a4p2r4 { --a4p2r4-ink: #2884EB; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <path d="7670:563g4j" fill="var(--a4p2r4-ink, #2B8FFF)"/>
+    <g data-aora-face="">
+      <path d="257:7gwocp" transform="translate(33.6387 130.3855) matrix(0.706 0.0647 0.0529 0.9882 0 0) translate(-53.214 -137.2534)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="277:b3vqlq" transform="translate(143.3655 127.7157) matrix(0.9664 -0.0816 0.0503 0.99 0 0) translate(-167.0195 -137.2534)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="1076:gibt7j" transform="translate(52.9889 118.6515) matrix(0.843 -0.0079 0.0262 0.9993 0 0) translate(-76.1059 -127.045)" fill="#FFFFFF" opacity="1"/>
+      <path d="1155:did44c" transform="translate(118.6491 117.0846) matrix(0.999 -0.0263 0.0255 0.9994 0 0) translate(-144.1276 -127.045)" fill="#FFFFFF" opacity="1"/>
+      <path d="436:5q6awh" transform="translate(85.6631 139.3161) matrix(0.9654 -0.0113 0.0671 0.9762 0 0) translate(-110.1168 -148.634)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><path d="88:qzomwk" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`solid, outline and glass, as restyled with the cute face > solid static output is pinned 2`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="aevgm65" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .aevgm65 { --aevgm65-ink: #28B06C; }
+    @media (prefers-color-scheme: dark) {
+      .aevgm65 { --aevgm65-ink: #25A263; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <path d="6571:p1pv7j" fill="var(--aevgm65-ink, #28B06C)"/>
+    <g data-aora-face="">
+      <path d="1121:1l1whzl" transform="translate(72.6928 100.1462) matrix(0.9309 -0.0384 -0.0101 0.9914 0 0) translate(-97.7155 -109.4066)" fill="#FFFFFF" opacity="1"/>
+      <path d="1166:18f7847" transform="translate(124.86 99.4975) matrix(0.9958 0.0224 -0.0105 0.9911 0 0) translate(-150.2201 -109.4066)" fill="#FFFFFF" opacity="1"/>
+      <path d="411:1nc3stz" transform="translate(91.4428 132.2912) matrix(0.978 -0.0223 0.0538 0.9876 0 0) translate(-116.5 -141.8747)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="6.56" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><circle cx="189.06" cy="39.94" r="5.06" fill="var(--aevgm65-ink, #28B06C)" opacity="1"/><circle cx="207.7" cy="19.97" r="7.19" fill="var(--aevgm65-ink, #28B06C)" opacity="1"/><circle cx="229" cy="-2.66" r="9.32" fill="var(--aevgm65-ink, #28B06C)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`solid, outline and glass, as restyled with the cute face > solid static output is pinned 3`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" viewBox="-24 -24 277 277" fill="none" aria-hidden="true">
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <path d="8970:e17huj" fill="#1F1F1F"/>
+    <g data-aora-face="">
+      <path d="1090:bi2l8j" transform="translate(58.2763 101.0078) matrix(0.8711 -0.0552 -0.0099 0.9915 0 0) translate(-82.1289 -109.6727)" fill="var(--aora-bg, var(--aora-bg-base, #fcfcfc))" opacity="1"/>
+      <path d="1165:176dfkw" transform="translate(121.3592 99.7385) matrix(0.9982 0.0176 -0.0099 0.9915 0 0) translate(-146.8711 -109.6727)" fill="var(--aora-bg, var(--aora-bg-base, #fcfcfc))" opacity="1"/>
+      <path d="221:kqrinz" transform="translate(89.0384 122.1107) matrix(0.9744 -0.0196 0.034 0.9976 0 0) translate(-114.5 -131.7885)" fill="none" stroke="var(--aora-bg, var(--aora-bg-base, #fcfcfc))" stroke-width="8.74" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+      <path d="442:1akpvvw" transform="translate(91.8261 160.0534) matrix(0.9744 -0.0196 0.1067 0.9172 0 0) translate(-114.5 -168.8198)" fill="none" stroke="var(--aora-bg, var(--aora-bg-base, #fcfcfc))" stroke-width="8.74" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`sticker: static snapshots > blob / happy 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a1g4wv85" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a1g4wv85 { --a1g4wv85-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a1g4wv85 { --a1g4wv85-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g filter="url(#a1g4wv85-shadow)"><defs><filter id="a1g4wv85-shadow" x="-25%" y="-25%" width="150%" height="160%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="3.5" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/></filter></defs><path d="7670:563g4j" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/></g>
+    <path d="7670:563g4j" fill="var(--a1g4wv85-ink, #846BEC)"/>
+    <g data-aora-face="">
+      <path d="257:7gwocp" transform="translate(33.6387 130.3855) matrix(0.706 0.0647 0.0529 0.9882 0 0) translate(-53.214 -137.2534)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="277:b3vqlq" transform="translate(143.3655 127.7157) matrix(0.9664 -0.0816 0.0503 0.99 0 0) translate(-167.0195 -137.2534)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="1076:gibt7j" transform="translate(52.9889 118.6515) matrix(0.843 -0.0079 0.0262 0.9993 0 0) translate(-76.1059 -127.045)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="1155:did44c" transform="translate(118.6491 117.0846) matrix(0.999 -0.0263 0.0255 0.9994 0 0) translate(-144.1276 -127.045)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="436:5q6awh" transform="translate(85.6631 139.3161) matrix(0.9654 -0.0113 0.0671 0.9762 0 0) translate(-110.1168 -148.634)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" stroke="var(--aora-face-sticker, var(--aora-paper, #fff))" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><path d="88:qzomwk" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`sticker: static snapshots > blob / idle 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="ach1lqo" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .ach1lqo { --ach1lqo-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .ach1lqo { --ach1lqo-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g filter="url(#ach1lqo-shadow)"><defs><filter id="ach1lqo-shadow" x="-25%" y="-25%" width="150%" height="160%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="3.5" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/></filter></defs><path d="7670:563g4j" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/></g>
+    <path d="7670:563g4j" fill="var(--ach1lqo-ink, #846BEC)"/>
+    <g data-aora-face="">
+      <path d="1083:bfsm54" transform="translate(52.8329 108.9546) matrix(0.8426 -0.038 0.006 0.9981 0 0) translate(-76.1059 -117.3702)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="1165:yvt6ec" transform="translate(118.4969 107.3891) matrix(0.9994 -0.0037 0.0058 0.9981 0 0) translate(-144.1276 -117.3702)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`sticker: static snapshots > blob / powering-down 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="ach1lqo" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .ach1lqo { --ach1lqo-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .ach1lqo { --ach1lqo-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g filter="url(#ach1lqo-shadow)"><defs><filter id="ach1lqo-shadow" x="-25%" y="-25%" width="150%" height="160%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="3.5" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/></filter></defs><path d="7670:563g4j" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round" opacity="0.85"/></g>
+    <path d="7670:563g4j" fill="var(--ach1lqo-ink, #846BEC)" fill-opacity="0.85"/>
+    <g data-aora-face="">
+      <path d="1083:bfsm54" transform="translate(52.8329 108.9546) matrix(0.8426 -0.038 0.006 0.9981 0 0) translate(-76.1059 -117.3702)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="1165:yvt6ec" transform="translate(118.4969 107.3891) matrix(0.9994 -0.0037 0.0058 0.9981 0 0) translate(-144.1276 -117.3702)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`sticker: static snapshots > blob / thinking 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="alwbvv3" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .alwbvv3 { --alwbvv3-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .alwbvv3 { --alwbvv3-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g filter="url(#alwbvv3-shadow)"><defs><filter id="alwbvv3-shadow" x="-25%" y="-25%" width="150%" height="160%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="3.5" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/></filter></defs><path d="7670:563g4j" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/></g>
+    <path d="7670:563g4j" fill="var(--alwbvv3-ink, #846BEC)"/>
+    <g data-aora-face="">
+      <path d="1041:192kt5t" transform="translate(61.6471 97.7751) matrix(0.8869 -0.0581 -0.0161 0.9876 0 0) translate(-85.7807 -106.5704)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="1158:bw9lct" transform="translate(128.6689 96.7221) matrix(0.9922 0.0359 -0.0166 0.9872 0 0) translate(-153.8024 -106.5704)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="445:1i6ixot" transform="translate(85.6631 139.3161) matrix(0.9654 -0.0113 0.0671 0.9762 0 0) translate(-110.1168 -148.634)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" stroke="var(--aora-face-sticker, var(--aora-paper, #fff))" stroke-width="8.5" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><circle cx="189.06" cy="39.94" r="5.06" fill="var(--alwbvv3-ink, #846BEC)" opacity="1"/><circle cx="207.7" cy="19.97" r="7.19" fill="var(--alwbvv3-ink, #846BEC)" opacity="1"/><circle cx="229" cy="-2.66" r="9.32" fill="var(--alwbvv3-ink, #846BEC)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`sticker: static snapshots > bunny / happy 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a1q9pxry" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a1q9pxry { --a1q9pxry-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a1q9pxry { --a1q9pxry-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g filter="url(#a1q9pxry-shadow)"><defs><filter id="a1q9pxry-shadow" x="-25%" y="-25%" width="150%" height="160%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="3.5" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/></filter></defs><path d="6412:d5r94c" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/><path d="2379:5e6m4o" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/><path d="2554:72toee" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/><path d="1331:1oi7vr5" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/><path d="1428:14rodk7" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/></g>
+    <path d="2379:5e6m4o" fill="var(--a1q9pxry-ink, #846BEC)"/>
+    <path d="2554:72toee" fill="var(--a1q9pxry-ink, #846BEC)"/>
+    <path d="6412:d5r94c" fill="var(--a1q9pxry-ink, #846BEC)"/>
+    <path d="1331:1oi7vr5" fill="var(--a1q9pxry-ink, #846BEC)"/>
+    <path d="1331:1oi7vr5" fill="#fff" fill-opacity="0.45"/>
+    <path d="1428:14rodk7" fill="var(--a1q9pxry-ink, #846BEC)"/>
+    <path d="1428:14rodk7" fill="#fff" fill-opacity="0.45"/>
+    <g data-aora-face="">
+      <path d="257:1fk099p" transform="translate(49.3081 158.7516) matrix(0.8147 0.1472 0.11 0.9105 0 0) translate(-68.7289 -165.824)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="277:1urori7" transform="translate(138.5041 156.9569) matrix(0.9716 -0.1831 0.11 0.9105 0 0) translate(-160.2711 -165.824)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="1084:1ckoy9n" transform="translate(64.7897 149.2817) matrix(0.8966 0.0546 0.0872 0.9512 0 0) translate(-87.1426 -157.6126)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="1158:1dz841l" transform="translate(118.1022 148.2089) matrix(0.9957 -0.0926 0.0872 0.9512 0 0) translate(-141.8574 -157.6126)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="443:r1yxo7" transform="translate(92.6292 166.4916) matrix(0.9744 -0.0196 0.1188 0.8907 0 0) translate(-114.5 -174.9782)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" stroke="var(--aora-face-sticker, var(--aora-paper, #fff))" stroke-width="6.84" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><path d="88:qzomwk" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`sticker: static snapshots > bunny / idle 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a87u5fr" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a87u5fr { --a87u5fr-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a87u5fr { --a87u5fr-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g filter="url(#a87u5fr-shadow)"><defs><filter id="a87u5fr-shadow" x="-25%" y="-25%" width="150%" height="160%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="3.5" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/></filter></defs><path d="6412:d5r94c" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/><path d="2379:5e6m4o" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/><path d="2554:72toee" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/><path d="1331:1oi7vr5" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/><path d="1428:14rodk7" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/></g>
+    <path d="2379:5e6m4o" fill="var(--a87u5fr-ink, #846BEC)"/>
+    <path d="2554:72toee" fill="var(--a87u5fr-ink, #846BEC)"/>
+    <path d="6412:d5r94c" fill="var(--a87u5fr-ink, #846BEC)"/>
+    <path d="1331:1oi7vr5" fill="var(--a87u5fr-ink, #846BEC)"/>
+    <path d="1331:1oi7vr5" fill="#fff" fill-opacity="0.45"/>
+    <path d="1428:14rodk7" fill="var(--a87u5fr-ink, #846BEC)"/>
+    <path d="1428:14rodk7" fill="#fff" fill-opacity="0.45"/>
+    <g data-aora-face="">
+      <path d="1072:qnb2eb" transform="translate(64.1292 141.2798) matrix(0.8952 0.0374 0.0715 0.9715 0 0) translate(-87.1426 -149.8304)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="1156:1o8y1n9" transform="translate(117.4417 140.2071) matrix(0.9971 -0.0754 0.0715 0.9715 0 0) translate(-141.8574 -149.8304)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`sticker: static snapshots > bunny / powering-down 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a87u5fr" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a87u5fr { --a87u5fr-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a87u5fr { --a87u5fr-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g filter="url(#a87u5fr-shadow)"><defs><filter id="a87u5fr-shadow" x="-25%" y="-25%" width="150%" height="160%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="3.5" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/></filter></defs><path d="6412:d5r94c" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round" opacity="0.85"/><path d="2379:5e6m4o" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/><path d="2554:72toee" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/><path d="1331:1oi7vr5" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/><path d="1428:14rodk7" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/></g>
+    <path d="2379:5e6m4o" fill="var(--a87u5fr-ink, #846BEC)"/>
+    <path d="2554:72toee" fill="var(--a87u5fr-ink, #846BEC)"/>
+    <path d="6412:d5r94c" fill="var(--a87u5fr-ink, #846BEC)" fill-opacity="0.85"/>
+    <path d="1331:1oi7vr5" fill="var(--a87u5fr-ink, #846BEC)"/>
+    <path d="1331:1oi7vr5" fill="#fff" fill-opacity="0.45"/>
+    <path d="1428:14rodk7" fill="var(--a87u5fr-ink, #846BEC)"/>
+    <path d="1428:14rodk7" fill="#fff" fill-opacity="0.45"/>
+    <g data-aora-face="">
+      <path d="1072:qnb2eb" transform="translate(64.1292 141.2798) matrix(0.8952 0.0374 0.0715 0.9715 0 0) translate(-87.1426 -149.8304)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="1156:1o8y1n9" transform="translate(117.4417 140.2071) matrix(0.9971 -0.0754 0.0715 0.9715 0 0) translate(-141.8574 -149.8304)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`sticker: static snapshots > bunny / thinking 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="aswk0g6" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .aswk0g6 { --aswk0g6-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .aswk0g6 { --aswk0g6-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g filter="url(#aswk0g6-shadow)"><defs><filter id="aswk0g6-shadow" x="-25%" y="-25%" width="150%" height="160%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="3.5" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/></filter></defs><path d="6412:d5r94c" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/><path d="2379:5e6m4o" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/><path d="2554:72toee" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/><path d="1331:1oi7vr5" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/><path d="1428:14rodk7" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/></g>
+    <path d="2379:5e6m4o" fill="var(--aswk0g6-ink, #846BEC)"/>
+    <path d="2554:72toee" fill="var(--aswk0g6-ink, #846BEC)"/>
+    <path d="6412:d5r94c" fill="var(--aswk0g6-ink, #846BEC)"/>
+    <path d="1331:1oi7vr5" fill="var(--aswk0g6-ink, #846BEC)"/>
+    <path d="1331:1oi7vr5" fill="#fff" fill-opacity="0.45"/>
+    <path d="1428:14rodk7" fill="var(--aswk0g6-ink, #846BEC)"/>
+    <path d="1428:14rodk7" fill="#fff" fill-opacity="0.45"/>
+    <g data-aora-face="">
+      <path d="1091:15pnfwd" transform="translate(70.7666 132.1164) matrix(0.9227 0.0068 0.0531 0.9881 0 0) translate(-94.9247 -141.1434)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="1163:1uxk464" transform="translate(124.969 131.3796) matrix(0.9943 -0.0681 0.055 0.9867 0 0) translate(-149.6396 -141.1434)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="417:1b3k2so" transform="translate(92.6292 166.4916) matrix(0.9744 -0.0196 0.1188 0.8907 0 0) translate(-114.5 -174.9782)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" stroke="var(--aora-face-sticker, var(--aora-paper, #fff))" stroke-width="6.84" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><circle cx="189.06" cy="39.94" r="5.06" fill="var(--aswk0g6-ink, #846BEC)" opacity="1"/><circle cx="207.7" cy="19.97" r="7.19" fill="var(--aswk0g6-ink, #846BEC)" opacity="1"/><circle cx="229" cy="-2.66" r="9.32" fill="var(--aswk0g6-ink, #846BEC)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`sticker: static snapshots > cat / happy 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a18tjcem" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a18tjcem { --a18tjcem-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a18tjcem { --a18tjcem-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g filter="url(#a18tjcem-shadow)"><defs><filter id="a18tjcem-shadow" x="-25%" y="-25%" width="150%" height="160%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="3.5" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/></filter></defs><path d="7681:19gfjyr" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/></g>
+    <path d="7681:19gfjyr" fill="var(--a18tjcem-ink, #846BEC)"/>
+    <g data-aora-face="">
+      <path d="258:1q8gyy5" transform="translate(33.9582 152.7309) matrix(0.7031 0.1971 0.1044 0.9218 0 0) translate(-51.373 -158.8471)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="278:zyzy3r" transform="translate(156.9763 150.2556) matrix(0.9228 -0.2299 0.1044 0.9218 0 0) translate(-177.627 -158.8471)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="1069:1rrixqq" transform="translate(54.58 139.3944) matrix(0.8494 0.0551 0.0687 0.9745 0 0) translate(-76.7689 -147.5219)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="1153:1dw3atz" transform="translate(128.1081 137.9149) matrix(0.9905 -0.0921 0.0687 0.9745 0 0) translate(-152.2311 -147.5219)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="436:6utijo" transform="translate(92.1579 162.8213) matrix(0.9744 -0.0196 0.1119 0.9064 0 0) translate(-114.5 -171.4725)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" stroke="var(--aora-face-sticker, var(--aora-paper, #fff))" stroke-width="9.43" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><path d="88:qzomwk" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`sticker: static snapshots > cat / idle 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="anozhyv" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .anozhyv { --anozhyv-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .anozhyv { --anozhyv-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g filter="url(#anozhyv-shadow)"><defs><filter id="anozhyv-shadow" x="-25%" y="-25%" width="150%" height="160%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="3.5" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/></filter></defs><path d="7681:19gfjyr" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/></g>
+    <path d="7681:19gfjyr" fill="var(--anozhyv-ink, #846BEC)"/>
+    <g data-aora-face="">
+      <path d="1075:1ip1533" transform="translate(53.9402 128.4606) matrix(0.8474 0.0218 0.0464 0.9923 0 0) translate(-76.7689 -136.7889)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="1159:1f2d8bl" transform="translate(127.4683 126.9811) matrix(0.9925 -0.0588 0.0464 0.9923 0 0) translate(-152.2311 -136.7889)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`sticker: static snapshots > cat / powering-down 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="anozhyv" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .anozhyv { --anozhyv-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .anozhyv { --anozhyv-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g filter="url(#anozhyv-shadow)"><defs><filter id="anozhyv-shadow" x="-25%" y="-25%" width="150%" height="160%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="3.5" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/></filter></defs><path d="7681:19gfjyr" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round" opacity="0.85"/></g>
+    <path d="7681:19gfjyr" fill="var(--anozhyv-ink, #846BEC)" fill-opacity="0.85"/>
+    <g data-aora-face="">
+      <path d="1075:1ip1533" transform="translate(53.9402 128.4606) matrix(0.8474 0.0218 0.0464 0.9923 0 0) translate(-76.7689 -136.7889)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="1159:1f2d8bl" transform="translate(127.4683 126.9811) matrix(0.9925 -0.0588 0.0464 0.9923 0 0) translate(-152.2311 -136.7889)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`sticker: static snapshots > cat / thinking 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a1t3j112" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a1t3j112 { --a1t3j112-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a1t3j112 { --a1t3j112-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g filter="url(#a1t3j112-shadow)"><defs><filter id="a1t3j112-shadow" x="-25%" y="-25%" width="150%" height="160%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="3.5" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/></filter></defs><path d="7681:19gfjyr" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/></g>
+    <path d="7681:19gfjyr" fill="var(--a1t3j112-ink, #846BEC)"/>
+    <g data-aora-face="">
+      <path d="1116:1bflyr0" transform="translate(63.2709 115.8892) matrix(0.8941 -0.0172 0.0208 0.9998 0 0) translate(-87.502 -124.8078)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="1171:16xm0p4" transform="translate(138.5016 115.0524) matrix(0.9775 -0.0239 0.0224 0.9997 0 0) translate(-162.9641 -124.8078)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="447:1di4xh5" transform="translate(92.1579 162.8213) matrix(0.9744 -0.0196 0.1119 0.9064 0 0) translate(-114.5 -171.4725)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" stroke="var(--aora-face-sticker, var(--aora-paper, #fff))" stroke-width="9.43" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><circle cx="189.06" cy="39.94" r="5.06" fill="var(--a1t3j112-ink, #846BEC)" opacity="1"/><circle cx="207.7" cy="19.97" r="7.19" fill="var(--a1t3j112-ink, #846BEC)" opacity="1"/><circle cx="229" cy="-2.66" r="9.32" fill="var(--a1t3j112-ink, #846BEC)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`sticker: static snapshots > sprout / happy 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a16r9khd" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a16r9khd { --a16r9khd-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a16r9khd { --a16r9khd-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g filter="url(#a16r9khd-shadow)"><defs><filter id="a16r9khd-shadow" x="-25%" y="-25%" width="150%" height="160%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="3.5" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/></filter></defs><path d="6367:1jftfwv" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/><path d="2283:1x6oprj" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/><path d="1240:1jtzno" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/></g>
+    <path d="6367:1jftfwv" fill="var(--a16r9khd-ink, #846BEC)"/>
+    <path d="2283:1x6oprj" fill="#34B36B"/>
+    <path d="1240:1jtzno" fill="#34B36B"/>
+    <g data-aora-face="">
+      <path d="248:1bcdacj" transform="translate(46.322 155.2364) matrix(0.7967 0.1457 0.1037 0.9231 0 0) translate(-65.7535 -162.2698)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="268:1hd9a7g" transform="translate(141.3162 153.325) matrix(0.9666 -0.1812 0.1037 0.9231 0 0) translate(-163.2465 -162.2698)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="1083:8w8dbe" transform="translate(62.8 145.1472) matrix(0.8887 0.0502 0.0793 0.9622 0 0) translate(-85.3642 -153.5246)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="1159:1lyapyu" transform="translate(119.5782 144.0047) matrix(0.9959 -0.0881 0.0793 0.9622 0 0) translate(-143.6358 -153.5246)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="442:1ybg90n" transform="translate(92.2289 163.3926) matrix(0.9744 -0.0196 0.113 0.904 0 0) translate(-114.5 -172.0191)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" stroke="var(--aora-face-sticker, var(--aora-paper, #fff))" stroke-width="7.28" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><path d="88:qzomwk" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`sticker: static snapshots > sprout / idle 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="agr4lis" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .agr4lis { --agr4lis-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .agr4lis { --agr4lis-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g filter="url(#agr4lis-shadow)"><defs><filter id="agr4lis-shadow" x="-25%" y="-25%" width="150%" height="160%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="3.5" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/></filter></defs><path d="6367:1jftfwv" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/><path d="2283:1x6oprj" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/><path d="1240:1jtzno" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/></g>
+    <path d="6367:1jftfwv" fill="var(--agr4lis-ink, #846BEC)"/>
+    <path d="2283:1x6oprj" fill="#34B36B"/>
+    <path d="1240:1jtzno" fill="#34B36B"/>
+    <g data-aora-face="">
+      <path d="1083:111i9iu" transform="translate(62.1807 136.6569) matrix(0.8873 0.0306 0.0624 0.9806 0 0) translate(-85.3642 -145.2366)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="1167:zcezae" transform="translate(118.9589 135.5144) matrix(0.9973 -0.0686 0.0624 0.9806 0 0) translate(-143.6358 -145.2366)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`sticker: static snapshots > sprout / powering-down 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="agr4lis" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .agr4lis { --agr4lis-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .agr4lis { --agr4lis-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g filter="url(#agr4lis-shadow)"><defs><filter id="agr4lis-shadow" x="-25%" y="-25%" width="150%" height="160%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="3.5" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/></filter></defs><path d="6367:1jftfwv" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round" opacity="0.85"/><path d="2283:1x6oprj" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/><path d="1240:1jtzno" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/></g>
+    <path d="6367:1jftfwv" fill="var(--agr4lis-ink, #846BEC)" fill-opacity="0.85"/>
+    <path d="2283:1x6oprj" fill="#34B36B"/>
+    <path d="1240:1jtzno" fill="#34B36B"/>
+    <g data-aora-face="">
+      <path d="1083:111i9iu" transform="translate(62.1807 136.6569) matrix(0.8873 0.0306 0.0624 0.9806 0 0) translate(-85.3642 -145.2366)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="1167:zcezae" transform="translate(118.9589 135.5144) matrix(0.9973 -0.0686 0.0624 0.9806 0 0) translate(-143.6358 -145.2366)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`sticker: static snapshots > sprout / thinking 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a192bxdf" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a192bxdf { --a192bxdf-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a192bxdf { --a192bxdf-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g filter="url(#a192bxdf-shadow)"><defs><filter id="a192bxdf-shadow" x="-25%" y="-25%" width="150%" height="160%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="3.5" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/></filter></defs><path d="6367:1jftfwv" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/><path d="2283:1x6oprj" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/><path d="1240:1jtzno" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/></g>
+    <path d="6367:1jftfwv" fill="var(--a192bxdf-ink, #846BEC)"/>
+    <path d="2283:1x6oprj" fill="#34B36B"/>
+    <path d="1240:1jtzno" fill="#34B36B"/>
+    <g data-aora-face="">
+      <path d="1108:1nitdzr" transform="translate(69.3256 126.9265) matrix(0.9179 0.0002 0.0429 0.9941 0 0) translate(-93.6522 -135.9848)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="1149:7wacmh" transform="translate(127.107 126.1628) matrix(0.9929 -0.056 0.0447 0.9932 0 0) translate(-151.9238 -135.9848)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="447:1wy4cmf" transform="translate(92.2289 163.3926) matrix(0.9744 -0.0196 0.113 0.904 0 0) translate(-114.5 -172.0191)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" stroke="var(--aora-face-sticker, var(--aora-paper, #fff))" stroke-width="7.28" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><circle cx="189.06" cy="39.94" r="5.06" fill="var(--a192bxdf-ink, #846BEC)" opacity="1"/><circle cx="207.7" cy="19.97" r="7.19" fill="var(--a192bxdf-ink, #846BEC)" opacity="1"/><circle cx="229" cy="-2.66" r="9.32" fill="var(--a192bxdf-ink, #846BEC)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`sticker: static snapshots > star / happy 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a15snm6i" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a15snm6i { --a15snm6i-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a15snm6i { --a15snm6i-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g filter="url(#a15snm6i-shadow)"><defs><filter id="a15snm6i-shadow" x="-25%" y="-25%" width="150%" height="160%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="3.5" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/></filter></defs><path d="8970:e17huj" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/></g>
+    <path d="8970:e17huj" fill="var(--a15snm6i-ink, #846BEC)"/>
+    <g data-aora-face="">
+      <path d="259:1t0xlvp" transform="translate(36.6481 134.7008) matrix(0.7306 0.0809 0.062 0.981 0 0) translate(-56.5097 -141.7266)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="279:1j285xk" transform="translate(149.656 132.4269) matrix(0.9497 -0.1147 0.062 0.981 0 0) translate(-172.4903 -141.7266)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="1084:o1h3rq" transform="translate(56.4928 123.3563) matrix(0.8614 0.004 0.0359 0.997 0 0) translate(-79.8391 -131.8919)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="1168:sdirrt" transform="translate(124.0379 121.9972) matrix(0.9959 -0.0414 0.0359 0.997 0 0) translate(-149.1609 -131.8919)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="428:uaqnau" transform="translate(90.269 144.0294) matrix(0.9744 -0.0196 0.0763 0.966 0 0) translate(-114.5 -153.3247)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" stroke="var(--aora-face-sticker, var(--aora-paper, #fff))" stroke-width="8.67" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><path d="88:qzomwk" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`sticker: static snapshots > star / idle 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a1joaraz" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a1joaraz { --a1joaraz-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a1joaraz { --a1joaraz-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g filter="url(#a1joaraz-shadow)"><defs><filter id="a1joaraz-shadow" x="-25%" y="-25%" width="150%" height="160%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="3.5" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/></filter></defs><path d="8970:e17huj" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/></g>
+    <path d="8970:e17huj" fill="var(--a1joaraz-ink, #846BEC)"/>
+    <g data-aora-face="">
+      <path d="1083:1u7aaci" transform="translate(56.2291 112.8679) matrix(0.8607 -0.0251 0.0144 0.9996 0 0) translate(-79.8391 -121.4634)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="1167:tb6e08" transform="translate(123.7741 111.5088) matrix(0.9966 -0.0123 0.0144 0.9996 0 0) translate(-149.1609 -121.4634)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`sticker: static snapshots > star / powering-down 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a1joaraz" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a1joaraz { --a1joaraz-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a1joaraz { --a1joaraz-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g filter="url(#a1joaraz-shadow)"><defs><filter id="a1joaraz-shadow" x="-25%" y="-25%" width="150%" height="160%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="3.5" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/></filter></defs><path d="8970:e17huj" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round" opacity="0.85"/></g>
+    <path d="8970:e17huj" fill="var(--a1joaraz-ink, #846BEC)" fill-opacity="0.85"/>
+    <g data-aora-face="">
+      <path d="1083:1u7aaci" transform="translate(56.2291 112.8679) matrix(0.8607 -0.0251 0.0144 0.9996 0 0) translate(-79.8391 -121.4634)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="1167:tb6e08" transform="translate(123.7741 111.5088) matrix(0.9966 -0.0123 0.0144 0.9996 0 0) translate(-149.1609 -121.4634)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`sticker: static snapshots > star / thinking 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="aty5fju" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .aty5fju { --aty5fju-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .aty5fju { --aty5fju-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g filter="url(#aty5fju-shadow)"><defs><filter id="aty5fju-shadow" x="-25%" y="-25%" width="150%" height="160%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="3.5" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/></filter></defs><path d="8970:e17huj" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/></g>
+    <path d="8970:e17huj" fill="var(--aty5fju-ink, #846BEC)"/>
+    <g data-aora-face="">
+      <path d="1082:1so9el1" transform="translate(65.7373 100.8201) matrix(0.9047 -0.0459 -0.0094 0.9918 0 0) translate(-90.2677 -109.8222)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="1158:165sltt" transform="translate(134.7814 100.027) matrix(0.9841 0.0328 -0.01 0.9914 0 0) translate(-159.5894 -109.8222)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="439:1dosjz7" transform="translate(90.269 144.0294) matrix(0.9744 -0.0196 0.0763 0.966 0 0) translate(-114.5 -153.3247)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" stroke="var(--aora-face-sticker, var(--aora-paper, #fff))" stroke-width="8.67" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><circle cx="189.06" cy="39.94" r="5.06" fill="var(--aty5fju-ink, #846BEC)" opacity="1"/><circle cx="207.7" cy="19.97" r="7.19" fill="var(--aty5fju-ink, #846BEC)" opacity="1"/><circle cx="229" cy="-2.66" r="9.32" fill="var(--aty5fju-ink, #846BEC)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`sticker: static snapshots > takes the parameters of its variant 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a28iket" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a28iket { --a28iket-ink: #1F1F1F; --a28iket-sticker: #FFFFFF; }
+    @media (prefers-color-scheme: dark) {
+      .a28iket { --a28iket-ink: #FFFFFF; --a28iket-sticker: #1F1F1F; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g><path d="6985:pvg2bx" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="12" stroke-linejoin="round"/></g>
+    <path d="6985:pvg2bx" fill="var(--a28iket-ink, #1F1F1F)"/>
+    <g data-aora-face="">
+      <path d="1085:1liific" transform="translate(58.6336 104.549) matrix(0.8729 -0.0457 -0.0025 0.9952 0 0) translate(-82.5467 -113.2544)" fill="var(--a28iket-sticker, #FFFFFF)" opacity="1"/>
+      <path d="1169:4qt9x2" transform="translate(120.9023 103.296) matrix(0.9984 0.008 -0.0025 0.9952 0 0) translate(-146.4533 -113.2544)" fill="var(--a28iket-sticker, #FFFFFF)" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`sticker: static snapshots > tofu / happy 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="ah0dxs2" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .ah0dxs2 { --ah0dxs2-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .ah0dxs2 { --ah0dxs2-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g filter="url(#ah0dxs2-shadow)"><defs><filter id="ah0dxs2-shadow" x="-25%" y="-25%" width="150%" height="160%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="3.5" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/></filter></defs><path d="6985:pvg2bx" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/></g>
+    <path d="6985:pvg2bx" fill="var(--ah0dxs2-ink, #846BEC)"/>
+    <g data-aora-face="">
+      <path d="259:uc9leh" transform="translate(39.973 124.4464) matrix(0.7582 0.0237 0.0387 0.9959 0 0) translate(-61.0397 -131.9348)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="279:1qfuluu" transform="translate(144.1533 122.3501) matrix(0.9651 -0.0584 0.0387 0.9959 0 0) translate(-167.9603 -131.9348)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="1076:1kkeebo" transform="translate(58.6951 113.6271) matrix(0.873 -0.0226 0.016 0.9997 0 0) translate(-82.5467 -122.3439)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="1156:1cjo75" transform="translate(120.9637 112.3741) matrix(0.9983 -0.015 0.016 0.9997 0 0) translate(-146.4533 -122.3439)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="434:18h8fzi" transform="translate(89.5323 133.0942) matrix(0.9744 -0.0196 0.0553 0.9865 0 0) translate(-114.5 -142.6269)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" stroke="var(--aora-face-sticker, var(--aora-paper, #fff))" stroke-width="7.99" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><path d="88:qzomwk" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`sticker: static snapshots > tofu / idle 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a6ra0sj" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a6ra0sj { --a6ra0sj-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a6ra0sj { --a6ra0sj-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g filter="url(#a6ra0sj-shadow)"><defs><filter id="a6ra0sj-shadow" x="-25%" y="-25%" width="150%" height="160%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="3.5" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/></filter></defs><path d="6985:pvg2bx" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/></g>
+    <path d="6985:pvg2bx" fill="var(--a6ra0sj-ink, #846BEC)"/>
+    <g data-aora-face="">
+      <path d="1085:1liific" transform="translate(58.6336 104.549) matrix(0.8729 -0.0457 -0.0025 0.9952 0 0) translate(-82.5467 -113.2544)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="1169:4qt9x2" transform="translate(120.9023 103.296) matrix(0.9984 0.008 -0.0025 0.9952 0 0) translate(-146.4533 -113.2544)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`sticker: static snapshots > tofu / powering-down 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a6ra0sj" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .a6ra0sj { --a6ra0sj-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a6ra0sj { --a6ra0sj-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g filter="url(#a6ra0sj-shadow)"><defs><filter id="a6ra0sj-shadow" x="-25%" y="-25%" width="150%" height="160%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="3.5" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/></filter></defs><path d="6985:pvg2bx" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round" opacity="0.85"/></g>
+    <path d="6985:pvg2bx" fill="var(--a6ra0sj-ink, #846BEC)" fill-opacity="0.85"/>
+    <g data-aora-face="">
+      <path d="1085:1liific" transform="translate(58.6336 104.549) matrix(0.8729 -0.0457 -0.0025 0.9952 0 0) translate(-82.5467 -113.2544)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="1169:4qt9x2" transform="translate(120.9023 103.296) matrix(0.9984 0.008 -0.0025 0.9952 0 0) translate(-146.4533 -113.2544)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`sticker: static snapshots > tofu / thinking 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="aizc3pe" viewBox="-24 -24 277 277" fill="none" aria-hidden="true"><style>
+    .aizc3pe { --aizc3pe-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .aizc3pe { --aizc3pe-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(114.5 114.5) scale(1) translate(-114.5 -114.5)">
+    <g filter="url(#aizc3pe-shadow)"><defs><filter id="aizc3pe-shadow" x="-25%" y="-25%" width="150%" height="160%" color-interpolation-filters="sRGB"><feDropShadow dx="0" dy="3.5" stdDeviation="3" flood-color="#000" flood-opacity="0.2"/></filter></defs><path d="6985:pvg2bx" fill="var(--aora-paper, #fff)" stroke="var(--aora-paper, #fff)" stroke-width="24" stroke-linejoin="round"/></g>
+    <path d="6985:pvg2bx" fill="var(--aizc3pe-ink, #846BEC)"/>
+    <g data-aora-face="">
+      <path d="1097:10kxrie" transform="translate(67.1145 94.1212) matrix(0.9101 -0.0563 -0.0228 0.9824 0 0) translate(-91.6362 -103.108)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="1152:1v7p2bu" transform="translate(130.5825 93.321) matrix(0.9898 0.05 -0.024 0.9815 0 0) translate(-155.5428 -103.108)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" opacity="1"/>
+      <path d="435:x2djs9" transform="translate(89.5323 133.0942) matrix(0.9744 -0.0196 0.0553 0.9865 0 0) translate(-114.5 -142.6269)" fill="var(--aora-face-sticker, var(--aora-paper, #fff))" stroke="var(--aora-face-sticker, var(--aora-paper, #fff))" stroke-width="7.99" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><circle cx="189.06" cy="39.94" r="5.06" fill="var(--aizc3pe-ink, #846BEC)" opacity="1"/><circle cx="207.7" cy="19.97" r="7.19" fill="var(--aizc3pe-ink, #846BEC)" opacity="1"/><circle cx="229" cy="-2.66" r="9.32" fill="var(--aizc3pe-ink, #846BEC)" opacity="1"/></g></g>
+</svg>"
+`;

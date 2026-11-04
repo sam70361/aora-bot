@@ -1,0 +1,223 @@
+import { API } from '@theme';
+
+# AgentStateProvider
+
+为一棵子树提供一个仲裁器；用 hooks 喂它、读它。
+
+```tsx preview
+import { useState } from 'react';
+import { AgentStateProvider, useAgentState, CharacterMark, ActivityTicker } from '@aora-bot/react';
+
+function Sessions() {
+  const agent = useAgentState();
+  // provider 只在*显示的*状态变化时重渲染，所以列出所有会话的表需要自己推一下。
+  const [, bump] = useState(0);
+  const update = (u: Parameters<typeof agent.update>[0]) => (agent.update(u), bump((n) => n + 1));
+  const remove = (id: string) => (agent.remove(id), bump((n) => n + 1));
+  const sessions = Array.from(agent.arbiter.sessions().entries());
+  return (
+    <table style={{ margin: 0, fontSize: 13 }}>
+      <tbody>
+        {sessions.length === 0 && (
+          <tr>
+            <td style={{ opacity: 0.6 }}>没有会话</td>
+          </tr>
+        )}
+        {sessions.map(([id, s]) => (
+          <tr key={id}>
+            <td>
+              <code>{id}</code>
+            </td>
+            <td>{s.state}</td>
+            <td>{s.headless ? 'headless' : ''}</td>
+            <td>
+              <button className="site-btn" onClick={() => remove(id)}>
+                结束
+              </button>
+            </td>
+          </tr>
+        ))}
+        <tr>
+          <td colSpan={4}>
+            <div className="site-controls">
+              <button className="site-btn" onClick={() => update({ sessionId: 'chat', state: 'thinking' })}>
+                chat: thinking
+              </button>
+              <button className="site-btn" onClick={() => update({ sessionId: 'chat', state: 'composing' })}>
+                chat: composing
+              </button>
+              <button
+                className="site-btn"
+                onClick={() => update({ sessionId: 'build', state: 'working', headless: true })}
+              >
+                build: working（headless）
+              </button>
+              <button
+                className="site-btn"
+                onClick={() => update({ sessionId: 'build', emotionId: '34', tips: '构建失败' })}
+              >
+                build: 34 出错
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  );
+}
+
+function Face() {
+  const { state, tips } = useAgentState();
+  return (
+    <div className="site-demo site-demo--column" style={{ alignItems: 'center' }}>
+      <CharacterMark shape="mochi" color="cyan" state={state} sizePx={96} />
+      <ActivityTicker text={tips ?? state} />
+    </div>
+  );
+}
+
+export default function Demo() {
+  return (
+    <AgentStateProvider minDisplayMs={600}>
+      <div className="site-demo" style={{ alignItems: 'flex-start' }}>
+        <Face />
+        <Sessions />
+      </div>
+    </AgentStateProvider>
+  );
+}
+```
+
+headless 的 `build` 会话被记录——它出现在表里——但从不显示。当它出错时就不再是 headless，会接管脸，因为出错需要人。
+
+## useArbiter
+
+在组件生命周期内运行一个[仲裁器](/guide/agent-integration#仲裁)，并在显示的状态或说明变化时重渲染——底下会话来去而结果不变时不会。
+
+```tsx
+const { state, emotionId, tips, current, update, remove, arbiter } = useArbiter({
+  minDisplayMs: 900,
+  priority: { searching: 45 },
+  tickMs: 15_000, // 多久清理一次沉默会话；0 关闭
+});
+```
+
+选项在挂载时读取一次，与 `createCharacter` 是同一份契约。接受所有 `ArbiterOptions` 字段；每条规则的作用见集成指南的仲裁一节。
+
+## AgentStateProvider 与 useAgentState
+
+`AgentStateProvider` 用它的 props 调用 `useArbiter` 并共享结果。把它放在页面显示智能体的那部分之上；从事件到达的任何地方喂它——WebSocket 处理器、[`useStateChannel`](#通道)、钩子脚本——再在渲染角色的组件里用 `useAgentState` 读取。
+
+```tsx
+<AgentStateProvider minDisplayMs={{ defaultMs: 900, byState: { celebrate: 2000 } }}>
+  <Sidebar />
+</AgentStateProvider>;
+
+function Sidebar() {
+  const { state, tips } = useAgentState();
+  return (
+    <span title={tips}>
+      <CharacterMark state={state} />
+    </span>
+  );
+}
+```
+
+`useAgentState` 在 provider 之外会抛出，因为没有合理的默认值可退。`useOptionalAgentState` 则返回 `null`，给两种情况都能工作的组件用——通道 hooks 用它找默认的接收方。
+
+### HUD 与状态同行
+
+一条消息可以在 `tips` 之外带一个 `hud`——见[协议](/design/protocol#hud)。仲裁器把它留在胜出会话的 `ArbiterResult` 上，value 以 `hud` 暴露出来，于是表盘和脸走同一套仲裁：优先级落败的会话不能把自己的进度环画在胜者的表情外面。可以直接传给角色，也可以让 [`AgentHud`](/components/agent-hud) 替你读 provider。
+
+```tsx preview
+import { AgentStateProvider, CharacterMark, useAgentState } from '@aora-bot/react';
+
+function Face() {
+  const { state, hud, update } = useAgentState();
+  return (
+    <div className="site-demo site-demo--center">
+      <CharacterMark shape="tofu" color="blue" state={state} hud={hud ?? null} sizePx={110} />
+      <div className="site-controls">
+        <button
+          className="site-btn"
+          onClick={() => update({ sessionId: 's1', state: 'working', hud: { kind: 'progress', value: 0.4 } })}
+        >
+          working, 40%
+        </button>
+        <button
+          className="site-btn"
+          onClick={() => update({ sessionId: 's1', state: 'working', hud: { kind: 'progress', value: 0.9 } })}
+        >
+          working, 90%
+        </button>
+        <button className="site-btn" onClick={() => update({ sessionId: 's1', state: 'idle' })}>
+          idle，没有表盘
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default function Demo() {
+  return (
+    <AgentStateProvider minDisplayMs={0}>
+      <Face />
+    </AgentStateProvider>
+  );
+}
+```
+
+`useAgentHud()` 返回同一个表盘，没有 provider 时返回 `null`，给只想要那个环的组件用。
+
+## 通道
+
+两个 hooks 从 React 树之外把消息带进来。不给显式 `onUpdate` 时，两者都投递到最近的 provider。
+
+```tsx
+// postMessage，给 iframe 和扩展面板
+useStateChannel({ allowOrigin: 'https://app.example' });
+
+// 服务端事件，给本地中继
+const status = useEventSourceChannel('http://127.0.0.1:27182/events');
+// 'idle' | 'connecting' | 'open' | 'error'
+```
+
+`useStateChannel` 只接受来自 `allowOrigin`（默认页面自身来源）的 `{ type: 'aora:state', payload }` 消息。只有当页面本身就是沙箱化的小组件时才传 `'*'`。`useEventSourceChannel` 把每个事件的 `data` 解析为一条协议消息；`EventSource` 自己会重连，所以 hook 只报告状态。两者都接受 `enabled: false` 以在不卸载的情况下断开。
+
+两者都让每条消息经过 `normalize`，所以畸形消息会进 `onError`，永远到不了仲裁器。
+
+## 不用 React
+
+provider 只是薄薄一层。同一个仲裁器在任何地方都能跑：
+
+```ts
+import { createArbiter } from '@aora-bot/engine/agent';
+import { createCharacter, getInkColorCss } from '@aora-bot/engine';
+
+const character = createCharacter(el, { shape: 'blob', ink: { flat: getInkColorCss('blue') } });
+const arbiter = createArbiter({ onApply: ({ state }) => character.update({ state }) });
+```
+
+## API
+
+<API component="AgentStateProvider" />
+
+### AgentStateValue
+
+```ts
+interface AgentStateValue {
+  arbiter: Arbiter;
+  current: ArbiterResult; // { state, emotionId, tips?, hud?, sessionId? }
+  state: CharacterState;
+  emotionId: EmotionId;
+  tips: string | undefined;
+  hud: HudSpec | undefined; // 胜出会话的表盘，与 tips 一起走
+  update(update: ArbiterUpdate): void; // arbiter.update
+  remove(sessionId: string): void; // arbiter.remove
+}
+```
+
+## 接下来
+
+- [AgentHud](/components/agent-hud)——角色、表盘与说明一起
+- [智能体集成](/guide/agent-integration)——把智能体接到一张脸上

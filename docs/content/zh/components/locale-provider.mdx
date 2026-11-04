@@ -1,0 +1,71 @@
+import { API } from '@theme';
+
+# LocaleProvider
+
+为下方所有组件提供语言。
+
+```tsx preview
+import { LocaleProvider, CharacterPicker, ActivityMark } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo site-demo--column">
+      <LocaleProvider locale="zh-CN">
+        <ActivityMark agent={{ id: 'a' }} tool="write_file" />
+        <CharacterPicker shape="hex" color="cyan" layout="row" shapes={['hex', 'pill', 'cloud']} />
+      </LocaleProvider>
+    </div>
+  );
+}
+```
+
+添加语言与覆盖单条文案见[国际化](/guide/internationalisation)。
+
+## 标识符的显示名
+
+形状、墨色、状态的标识符是 API——`'blob'`、`'blue'`、`'thinking'`——永远不翻译。翻译的是它们的**显示名**，语言表把这些显示名按 id 驱动的族存放：`shape.*`、`color.*`、`state.*`、`stateDesc.*`（每个状态的一句话描述）、`belt.*`、`hud.*`、`mouth.*`、`expression.*`，加上线条脸用的 `face.*`、`nose.*`，以及四个状态分组的 `state.group.*`。
+
+`useLabel()` 把这些族包成函数，于是遍历 `SHAPE_IDS` 的组件不必拼 `'shape.' + id` 再强转成键：
+
+```tsx preview
+import { LocaleProvider, SHAPE_IDS, useLabel, type ShapeId } from '@aora-bot/react';
+
+function Names({ shapes }: { shapes: ShapeId[] }) {
+  const label = useLabel();
+  return (
+    <div className="site-demo site-demo--column">
+      {shapes.map((shape) => (
+        <span className="site-demo__label" key={shape}>
+          <code>{shape}</code> → {label.shape(shape)}、{label.state('thinking')}、{label.hud('progress')}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+export default function Demo() {
+  return (
+    <div className="site-demo site-demo--column">
+      <Names shapes={SHAPE_IDS.slice(0, 3)} />
+      <LocaleProvider locale="zh-CN">
+        <Names shapes={SHAPE_IDS.slice(0, 3)} />
+      </LocaleProvider>
+    </div>
+  );
+}
+```
+
+HUD 的名字来自引擎自己的 `HUD_KIND_LABELS`，那里已经带了两种语言；语言表直接转出，而不是再存一份。
+
+## 键的族
+
+标识符族之外，表按读取它的界面分组：`picker.*`、`editor.*`、`activity.*`、`template.*`、`avatar.*`、`occupancy.*`、`restricted.*`、`boot.*` 与 `loading.label`、`cast.*`、`walkthrough.*`、`sprite.*`。`LocaleKey` 是覆盖所有键的封闭联合类型，所以拼错键的覆盖是类型错误，而不是悄无声息地不起作用。
+
+## API
+
+<API component="LocaleProvider" />
+
+## 接下来
+
+- [国际化](/guide/internationalisation)——一个 provider 管所有文案
+- [API 索引](/components/api-index)——所有导出集中一处
