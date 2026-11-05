@@ -24,7 +24,7 @@ Copyright (c) 2026 sam70361
 - (a) 将 Aora Bot 用于已上线的产品、服务及其他商业用途；
 - (b) 修改与二次开发，且无须公开修改后的源代码；
 - (c) 将 Aora Bot 集成到自己的产品或服务中，并随其分发与销售；
-- (d) 在产品界面中不展示 Aora Bot 署名。
+- (d) 免于 `LICENSE` 第 5.2 条的署名要求。
 
 ### 第 3 条 授权方式
 
@@ -49,10 +49,50 @@ Aora Bot 按「现状」提供，不附带任何明示或默示的担保。著�
 ## [English] (the Chinese version prevails)
 
 1. **Scope**: under section 3 of `LICENSE`, an organisation that is not a Free User (for example a for-profit organisation with more than 3 people in total, counting full-time, part-time and long-term contracted staff) needs a commercial license to use Aora Bot in a live product or service, or for any other commercial purpose. Each license is concluded by a confirmed email exchange or a signed agreement (the "License Confirmation"), which prevails over these general terms. The activities restricted in section 4 of `LICENSE` (standalone resale, hosted services, character merchandise, trademarks, AI training and so on) are outside the general grant and can be negotiated separately in the License Confirmation.
-2. **Grant**: once the fee is paid and the license confirmed, the licensee may, within the scope of the License Confirmation, use Aora Bot in live products, services and for other commercial purposes, modify it without publishing the changes, integrate and distribute it with its own products or services, and leave the Aora Bot attribution out of its interface.
+2. **Grant**: once the fee is paid and the license confirmed, the licensee may, within the scope of the License Confirmation, use Aora Bot in live products, services and for other commercial purposes, modify it without publishing the changes, integrate and distribute it with its own products or services, and leave out the credit that section 5.2 of `LICENSE` asks of Free Users.
 3. **Terms**: non-exclusive, non-transferable and non-sublicensable; the copyright holder keeps all rights. The organisations and products covered, the term (yearly subscription or a perpetual license for a version), the fee, and whether support and upgrades are included are set by the License Confirmation.
 4. **Warranty and liability**: provided "as is"; the copyright holder warrants it holds the rights needed to grant the license; total liability is capped at the fee actually paid.
 5. **Termination**: a material breach not cured within 30 days of written notice (including email) ends the license; commercial use must then stop and fees already paid are not refunded. Section 4 survives termination.
 6. **Governing law**: the laws of the People's Republic of China; disputes go to the competent people's court where the copyright holder is located.
 
 For commercial licensing, contact **1251579308@qq.com**.
+
+---
+
+## 附：商业授权问询模板 / Appendix: inquiry template
+
+洽谈商业授权时，可参考以下问询模板。模板仅供参考，无须逐项填写，注明公司规模与使用场景即可。
+
+The template below may help when you get in touch about a commercial license. It is a guide only: you need not complete every field, and the company's size and intended use are enough to begin.
+
+```text
+主题：Aora Bot 商业授权问询（公司名称）
+
+公司全称：
+所在国家或地区：
+团队总人数：（全职、兼职与长期外包合计，含关联公司）
+产品名称与链接：
+产品类型：（网站、App、小程序、游戏、硬件、SaaS 或其他）
+使用方式：（例如 AI 助手形象、状态提示、用户头像；用到哪些包或头像接口）
+预计上线时间：
+授权方式：（按年订阅、按版本买断，或还没想好）
+是否需要：（技术支持、定制开发、合同、发票）
+联系人：（姓名、职务、邮箱或微信）
+其他说明：
+```
+
+```text
+Subject: Aora Bot commercial license inquiry (company name)
+
+Company name:
+Country or region:
+Total headcount: (full-time, part-time and long-term contractors, including affiliates)
+Product name and link:
+Product type: (website, app, mini program, game, hardware, SaaS or other)
+How you plan to use Aora Bot: (for example an AI assistant, status indicators or user avatars; which packages or the avatar endpoint)
+Expected launch date:
+License type: (yearly subscription, perpetual license for a version, or not sure yet)
+Needs: (support, custom work, a signed contract, an invoice)
+Contact: (name, role, email or WeChat)
+Anything else:
+```

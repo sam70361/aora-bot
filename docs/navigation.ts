@@ -60,6 +60,7 @@ const SECTIONS: Section[] = [
       { link: '/guide/custom-shapes', en: 'Custom shapes', zh: '自定义形状' },
       { link: '/guide/avatar-api', en: 'Avatar API', zh: '头像接口' },
       { link: '/guide/license', en: 'License', zh: '授权' },
+      { link: '/guide/copyright', en: 'Copyright', zh: '版权声明' },
     ],
   },
   {
