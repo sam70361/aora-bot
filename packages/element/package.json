@@ -1,6 +1,6 @@
 {
   "name": "@aora-bot/element",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "The Aora Bot procedural character as a framework-free Web Component, with a one-line CDN build",
   "license": "SEE LICENSE IN LICENSE",
   "homepage": "https://aora-bot.vercel.app",

@@ -198,8 +198,8 @@ Add me on WeChat above and mention sponsorship.
 
 Aora Bot is source-available under the tiered [Aora Bot License](./LICENSE):
 
-- **Free, commercial use included**: individuals and independent developers, students and educational institutions, non-profits, non-profit open-source projects, and teams of up to 3 people in total.
-- **Commercial license**: larger companies using it in a live product need a commercial license; evaluation and prototyping are free. Terms are in [LICENSE-COMMERCIAL.md](./LICENSE-COMMERCIAL.md); contact 1251579308@qq.com.
+- **Free, commercial use included**: individuals and independent developers, students and educational institutions, non-profits, non-profit open-source projects, and teams of up to 3 people in total. Once the product is publicly released, it must credit "Powered by Aora Bot" with a link to this repository in any one place, such as the About page, the website footer, the product description or the README.
+- **Commercial license**: larger companies using it in a live product need a commercial license, under which the credit may be omitted; evaluation and prototyping are free. Terms and an inquiry template are in [LICENSE-COMMERCIAL.md](./LICENSE-COMMERCIAL.md); contact 1251579308@qq.com.
 - **Not allowed for anyone**: reselling the engine or characters as a package of their own, offering a hosted character, avatar or expression service built on it, selling the characters as goods such as stickers or sticker packs, or training generative models on the character designs.
 
 The classic Emotion Ball keeps its original license; see the [`emotion-ball` branch](https://github.com/sam70361/aora-bot/tree/emotion-ball).

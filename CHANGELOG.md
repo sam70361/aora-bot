@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.1.3
+
+All four packages are released at this version to carry the Aora Bot License 1.1. The code is unchanged.
+
+### License
+
+- Free users must credit Aora Bot once a product that uses it is publicly released: the words "Aora Bot" with a link to the GitHub repository, in any one place of their choice, such as an About page, the website footer, a store description or the README, or, for a product that cannot carry a link, its manual or credits. Personal use, learning and research, internal testing and unreleased projects require no credit, and a commercial license may omit it.
+- Versions 0.1.1 and 0.1.2 remain under the Aora Bot License 1.0.
+
+### Docs
+
+- The license page describes the credit requirement and provides an optional template for commercial license inquiries.
+- Documentation pages end with a copyright notice linking to the license page.
+- A new Copyright page sets out who owns the code and the characters, how the name and characters may be used, and how third-party content is treated.
+
 ## 0.1.2
 
 Only `@aora-bot/element` is released at this version; the other packages stay at 0.1.1.

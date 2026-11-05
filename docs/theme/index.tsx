@@ -1,5 +1,5 @@
 import { Layout as BasicLayout } from '@rspress/core/theme-original';
-import { useLang, usePage } from '@rspress/core/runtime';
+import { useLang } from '@rspress/core/runtime';
 import { LocaleProvider } from '@aora-bot/react';
 import { CapsuleNav } from './components/CapsuleNav.js';
 import { LangSwitch } from './components/LangSwitch.js';
@@ -27,11 +27,10 @@ import './styles/pages/sponsor.css';
  * on documentation pages, so the home page, the sponsor page and the 404 page
  * would draw on a flat background while every article had the ambient light.
  *
- * The copyright line goes in `afterDocFooter` on documentation pages, so it
- * sits in the doc column and not under the fixed sidebar. The full-screen pages
- * get it from `bottom`, which sits below their content and leaves the hero's
- * height alone. `bottom` renders on every page type, so the page type decides
- * which slot is filled and the line never shows twice.
+ * The copyright line goes in `afterDocFooter`, so it sits in the doc column
+ * and not under the fixed sidebar. The home, sponsor and 404 pages fill the
+ * screen, and a line below them would only add a scroll; the copyright page
+ * in the docs covers them.
  *
  * The hero slots are empty. The home page and the sponsor page are
  * `pageType: custom` pages — a live console rather than a headline and a row
@@ -39,9 +38,6 @@ import './styles/pages/sponsor.css';
  */
 const Layout = () => {
   const lang = useLang();
-  const { page } = usePage();
-  // Rspress lays out every page type outside this list as documentation.
-  const standalone = page.pageType === 'home' || page.pageType === 'custom' || page.pageType === '404';
 
   return (
     <LocaleProvider locale={lang === 'zh' ? 'zh-CN' : 'en-US'}>
@@ -49,8 +45,7 @@ const Layout = () => {
         top={<WaveBackdrop />}
         beforeNav={<CapsuleNav />}
         afterNavMenu={<LangSwitch />}
-        afterDocFooter={standalone ? undefined : <SiteFooter />}
-        bottom={standalone ? <SiteFooter /> : undefined}
+        afterDocFooter={<SiteFooter />}
       />
     </LocaleProvider>
   );

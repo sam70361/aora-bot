@@ -1,5 +1,5 @@
-Aora Bot License 1.0
-Aora Bot 许可协议 1.0
+Aora Bot License 1.1
+Aora Bot 许可协议 1.1
 
 Copyright (c) 2026 sam70361
 商业授权联系 / Commercial licensing: 1251579308@qq.com
@@ -63,10 +63,26 @@ The Chinese version prevails; the English version is provided for reference.
 
    在自己的产品中把角色用作头像、助手形象或吉祥物，不属于上述行为。
 
-5. 声明保留
+5. 声明与署名
 
-   分发本软件或其修改版本的源代码时，须完整保留本协议与版权声明。
-   在产品界面中无须展示署名。
+   5.1 分发本软件或其修改版本的源代码时，须完整保留本协议与版权声明。
+
+   5.2 免费使用者公开发布、上线或分发使用了本软件的产品或服务时，
+       须在以下任一位置注明本软件的出处：
+       (a) 产品的「关于」「致谢」「帮助」或设置页面；
+       (b) 网站页脚；
+       (c) 应用商店、插件市场或项目主页上的产品说明；
+       (d) 产品的 README、文档或第三方许可清单；
+       (e) 无法放置链接的产品（例如硬件设备、离线软件或游戏）的说明书、
+           包装、片尾字幕或制作人员名单，并以文字写明完整网址。
+       署名须包含「Aora Bot」字样，并链接至本软件的代码仓库
+       https://github.com/sam70361/aora-bot 或著作权人日后公布的官方
+       网站，例如「Powered by Aora Bot」或「角色由 Aora Bot 提供」。
+       署名无须紧邻角色展示，但不得暗示著作权人为该产品提供背书。
+
+   5.3 个人自用、学习研究、内部测试及尚未公开发布的使用，无须署名。
+
+   5.4 已取得商业授权的被许可方，可依商业授权条款免于署名。
 
 6. 修改与贡献
 
@@ -168,11 +184,33 @@ The Chinese version prevails; the English version is provided for reference.
    Using a character as an avatar, assistant or mascot in your own product
    is not one of the above.
 
-5. Notices
+5. Notices and attribution
 
-   When you distribute the source code of the Software or of a modified
-   version, you must keep this license and the copyright notice intact.
-   No attribution is required in your product's interface.
+   5.1 When you distribute the source code of the Software or of a modified
+       version, you must keep this license and the copyright notice intact.
+
+   5.2 When a Free User publicly releases, launches or distributes a product
+       or service that uses the Software, it must credit the Software in any
+       one of these places:
+       (a) the product's About, Credits, Help or settings page;
+       (b) the website footer;
+       (c) the product description in an app store, a plugin marketplace or
+           on the project's homepage;
+       (d) the product's README, documentation or third-party license list;
+       (e) for a product that cannot carry a link, such as a hardware device,
+           offline software or a game: its manual, packaging, end credits or
+           staff list, with the full URL written out.
+       The credit must include the words "Aora Bot" and link to the
+       Software's repository at https://github.com/sam70361/aora-bot or to an
+       official website the copyright holder announces later, for example
+       "Powered by Aora Bot". It need not appear next to the characters, but
+       it must not suggest that the copyright holder endorses the product.
+
+   5.3 No credit is required for personal use, learning and research,
+       internal testing, or anything not yet publicly released.
+
+   5.4 A commercial licensee may omit the credit under the terms of its
+       commercial license.
 
 6. Modifications and contributions
 

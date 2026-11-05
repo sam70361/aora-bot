@@ -118,4 +118,4 @@ const character = createCharacter(document.querySelector('#avatar')!, { shape: '
 
 ## License
 
-[Aora Bot License](https://github.com/sam70361/aora-bot/blob/main/LICENSE): free for individuals, education, non-profits, open-source projects and teams of up to 3 people, commercial use included. Larger companies need a [commercial license](https://github.com/sam70361/aora-bot/blob/main/LICENSE-COMMERCIAL.md).
+[Aora Bot License](https://github.com/sam70361/aora-bot/blob/main/LICENSE): free for individuals, education, non-profits, open-source projects and teams of up to 3 people, commercial use included; a publicly released product must credit Aora Bot with a link to the repository. Larger companies need a [commercial license](https://github.com/sam70361/aora-bot/blob/main/LICENSE-COMMERCIAL.md).
