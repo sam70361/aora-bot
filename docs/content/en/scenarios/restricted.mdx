@@ -10,7 +10,7 @@ The three tones and the roster dot that goes with each. Switching the tone swaps
 
 ```tsx preview
 import { useState } from 'react';
-import { AgentAvatar, AvatarStatusDot, MarkStageProvider } from '@aora-bot/react';
+import { AgentPortrait, AvatarStatusDot, CharacterStageProvider } from '@aora-bot/react';
 import { RestrictedScene, type RestrictedTone } from '@aora-bot/surfaces';
 
 const tones: RestrictedTone[] = ['restricted', 'unauthorised', 'offline'];
@@ -24,7 +24,7 @@ export default function Demo() {
   const [tone, setTone] = useState<RestrictedTone>('restricted');
 
   return (
-    <MarkStageProvider>
+    <CharacterStageProvider>
       <div className="site-demo site-demo--stack">
         <RestrictedScene
           tone={tone}
@@ -42,7 +42,7 @@ export default function Demo() {
         />
         <div className="site-demo__row">
           <span className="site-demo__avatar">
-            <AgentAvatar
+            <AgentPortrait
               agent={{ id: 'ledger', name: 'Ledger' }}
               state={tone === 'offline' ? 'sleeping' : 'idle'}
               sizePx={40}
@@ -54,7 +54,7 @@ export default function Demo() {
           <span className="site-demo__label">Ledger, {dot[tone].label}</span>
         </div>
       </div>
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 ```
@@ -70,7 +70,7 @@ The page you land on when something says no: a plan limit, a region block, a sig
 - [`RestrictedScene`](/components/restricted-scene) — the whole dead end: bezel, character, title, body, a way out. `tone` picks the copy and the bezel light.
 - `DeviceBezel` — the frame on its own, when the scene is yours to lay out.
 - [`CharacterMark`](/components/character-mark) — `refusing` for a no, `alerting` for a something-went-wrong.
-- [`AvatarStatusDot`](/components/avatar-chrome) — the `error` and `offline` tones, for the same news in a roster corner.
+- [`AvatarStatusDot`](/components/avatar-frame) — the `error` and `offline` tones, for the same news in a roster corner.
 - [`HudPlate`](/components/hud-plate) — a `timer` dial when the limit lifts by itself (a rate limit, a cooldown), because a ring that drains tells the person to wait rather than to leave; `sync` with `state: 'error'` when the service is down, which says the lifecycle failed without inventing a figure.
 
 ## How the states move
@@ -94,4 +94,4 @@ The page you land on when something says no: a plan limit, a region block, a sig
 ## Next
 
 - [RestrictedScene](/components/restricted-scene) — the whole dead end
-- [Badges and status](/components/avatar-chrome) — unread counts and status dots
+- [Badges and status](/components/avatar-frame) — unread counts and status dots

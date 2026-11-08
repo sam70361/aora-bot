@@ -34,13 +34,13 @@ export default function Demo() {
 
 `inFront` 让角色站在屏幕前面而不是后面，适合边框只是布景、而不是正在启动的东西本身的布局。
 
-## LoadingMark
+## LoadingCharacter
 
 即将到来的那个角色形状的占位符。
 
 ```tsx preview
 import { useEffect, useState } from 'react';
-import { LoadingMark } from '@aora-bot/surfaces';
+import { LoadingCharacter } from '@aora-bot/surfaces';
 
 export default function Demo() {
   const [ready, setReady] = useState(false);
@@ -53,7 +53,7 @@ export default function Demo() {
     <div className="site-demo">
       {(['hex', 'cloud', 'star'] as const).map((shape) => (
         <div className="site-demo__cell" key={shape}>
-          <LoadingMark shape={shape} color="violet" ready={ready} sizePx={48} />
+          <LoadingCharacter shape={shape} color="violet" ready={ready} sizePx={48} />
           <span className="site-demo__label">{ready ? '就绪' : '加载中'}</span>
         </div>
       ))}
@@ -70,9 +70,9 @@ export default function Demo() {
 
 <API component="BootLoop" />
 
-### LoadingMark
+### LoadingCharacter
 
-<API component="LoadingMark" />
+<API component="LoadingCharacter" />
 
 ## 接下来
 

@@ -1,0 +1,41 @@
+import { API } from '@theme';
+
+# CompactCharacterSelector
+
+裁到刚好能放在注册表单旁边的选择器。
+
+```tsx preview
+import { useState } from 'react';
+import { AgentPortrait, CompactCharacterSelector, type ColorId, type ShapeId } from '@aora-bot/react';
+
+export default function Demo() {
+  const [shape, setShape] = useState<ShapeId>('blob');
+  const [color, setColor] = useState<ColorId>('blue');
+  return (
+    <div className="site-demo site-demo--column">
+      <AgentPortrait agent={{ id: 'first', shape, color }} size="xl" />
+      <CompactCharacterSelector
+        shape={shape}
+        color={color}
+        onSelectShape={setShape}
+        onSelectColor={setColor}
+      />
+    </div>
+  );
+}
+```
+
+## 选项少是有意的
+
+只给一小撮墨色和形状，而不是整本目录。形状是 `AUTO_SHAPE_POOL`——在 16px 下仍然读得出是个角色的形状；少掉的那种墨色是 `black`，它被保留为默认墨色，没人会把它当成一个选择（`ASSIGNABLE_COLOR_IDS`）。一个人决定自己第一个智能体长什么样时，想要的是几个显而易见的选项，而不是整本目录；完整网格属于他们稍后可以打开的[编辑器](/components/avatar-studio)。
+
+组件和普通选择器一样是受控的，两组选项排在同一行。
+
+## API
+
+<API component="CompactCharacterSelector" />
+
+## 接下来
+
+- [CharacterSelector](/components/character-selector)——受控的选择网格
+- [角色设置](/scenarios/character-setup)——挑选智能体的外观

@@ -5,14 +5,14 @@ import { API } from '@theme';
 为下方所有组件提供语言。
 
 ```tsx preview
-import { LocaleProvider, CharacterPicker, ActivityMark } from '@aora-bot/react';
+import { LocaleProvider, CharacterSelector, ActivityBadge } from '@aora-bot/react';
 
 export default function Demo() {
   return (
     <div className="site-demo site-demo--column">
       <LocaleProvider locale="zh-CN">
-        <ActivityMark agent={{ id: 'a' }} tool="write_file" />
-        <CharacterPicker shape="hex" color="cyan" layout="row" shapes={['hex', 'pill', 'cloud']} />
+        <ActivityBadge agent={{ id: 'a' }} tool="write_file" />
+        <CharacterSelector shape="hex" color="cyan" layout="row" shapes={['hex', 'pill', 'cloud']} />
       </LocaleProvider>
     </div>
   );

@@ -50,7 +50,8 @@
     "**/node_modules/**",
     "**/.rspress/**",
     "lab/**",
-    "docs/theme/generated/**"
+    "docs/theme/generated/**",
+    "**/*.generated.ts"
   ],
   "overrides": [
     {

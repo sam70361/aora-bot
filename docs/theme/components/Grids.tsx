@@ -3,7 +3,7 @@ import {
   CHARACTER_STATES,
   COLOR_SWATCHES,
   EYE_TOPOLOGY_IDS,
-  MarkStageProvider,
+  CharacterStageProvider,
   SHAPE_FAMILIES,
   STATE_GROUPS,
   StagedMark,
@@ -58,7 +58,7 @@ export function StateGrid({ shape = 'mochi' as ShapeId, color = 'green' as Color
 
   return (
     // Every state is on screen at once, so the cap is the whole catalogue.
-    <MarkStageProvider maxSources={CHARACTER_STATES.length}>
+    <CharacterStageProvider maxSources={CHARACTER_STATES.length}>
       {STATE_GROUPS.map((group) => {
         const name = label.stateGroup(group.id, '');
         return (
@@ -76,7 +76,7 @@ export function StateGrid({ shape = 'mochi' as ShapeId, color = 'green' as Color
           </div>
         );
       })}
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 
@@ -86,7 +86,7 @@ export function FxGrid({ shape = 'mochi' as ShapeId, color = 'blue' as ColorId }
   const states = CHARACTER_STATES.filter((state) => STATE_FX[state]);
 
   return (
-    <MarkStageProvider maxSources={states.length}>
+    <CharacterStageProvider maxSources={states.length}>
       <div className="site-swatches">
         {states.map((state) => (
           <div className="site-swatch" key={state}>
@@ -99,7 +99,7 @@ export function FxGrid({ shape = 'mochi' as ShapeId, color = 'blue' as ColorId }
           </div>
         ))}
       </div>
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 

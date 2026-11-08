@@ -26,6 +26,7 @@ import {
 import { useEffect, useImperativeHandle, useRef, type CSSProperties, type ReactNode, type Ref } from 'react';
 import { optionsKey, useAppearance } from '../appearance/AppearanceProvider.js';
 import { resolveVariant } from '../appearance/resolve.js';
+import { useThemesReady } from '../themes/useThemes.js';
 import { cx } from '../utils/cx.js';
 import { useLatest, useStable } from '../utils/hooks.js';
 
@@ -81,7 +82,7 @@ export interface CharacterMarkProps {
   faceTune?: Partial<FaceTune>;
   /** Rest pose — the slight head turn held when nothing else is happening. */
   poseHome?: Partial<PoseHome>;
-  /** Rendered size in pixels. Defaults to 28. */
+  /** Rendered size in pixels. Defaults to 32. */
   sizePx?: number;
   /** Any CSS length, taking precedence over `sizePx`. */
   sizeCss?: string | number;
@@ -164,7 +165,7 @@ export function CharacterMark({
   nose: noseProp,
   faceTune,
   poseHome,
-  sizePx = 28,
+  sizePx = 32,
   sizeCss,
   sourceId,
   paused = false,
@@ -189,13 +190,21 @@ export function CharacterMark({
   ref,
 }: CharacterMarkProps) {
   const ambient = useAppearance();
-  const member = castMember(preset);
+  const styleId = styleIdProp ?? ambient.styleId ?? DEFAULT_STYLE_ID;
+  // A theme's character, member, skin or colour draws once its theme is loaded; until then the box is held.
+  const ready = useThemesReady({
+    shape: shapeProp,
+    preset,
+    variant: variantProp ?? ambient.variant,
+    style: styleId,
+    color: colorProp,
+  });
+  const member = ready ? castMember(preset) : null;
   const shape = shapeProp ?? member?.shape ?? 'mochi';
   const color = colorProp ?? member?.color ?? 'black';
   const face = faceProp ?? member?.face ?? ambient.face ?? 'cute';
   const nose = noseProp !== undefined ? noseProp : member?.nose !== undefined ? member.nose : ambient.nose;
   const lineWeight = lineWeightProp ?? ambient.lineWeight;
-  const styleId = styleIdProp ?? ambient.styleId ?? DEFAULT_STYLE_ID;
   const variant = resolveVariant(styleId, variantProp ?? ambient.variant);
   const styleOptions = styleOptionsProp ?? ambient.styleOptions;
   const state = stateProp ?? (emotionId != null ? stateForEmotion(emotionId) : 'idle');
@@ -208,11 +217,11 @@ export function CharacterMark({
   // its latest one called, without the controller being rebuilt.
   const onSettleRef = useLatest(onSettle);
 
-  // Mount once. Re-creating the controller on every prop change would restart
-  // the animation, so the effect deliberately has no dependencies.
+  // Mount once the themes it names are in. Re-creating the controller on every prop change would restart
+  // the animation, so the effect depends on nothing else.
   useEffect(() => {
     const host = hostRef.current;
-    if (!host) return;
+    if (!host || !ready) return;
 
     const controller = createCharacter(host, {
       shape,
@@ -246,9 +255,10 @@ export function CharacterMark({
       controllerRef.current = null;
     };
     // oxlint-disable-next-line react/exhaustive-deps -- the controller owns later changes through `update`
-  }, []);
+  }, [ready]);
 
   useEffect(() => {
+    if (!ready) return;
     controllerRef.current?.update({
       shape,
       state,
@@ -266,6 +276,7 @@ export function CharacterMark({
       antics,
     });
   }, [
+    ready,
     shape,
     state,
     variant,
@@ -366,6 +377,7 @@ export function CharacterMark({
           '--aora-leaf': getLeafColor(color),
           ...(eyeColor ? { '--aora-bg': eyeColor } : null),
           width: size,
+          ...(ready ? null : { aspectRatio: '1 / 1' }),
           ...style,
         } as CSSProperties
       }

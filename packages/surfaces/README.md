@@ -34,10 +34,10 @@ in its own `aora.surfaces` CSS layer after the library's layers, and every class
 | Group       | Exports                                                                                      |
 | ----------- | -------------------------------------------------------------------------------------------- |
 | Walkthrough | `DemoDesktop`, `JobBubbles`, `SuggestionCards`, `LandingWait`, `HandOff`, `Composer`         |
-| Scenes      | `RestrictedScene`, `DeviceBezel`, `BootLoop`, `LoadingMark`                                  |
+| Scenes      | `RestrictedScene`, `DeviceBezel`, `BootLoop`, `LoadingCharacter`                             |
 | Template    | `TemplateDialog`, `VisibilityControls`, `ShareCard`, `usePublishMark`                        |
 | Occupancy   | `OccupancyList`, `OccupancyMark`                                                             |
-| Cast        | `CastStage`, `CastMember`, `AvatarSlot`, `useCastScene`                                      |
+| Cast        | `CastLineup`, `CastFigure`, `PortraitSlot`, `useCastScene`                                   |
 | Locale      | `SurfaceLocaleProvider`, `useSurfaceLocale`, `SURFACE_LOCALES`, `surfaceEnUS`, `surfaceZhCN` |
 
 ## Copy and languages

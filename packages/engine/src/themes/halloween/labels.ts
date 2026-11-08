@@ -1,0 +1,32 @@
+/** Names of the Halloween theme's characters and skins, for labels. */
+export const LABELS = {
+  shapes: {
+    spook: { en: 'Lollipop ghost', zh: '棒棒糖幽灵' },
+    pumpkin: { en: 'Pumpkin', zh: '南瓜' },
+    nightcat: { en: 'Black cat', zh: '小黑猫' },
+    batling: { en: 'Little bat', zh: '小蝙蝠' },
+    cauldron: { en: 'Cauldron', zh: '魔法锅' },
+    witch: { en: 'Witch hat jelly', zh: '巫师帽软糖' },
+    toffee: { en: 'Wrapped sweet', zh: '扭结糖' },
+    manor: { en: 'Haunted house', zh: '小鬼屋' },
+    wisp: { en: 'Wisp', zh: '长尾幽灵' },
+    deadtree: { en: 'Bare tree', zh: '枯树' },
+    scarecrow: { en: 'Scarecrow', zh: '稻草人' },
+    tombstone: { en: 'Headstone', zh: '墓碑' },
+    candycorn: { en: 'Candy corn', zh: '玉米糖' },
+    mummy: { en: 'Mummy', zh: '木乃伊' },
+    skull: { en: 'Skull', zh: '骷髅头' },
+    spider: { en: 'Spider', zh: '蜘蛛' },
+    owl: { en: 'Owl', zh: '猫头鹰' },
+    pail: { en: 'Treat pail', zh: '南瓜桶' },
+    candle: { en: 'Candle', zh: '蜡烛' },
+    vampire: { en: 'Caped creature', zh: '斗篷小怪' },
+    witchmochi: { en: 'Mochi in a witch hat', zh: '戴巫师帽的糯糯' },
+    lanterncat: { en: 'Cat with a lantern', zh: '提南瓜灯的猫' },
+    nightcapmoon: { en: 'Moon in a nightcap', zh: '戴睡帽的月亮' },
+  },
+  variants: {
+    doodle: { en: 'Doodle sticker', zh: '涂鸦贴纸' },
+    grainy: { en: 'Grainy flat', zh: '颗粒扁平' },
+  },
+};

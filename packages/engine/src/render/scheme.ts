@@ -1,6 +1,4 @@
 import type { StaticColorScheme } from '../core/options.js';
-import { FACE_INK, SOFT_FACE_INK } from '../core/palette.js';
-
 /** One rule of a static SVG's `<style>`: the properties that differ between light and dark. */
 export interface SchemeRule {
   selector: string;
@@ -51,10 +49,10 @@ export function paletteInk(
   uid: string,
   light: string,
   dark: string,
-  softDark: boolean,
+  soft: { light: string; dark: string } | null,
   extra: SchemeRule['decls'] = [],
 ): string {
   const decls = [{ prop: `--${uid}-ink`, light, dark }];
-  if (softDark) decls.push({ prop: `--${uid}-soft`, light: FACE_INK, dark: SOFT_FACE_INK });
+  if (soft) decls.push({ prop: `--${uid}-soft`, ...soft });
   return schemeStyle(scheme, [{ selector: `.${uid}`, decls: [...decls, ...extra] }], true);
 }

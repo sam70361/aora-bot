@@ -10,7 +10,7 @@ A settings panel. The staged picker hands over one value when confirmed; the tri
 
 ```tsx preview
 import { useState } from 'react';
-import { AgentAvatar, AgentCharacterPicker, AvatarTrigger, type CharacterChoice } from '@aora-bot/react';
+import { AgentPortrait, AgentCharacterSelector, AvatarButton, type CharacterChoice } from '@aora-bot/react';
 
 export default function Demo() {
   const [choice, setChoice] = useState<CharacterChoice>({
@@ -24,8 +24,8 @@ export default function Demo() {
   return (
     <div className="site-demo site-demo--column">
       <div className="site-demo__row">
-        <AvatarTrigger value={choice} onCommit={setChoice} lineWeight={lineWeight} sizePx={64} />
-        <AgentAvatar agent={{ id: 'me', ...choice }} sizePx={28} />
+        <AvatarButton value={choice} onCommit={setChoice} lineWeight={lineWeight} sizePx={64} />
+        <AgentPortrait agent={{ id: 'me', ...choice }} sizePx={28} />
         <label className="site-field">
           line weight {lineWeight.toFixed(2)}
           <input
@@ -38,7 +38,7 @@ export default function Demo() {
           />
         </label>
       </div>
-      <AgentCharacterPicker value={choice} onCommit={setChoice} lineWeight={lineWeight} layout="row" />
+      <AgentCharacterSelector value={choice} onCommit={setChoice} lineWeight={lineWeight} layout="row" />
     </div>
   );
 }
@@ -52,10 +52,10 @@ The settings page where someone decides what their agent looks like, and the dia
 
 ## Components
 
-- [`CharacterPicker`](/components/character-picker) — the controlled grid. Pass `face` to get the `eyes | line` toggle and, in line mode, a row of noses.
-- [`AgentCharacterPicker`](/components/agent-character-picker) — the same grid holding its edits until they are confirmed, for a dialog where Cancel has to mean something.
-- [`CompactCharacterPicker`](/components/compact-character-picker) — a handful of shapes and inks, for a sign-up form.
-- [`AvatarEditor`](/components/avatar-editor), `AvatarTrigger` and `EditableAvatar` — the dialog with character, generate and upload tabs, and two buttons that open it.
+- [`CharacterSelector`](/components/character-selector) — the controlled grid. Pass `face` to get the `eyes | line` toggle and, in line mode, a row of noses.
+- [`AgentCharacterSelector`](/components/agent-character-selector) — the same grid holding its edits until they are confirmed, for a dialog where Cancel has to mean something.
+- [`CompactCharacterSelector`](/components/compact-character-selector) — a handful of shapes and inks, for a sign-up form.
+- [`AvatarStudio`](/components/avatar-studio), `AvatarButton` and `AvatarField` — the dialog with character, generate and upload tabs, and two buttons that open it.
 - [`TemplateDialog`](/components/template-dialog) — name, instructions, visibility, with the character beside the form.
 
 ## How the states move
@@ -63,7 +63,7 @@ The settings page where someone decides what their agent looks like, and the dia
 | From        | To          | When                                         |
 | ----------- | ----------- | -------------------------------------------- |
 | —           | `idle`      | picker previews, held still with `paused`    |
-| `idle`      | `curious`   | pointer over an `AvatarTrigger`              |
+| `idle`      | `curious`   | pointer over an `AvatarButton`               |
 | —           | `happy`     | the editor's own preview                     |
 | `idle`      | `working`   | a template save is in flight                 |
 | `working`   | `celebrate` | the save resolved — one burst, then it rests |
@@ -80,6 +80,6 @@ None of these use a belt: a picker is the one place the silhouette has to stay w
 
 ## Next
 
-- [CharacterPicker](/components/character-picker) — the controlled grid
-- [AvatarEditor](/components/avatar-editor) — character, generate and upload tabs
+- [CharacterSelector](/components/character-selector) — the controlled grid
+- [AvatarStudio](/components/avatar-studio) — character, generate and upload tabs
 - [TemplateDialog](/components/template-dialog) — name, instructions, visibility

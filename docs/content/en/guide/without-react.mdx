@@ -53,14 +53,14 @@ Every attribute is optional. A value the engine does not know falls back to the 
 | `character`      | A [cast](/design/cast) id such as `mochi`; sets `shape`, `color`, `face` and `nose`    |
 | `shape`          | Which [character](/design/shapes) to draw, `mochi` by default                          |
 | `color`          | One hue of the [palette](/design/palette), `black` by default                          |
-| `face`           | `cute` (default), `eyes` or `line`, see [Faces](/design/face)                          |
+| `face`           | `cute` (default), or any other face in `FACE_STYLES`, see [Faces](/design/face)        |
 | `nose`           | A nose id for the line face, or `none`; derived from `seed` by default                 |
 | `state`          | What it is doing, one of the [animation states](/design/states), `idle` by default     |
 | `style-id`       | The style series: `vector` (default), `pixel` or `kaomoji`                             |
 | `variant`        | A variant of that style, such as `outline` or `dot`                                    |
 | `style-options`  | A JSON object of that style's parameters, such as `{"paperOffset":12}`                 |
 | `seed`           | Any string; two characters with different seeds do not blink in unison                 |
-| `size`           | A CSS length, or a number of pixels; `28px` by default                                 |
+| `size`           | A CSS length, or a number of pixels; `32px` by default                                 |
 | `eye-color`      | A CSS colour for the eye cut-outs                                                      |
 | `badge-color`    | A CSS colour for the badge shown in the `notifying` state                              |
 | `eye-scale`      | A positive multiplier on eye size, `1` by default                                      |

@@ -30,25 +30,25 @@ your own rules win without `!important`.
 
 ## Components
 
-| Component                                                            | Use it for                                                                  |
-| -------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| `CharacterMark`                                                      | One animated character; `styleId`, `variant`, `face`, `hud`, `followTarget` |
-| `MarkStageProvider` + `StagedMark`                                   | Many characters sharing a few engines; falls back to still images           |
-| `useMarkCommands`, `useMarkCommand`, `useMarkSettle`, `usePokeCycle` | Hold a state, wait for settle, poke an agent from anywhere in the tree      |
-| `CharacterMarkMirror`                                                | Re-drawing a running character elsewhere via `<use href>`                   |
-| `AgentAvatar`, `AvatarStack`, `GroupAvatar`                          | A stable character per user, derived from any id                            |
-| `UnreadBadge`, `AvatarStatusDot`, `WorkingBadge`                     | Avatar decorations                                                          |
-| `CharacterPicker`, `AgentCharacterPicker`, `CompactCharacterPicker`  | Letting users choose a shape, colour, face and nose                         |
-| `AvatarEditor`, `AvatarTrigger`, `EditableAvatar`                    | Character or cropped picture, in a dialog or inline                         |
-| `ActivityMark`, `GroupActivityMark`                                  | "Someone is working" indicators, with facts, bubbles and poke               |
-| `ActivityTicker`                                                     | Crossfading one-line status text                                            |
-| `HudPlate`, `AgentHud`, `useHudSpec`                                 | Progress, timers, waveforms, KPIs and more drawn around the character       |
-| `AgentStateProvider`, `useArbiter`, `useAgentHud`                    | Multi-session emotion protocol → one displayed state and HUD                |
-| `useStateChannel`, `useEventSourceChannel`                           | Feeding that protocol from a `postMessage` port or an SSE stream            |
-| `useIdleSleep`                                                       | Letting an unattended character drowse and then fall asleep                 |
-| `SpriteMark`                                                         | Painted sprite sheet keyed by the same protocol ids                         |
-| `ConfettiLayer`                                                      | Celebration without a character attached                                    |
-| `LocaleProvider`, `useLabel`                                         | Component copy and catalogue labels in `en-US` or `zh-CN`                   |
+| Component                                                                 | Use it for                                                                  |
+| ------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `CharacterMark`                                                           | One animated character; `styleId`, `variant`, `face`, `hud`, `followTarget` |
+| `CharacterStageProvider` + `StagedMark`                                   | Many characters sharing a few engines; falls back to still images           |
+| `useMarkCommands`, `useMarkCommand`, `useMarkSettle`, `useTapCycle`       | Hold a state, wait for settle, poke an agent from anywhere in the tree      |
+| `CharacterMarkMirror`                                                     | Re-drawing a running character elsewhere via `<use href>`                   |
+| `AgentPortrait`, `AvatarGroup`, `GroupAvatar`                             | A stable character per user, derived from any id                            |
+| `UnreadBadge`, `AvatarStatusDot`, `WorkingBadge`                          | Avatar decorations                                                          |
+| `CharacterSelector`, `AgentCharacterSelector`, `CompactCharacterSelector` | Letting users choose a shape, colour, face and nose                         |
+| `AvatarStudio`, `AvatarButton`, `AvatarField`                             | Character or cropped picture, in a dialog or inline                         |
+| `ActivityBadge`, `GroupActivityBadge`                                     | "Someone is working" indicators, with facts, bubbles and poke               |
+| `ActivityLine`                                                            | Crossfading one-line status text                                            |
+| `HudPlate`, `AgentHud`, `useHudSpec`                                      | Progress, timers, waveforms, KPIs and more drawn around the character       |
+| `AgentStateProvider`, `useArbiter`, `useAgentHud`                         | Multi-session emotion protocol → one displayed state and HUD                |
+| `useStateChannel`, `useEventSourceChannel`                                | Feeding that protocol from a `postMessage` port or an SSE stream            |
+| `useIdleSleep`                                                            | Letting an unattended character drowse and then fall asleep                 |
+| `SpriteMark`                                                              | Painted sprite sheet keyed by the same protocol ids                         |
+| `CelebrationLayer`                                                        | Celebration without a character attached                                    |
+| `LocaleProvider`, `useLabel`                                              | Component copy and catalogue labels in `en-US` or `zh-CN`                   |
 
 Onboarding walkthroughs, scenes, the template dialog, the occupancy list and the cast stage
 live in [`@aora-bot/surfaces`](https://github.com/sam70361/aora-bot/tree/main/packages/surfaces),

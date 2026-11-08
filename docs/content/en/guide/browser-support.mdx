@@ -52,7 +52,7 @@ Three custom properties are registered so ink can transition between two colours
 
 ### CSS masks — required for two components
 
-`AvatarStack` punches each disc out of the one behind it, and `CharacterPicker` draws its selection ring, using `mask-image`. Both ship the `-webkit-` prefixed properties alongside the standard ones.
+`AvatarGroup` punches each disc out of the one behind it, and `CharacterSelector` draws its selection ring, using `mask-image`. Both ship the `-webkit-` prefixed properties alongside the standard ones.
 
 Without mask support the stack still renders, but the discs overlap without a visible gap.
 
@@ -62,11 +62,11 @@ Used to make the stylesheet overridable without `!important`. In a browser witho
 
 ### Container queries — graceful
 
-`CharacterPicker` in its grid layout counts its columns from its own width, and `AvatarEditor` and `TemplateDialog` rearrange themselves when they are narrow. Without container queries the picker keeps six columns and the other two keep their default arrangement.
+`CharacterSelector` in its grid layout counts its columns from its own width, and `AvatarStudio` and `TemplateDialog` rearrange themselves when they are narrow. Without container queries the picker keeps six columns and the other two keep their default arrangement.
 
 ### `:has()` — graceful
 
-`AvatarEditor`'s drop zone draws the focus ring while the file input inside it has keyboard focus. Without `:has()` the zone shows no ring of its own.
+`AvatarStudio`'s drop zone draws the focus ring while the file input inside it has keyboard focus. Without `:has()` the zone shows no ring of its own.
 
 ## What is not used
 

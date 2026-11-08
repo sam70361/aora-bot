@@ -30,7 +30,8 @@ A character is `{ shape, color, styleId, variant, face, nose, lineWeight, state 
 - `color` — one of the 12 `COLOR_IDS`. `ink` overrides the paint with any CSS
   colour or gradient when the palette does not fit the host.
 - `styleId` / `variant` — the series and its look: `vector` (`solid` default,
-  `outline`, `glass`, `sticker`, `paper`, `soft`, `riso`), `pixel` (`crisp`,
+  `outline`, `glass`, `sticker`, `paper`, `soft`, `riso`, `pencil`, `marker`, `crayon`,
+  `watercolor`, `neon`, `chalk`), `pixel` (`crisp`,
   `dot`, `block`), `kaomoji` (`plain`, `bubble`). `listStyles()` is the source.
 - `face` — `cute` (default: eyes, mouth and blush) | `eyes` (cut-out eyes
   only) | `line` (stroked nose + mouth).
@@ -158,10 +159,10 @@ SessionEnd→sleeping.
 error→alerting, awaitingApproval→refusing, responding→composing,
 taskComplete→celebrate, sessionEnd→sleeping.
 
-`stateForTool('grep')` is the table `ActivityMark` reads. For roster rows
+`stateForTool('grep')` is the table `ActivityBadge` reads. For roster rows
 that know only a verb (`reading`, `editing`, `running`, …) use
 `stateForActivity(verb)` from `ACTIVITY_VERBS`; `characterStateForRoster`
-folds verb, unread count and presence into one state for `AgentAvatar`.
+folds verb, unread count and presence into one state for `AgentPortrait`.
 
 ## Surfaces
 
@@ -171,20 +172,20 @@ locale and face settings.
 | Need                                        | Use                                                                                  |
 | ------------------------------------------- | ------------------------------------------------------------------------------------ |
 | One character, animated                     | `CharacterMark`                                                                      |
-| Dozens or hundreds                          | `MarkStageProvider` + `StagedMark`                                                   |
-| Hold a state from a button, wait for settle | `useMarkCommands`, `useMarkSettle`, `usePokeCycle`                                   |
-| "Someone is working" in a chat              | `ActivityMark` (`facts`, `bubble`, `onPoke`), `GroupActivityMark`                    |
-| A user's avatar from an id                  | `AgentAvatar`, `AvatarStack`, `AvatarStatusDot`, `WorkingBadge`                      |
-| Choose shape and ink                        | `CharacterPicker`, `AgentCharacterPicker`, `CompactCharacterPicker`                  |
-| Character or cropped picture, editable      | `AvatarEditor`, `AvatarTrigger`, `EditableAvatar`                                    |
+| Dozens or hundreds                          | `CharacterStageProvider` + `StagedMark`                                              |
+| Hold a state from a button, wait for settle | `useMarkCommands`, `useMarkSettle`, `useTapCycle`                                    |
+| "Someone is working" in a chat              | `ActivityBadge` (`facts`, `bubble`, `onPoke`), `GroupActivityBadge`                  |
+| A user's avatar from an id                  | `AgentPortrait`, `AvatarGroup`, `AvatarStatusDot`, `WorkingBadge`                    |
+| Choose shape and ink                        | `CharacterSelector`, `AgentCharacterSelector`, `CompactCharacterSelector`            |
+| Character or cropped picture, editable      | `AvatarStudio`, `AvatarButton`, `AvatarField`                                        |
 | Name, publish, share a preset               | `TemplateDialog`, `VisibilityControls`, `ShareCard`, `usePublishMark`                |
 | Who is in the room, who is speaking         | `OccupancyList`, `OccupancyMark`                                                     |
 | A blocked, paused or denied surface         | `RestrictedScene`, `DeviceBezel`                                                     |
-| Boot / loading                              | `BootLoop`, `LoadingMark`                                                            |
-| Several characters entering and handing off | `CastStage`, `CastMember`, `AvatarSlot`, `useCastScene`                              |
+| Boot / loading                              | `BootLoop`, `LoadingCharacter`                                                       |
+| Several characters entering and handing off | `CastLineup`, `CastFigure`, `PortraitSlot`, `useCastScene`                           |
 | Onboarding walkthrough                      | `DemoDesktop`, `JobBubbles`, `SuggestionCards`, `LandingWait`, `HandOff`, `Composer` |
 | Sleep after inactivity                      | `useIdleSleep`                                                                       |
-| Celebration                                 | `ConfettiLayer`, `createConfettiController`                                          |
+| Celebration                                 | `CelebrationLayer`, `createConfettiController`                                       |
 
 Labels for every catalogue id (states, shapes, inks, mouths, HUD kinds)
 come from `useLabel()` under `LocaleProvider`; do not keep a parallel table

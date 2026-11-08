@@ -1,0 +1,226 @@
+import { API } from '@theme';
+
+# ActivityBadge
+
+智能体正在做什么，用角色和标签一起表达。
+
+```tsx preview
+import { CharacterStageProvider, ActivityBadge, TOOL_ACTIVITIES } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <CharacterStageProvider>
+      <div className="site-demo site-demo--column">
+        {Object.keys(TOOL_ACTIVITIES).map((tool) => (
+          <ActivityBadge key={tool} agent={{ id: tool }} tool={tool} />
+        ))}
+      </div>
+    </CharacterStageProvider>
+  );
+}
+```
+
+## 两半来自同一来源
+
+工具名同时选出动画状态**和**标签。状态来自引擎的 `stateForTool()` 表——Claude Code 和 Cursor 适配器也用这张表——所以已经讲[情绪协议](/design/protocol)的宿主，和只知道工具名的宿主，不会对脸上该显示什么各说各话。
+
+```ts
+activityForTool('web_search');
+// → { labelKey: 'activity.searching', state: 'searching' }
+```
+
+未知工具回退到通用的工作状态，而不是什么都不渲染，所以新工具会优雅降级。
+
+## 添加工具
+
+```ts
+import { TOOL_ACTIVITIES } from '@aora-bot/react';
+
+TOOL_ACTIVITIES.deploy = { labelKey: 'activity.running', state: 'working' };
+```
+
+## 群组
+
+```tsx preview
+import { CharacterStageProvider, GroupActivityBadge } from '@aora-bot/react';
+
+const members = [{ id: 'ada' }, { id: 'grace' }, { id: 'alan' }];
+
+export default function Demo() {
+  return (
+    <CharacterStageProvider>
+      <GroupActivityBadge members={members} tool="run" />
+    </CharacterStageProvider>
+  );
+}
+```
+
+一次展示每个成员会把四人组变成一堵角色墙，所以这一行改为轮播——始终一个角色宽，同时仍然告诉你谁参与了。
+
+## 语言
+
+标签来自[语言 Provider](/components/locale-provider)，所以文字跟随周围语言，不需要再传 prop。
+
+```tsx preview
+import { LocaleProvider, ActivityBadge } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo site-demo--column">
+      <ActivityBadge agent={{ id: 'en' }} tool="search" />
+      <LocaleProvider locale="zh-CN">
+        <ActivityBadge agent={{ id: 'zh' }} tool="search" />
+      </LocaleProvider>
+    </div>
+  );
+}
+```
+
+## 用事实而不是工具名
+
+`activityMode="tool"` 是默认值：调用方给出工具名，这一行的两半都跟着它走。`activityMode="facts"` 则读取共享的[角色指令](/components/mark-commands)注册表，于是同一个智能体的对话行和名册头像不可能对它在做什么有分歧。`facts` 在这一行挂载期间为该智能体发布 `{ running, composing, activity }`——按值比较，内联对象没问题——`surface` 说明这一行画在哪里。对话行是 `chat`，在那里正在撰写就是重点；同样的事实在 `avatar` 面上解析为 idle，因为二十张脸每几百毫秒在两个状态之间闪是噪音。解析由引擎的 `characterStateForRoster(facts, surface)` 完成。
+
+```tsx preview
+import { useState } from 'react';
+import { CharacterStageProvider, ActivityBadge, AgentPortrait, useMarkCommand } from '@aora-bot/react';
+
+const agent = { id: 'nova', shape: 'hex', color: 'violet' } as const;
+
+function RosterAvatar() {
+  const snapshot = useMarkCommand(agent.id, 'avatar');
+  return <AgentPortrait agent={agent} state={snapshot.state} size="lg" />;
+}
+
+export default function Demo() {
+  const [composing, setComposing] = useState(true);
+  return (
+    <CharacterStageProvider>
+      <div className="site-demo site-demo--column">
+        <ActivityBadge
+          agent={agent}
+          activityMode="facts"
+          facts={{ running: true, composing, activity: 'writing' }}
+          surface="chat"
+        />
+        <div className="site-demo">
+          <RosterAvatar />
+          <span className="site-demo__label">同样的事实，avatar 面</span>
+        </div>
+        <button className="site-btn" onClick={() => setComposing((c) => !c)}>
+          composing: {String(composing)}
+        </button>
+      </div>
+    </CharacterStageProvider>
+  );
+}
+```
+
+## 标签、气泡、可见性
+
+`showLabel` 让标签 `always` 常显、只在 `hover` 时显示、或 `never` 不显示——`never` 仍把它留在无障碍树里，因为标签是屏幕阅读器唯一能用的部分。`bubble` 把标签画成对话气泡而不是裸文字，给紧挨着角色而不是在它下方的行用。
+
+`visible={false}` 播放退场动画后再卸载，而不是立刻消失。在标志翻转的同一刻卸载会让这一行凭空不见而不是离开，在一段本来连续的对话里读起来像故障。
+
+```tsx preview
+import { useState } from 'react';
+import { CharacterStageProvider, ActivityBadge } from '@aora-bot/react';
+
+export default function Demo() {
+  const [visible, setVisible] = useState(true);
+  return (
+    <CharacterStageProvider>
+      <div className="site-demo site-demo--column">
+        <ActivityBadge agent={{ id: 'bubble' }} tool="search" bubble />
+        <ActivityBadge agent={{ id: 'hover' }} tool="read_file" showLabel="hover" />
+        <ActivityBadge agent={{ id: 'leaving' }} tool="run" visible={visible} />
+        <button className="site-btn" onClick={() => setVisible((v) => !v)}>
+          {visible ? '隐藏最后一行' : '再显示出来'}
+        </button>
+      </div>
+    </CharacterStageProvider>
+  );
+}
+```
+
+## 戳一下
+
+`onPoke` 在角色被点击时调用，它的存在也让角色变成一个真正的按钮——没有它，点击什么也不做，因为为一个屏幕阅读器用户看不到的小花样给对话记录的每一行加一个 tab 停靠点并不值得。戳也会走共享指令，于是这个智能体的其他角色都会有反应；无法单独动作的镜像角色则由外层容器代为跳一下。
+
+```tsx preview
+import { useState } from 'react';
+import { CharacterStageProvider, ActivityBadge } from '@aora-bot/react';
+
+export default function Demo() {
+  const [pokes, setPokes] = useState(0);
+  return (
+    <CharacterStageProvider>
+      <div className="site-demo site-demo--column">
+        <ActivityBadge
+          agent={{ id: 'poke', shape: 'star', color: 'yellow' }}
+          tool="think"
+          onPoke={() => setPokes((n) => n + 1)}
+        />
+        <span className="site-demo__label">戳了 {pokes} 次</span>
+      </div>
+    </CharacterStageProvider>
+  );
+}
+```
+
+## 在场 hook
+
+组件自己用的两个 hook 也导出给自绘对话行的宿主。
+
+`useActivityStatus(visible, { exitMs })` 返回 `{ mounted, leaving }`：`mounted` 在退场动画期间保持为真，`leaving` 标出该套用离场类名的那几帧。`exitMs` 默认是 `ACTIVITY_EXIT_MS`（140 ms），在减少动态效果下降为零。切换在渲染期间而不是 effect 里完成，这样退场动画在隐藏该行的那一帧就已经在屏幕上。
+
+`useArrival(agentId)` 返回 `{ isFirst, state }`：`state` 在登场播放期间是 `'spawning'`，之后是 `null`，调用方回落到真实状态。哪些智能体已经登场过记在模块级别而不是 context 里——滚过去时卸载、滚回来时重新挂载的行不应该登场两次。`resetSpawnEntrances()` 忘掉所有登场记录，供测试和会话重置使用。
+
+```tsx preview
+import { useState } from 'react';
+import { CharacterStageProvider, StagedMark, useActivityStatus, useArrival } from '@aora-bot/react';
+
+function Row({ id, visible }: { id: string; visible: boolean }) {
+  const presence = useActivityStatus(visible);
+  const spawn = useArrival(id);
+  if (!presence.mounted) return null;
+  return (
+    <span className={`aora-activity${presence.leaving ? ' aora-activity--leaving' : ''}`}>
+      <StagedMark shape="pebble" color="green" state={spawn.state ?? 'idle'} sizePx={28} />
+      <span className="site-demo__label">
+        {spawn.isFirst ? '首次出现' : '之前见过'}，{presence.leaving ? '离场中' : '在场'}
+      </span>
+    </span>
+  );
+}
+
+export default function Demo() {
+  const [visible, setVisible] = useState(true);
+  return (
+    <CharacterStageProvider>
+      <div className="site-demo site-demo--column">
+        <Row id="presence-demo" visible={visible} />
+        <button className="site-btn" onClick={() => setVisible((v) => !v)}>
+          切换
+        </button>
+      </div>
+    </CharacterStageProvider>
+  );
+}
+```
+
+## 无障碍
+
+标签是真正的文字，所以看不见动画也能读出智能体的状态。角色承载含义时请复制这个模式——见[无障碍](/guide/accessibility)。
+
+## API
+
+<API component="ActivityBadge" />
+
+### GroupActivityBadge
+
+<API component="GroupActivityBadge" />
+
+## 接下来
+
+- [ActivityLine](/components/activity-line)——滚动的活动动词
+- [对话流](/scenarios/chat-stream)——一行带脸的状态

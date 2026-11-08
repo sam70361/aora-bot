@@ -7,12 +7,9 @@ export const POLYGON: FamilyArt<'polygon'> = {
     face: [50, 62],
   },
   // A crown, a girdle and a pavilion with every corner rounded, the bottom tip the most, and the edges
-  // bowed a little. The crown is only hinted, by the narrow `inner` highlight.
+  // bowed a little.
   gem: {
     body: loop('gem').body,
-    parts: [
-      { tone: 'inner', d: 'M42 28H58Q62 28 63 31L67 36Q68 39 65 39H35Q32 39 33 36L37 31Q38 28 42 28Z' },
-    ],
     face: [50, 60],
   },
 };

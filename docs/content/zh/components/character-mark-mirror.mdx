@@ -37,7 +37,7 @@ export default function Demo() {
 
 `sourceId` 会变成 DOM id，`<use href="#id">` 解析到文档里的第一个匹配。同一页上两个相同 id 的源，意味着每个镜像都指向第一个。
 
-优先使用 [`MarkStageProvider`](/components/mark-stage)，它用 `useId` 推导 id，不会碰撞——即使一页上有好几个 Provider，而这正是带多个示例的文档站点会产生的情况。
+优先使用 [`CharacterStageProvider`](/components/character-stage)，它用 `useId` 推导 id，不会碰撞——即使一页上有好几个 Provider，而这正是带多个示例的文档站点会产生的情况。
 
 ## API
 
@@ -45,5 +45,5 @@ export default function Demo() {
 
 ## 接下来
 
-- [MarkStageProvider](/components/mark-stage)——按外观共享引擎
+- [CharacterStageProvider](/components/character-stage)——按外观共享引擎
 - [性能](/guide/performance)——怎样渲染上百个角色

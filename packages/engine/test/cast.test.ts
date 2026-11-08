@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CAST, CAST_IDS, castMember, isCastId } from '../src/core/cast.js';
-import { COLOR_IDS, SHAPE_IDS } from '../src/core/types.js';
+import { CORE_COLOR_IDS, SHAPE_IDS } from '../src/core/types.js';
 
 /*
  * The cast is the one table a product stores an id from, so the invariants
@@ -27,7 +27,7 @@ describe('CAST', () => {
     // nothing would say so.
     for (const member of CAST) {
       expect(SHAPE_IDS, member.id).toContain(member.shape);
-      expect(COLOR_IDS, member.id).toContain(member.color);
+      expect(CORE_COLOR_IDS, member.id).toContain(member.color);
     }
   });
 
@@ -41,9 +41,9 @@ describe('CAST', () => {
     }
   });
 
-  it('keeps the default face throughout, as its own documentation claims', () => {
+  it('keeps the default face throughout but for the ball, as its own documentation claims', () => {
     for (const member of CAST) {
-      expect(member.face, member.id).toBeUndefined();
+      expect(member.face, member.id).toBe(member.id === 'dot' ? 'capsule' : undefined);
       expect(member.nose, member.id).toBeUndefined();
     }
   });

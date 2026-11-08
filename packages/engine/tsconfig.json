@@ -1,4 +1,9 @@
 {
   "extends": "../../tsconfig.base.json",
-  "include": ["src", "test"]
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": false,
+    "paths": { "@aora-bot/engine/themes/*": ["./src/themes/*/index.ts"] }
+  },
+  "include": ["src", "test", "scripts", "vitest.config.ts"]
 }

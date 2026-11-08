@@ -10,7 +10,7 @@ import { StateMatrix } from '@theme';
 
 ```tsx preview
 import { useState } from 'react';
-import { AgentAvatar, AvatarStatusDot, MarkStageProvider } from '@aora-bot/react';
+import { AgentPortrait, AvatarStatusDot, CharacterStageProvider } from '@aora-bot/react';
 import { RestrictedScene, type RestrictedTone } from '@aora-bot/surfaces';
 
 const tones: RestrictedTone[] = ['restricted', 'unauthorised', 'offline'];
@@ -24,7 +24,7 @@ export default function Demo() {
   const [tone, setTone] = useState<RestrictedTone>('restricted');
 
   return (
-    <MarkStageProvider>
+    <CharacterStageProvider>
       <div className="site-demo site-demo--stack">
         <RestrictedScene
           tone={tone}
@@ -42,7 +42,7 @@ export default function Demo() {
         />
         <div className="site-demo__row">
           <span className="site-demo__avatar">
-            <AgentAvatar
+            <AgentPortrait
               agent={{ id: 'ledger', name: 'Ledger' }}
               state={tone === 'offline' ? 'sleeping' : 'idle'}
               sizePx={40}
@@ -54,7 +54,7 @@ export default function Demo() {
           <span className="site-demo__label">Ledger, {dot[tone].label}</span>
         </div>
       </div>
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 ```
@@ -70,7 +70,7 @@ export default function Demo() {
 - [`RestrictedScene`](/components/restricted-scene)——整个死胡同：边框、角色、标题、正文、出口。`tone` 决定文案和边框指示灯。
 - `DeviceBezel`——只要边框，版面自己排的时候用。
 - [`CharacterMark`](/components/character-mark)——拒绝用 `refusing`，出了问题用 `alerting`。
-- [`AvatarStatusDot`](/components/avatar-chrome)——`error` 和 `offline` 两个 tone，在名册角落说同一件事。
+- [`AvatarStatusDot`](/components/avatar-frame)——`error` 和 `offline` 两个 tone，在名册角落说同一件事。
 - [`HudPlate`](/components/hud-plate)——限制会自己解除时（限流、冷却）配 `timer` 表盘，流失的环告诉人等一下而不是走开；服务宕机时配 `sync` 的 `error`，说生命周期失败了，而不编造一个数字。
 
 ## 状态怎么走
@@ -94,4 +94,4 @@ export default function Demo() {
 ## 接下来
 
 - [RestrictedScene](/components/restricted-scene)——整个死胡同
-- [徽标与状态](/components/avatar-chrome)——未读数与状态点
+- [徽标与状态](/components/avatar-frame)——未读数与状态点

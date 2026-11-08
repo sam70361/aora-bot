@@ -102,7 +102,7 @@ const now = (): number => (typeof performance === 'undefined' ? Date.now() : per
  * its animation with everyone else of the same appearance, so it cannot move
  * on its own and the caller should fall back to something element-level.
  */
-export function usePokeCycle(ref: RefObject<CharacterHandle | null>): () => boolean {
+export function useTapCycle(ref: RefObject<CharacterHandle | null>): () => boolean {
   const step = useRef(0);
   const last = useRef(Number.NEGATIVE_INFINITY);
 

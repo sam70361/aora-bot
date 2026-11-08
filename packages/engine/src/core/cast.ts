@@ -1,5 +1,7 @@
 import { getSwatchHex } from './palette.js';
-import type { ColorId, FaceStyle, NoseId, ShapeId } from './types.js';
+import { THEME_MANIFEST, type ThemeCastId } from '../themes/manifest.js';
+import { requireTheme } from '../themes/state.js';
+import { isListedShape, type ColorId, type FaceStyle, type NoseId, type ShapeId } from './types.js';
 
 /**
  * A named character: a shape, a palette colour and a little personality.
@@ -9,8 +11,10 @@ import type { ColorId, FaceStyle, NoseId, ShapeId } from './types.js';
  * exist so a product can offer "pick a character" instead of "pick a shape
  * and a colour", and so the documentation has something to call them.
  *
- * The roster is one-to-one with `SHAPE_IDS`: every body has exactly one name,
- * in the same family order as the catalogue. A missing body is a bug.
+ * The core cast is one-to-one with `CORE_SHAPE_IDS`, and `CAST` with the
+ * core's listed bodies: every body has exactly one name, in the same family
+ * order as the catalogue. A missing body is a bug. A theme's members come
+ * with its entry.
  * `castMember` returns `null` for an unknown id, so a stored preference can go
  * stale safely.
  */
@@ -26,9 +30,9 @@ export interface CharacterPreset {
    */
   accent: string;
   /**
-   * Face style and nose, for presets designed as line faces. No shipped
-   * member sets these — the cast keeps the default face — but a host's own
-   * presets can, and the pickers honour them.
+   * Face style and nose, for a member designed with a face of its own (Dot
+   * wears `capsule`). The rest of the cast keeps the default face; a host's
+   * own presets may set these too, and the pickers honour them.
    */
   face?: FaceStyle;
   nose?: NoseId;
@@ -36,9 +40,10 @@ export interface CharacterPreset {
 
 const ink = (color: ColorId): string => getSwatchHex(color);
 
-export const CAST_IDS = [
-  'mochi',
+/** The core's members' ids, listed or not, in catalogue order. */
+export const CORE_CAST_IDS = [
   'dot',
+  'mochi',
   'pip',
   'byte',
   'momo',
@@ -57,10 +62,20 @@ export const CAST_IDS = [
   'shroom',
   'oak',
   'pokey',
+  'aubie',
   'nashi',
   'pomme',
   'berry',
   'cheri',
+  'avo',
+  'melo',
+  'pud',
+  'toasty',
+  'scoop',
+  'cuppy',
+  'fry',
+  'candy',
+  'patty',
   'twinkle',
   'luv',
   'ember',
@@ -69,8 +84,15 @@ export const CAST_IDS = [
   'beep',
   'luna',
   'boba',
+  'orbi',
+  'nook',
+  'chatty',
+  'joy',
+  'lumi',
   'finn',
   'inky',
+  'roly',
+  'puff',
   'miso',
   'hop',
   'bruno',
@@ -78,6 +100,11 @@ export const CAST_IDS = [
   'waddle',
   'oink',
   'rusty',
+  'leo',
+  'hammy',
+  'prickle',
+  'koko',
+  'flap',
   'kiki',
   'maru',
   'zip',
@@ -85,12 +112,34 @@ export const CAST_IDS = [
   'lulu',
 ] as const;
 
-export type CastId = (typeof CAST_IDS)[number];
+export type CoreCastId = (typeof CORE_CAST_IDS)[number];
+/** Any member the engine knows: the core's, and those of the shipped themes, which resolve once their theme is installed. */
+export type CastId = CoreCastId | ThemeCastId;
+
+/** Every member id the engine knows, the core's first: for checking an id. */
+export const ALL_CAST_IDS: readonly CastId[] = [
+  ...CORE_CAST_IDS,
+  ...THEME_MANIFEST.flatMap((theme) => theme.cast),
+];
 
 /**
- * The named characters, one per body, in catalogue order.
+ * The core's named characters, one per body, in catalogue order. A member is
+ * listed exactly when its body is (`SHAPE_IDS`), so moving a body between
+ * families moves its name with it. A theme adds its own when it is installed.
  */
-export const CAST: readonly CharacterPreset[] = [
+const CORE_CAST: readonly CharacterPreset[] = [
+  {
+    id: 'dot',
+    name: { en: 'Dot', zh: '球球' },
+    desc: {
+      en: 'A cream-white ball with two tall capsule eyes that tip together when it is happy and apart when it is cross.',
+      zh: '奶白色的小圆球，一对竖直的胶囊眼，开心时眼顶往里靠，生气时往外撇。',
+    },
+    shape: 'circle',
+    color: 'cream',
+    accent: ink('cream'),
+    face: 'capsule',
+  },
   {
     id: 'mochi',
     name: { en: 'Mochi', zh: '糯糯' },
@@ -101,17 +150,6 @@ export const CAST: readonly CharacterPreset[] = [
     shape: 'mochi',
     color: 'blue',
     accent: ink('blue'),
-  },
-  {
-    id: 'dot',
-    name: { en: 'Dot', zh: '圆圆' },
-    desc: {
-      en: 'A plain orange circle, the shape every face was first drawn on.',
-      zh: '一枚纯粹的橙色圆，所有笑脸最早就画在它身上。',
-    },
-    shape: 'circle',
-    color: 'orange',
-    accent: ink('orange'),
   },
   {
     id: 'pip',
@@ -205,8 +243,8 @@ export const CAST: readonly CharacterPreset[] = [
     id: 'gemma',
     name: { en: 'Gemma', zh: '晶晶' },
     desc: {
-      en: 'A soft-cut gem with a pale crown and every corner rounded.',
-      zh: '软切面小宝石，头顶一层浅色冠面，每个角都是圆的。',
+      en: 'A soft-cut gem with every corner rounded.',
+      zh: '软切面小宝石，每个角都是圆的。',
     },
     shape: 'gem',
     color: 'cyan',
@@ -312,6 +350,17 @@ export const CAST: readonly CharacterPreset[] = [
     accent: ink('green'),
   },
   {
+    id: 'aubie',
+    name: { en: 'Aubie', zh: '茄茄' },
+    desc: {
+      en: 'A plump purple eggplant in a pointed green cap, round at the bottom and in no hurry.',
+      zh: '戴着尖角绿帽子的紫茄子，底下圆滚滚的，做什么都不着急。',
+    },
+    shape: 'eggplant',
+    color: 'violet',
+    accent: ink('violet'),
+  },
+  {
     id: 'nashi',
     name: { en: 'Nashi', zh: '梨梨' },
     desc: {
@@ -354,6 +403,105 @@ export const CAST: readonly CharacterPreset[] = [
     shape: 'cherry',
     color: 'magenta',
     accent: ink('magenta'),
+  },
+  {
+    id: 'avo',
+    name: { en: 'Avo', zh: '油油' },
+    desc: {
+      en: 'Half an avocado with its round pit still in, creamy and unbothered.',
+      zh: '切开的半个牛油果，圆圆的果核还在，软软糯糯，什么都不放在心上。',
+    },
+    shape: 'avocado',
+    color: 'yellow',
+    accent: ink('yellow'),
+  },
+  {
+    id: 'melo',
+    name: { en: 'Melo', zh: '瓜瓜' },
+    desc: {
+      en: 'A slice of watermelon with a green rind and three seeds, cool on the hottest day.',
+      zh: '绿皮红瓤的一角西瓜，带着三颗瓜子，再热的天也清清爽爽。',
+    },
+    shape: 'melon',
+    color: 'red',
+    accent: ink('red'),
+  },
+  {
+    id: 'pud',
+    name: { en: 'Pud', zh: '布布' },
+    desc: {
+      en: 'A wobbly custard pudding under a cap of caramel, with a mint leaf on top.',
+      zh: '顶着一层焦糖和一片薄荷叶的布丁，轻轻一碰就晃一晃。',
+    },
+    shape: 'pudding',
+    color: 'yellow',
+    accent: ink('yellow'),
+  },
+  {
+    id: 'toasty',
+    name: { en: 'Toasty', zh: '脆脆' },
+    desc: {
+      en: 'A slice of toast with a golden crust, still warm from the toaster.',
+      zh: '一片烤得金黄的吐司，边是脆的，刚从烤面包机里跳出来，还热乎着。',
+    },
+    shape: 'toast',
+    color: 'brown',
+    accent: ink('brown'),
+  },
+  {
+    id: 'scoop',
+    name: { en: 'Scoop', zh: '冰冰' },
+    desc: {
+      en: 'A pink scoop on a waffle cone, melting a little at the edges.',
+      zh: '华夫筒上顶着一球粉色冰淇淋，边上微微化开了。',
+    },
+    shape: 'icecream',
+    color: 'pink',
+    accent: ink('pink'),
+  },
+  {
+    id: 'cuppy',
+    name: { en: 'Cuppy', zh: '杯杯' },
+    desc: {
+      en: 'A cupcake with a dome of frosting and a pleated paper cup, sweet all the way down.',
+      zh: '顶着一团奶油的纸杯蛋糕，杯子上一道道褶，从上甜到下。',
+    },
+    shape: 'cupcake',
+    color: 'pink',
+    accent: ink('pink'),
+  },
+  {
+    id: 'fry',
+    name: { en: 'Fry', zh: '条条' },
+    desc: {
+      en: 'A carton of fresh fries, long ones and short ones squeezed in side by side.',
+      zh: '一盒刚出锅的薯条，长长短短挤在纸盒里。',
+    },
+    shape: 'fries',
+    color: 'yellow',
+    accent: ink('yellow'),
+  },
+  {
+    id: 'candy',
+    name: { en: 'Candy', zh: '糖糖' },
+    desc: {
+      en: 'A round hard candy twisted into a bow at each end, its wrapper rustling.',
+      zh: '两头拧成蝴蝶结的圆硬糖，糖纸一动就沙沙响。',
+    },
+    shape: 'candy',
+    color: 'blue',
+    accent: ink('blue'),
+  },
+  {
+    id: 'patty',
+    name: { en: 'Patty', zh: '堡堡' },
+    desc: {
+      en: 'A little burger with lettuce and a patty between round buns, three sesame seeds on top.',
+      zh: '圆面包夹着生菜和肉饼的小汉堡，头顶三粒芝麻。',
+    },
+    shape: 'burger',
+    color: 'brown',
+    accent: ink('brown'),
   },
   {
     id: 'twinkle',
@@ -403,8 +551,8 @@ export const CAST: readonly CharacterPreset[] = [
     id: 'jelly',
     name: { en: 'Jelly', zh: '水灵' },
     desc: {
-      en: 'A minimalist apricot ghost that drifts along, always unhurried.',
-      zh: '杏橙色的简约小幽灵，慢悠悠地漂。',
+      en: 'An apricot ghost with a round head, two little nub arms and a soft scalloped hem, drifting along unhurried.',
+      zh: '杏橙色的小幽灵，圆脑袋，两只小短手，裙边软软的波浪，慢悠悠地漂。',
     },
     shape: 'ghost',
     color: 'orange',
@@ -444,6 +592,61 @@ export const CAST: readonly CharacterPreset[] = [
     accent: ink('brown'),
   },
   {
+    id: 'orbi',
+    name: { en: 'Orbi', zh: '环环' },
+    desc: {
+      en: 'A violet planet in a tilted ring, waltzing slowly on its own axis.',
+      zh: '戴着一圈斜光环的紫色小星球，转起来像在跳圆舞。',
+    },
+    shape: 'planet',
+    color: 'violet',
+    accent: ink('violet'),
+  },
+  {
+    id: 'nook',
+    name: { en: 'Nook', zh: '窝窝' },
+    desc: {
+      en: 'An orange cottage with a pointed roof and a chimney; the front wall is its face.',
+      zh: '尖屋顶、小烟囱的橘色小房子，正面的墙就是它的脸。',
+    },
+    shape: 'cottage',
+    color: 'orange',
+    accent: ink('orange'),
+  },
+  {
+    id: 'chatty',
+    name: { en: 'Chatty', zh: '叨叨' },
+    desc: {
+      en: 'A rounded speech bubble with a little tail; once it starts talking, it does not stop.',
+      zh: '拖着一条小尾巴的圆角对话气泡，一开口就停不下来。',
+    },
+    shape: 'chat',
+    color: 'cyan',
+    accent: ink('cyan'),
+  },
+  {
+    id: 'joy',
+    name: { en: 'Joy', zh: '喜喜' },
+    desc: {
+      en: 'A magenta gift box under a green bow, its lid one size wider than the box.',
+      zh: '扎着绿蝴蝶结的洋红礼物盒，盖子比盒身宽一圈。',
+    },
+    shape: 'gift',
+    color: 'magenta',
+    accent: ink('magenta'),
+  },
+  {
+    id: 'lumi',
+    name: { en: 'Lumi', zh: '点点' },
+    desc: {
+      en: 'A round little light bulb that lights up whenever it has an idea.',
+      zh: '圆圆的小灯泡，一有好点子就亮起来。',
+    },
+    shape: 'bulb',
+    color: 'yellow',
+    accent: ink('yellow'),
+  },
+  {
     id: 'finn',
     name: { en: 'Finn', zh: '鱼鱼' },
     desc: {
@@ -464,6 +667,28 @@ export const CAST: readonly CharacterPreset[] = [
     shape: 'octopus',
     color: 'violet',
     accent: ink('violet'),
+  },
+  {
+    id: 'roly',
+    name: { en: 'Roly', zh: '噜噜' },
+    desc: {
+      en: 'A blue seal lying on its belly, one smooth roll from round head to forked tail.',
+      zh: '趴着的蓝色小海豹，从圆脑袋一路滑到分叉的尾鳍。',
+    },
+    shape: 'seal',
+    color: 'blue',
+    accent: ink('blue'),
+  },
+  {
+    id: 'puff',
+    name: { en: 'Puff', zh: '鼓鼓' },
+    desc: {
+      en: 'A green pufferfish that puffs into a ball of spikes when cross, and never actually pricks.',
+      zh: '一生气就鼓成小刺球的绿色河豚，其实一点也不扎。',
+    },
+    shape: 'puffer',
+    color: 'green',
+    accent: ink('green'),
   },
   {
     id: 'miso',
@@ -543,6 +768,61 @@ export const CAST: readonly CharacterPreset[] = [
     accent: ink('orange'),
   },
   {
+    id: 'leo',
+    name: { en: 'Leo', zh: '狮狮' },
+    desc: {
+      en: 'A small lion in a big swirl of a mane, very brave as long as someone is watching.',
+      zh: '顶着一大圈蓬蓬鬃毛的小狮子，只要有人看着就特别勇敢。',
+    },
+    shape: 'lion',
+    color: 'orange',
+    accent: ink('orange'),
+  },
+  {
+    id: 'hammy',
+    name: { en: 'Hammy', zh: '囤囤' },
+    desc: {
+      en: 'An orange hamster with stuffed cheeks and a pale chin, always hoarding one more seed.',
+      zh: '腮帮子鼓鼓、下巴白白的橘色小仓鼠，总想再多囤一颗瓜子。',
+    },
+    shape: 'hamster',
+    color: 'orange',
+    accent: ink('orange'),
+  },
+  {
+    id: 'prickle',
+    name: { en: 'Prickle', zh: '扎扎' },
+    desc: {
+      en: 'A brown hedgehog in a coat of round spikes, with the softest face underneath.',
+      zh: '背着一圈圆圆小刺的棕色刺猬，底下藏着一张软乎乎的脸。',
+    },
+    shape: 'hedgehog',
+    color: 'brown',
+    accent: ink('brown'),
+  },
+  {
+    id: 'koko',
+    name: { en: 'Koko', zh: '抱抱' },
+    desc: {
+      en: 'A gray koala with big fluffy ears that never lets go once it hugs.',
+      zh: '大耳朵毛茸茸的灰色小考拉，抱住了就不撒手。',
+    },
+    shape: 'koala',
+    color: 'gray',
+    accent: ink('gray'),
+  },
+  {
+    id: 'flap',
+    name: { en: 'Flap', zh: '扑扑' },
+    desc: {
+      en: 'A violet bat with scalloped wings, wide awake in broad daylight.',
+      zh: '翅膀边一波一波的紫色小蝙蝠，大白天也醒着陪你。',
+    },
+    shape: 'bat',
+    color: 'violet',
+    accent: ink('violet'),
+  },
+  {
     id: 'kiki',
     name: { en: 'Kiki', zh: '琪琪' },
     desc: {
@@ -599,10 +879,37 @@ export const CAST: readonly CharacterPreset[] = [
   },
 ];
 
-const BY_ID = new Map<CastId, CharacterPreset>(CAST.map((m) => [m.id, m]));
+/** The listed members: the ones whose bodies the default lists show. */
+export const CAST: readonly CharacterPreset[] = CORE_CAST.filter((member) => isListedShape(member.shape));
 
-/** Look up a cast member. Returns `null` for unknown ids rather than throwing, so a stored preference can go stale safely. */
-export const castMember = (id: string | null | undefined): CharacterPreset | null =>
-  id ? (BY_ID.get(id as CastId) ?? null) : null;
+/** The listed members' ids, in catalogue order. */
+export const CAST_IDS: readonly CastId[] = CAST.map((member) => member.id);
 
-export const isCastId = (value: string): value is CastId => BY_ID.has(value as CastId);
+const BY_ID = new Map<string, CharacterPreset>(CORE_CAST.map((m) => [m.id, m]));
+
+/** A theme's member as its entry gives it: everything but the swatch, which the palette supplies. */
+export type ThemeCastMember = Omit<CharacterPreset, 'accent'>;
+
+/** Add a theme's members (`installTheme`). A member with an id already taken replaces it. */
+export function registerCast(members: readonly ThemeCastMember[]): void {
+  for (const member of members) BY_ID.set(member.id, { ...member, accent: ink(member.color) });
+}
+
+/** Every member this copy of the engine can resolve: the core's, then the installed themes'. */
+export const allCast = (): CharacterPreset[] => [...BY_ID.values()];
+
+/**
+ * Look up a cast member. Returns `null` for an unknown id rather than
+ * throwing, so a stored preference can go stale safely; throws
+ * `ThemeNotInstalledError` for a member of a theme that is not installed.
+ */
+export const castMember = (id: string | null | undefined): CharacterPreset | null => {
+  if (!id) return null;
+  const member = BY_ID.get(id);
+  if (member) return member;
+  requireTheme('cast', id);
+  return BY_ID.get(id) ?? null;
+};
+
+export const isCastId = (value: string): value is CastId =>
+  (ALL_CAST_IDS as readonly string[]).includes(value);

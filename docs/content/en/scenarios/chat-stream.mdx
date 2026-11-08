@@ -10,7 +10,7 @@ A transcript row driven from facts: the row publishes what it knows through `fac
 
 ```tsx preview
 import { useState } from 'react';
-import { ActivityMark, GroupActivityMark, MarkStageProvider, useMarkCommands } from '@aora-bot/react';
+import { ActivityBadge, GroupActivityBadge, CharacterStageProvider, useMarkCommands } from '@aora-bot/react';
 
 const agent = { id: 'nova', name: 'Nova' };
 const team = [{ id: 'ada' }, { id: 'grace' }, { id: 'alan' }];
@@ -37,7 +37,7 @@ function Transcript() {
 
   return (
     <div className="site-demo site-demo--column">
-      <ActivityMark
+      <ActivityBadge
         agent={agent}
         activityMode="facts"
         facts={finished ? undefined : TURN[step]}
@@ -45,7 +45,7 @@ function Transcript() {
         bubble
         onPoke={() => {}}
       />
-      <GroupActivityMark members={team} tool="run" />
+      <GroupActivityBadge members={team} tool="run" />
       <div className="site-controls">
         <button
           className="site-btn"
@@ -74,14 +74,14 @@ function Transcript() {
 
 export default function Demo() {
   return (
-    <MarkStageProvider>
+    <CharacterStageProvider>
       <Transcript />
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 ```
 
-`surface` defaults to `chat` on an `ActivityMark`, which is why the fourth step shows `composing`: the same facts read on an `avatar` surface stay `idle`, because twenty avatars flicking between two faces every few hundred milliseconds is noise rather than information.
+`surface` defaults to `chat` on an `ActivityBadge`, which is why the fourth step shows `composing`: the same facts read on an `avatar` surface stay `idle`, because twenty avatars flicking between two faces every few hundred milliseconds is noise rather than information.
 
 ## When to use it
 
@@ -89,10 +89,10 @@ The line under the last message that says what the agent is doing right now. The
 
 ## Components
 
-- [`ActivityMark`](/components/activity-mark) — one agent, one row: the character and the verb. `activityMode="facts"` reads the shared registry instead of a tool name.
-- [`GroupActivityMark`](/components/activity-mark#groups) — several agents taking turns in one slot, so a group does not become a wall of characters.
-- [`ActivityTicker`](/components/activity-ticker) — the verb, swapped rather than rewritten, so the row keeps its height.
-- [`MarkStageProvider`](/components/mark-stage) — one engine per distinct appearance, and the home of the command registry.
+- [`ActivityBadge`](/components/activity-badge) — one agent, one row: the character and the verb. `activityMode="facts"` reads the shared registry instead of a tool name.
+- [`GroupActivityBadge`](/components/activity-badge#groups) — several agents taking turns in one slot, so a group does not become a wall of characters.
+- [`ActivityLine`](/components/activity-line) — the verb, swapped rather than rewritten, so the row keeps its height.
+- [`CharacterStageProvider`](/components/character-stage) — one engine per distinct appearance, and the home of the command registry.
 - [`useMarkCommands`](/components/mark-commands) — `holdFacts`, `holdState` and `poke`, so the roster and the transcript talk about the same agent.
 - [`HudPlate`](/components/hud-plate) — when a turn has a known length (the third of five tool calls), the figure beside the character, where it can be read and announced.
 
@@ -109,7 +109,7 @@ The line under the last message that says what the agent is doing right now. The
 | `working`   | `alerting`  | a tool failed (held with a `ttlMs`)     |
 | either      | row leaves  | the hold expires                        |
 
-`spawning` is played by `useSpawnEntrance` the first time an agent appears in a session and never again — a row that scrolls out and back did not arrive twice. The engine settles it to `idle` after `STATE_SETTLE_TO.spawning.afterMs` (2 s), so the host does not keep a timer.
+`spawning` is played by `useArrival` the first time an agent appears in a session and never again — a row that scrolls out and back did not arrive twice. The engine settles it to `idle` after `STATE_SETTLE_TO.spawning.afterMs` (2 s), so the host does not keep a timer.
 
 `celebrate` and `alerting` are events, not conditions: protocol ids `33` and `34` are one-shot. Hold them with a `ttlMs` so a row cannot stay celebrating after the reply has landed.
 
@@ -121,6 +121,6 @@ Two of these hand their body to a belt: `thinking` to the three travelling beads
 
 ## Next
 
-- [ActivityMark](/components/activity-mark) — what a tool call looks like
-- [ActivityTicker](/components/activity-ticker) — a line of rolling verbs
+- [ActivityBadge](/components/activity-badge) — what a tool call looks like
+- [ActivityLine](/components/activity-line) — a line of rolling verbs
 - [AgentStateProvider](/components/agent-state) — arbitrating sessions into one face

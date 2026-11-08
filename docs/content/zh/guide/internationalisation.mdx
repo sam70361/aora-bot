@@ -5,14 +5,14 @@
 ## 一个 Provider，而不是每个组件一个 prop
 
 ```tsx preview
-import { LocaleProvider, ActivityMark, CharacterPicker } from '@aora-bot/react';
+import { LocaleProvider, ActivityBadge, CharacterSelector } from '@aora-bot/react';
 
 export default function Demo() {
   return (
     <div className="site-demo site-demo--column">
       <LocaleProvider locale="zh-CN">
-        <ActivityMark agent={{ id: 'nova' }} tool="search" />
-        <CharacterPicker shape="blob" color="blue" shapes={['blob', 'hex', 'cloud']} layout="row" />
+        <ActivityBadge agent={{ id: 'nova' }} tool="search" />
+        <CharacterSelector shape="blob" color="blue" shapes={['blob', 'hex', 'cloud']} layout="row" />
       </LocaleProvider>
     </div>
   );

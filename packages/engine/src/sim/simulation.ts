@@ -4,6 +4,8 @@ import {
   DEFAULT_FACE_TUNE,
   DEFAULT_POSE,
   DEFAULT_POSE_HOME,
+  isCuteFamily,
+  isDrawnFace,
   type CuteMouthId,
   type FaceTune,
   type MouthId,
@@ -15,8 +17,26 @@ import {
   type ShapePart,
 } from '../core/types.js';
 import { computeFaceGeometry, turnFace } from '../face/placement.js';
-import { getCuteMouth, getMouth, morphMouth, mouthSpecFor, resolveLineWeight } from '../face/features.js';
+import {
+  getCuteMouth,
+  getMouth,
+  LINE_WEIGHT,
+  morphMouth,
+  mouthSpecFor,
+  resolveLineWeight,
+} from '../face/features.js';
 import { morphEyePair } from '../face/morph.js';
+import {
+  drawnMouthFor,
+  drawnPairFor,
+  drawnPairForState,
+  getFaceDesign,
+  morphDrawnPair,
+  type AnyFaceDesign,
+  type DrawnEntry,
+  type DrawnInput,
+  type DrawnPair,
+} from '../face/drawn/index.js';
 import {
   CUTE_EYE_TOPOLOGIES,
   EYE_TOPOLOGIES,
@@ -25,6 +45,7 @@ import {
   type ExpressionId,
 } from '../face/topologies.js';
 import { evaluateFx, type FxFrame } from '../motion/fx.js';
+import { themeExtras } from '../themes/extras-hook.js';
 import { evaluateHudPrimitives, HUD_PRINT_MIN_PX } from '../hud/dials.js';
 import type { HudSpec } from '../hud/spec.js';
 import { clamp, easeOutCubic, easeOutQuart, frameLerp } from '../math/easing.js';
@@ -179,6 +200,8 @@ interface Springs {
   fx: Spring;
   /** Dips to 0 and recovers when the nose is swapped, so the swap fades. */
   featureFade: Spring;
+  /** 0 = the face just left, 1 = the face now asked for: cross-fades a drawn face in or out. */
+  faceFade: Spring;
   spin: Spring;
   beltBlend: Spring;
   /** 0 = the outgoing belt, 1 = the incoming one. */
@@ -202,10 +225,11 @@ function makeSprings(face: CharacterOptions['face'], state: CharacterState): Spr
     eyeMorph: spring(1, 8, 1),
     mouthMorph: spring(1, 8, 1),
     lineBlend: spring(face === 'line' ? 1 : 0, 10, 1),
-    cuteBlend: spring(face === 'cute' ? 1 : 0, 10, 1),
-    blush: spring(face === 'cute' ? STATE_BLUSH[state] : 0, 8, 1),
+    cuteBlend: spring(isCuteFamily(face) ? 1 : 0, 10, 1),
+    blush: spring(isCuteFamily(face) ? STATE_BLUSH[state] : 0, 8, 1),
     fx: spring(1, 7, 1),
     featureFade: spring(1, 12, 1),
+    faceFade: spring(1, 10, 1),
     spin: spring(0, 6.2, 1),
     beltBlend: spring(0, 14, 1),
     beltFade: spring(1, 11, 1),
@@ -302,11 +326,21 @@ export function createSimulation(options: SimulationOptions = {}): Simulation {
   let impulseBehaviour = createImpulseBehaviour(opts.state);
 
   let topologyIndex = 0;
-  let fromEyes: EyePair = opts.face === 'cute' ? CUTE_EYE_TOPOLOGIES.dot : EYE_TOPOLOGIES.neutral;
+  let fromEyes: EyePair = isCuteFamily(opts.face) ? CUTE_EYE_TOPOLOGIES.dot : EYE_TOPOLOGIES.neutral;
   let toEyes: EyePair = currentTopology();
   // A still frame has no morph to be part-way through; starting both ends on
   // the same pair keeps the blend an exact copy rather than a lerp at t = 1.
   if (still) fromEyes = toEyes;
+  /*
+   * A drawn face's own eyes, on the same morph spring as the plain ones. The
+   * plain cute pair keeps running underneath, so a switch to or from the cute
+   * face morphs rather than fades; the drawn layers cross-fade on `faceFade`,
+   * the face just left kept as it was when the switch came.
+   */
+  let design: AnyFaceDesign | null = isDrawnFace(opts.face) ? getFaceDesign(opts.face) : null;
+  let toDrawn: DrawnPair | null = currentDrawn();
+  let fromDrawn: DrawnPair | null = design && !still ? drawnPairFor(design, 'dot') : toDrawn;
+  let previousDrawn: { design: AnyFaceDesign; eyes: DrawnPair } | null = null;
   let nextSwitch = scheduleSwitch();
   let nextBlink = scheduleBlink();
   let nextGaze = still ? Infinity : 0;
@@ -354,7 +388,7 @@ export function createSimulation(options: SimulationOptions = {}): Simulation {
 
   /** The eyes the current state and face want right now: the pinned expression, or the state's cycle. */
   function currentTopology(): EyePair {
-    const cute = opts.face === 'cute';
+    const cute = isCuteFamily(opts.face);
     const pinned = still ? stillOptions?.expression : undefined;
     if (pinned) return eyePairFor(cute, pinned);
     const table: Record<CharacterState, string[]> = cute ? STATE_CUTE_EYES : STATE_EYE_TOPOLOGIES;
@@ -362,13 +396,38 @@ export function createSimulation(options: SimulationOptions = {}): Simulation {
     return eyePairFor(cute, list[topologyIndex % list.length] ?? 'neutral');
   }
 
+  /** The drawn face's eyes the current state wants right now, or `null` on a face that is not drawn. */
+  function currentDrawn(): DrawnPair | null {
+    if (!design) return null;
+    const pinned = still ? stillOptions?.expression : undefined;
+    return pinned ? drawnPairFor(design, pinned) : drawnPairForState(design, opts.state, topologyIndex);
+  }
+
   /** The mouth a state wears on the current face, unless a still frame pins one. */
   function mouthFor(state: CharacterState): MouthSpec {
-    const cute = opts.face === 'cute';
+    const cute = isCuteFamily(opts.face);
     const pinned = still ? stillOptions?.mouth : undefined;
+    if (design) return drawnMouthFor(design, state, pinned);
     const spec = pinned ? mouthSpecFor(cute, pinned) : undefined;
     if (spec) return spec;
     return cute ? getCuteMouth(STATE_CUTE_MOUTH[state]) : getMouth(mouthForState(state));
+  }
+
+  /** The drawn eyes as they are this frame. */
+  function blendedDrawn(): DrawnPair | null {
+    if (!fromDrawn || !toDrawn) return toDrawn;
+    const t = reduced ? 1 : easeOutCubic(clamp(springs.eyeMorph.value, 0, 1));
+    return morphDrawnPair(fromDrawn, toDrawn, t);
+  }
+
+  /** Start the eyes on their way to what the state wants now, plain and drawn alike. */
+  function retargetEyes(): void {
+    fromEyes = blendedEyes();
+    toEyes = currentTopology();
+    fromDrawn = blendedDrawn();
+    toDrawn = currentDrawn();
+    springs.eyeMorph.value = 0;
+    springs.eyeMorph.target = 1;
   }
 
   function scheduleSwitch(): number {
@@ -420,10 +479,7 @@ export function createSimulation(options: SimulationOptions = {}): Simulation {
     behaviour = behaviourFor(next);
     impulseBehaviour = createImpulseBehaviour(next);
 
-    fromEyes = blendedEyes();
-    toEyes = currentTopology();
-    springs.eyeMorph.value = 0;
-    springs.eyeMorph.target = 1;
+    retargetEyes();
     activeFaceTune = faceTuneForState(next, baseFaceTune);
     nextSwitch = scheduleSwitch();
     nextBlink = scheduleBlink();
@@ -501,10 +557,7 @@ export function createSimulation(options: SimulationOptions = {}): Simulation {
     // Expression cycling.
     if (stateClock >= nextSwitch) {
       topologyIndex++;
-      fromEyes = blendedEyes();
-      toEyes = currentTopology();
-      springs.eyeMorph.value = 0;
-      springs.eyeMorph.target = 1;
+      retargetEyes();
       nextSwitch = scheduleSwitch();
     }
 
@@ -570,17 +623,19 @@ export function createSimulation(options: SimulationOptions = {}): Simulation {
     // erase the silhouette the dial sits on, so HUD mode keeps the shape.
     // The cute face keeps its body too: what a belt said it says as an effect
     // beside the figure (STATE_FX), and only the older faces shrink to a core.
-    springs.beltBlend.target = hudSpec || opts.face === 'cute' ? 0 : beltKind ? 1 : 0;
+    const cuteFamily = isCuteFamily(opts.face);
+    springs.beltBlend.target = hudSpec || cuteFamily ? 0 : beltKind ? 1 : 0;
     springs.beltFade.target = 1;
     springs.hudBlend.target = hudSpec ? 1 : 0;
     springs.badge.target = opts.state === 'notifying' ? 1 : 0;
     springs.spin.target = spinTarget;
     springs.lineBlend.target = opts.face === 'line' ? 1 : 0;
-    springs.cuteBlend.target = opts.face === 'cute' ? 1 : 0;
-    springs.blush.target = opts.face === 'cute' ? STATE_BLUSH[opts.state] : 0;
+    springs.cuteBlend.target = cuteFamily ? 1 : 0;
+    springs.blush.target = cuteFamily ? STATE_BLUSH[opts.state] : 0;
     springs.fx.target = 1;
     springs.mouthMorph.target = 1;
     springs.featureFade.target = 1;
+    springs.faceFade.target = 1;
 
     if (reduced) {
       for (const s of Object.values(springs)) settleSpring(s);
@@ -607,6 +662,7 @@ export function createSimulation(options: SimulationOptions = {}): Simulation {
     // The outgoing belt is spent once the cross-fade has landed. Dropping it
     // here, not when drawing, keeps a snapshot from changing the simulation.
     if (previousBelt && clamp(springs.beltFade.value, 0, 1) >= 0.999) previousBelt = null;
+    if (previousDrawn && clamp(springs.faceFade.value, 0, 1) >= 0.999) previousDrawn = null;
   }
 
   function blinkSequence(): void {
@@ -677,7 +733,7 @@ export function createSimulation(options: SimulationOptions = {}): Simulation {
     // Two incommensurate sines so the pulse reads as speech, not as a metronome.
     const pulse = 0.5 + 0.5 * Math.sin(clock * Math.PI * 2 * 3.1) * Math.sin(clock * Math.PI * 2 * 0.9 + 1);
     // The cute mouth is drawn in its own, smaller unit, so it needs a bigger swing to read as speech.
-    const amplitude = opts.face === 'cute' ? TALK_AMPLITUDE_CUTE : TALK_AMPLITUDE;
+    const amplitude = isCuteFamily(opts.face) ? TALK_AMPLITUDE_CUTE : TALK_AMPLITUDE;
     return { ...m, open: m.open + amplitude * pulse };
   }
 
@@ -730,6 +786,7 @@ export function createSimulation(options: SimulationOptions = {}): Simulation {
       shape: opts.shape,
       shapeScale: getShapeScale(opts.shape),
       time: clock,
+      settled: reduced || still,
       variant: opts.variant,
       ink: opts.ink ?? null,
       body: {
@@ -828,11 +885,28 @@ ull leaves the paint alone.
       mouth: features || cute > 0.005 ? currentMouth() : undefined,
       nose: features ? noseId : null,
       lineWeight: resolveLineWeight(opts.lineWeight),
+      drawn: cute > 0.005 ? drawnInput() : undefined,
     });
     // A spin turns the body about its vertical axis: the outline stays upright and the face goes round.
     const yaw = (springs.spin.value % 1) * Math.PI * 2;
     if (Math.cos(yaw) < 1 - 1e-6) frame.geometry = turnFace(frame.geometry, shapeDef, yaw);
     return frame;
+  }
+
+  /** The drawn faces on show this frame, the one being left first; `undefined` when there are none. */
+  function drawnInput(): DrawnInput | undefined {
+    const fade = clamp(springs.faceFade.value, 0, 1);
+    const entries: DrawnEntry[] = [];
+    if (previousDrawn) entries.push({ ...previousDrawn, weight: 1 - fade });
+    const eyes = blendedDrawn();
+    if (design && eyes) entries.push({ design, eyes, weight: fade });
+    if (entries.length === 0) return undefined;
+    return {
+      entries,
+      time: stateClock,
+      settled: reduced || still,
+      weight: resolveLineWeight(opts.lineWeight) / LINE_WEIGHT,
+    };
   }
 
   /**
@@ -842,10 +916,13 @@ ull leaves the paint alone.
    */
   function fxFrame(face: FaceFrame, blend: number, hudFade: number): FxFrame | null {
     const kind = STATE_FX[opts.state];
-    if (!kind || face.cute < 0.005) return null;
+    if (!kind || face.cute < 0.005 || design?.quietFx.includes(kind)) return null;
 
     let anchor: { x: number; y: number; r: number } | undefined;
-    const left = face.geometry?.left.points;
+    // A drawn eye is larger than a dot and sits elsewhere: a tear falls from the eye that is drawn.
+    const drawn = face.geometry?.drawn;
+    const drawnLeft = drawn?.[drawn.length - 1]?.left.layers[0]?.rings[0];
+    const left = drawnLeft ?? face.geometry?.left.points;
     if (kind === 'tear') {
       if (!left || left.length === 0) return null;
       const xs = left.map((p) => p[0]);
@@ -862,7 +939,15 @@ ull leaves the paint alone.
     });
     const fade = clamp(springs.fx.value, 0, 1) * face.cute * (1 - blend) * (1 - hudFade);
     if (frame.items.length === 0 || fade < 0.01) return null;
-    return { ...frame, items: frame.items.map((item) => ({ ...item, opacity: item.opacity * fade })) };
+    // A theme's figure moves it out of the way of its own props, where it has any in the top right.
+    const extras = frame.space === 'scene' ? themeExtras() : null;
+    const placed = extras ? extras.placeFx(shapeDef, kind, getShapeScale(opts.shape)) : null;
+    return {
+      ...frame,
+      items: frame.items.map((item) =>
+        placed ? placed(item, item.opacity * fade) : { ...item, opacity: item.opacity * fade },
+      ),
+    };
   }
 
   function beltSnapshot(frame: BeltFrame, blend: number): BeltSnapshot {
@@ -930,8 +1015,18 @@ ull leaves the paint alone.
       // Each face has its own eye and mouth tables, so a live switch has to
       // pick the new face's pair for the state and morph to it.
       if (opts.face !== prevFace) {
+        // Two designs have nothing to interpolate between: the face being left keeps its eyes as they are and fades.
+        const leaving = blendedDrawn();
+        previousDrawn = design && leaving ? { design, eyes: leaving } : null;
+        design = isDrawnFace(opts.face) ? getFaceDesign(opts.face) : null;
+        if (previousDrawn || design) {
+          springs.faceFade.value = 0;
+          springs.faceFade.target = 1;
+        }
         fromEyes = blendedEyes();
         toEyes = currentTopology();
+        toDrawn = currentDrawn();
+        fromDrawn = toDrawn;
         springs.eyeMorph.value = 0;
         springs.eyeMorph.target = 1;
         fromMouth = blendedMouth();

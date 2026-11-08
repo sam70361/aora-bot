@@ -168,11 +168,24 @@ export function rasteriseEyes(
 export function rasteriseGlyph(poly: Poly, axis: number | null, { size, put }: EyeOptions): void {
   const m = coverageMaps(size);
   const b = boxOf(poly);
+  const [dx, dy] = glyphShift(poly, axis);
+  const ax = (b.x0 + b.x1) / 2 + dx;
+  const ay = (b.y0 + b.y1) / 2 + dy;
+  addGlyphCoverage(shifted(poly, dx, dy), size, m.glyph);
+  for (const [c, r] of glyph(m.glyph, size, ax, ay, b.x1 - b.x0 >= b.y1 - b.y0)) put(c, r);
+}
+
+/**
+ * How far `rasteriseGlyph` moves an outline: onto the face axis when it is
+ * near it, else to the nearest half cell, so whatever rides with it (a
+ * tongue in a mouth) can move the same way.
+ */
+export function glyphShift(poly: Poly, axis: number | null): [number, number] {
+  const b = boxOf(poly);
   const middle = (b.x0 + b.x1) / 2;
   const ax = axis !== null && Math.abs(middle - axis) < 1.5 ? axis : half(middle);
-  const ay = half((b.y0 + b.y1) / 2);
-  addGlyphCoverage(shifted(poly, ax - middle, ay - (b.y0 + b.y1) / 2), size, m.glyph);
-  for (const [c, r] of glyph(m.glyph, size, ax, ay, b.x1 - b.x0 >= b.y1 - b.y0)) put(c, r);
+  const cy = (b.y0 + b.y1) / 2;
+  return [ax - middle, half(cy) - cy];
 }
 
 /**
@@ -180,7 +193,7 @@ export function rasteriseGlyph(poly: Poly, axis: number | null, { size, put }: E
  * readable: a visible eye is never empty, and a stroke thinner than a cell
  * is still a connected line one cell thick.
  */
-function glyph(
+export function glyph(
   cover: Float32Array,
   size: number,
   anchorX: number,

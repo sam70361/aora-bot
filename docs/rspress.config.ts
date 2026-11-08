@@ -1,11 +1,45 @@
-import { defineConfig } from '@rspress/core';
+import { THEME_MANIFEST } from '@aora-bot/engine';
+import { defineConfig, type RspressPlugin } from '@rspress/core';
 import { pluginPreview } from '@rspress/plugin-preview';
+import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { BROWSERSLIST } from '../scripts/build-shared.ts';
 import { navFor, sidebarFor } from './navigation.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
+
+type Message = Record<'en' | 'zh', string>;
+const messages: Record<string, Message> = JSON.parse(readFileSync(resolve(here, 'i18n.json'), 'utf8'));
+const message = (key: string, lang: 'en' | 'zh', name: string) =>
+  messages[key]![lang].replace('{{name}}', name);
+
+/*
+ * One album page per theme in the engine's manifest, in both languages, so a
+ * theme the engine ships has its page at `/themes/<id>` without a file being
+ * added here. Each page is the album component and the theme's names.
+ */
+const themeAlbums = (): RspressPlugin => ({
+  name: 'theme-albums',
+  addPages: () =>
+    THEME_MANIFEST.flatMap((theme) =>
+      (['zh', 'en'] as const).map((lang) => ({
+        routePath: `${lang === 'zh' ? '' : '/en'}/themes/${theme.id}`,
+        content: [
+          '---',
+          'pageType: custom',
+          `title: ${JSON.stringify(message('themes.album.title', lang, theme.name[lang]))}`,
+          `description: ${JSON.stringify(message('themes.album.description', lang, theme.name[lang]))}`,
+          '---',
+          '',
+          `import { ThemeAlbum } from '@app/themes';`,
+          '',
+          `<ThemeAlbum id=${JSON.stringify(theme.id)} />`,
+          '',
+        ].join('\n'),
+      })),
+    ),
+});
 
 export default defineConfig({
   root: 'content',
@@ -90,6 +124,7 @@ export default defineConfig({
       defaultRenderMode: 'pure',
       defaultPreviewMode: 'internal',
     }),
+    themeAlbums(),
   ],
 
   builderConfig: {
@@ -108,6 +143,12 @@ export default defineConfig({
         '@aora-bot/surfaces/static$': resolve(here, '../packages/surfaces/src/static.ts'),
         '@aora-bot/engine$': resolve(here, '../packages/engine/src/index.ts'),
         '@aora-bot/engine/static$': resolve(here, '../packages/engine/src/static.ts'),
+      },
+    },
+    tools: {
+      rspack: {
+        // One build of each module for the page and its workers, so a worker reuses the page's chunks from the cache.
+        optimization: { usedExports: 'global' },
       },
     },
   },

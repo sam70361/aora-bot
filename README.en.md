@@ -2,7 +2,7 @@
 
 # Aora Bot
 
-**A procedural character engine for the web — a roster of generated characters, animated states, three faces, three drawing styles, an SVG HUD, and the UI surfaces built on top of them.**
+**A procedural character engine for the web — a roster of generated characters, animated states, thirteen faces, three drawing styles, an SVG HUD, and the UI surfaces built on top of them.**
 
 [Console](https://aora-bot.vercel.app/en/) | [Documentation](https://aora-bot.vercel.app/en/guide/getting-started) | [Scenarios](https://aora-bot.vercel.app/en/scenarios/chat-stream) | [Emotion Ball](https://sam70361.github.io/aora-bot/) | [中文](./README.md)
 
@@ -22,11 +22,11 @@ separate parts), every expression is a few numbers describing a curved stroke,
 interpolated by springs, and every animation frame is written directly to SVG attributes
 by a `requestAnimationFrame` loop.
 
-The roster has 46 characters, from round blobs and rice cakes to fruit, critters and people.
+The roster has 68 characters, from round blobs and rice cakes to fruit, treats, critters, objects and people.
 Here they all are, happy, in the default `cute` face:
 
 <p align="center">
-  <img src=".github/media/cast.png" width="760" alt="The whole roster of 46 characters in a grid, each smiling, with its shape id underneath">
+  <img src=".github/media/cast.png" width="760" alt="The whole roster of 68 characters in a grid, each smiling, with its shape id underneath">
 </p>
 
 Every character combines independent choices, all of which you can try in the
@@ -41,7 +41,7 @@ or `kaomoji`) and its variant, the ink colour, the face and the animation state.
 
 On top of the engine sits a set of React components for the things products actually need
 from a character system: a stable character per user derived from any id, shape and
-colour pickers, an avatar editor with image crop, group avatar stacks, chat activity
+colour pickers, an avatar studio with image crop, group avatar groups, chat activity
 indicators, a numeric emotion protocol for AI agents, a HUD that draws progress, timers,
 waveforms and KPIs in the ring around the character, and a stage that lets hundreds of
 characters share a handful of animations. Onboarding and restricted-state scenes, template
@@ -98,7 +98,7 @@ When all you need is an avatar image, put an [avatar API](https://aora-bot.verce
 | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `@aora-bot/engine`   | The engine. Shapes and style series, face fitting, pose projection, spring integrator, state machine, belts, HUD dials, particles, emotion protocol and arbiter. No React; `/static` and `/agent` need no DOM. |
 | `@aora-bot/element`  | The `<aora-bot>` Web Component for pages without React, with a single-file CDN build that bundles the engine.                                                                                                  |
-| `@aora-bot/react`    | React components. `CharacterMark`, `MarkStageProvider`, avatars and stacks, pickers, avatar editor, activity marks, HUD plates, agent state, sprites, confetti, locale provider.                               |
+| `@aora-bot/react`    | React components. `CharacterMark`, `CharacterStageProvider`, avatars and stacks, pickers, avatar studio, activity badges, HUD plates, agent state, sprites, confetti, locale provider.                         |
 | `@aora-bot/surfaces` | Product and demo surfaces built on `@aora-bot/react`. Walkthrough pieces, scenes, template dialog and publishing, occupancy list, cast stage. Peer-depends on the engine and the React package.                |
 
 Each package has its own README: [`packages/engine`](./packages/engine/README.md),

@@ -56,11 +56,11 @@ export const DEFAULT_ACTIVITY: ActivityDescriptor = {
 export const isKnownActivity = (tool: string | null | undefined): boolean =>
   tool != null && tool !== '' && Object.hasOwn(TOOL_ACTIVITIES, tool);
 
-export const activityFromTool = (tool: string | null | undefined): ActivityDescriptor =>
+export const activityForTool = (tool: string | null | undefined): ActivityDescriptor =>
   (isKnownActivity(tool) ? TOOL_ACTIVITIES[tool!] : undefined) ?? DEFAULT_ACTIVITY;
 
 export const characterStateForActivity = (tool: string | null | undefined): CharacterState =>
-  activityFromTool(tool).state;
+  activityForTool(tool).state;
 
 /** The label for a state, for hosts that already know the state and only need the words. */
 export const activityLabelForState = (state: CharacterState): LocaleKey => labelFor(state);

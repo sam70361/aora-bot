@@ -1,7 +1,9 @@
 import { Layout as BasicLayout } from '@rspress/core/theme-original';
 import { useLang } from '@rspress/core/runtime';
 import { LocaleProvider } from '@aora-bot/react';
+import { lazy } from 'react';
 import { CapsuleNav } from './components/CapsuleNav.js';
+import type * as DemoModule from './components/demos.js';
 import { LangSwitch } from './components/LangSwitch.js';
 import { SiteFooter } from './components/SiteFooter.js';
 import { WaveBackdrop } from './components/WaveBackdrop.js';
@@ -17,6 +19,7 @@ import './styles/controls.css';
 import './styles/doc-components.css';
 import './styles/pages/home.css';
 import './styles/pages/sponsor.css';
+import './styles/pages/themes.css';
 
 /**
  * Default Rspress layout, with a floating capsule bar, an ambient backdrop, a
@@ -55,31 +58,44 @@ export { Layout };
 export * from '@rspress/core/theme-original';
 export { IconMoon, IconSun } from './components/AppearanceIcons.js';
 
-export { API, ApiIndex } from './components/ApiTable.js';
-export { TokenTable } from './components/TokenTable.js';
-export { ComponentOverview } from './components/ComponentOverview.js';
-export { ComponentGraph } from './components/ComponentGraph.js';
-export {
-  ShapeGrid,
-  StateGrid,
-  FxGrid,
-  ExpressionGrid,
-  EyeTopologyGrid,
-  PaletteGrid,
-} from './components/Grids.js';
-export { ProtocolTable } from './components/ProtocolTable.js';
-export { CastGrid } from './components/CastGrid.js';
-export { ScenarioGrid } from './components/ScenarioGrid.js';
-export {
-  FaceStyleDemo,
-  FaceStyleRow,
-  CuteMouthGrid,
-  MouthGrid,
-  MouthTable,
-  NoseGrid,
-  LineExpressionGrid,
-  LineStateGrid,
-  LineShapeRow,
-} from './components/FaceDemos.js';
-export { StateMatrix } from './components/StateMatrix.js';
-export { StyleParamsDemo } from './components/StyleParamsDemo.js';
+/*
+ * The components the documentation embeds load with the first page that uses
+ * one, not with every page: the API tables alone carry the whole generated API
+ * description, and the home page needs none of them. No Suspense boundary of
+ * their own: the server render waits for them, hydration keeps the server's
+ * markup until they arrive, and a link click is a transition that holds the
+ * old page until the new one can draw, so nothing shifts.
+ */
+type Demos = typeof DemoModule;
+const demos = () => import('./components/demos.js');
+const demo = <K extends keyof Demos>(name: K) => lazy(() => demos().then((m) => ({ default: m[name] })));
+const apiTables = () => import('./components/ApiTable.js');
+
+export const API = lazy(() => apiTables().then((m) => ({ default: m.API })));
+export const ApiIndex = lazy(() => apiTables().then((m) => ({ default: m.ApiIndex })));
+export const TokenTable = demo('TokenTable');
+export const ComponentOverview = demo('ComponentOverview');
+export const ComponentGraph = demo('ComponentGraph');
+export const ShapeGrid = demo('ShapeGrid');
+export const StateGrid = demo('StateGrid');
+export const FxGrid = demo('FxGrid');
+export const ExpressionGrid = demo('ExpressionGrid');
+export const EyeTopologyGrid = demo('EyeTopologyGrid');
+export const PaletteGrid = demo('PaletteGrid');
+export const ProtocolTable = demo('ProtocolTable');
+export const CastGrid = demo('CastGrid');
+export const ScenarioGrid = demo('ScenarioGrid');
+export const FaceStyleDemo = demo('FaceStyleDemo');
+export const FaceStyleRow = demo('FaceStyleRow');
+export const DrawnFaceGrid = demo('DrawnFaceGrid');
+export const DrawnFaceSeries = demo('DrawnFaceSeries');
+export const DrawnFacePalette = demo('DrawnFacePalette');
+export const CuteMouthGrid = demo('CuteMouthGrid');
+export const MouthGrid = demo('MouthGrid');
+export const MouthTable = demo('MouthTable');
+export const NoseGrid = demo('NoseGrid');
+export const LineExpressionGrid = demo('LineExpressionGrid');
+export const LineStateGrid = demo('LineStateGrid');
+export const LineShapeRow = demo('LineShapeRow');
+export const StateMatrix = demo('StateMatrix');
+export const StyleParamsDemo = demo('StyleParamsDemo');

@@ -37,7 +37,7 @@ Size works the same way — it is set on the wrapper, not inside the SVG.
 
 `sourceId` becomes a DOM id, and `<use href="#id">` resolves to the first match in the document. Two sources with the same id on one page means every mirror points at the first one.
 
-Prefer [`MarkStageProvider`](/components/mark-stage), which derives ids from `useId` and cannot collide — even with several providers on one page, which is exactly what a documentation site with several examples produces.
+Prefer [`CharacterStageProvider`](/components/character-stage), which derives ids from `useId` and cannot collide — even with several providers on one page, which is exactly what a documentation site with several examples produces.
 
 ## API
 
@@ -45,5 +45,5 @@ Prefer [`MarkStageProvider`](/components/mark-stage), which derives ids from `us
 
 ## Next
 
-- [MarkStageProvider](/components/mark-stage) — share engines by appearance
+- [CharacterStageProvider](/components/character-stage) — share engines by appearance
 - [Performance](/guide/performance) — how to render hundreds of characters

@@ -7,12 +7,12 @@ Six pieces for showing an agent product without being the product: a window fram
 > Part of `@aora-bot/surfaces`, not `@aora-bot/react`: `pnpm add @aora-bot/surfaces @aora-bot/react`, and import `@aora-bot/surfaces/styles.css` after the React stylesheet.
 
 ```tsx preview
-import { MarkStageProvider } from '@aora-bot/react';
+import { CharacterStageProvider } from '@aora-bot/react';
 import { Composer, DemoDesktop, JobBubbles } from '@aora-bot/surfaces';
 
 export default function Demo() {
   return (
-    <MarkStageProvider>
+    <CharacterStageProvider>
       <div className="site-demo site-demo--center">
         <DemoDesktop
           title="Workspace"
@@ -30,7 +30,7 @@ export default function Demo() {
           </div>
         </DemoDesktop>
       </div>
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 ```
@@ -93,12 +93,12 @@ The screen before anything has happened. A blank state with a waiting character 
 ## HandOff
 
 ```tsx preview
-import { MarkStageProvider } from '@aora-bot/react';
+import { CharacterStageProvider } from '@aora-bot/react';
 import { HandOff } from '@aora-bot/surfaces';
 
 export default function Demo() {
   return (
-    <MarkStageProvider>
+    <CharacterStageProvider>
       <div className="site-demo site-demo--center">
         <HandOff
           from={{ id: 'ada', name: 'Ada' }}
@@ -107,7 +107,7 @@ export default function Demo() {
           loop
         />
       </div>
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 ```
@@ -147,4 +147,4 @@ A message field with a character that pays attention to it. Three states, driven
 ## Next
 
 - [Onboarding](/scenarios/onboarding) — a scripted first run
-- [CastStage](/components/cast-stage) — several characters entering in turn
+- [CastLineup](/components/cast-lineup) — several characters entering in turn

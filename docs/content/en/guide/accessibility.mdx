@@ -23,7 +23,7 @@ Forty-four animation states carry real information — working, waiting for you,
 </span>
 ```
 
-`ActivityMark` does this for you — it renders a character and a text label from the same source, so they cannot disagree.
+`ActivityBadge` does this for you — it renders a character and a text label from the same source, so they cannot disagree.
 
 ## When a character is the only content
 
@@ -31,7 +31,7 @@ An avatar standing alone with no adjacent name is content, and needs a name:
 
 ```tsx
 <span role="img" aria-label={`${user.name}'s avatar`}>
-  <AgentAvatar agent={user} />
+  <AgentPortrait agent={user} />
 </span>
 ```
 
@@ -64,11 +64,11 @@ A character used as a button needs to be a button.
 
 ```tsx
 <button type="button" aria-label="Change avatar" onClick={open}>
-  <AgentAvatar agent={user} />
+  <AgentPortrait agent={user} />
 </button>
 ```
 
-`CharacterPicker` is already a pair of radio groups: each option has `role="radio"`, an accessible name, and a visible focus ring. Arrow keys and `Tab` behave as expected.
+`CharacterSelector` is already a pair of radio groups: each option has `role="radio"`, an accessible name, and a visible focus ring. Arrow keys and `Tab` behave as expected.
 
 ## Colour
 

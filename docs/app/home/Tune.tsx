@@ -3,7 +3,7 @@ import { useLabel } from '@aora-bot/react';
 import { useEffect, useId, useRef } from 'react';
 import { useI18n, useLocalized } from '../shared/i18n.js';
 import { cleanParams, type ParamValue, type Preset } from '../shared/share.js';
-import { TuneIcon } from './icons.js';
+import { TuneIcon } from '../shared/icons.js';
 
 /** Room kept between the panel and the button, and between the panel and the screen's edge, in px. */
 const PANEL_GAP = 12;

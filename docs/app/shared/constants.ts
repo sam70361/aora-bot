@@ -1,7 +1,7 @@
 /*
  * Stage caps the pages share.
  *
- * `MarkStageProvider`'s `maxSources` is a budget: how many *distinct*
+ * `CharacterStageProvider`'s `maxSources` is a budget: how many *distinct*
  * appearances may run a real engine before the rest fall back to stills. The
  * right number is a property of the layout, not of the component, so the caps
  * live here with the reasoning attached rather than as bare numbers scattered

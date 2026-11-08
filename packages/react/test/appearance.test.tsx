@@ -9,7 +9,7 @@ import {
   AppearanceProvider,
   CharacterMark,
   CharacterMarkMirror,
-  MarkStageProvider,
+  CharacterStageProvider,
   StagedMark,
   useAppearance,
   type MarkAppearance,
@@ -289,7 +289,7 @@ describe('shared stage appearance key', () => {
   );
 
   it('hosts one source per style, variant and parameter set, and shares the rest', () => {
-    const el = render(<MarkStageProvider>{marks}</MarkStageProvider>);
+    const el = render(<CharacterStageProvider>{marks}</CharacterStageProvider>);
     advance(FRAME_MS);
 
     const hosted = sources(el);
@@ -309,7 +309,7 @@ describe('shared stage appearance key', () => {
   });
 
   it('echoes the series on each mirror', () => {
-    const el = render(<MarkStageProvider>{marks}</MarkStageProvider>);
+    const el = render(<CharacterStageProvider>{marks}</CharacterStageProvider>);
     advance(FRAME_MS);
 
     expect(
@@ -319,7 +319,7 @@ describe('shared stage appearance key', () => {
 
   it('treats options equal to the defaults, or in another order, as the same appearance', () => {
     const el = render(
-      <MarkStageProvider>
+      <CharacterStageProvider>
         <div className="aora-roster">
           <StagedMark shape="blob" styleId="pixel" />
           <StagedMark shape="blob" styleId="pixel" styleOptions={{}} />
@@ -329,7 +329,7 @@ describe('shared stage appearance key', () => {
           <StagedMark shape="blob" styleId="pixel" styleOptions={{ gap: 0.3, grid: 20 }} />
           <StagedMark shape="blob" styleId="pixel" styleOptions={{ grid: 20, gap: 0.3 }} />
         </div>
-      </MarkStageProvider>,
+      </CharacterStageProvider>,
     );
     advance(FRAME_MS);
 
@@ -339,12 +339,12 @@ describe('shared stage appearance key', () => {
 
   it('draws the same series in the still image once the stage is over its cap', () => {
     const el = render(
-      <MarkStageProvider maxSources={1}>
+      <CharacterStageProvider maxSources={1}>
         <div className="aora-roster">
           <StagedMark shape="blob" />
           <StagedMark shape="hex" styleId="pixel" variant="block" />
         </div>
-      </MarkStageProvider>,
+      </CharacterStageProvider>,
     );
     advance(FRAME_MS);
 
@@ -359,11 +359,11 @@ describe('shared stage appearance key', () => {
 
   it('keeps the ids of marks that never named a style as they were', () => {
     const el = render(
-      <MarkStageProvider>
+      <CharacterStageProvider>
         <div className="aora-roster">
           <StagedMark shape="blob" state="idle" lineWeight={1.15} />
         </div>
-      </MarkStageProvider>,
+      </CharacterStageProvider>,
     );
     advance(FRAME_MS);
 
@@ -374,11 +374,11 @@ describe('shared stage appearance key', () => {
 
   it('gives a pixel source an id a <use> can resolve', () => {
     const el = render(
-      <MarkStageProvider>
+      <CharacterStageProvider>
         <div className="aora-roster">
           <StagedMark shape="blob" styleId="pixel" styleOptions={{ grid: 32, gap: 0.3 }} />
         </div>
-      </MarkStageProvider>,
+      </CharacterStageProvider>,
     );
     advance(FRAME_MS);
 
@@ -390,11 +390,11 @@ describe('shared stage appearance key', () => {
   it('takes the ambient series from an AppearanceProvider, without leaking it into the sources it hosts', () => {
     const el = render(
       <AppearanceProvider styleId="pixel" variant="dot" lineWeight={1.2}>
-        <MarkStageProvider>
+        <CharacterStageProvider>
           <div className="aora-roster">
             <StagedMark shape="blob" />
           </div>
-        </MarkStageProvider>
+        </CharacterStageProvider>
       </AppearanceProvider>,
     );
     advance(FRAME_MS);
@@ -407,9 +407,9 @@ describe('shared stage appearance key', () => {
 
   it('does not release and re-claim the source when styleOptions is a fresh equal literal', () => {
     const tree = (styleOptions: Record<string, unknown>) => (
-      <MarkStageProvider>
+      <CharacterStageProvider>
         <StagedMark shape="blob" styleId="pixel" styleOptions={styleOptions} />
-      </MarkStageProvider>
+      </CharacterStageProvider>
     );
     render(tree({ grid: 32 }));
     advance(FRAME_MS);

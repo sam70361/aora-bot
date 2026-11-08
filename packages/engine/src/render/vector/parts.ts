@@ -16,9 +16,11 @@
  */
 import { LEAF_COLOR } from '../../core/leaf.js';
 import { smoothClosedPath } from '../../math/path-builder.js';
-import type { Point, Ring } from '../../core/types.js';
+import type { PartColor, Point, Ring } from '../../core/types.js';
 import type { FrameSnapshot, PartFrame } from '../../sim/snapshot.js';
+import type { PartColorPaint } from '../part-color.js';
 import { node, r2, type SceneNode } from '../scene.js';
+import type { ExtrasScene } from '../../themes/extras-hook.js';
 
 /**
  * The leaf's paint in a live scene: a token, so a host re-tints it and the
@@ -36,6 +38,9 @@ export const HAIR_SHADE_OPACITY = 0.4;
 /** Opacity below which a piece is not worth a node. */
 const VISIBLE = 0.01;
 
+/** Width of the ring round a part with its own colour, in shape units; half of it shows outside the part. */
+export const PART_RIM_WIDTH = 4;
+
 export interface PartPaint {
   /** The body's paint, as resolved by the scene. */
   ink: string;
@@ -47,7 +52,20 @@ export interface PartPaint {
   strokeWidth: number;
   /** A live scene keeps its nodes; a static one drops what is at its default. */
   live: boolean;
+  /** A part's own colour and its ring, as the scene resolves them. */
+  partColor: (color: PartColor) => PartColorPaint;
+  /** The line an outlined variant draws a colour in: shifted towards the page's contrast, as its face is. */
+  line: (color: string) => string;
+  /** How a part's signature motion plays (a theme's extras); without it every part is drawn at rest. */
+  motion?: ExtrasScene;
 }
+
+/** A part's nodes as its motion moves them, or as they are. */
+const movedPart = (part: PartFrame, nodes: SceneNode[], motion?: ExtrasScene) =>
+  motion && part.motion ? motion.part(part, nodes) : nodes;
+
+/** Whether a piece is more of the body: its ink, and no colour of its own. */
+export const isBodyPiece = (part: PartFrame): boolean => part.tone === 'body' && part.color === undefined;
 
 export interface PartLayers {
   behind: SceneNode[];
@@ -96,21 +114,29 @@ export function partLayers(frame: FrameSnapshot, paint: PartPaint): PartLayers {
     if (!shown(part, paint.live)) continue;
     const d = partPath(part.outline);
     const opacity = alphaOf(part, paint.live);
+    const put = (layer: SceneNode[], nodes: SceneNode[]): void => {
+      if (part.motion) layer.push(...movedPart(part, nodes, paint.motion));
+      else layer.push(...nodes);
+    };
 
+    if (part.color !== undefined) {
+      put(part.tone === 'body' ? behind : front, colouredPart(frame, part, d, opacity, paint, hollow));
+      continue;
+    }
     if (part.tone === 'body') {
       // Already inside the silhouette when the outline was merged.
       if (silhouette !== null) continue;
-      behind.push(
+      put(behind, [
         node(
           'path',
           hollow ? hollowAttrs(frame, d, paint.ink, paint, opacity) : { d, fill: paint.ink, opacity },
         ),
-      );
+      ]);
     } else if (hollow) {
       // Outlined, a leaf is drawn as an outline and the inside of an ear is left out.
-      if (part.tone === 'leaf') front.push(node('path', hollowAttrs(frame, d, paint.ink, paint, opacity)));
+      if (part.tone === 'leaf') put(front, [node('path', hollowAttrs(frame, d, paint.ink, paint, opacity))]);
       if (part.tone === 'hair') {
-        front.push(
+        put(front, [
           node('path', {
             d,
             fill: paint.ink,
@@ -119,26 +145,69 @@ export function partLayers(frame: FrameSnapshot, paint: PartPaint): PartLayers {
             'stroke-linejoin': 'round',
             opacity,
           }),
-        );
+        ]);
       }
     } else if (part.tone === 'hair') {
-      front.push(
+      put(front, [
         node('path', { d, fill: paint.ink, opacity }),
         node('path', { d, fill: paint.hairShade, 'fill-opacity': HAIR_SHADE_OPACITY, opacity }),
-      );
+      ]);
     } else if (part.tone === 'leaf') {
-      front.push(node('path', { d, fill: paint.leaf, opacity }));
+      put(front, [node('path', { d, fill: paint.leaf, opacity })]);
     } else {
       // White over the ink rather than a computed mix: that works for a token,
       // a flat colour and a gradient alike, which `color-mix` cannot do for the last.
-      front.push(
+      put(front, [
         node('path', { d, fill: paint.ink, opacity }),
         node('path', { d, fill: '#fff', 'fill-opacity': INNER_WHITE, opacity }),
-      );
+      ]);
     }
   }
 
   return { behind, front, silhouette };
+}
+
+/**
+ * A part in its own colour. Filled, it is laid flat in that colour, whatever
+ * its tone, and ringed in its derived line, the ring under the fill so only
+ * its outer half shows. Outlined, it is a line in its colour, as the body is a
+ * line in the ink.
+ */
+function colouredPart(
+  frame: FrameSnapshot,
+  part: PartFrame,
+  d: string,
+  opacity: number | undefined,
+  paint: PartPaint,
+  hollow: boolean,
+): SceneNode[] {
+  const own = paint.partColor(part.color!);
+  if (hollow) {
+    if (part.tone === 'inner') return [];
+    const line = paint.line(own.fill);
+    if (part.tone !== 'hair') return [node('path', hollowAttrs(frame, d, line, paint, opacity))];
+    return [
+      node('path', {
+        d,
+        fill: line,
+        stroke: line,
+        'stroke-width': paint.strokeWidth,
+        'stroke-linejoin': 'round',
+        opacity,
+      }),
+    ];
+  }
+  return [
+    node('path', {
+      d,
+      fill: own.fill,
+      stroke: own.rim,
+      'stroke-width': PART_RIM_WIDTH,
+      'stroke-linejoin': 'round',
+      'paint-order': 'stroke',
+      opacity,
+    }),
+  ];
 }
 
 function hollowAttrs(
@@ -175,39 +244,71 @@ export interface BodyPiece {
  */
 export function bodyPieces(frame: FrameSnapshot, live: boolean): BodyPiece[] {
   return frame.body.parts
-    .filter((part) => part.tone === 'body' && shown(part, live))
+    .filter((part) => isBodyPiece(part) && shown(part, live))
     .map((part) => ({ d: partPath(part.outline), outline: part.outline, opacity: alphaOf(part, live) }));
 }
 
 /** Every piece, as paper under the sticker's border: the stroke is twice the edge, half of it hidden. */
-export function partsPaper(frame: FrameSnapshot, paper: string, edge: number, live: boolean): SceneNode[] {
+export function partsPaper(
+  frame: FrameSnapshot,
+  paper: string,
+  edge: number,
+  live: boolean,
+  motion?: ExtrasScene,
+): SceneNode[] {
   return frame.body.parts
     .filter((part) => shown(part, live))
-    .map((part) =>
-      node('path', {
-        d: partPath(part.outline),
-        fill: paper,
-        stroke: paper,
-        'stroke-width': r2(edge * 2),
-        'stroke-linejoin': 'round',
-        opacity: alphaOf(part, live),
-      }),
+    .flatMap((part) =>
+      movedPart(
+        part,
+        [
+          node('path', {
+            d: partPath(part.outline),
+            fill: paper,
+            stroke: paper,
+            'stroke-width': r2(edge * 2),
+            'stroke-linejoin': 'round',
+            opacity: alphaOf(part, live),
+          }),
+        ],
+        motion,
+      ),
     );
 }
 
 /** Every piece, in the ink and then in black over it, as the paper variant's hard shadow. */
-export function partsShadow(frame: FrameSnapshot, ink: string, darkness: number, live: boolean): SceneNode[] {
+export function partsShadow(
+  frame: FrameSnapshot,
+  ink: string,
+  darkness: number,
+  live: boolean,
+  motion?: ExtrasScene,
+): SceneNode[] {
   const out: SceneNode[] = [];
   for (const part of frame.body.parts) {
     if (!shown(part, live)) continue;
     const d = partPath(part.outline);
     const opacity = alphaOf(part, live);
     out.push(
-      node('path', { d, fill: ink, opacity }),
-      node('path', { d, fill: '#000', 'fill-opacity': r2(darkness), opacity }),
+      ...movedPart(
+        part,
+        [
+          node('path', { d, fill: ink, opacity }),
+          node('path', { d, fill: '#000', 'fill-opacity': r2(darkness), opacity }),
+        ],
+        motion,
+      ),
     );
   }
   return out;
+}
+
+/**
+ * The body and its same-ink pieces as one outline, for a line drawn round the
+ * whole figure; `null` when there is nothing to merge or the merge fails.
+ */
+export function mergedSilhouette(frame: FrameSnapshot): Ring | null {
+  return mergedOutline(frame.body.outline, frame.body.parts);
 }
 
 // ---------------------------------------------------------------- the union
@@ -225,7 +326,7 @@ const merged = new WeakMap<Ring, Ring | null>();
  * away first.
  */
 function mergedOutline(body: Ring, parts: readonly PartFrame[]): Ring | null {
-  const same = parts.filter((part) => part.tone === 'body');
+  const same = parts.filter(isBodyPiece);
   if (same.length === 0 || same.some((part) => part.opacity < 0.999)) return null;
 
   const cached = merged.get(body);

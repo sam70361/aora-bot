@@ -12,10 +12,13 @@ are drawn by hand, as SVG paths, and that is the point of them.
 
 ## The default look
 
-The default face is `cute` (`FACE_STYLES = ['cute', 'eyes', 'line']`): white
-dot eyes, a small mouth and a pink blush painted on the body. `eyes` and
-`line` are the other two faces. Three series draw the same
-snapshot: `vector` (solid, outline, glass, sticker, paper, soft, riso),
+The default face is `cute`: white dot eyes, a small mouth and a pink blush
+painted on the body. `eyes` and `line` are the other two plain faces, and ten
+drawn faces (`DRAWN_FACE_STYLES`: `brow`, `glossy`, `sparkle`, `button`,
+`shades`, `droopy`, `bigmouth`, `pie`, `screen`, `symbol`) complete
+`FACE_STYLES`. Three series draw the same
+snapshot: `vector` (solid, outline, glass, sticker, paper, soft, riso, and the
+drawing media pencil, marker, crayon, watercolor, neon, chalk),
 `pixel` (crisp, dot, block) and `kaomoji` (plain, bubble). Whatever you add
 must read in all three.
 
@@ -90,9 +93,13 @@ Iterate on the picture, not the path. Drop what does not hold up.
    frame; otherwise it wears plain parentheses.
 6. Leave `AUTO_SHAPE_POOL` alone unless the shape is still a blob at 16 px:
    it fixes which shape a key maps to, so reordering it changes everyone's
-   automatic avatar.
-7. Add a `CHANGELOG.md` line, run the engine tests and inspect the snapshot
-   diff before `pnpm --filter @aora-bot/engine test -- -u`.
+   automatic avatar. Append the member's id to the end of `AVATAR_POOL` in
+   `api/_avatar.ts`; never reorder or remove entries there, since the
+   avatar endpoint's consistent hash depends on that order.
+7. Run `pnpm --filter @aora-bot/engine generate:faces`, which stores how
+   every drawn face fits the new body. Add a `CHANGELOG.md` line, run the
+   engine tests and inspect the snapshot diff before
+   `pnpm --filter @aora-bot/engine test -- -u`.
 
 Cap the roster by taste, not by count: when a new character is added, ask
 which existing one it makes redundant.
@@ -198,6 +205,36 @@ character knows. A new one is a variant of `HudSpec`. State-like leftovers
 
 No text inside the ring except the single figure a `kpi` / `balance` shows.
 No second colour. No WebGL.
+
+## Adding a drawn face
+
+A drawn face is one `FaceDesign` in `face/drawn/designs/<id>.ts`, a complete
+face of the cute family. Draw it from a prototype; never derive it from the
+cute face's geometry at runtime.
+
+1. Add the id to `DRAWN_FACE_STYLES` (`core/types.ts`) and the design to
+   `FACE_DESIGNS` (`face/drawn/index.ts`).
+2. Name the eye's numbers (`Field`) and write every cute expression with
+   `vocabulary(rest, form)`, plus any expressions of the face's own. Parts
+   that come and go are amounts, so states morph by interpolation; a builder
+   always lays down every part it has and lets `LayerList` drop the ones at
+   zero.
+3. Write `states`, `mouths`, `stateMouth`: share the cute tables by naming
+   them (`STATE_CUTE_EYES`, `CUTE_MOUTHS`), and override per state where the
+   face differs. Quiet the effects its eyes already show (`quietFx`).
+4. Layout in cute dot radii from the cute eye line; paint through roles
+   (`face`, `pupil`, `feature`, `glint`, `iris`, accents, `light`), never
+   colours, so variants and palette colours apply. Mark a part that drifts
+   off the face `loose`, so the fit to narrow bodies ignores it.
+5. Give it a glyph per kind of eye and per mouth (`kaomoji`), and
+   `face.<id>` in both locale files.
+6. Run `pnpm --filter @aora-bot/engine generate:faces`: it stores the face's
+   extent over all its states and its fit to every body of the roster, which
+   a live mount reads instead of working them out. `drawn-stored.test.ts`
+   fails until they match.
+7. Check it in every vector variant, pixel crisp, dot and block at 24 px and
+   kaomoji, on all twelve colours on light and dark pages, and on the
+   narrowest shapes.
 
 ## Adding a mouth or a nose
 

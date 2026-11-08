@@ -1,4 +1,11 @@
-import type { BeltKind, CharacterState, ColorId, EyeTopologyId, MouthId, ShapeId } from '@aora-bot/engine';
+import type {
+  BeltKind,
+  CharacterState,
+  CoreColorId,
+  CoreShapeId,
+  EyeTopologyId,
+  MouthId,
+} from '@aora-bot/engine';
 import { family, hudLabels, shapeFamilyLabels, stateGroupLabels } from './families.js';
 
 /*
@@ -11,7 +18,7 @@ import { family, hudLabels, shapeFamilyLabels, stateGroupLabels } from './famili
  * than the id, because "pebble" is not a word a screen reader user asked for.
  */
 
-const SHAPES: Record<ShapeId, string> = {
+const SHAPES: Record<CoreShapeId, string> = {
   mochi: 'Mochi',
   circle: 'Circle',
   blob: 'Blob',
@@ -58,9 +65,31 @@ const SHAPES: Record<ShapeId, string> = {
   curly: 'Curly',
   twinbuns: 'Twin buns',
   boba: 'Boba tea',
+  pudding: 'Pudding',
+  avocado: 'Avocado',
+  toast: 'Toast',
+  icecream: 'Ice cream',
+  lion: 'Lion',
+  melon: 'Watermelon',
+  eggplant: 'Eggplant',
+  cupcake: 'Cupcake',
+  fries: 'Fries',
+  candy: 'Candy',
+  burger: 'Burger',
+  hamster: 'Hamster',
+  hedgehog: 'Hedgehog',
+  koala: 'Koala',
+  bat: 'Bat',
+  seal: 'Seal',
+  puffer: 'Pufferfish',
+  planet: 'Planet',
+  cottage: 'Cottage',
+  chat: 'Speech bubble',
+  gift: 'Gift',
+  bulb: 'Light bulb',
 };
 
-const COLORS: Record<ColorId, string> = {
+const COLORS: Record<CoreColorId, string> = {
   black: 'Black',
   brown: 'Brown',
   red: 'Red',
@@ -73,6 +102,15 @@ const COLORS: Record<ColorId, string> = {
   magenta: 'Magenta',
   pink: 'Pink',
   gray: 'Gray',
+  night: 'Night',
+  cocoa: 'Cocoa',
+  sky: 'Sky',
+  blush: 'Blush',
+  lilac: 'Lilac',
+  cream: 'Cream',
+  butter: 'Butter',
+  ivory: 'Ivory',
+  meadow: 'Meadow',
 };
 
 const STATES: Record<CharacterState, string> = {
@@ -295,6 +333,19 @@ export const enUS = {
   'face.cute': 'Cute',
   'face.eyes': 'Eyes',
   'face.line': 'Line',
+  'face.brow': 'Brows',
+  'face.glossy': 'Glossy',
+  'face.sparkle': 'Sparkle',
+  'face.button': 'Button',
+  'face.shades': 'Shades',
+  'face.droopy': 'Droopy',
+  'face.bigmouth': 'Big mouth',
+  'face.pie': 'Pie',
+  'face.screen': 'Screen',
+  'face.symbol': 'Symbol',
+  'face.capsule': 'Capsule',
+  'face.teardrop': 'Teardrop',
+  'face.specs': 'Specs',
 
   'nose.slant': 'Slant',
   'nose.angular': 'Angular',
@@ -314,6 +365,14 @@ export const enUS = {
   'variant.paper': 'Paper',
   'variant.soft': 'Soft',
   'variant.riso': 'Riso',
+  'variant.pencil': 'Pencil',
+  'variant.marker': 'Marker',
+  'variant.crayon': 'Crayon',
+  'variant.watercolor': 'Watercolor',
+  'variant.neon': 'Neon',
+  'variant.chalk': 'Chalk',
+  'variant.origami': 'Origami',
+  'variant.relief': 'Relief',
   'variant.crisp': 'Crisp',
   'variant.dot': 'Dot',
   'variant.block': 'Block',
@@ -330,6 +389,10 @@ export const enUS = {
   'param.vector.softGloss': 'Gloss',
   'param.vector.risoOffset': 'Misregistration',
   'param.vector.risoHalftone': 'Halftone',
+  'param.vector.wobble': 'Wobble',
+  'param.vector.grain': 'Grain',
+  'param.vector.hatching': 'Hatching',
+  'param.vector.neonGlow': 'Glow',
   'param.pixel.grid': 'Grid',
   'param.pixel.gap': 'Gap',
   'param.pixel.shades': 'Shades',

@@ -17,7 +17,7 @@ import { StateGrid, FxGrid, StateMatrix } from '@theme';
 | `STATE_EYE_TOPOLOGIES` | `eyes` / `line` 脸的表情序列     |
 | `STATE_EYE_SWITCH_MS`  | 两次切换之间的随机间隔           |
 | `STATE_BLINK_MS`       | 眨眼间隔，`null` 表示不眨        |
-| `STATE_FACE_TUNE`      | 叠加在默认值上的面部微调         |
+| `STATE_FACE_TUNE`      | 按比例乘到默认值上的面部微调     |
 | `STATE_GAZE`           | 凝视漂移的幅度与重新取点的频率   |
 | `STATE_BELT`           | `eyes` / `line` 脸的腰带覆盖动效 |
 | `STATE_MOUTH`          | 线条脸模式下戴的嘴形             |
@@ -89,12 +89,12 @@ impulse(70); // 加到 y 弹簧的速度上
 `eyes` 和 `line` 脸用腰带画这些状态：身体被收成核心，腰带接管。过渡如何发生、每条腰带如何绘制，见[腰带与粒子](/internals/belts)。下面的演示用 `face="eyes"` 让腰带本身可见。
 
 ```tsx preview
-import { MarkStageProvider, StagedMark, STATE_BELT } from '@aora-bot/react';
+import { CharacterStageProvider, StagedMark, STATE_BELT } from '@aora-bot/react';
 
 export default function Demo() {
   const entries = Object.entries(STATE_BELT) as [string, string][];
   return (
-    <MarkStageProvider maxSources={entries.length}>
+    <CharacterStageProvider maxSources={entries.length}>
       <div className="site-demo">
         {entries.map(([state, belt]) => (
           <div className="site-demo__cell" key={state}>
@@ -106,7 +106,7 @@ export default function Demo() {
           </div>
         ))}
       </div>
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 ```
@@ -124,7 +124,7 @@ export default function Demo() {
 大多数应用不会用这些词思考。两个辅助函数负责翻译。
 
 ```tsx preview
-import { characterStateForAgent, activityFromTool, TOOL_ACTIVITIES } from '@aora-bot/react';
+import { characterStateForAgent, activityForTool, TOOL_ACTIVITIES } from '@aora-bot/react';
 
 export default function Demo() {
   return (
@@ -142,7 +142,7 @@ export default function Demo() {
               <code>{tool}</code>
             </td>
             <td>
-              <code>{activityFromTool(tool).state}</code>
+              <code>{activityForTool(tool).state}</code>
             </td>
           </tr>
         ))}

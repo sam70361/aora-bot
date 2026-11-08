@@ -50,18 +50,26 @@ CharacterOptions ──► Simulation ──step(dt)──► FrameSnapshot ─�
 - **渲染**：画法都在各自的模块里，`build.ts` / 像素栅格只留最小的挂钩。
   - 向量（`render/vector/parts.ts`）：`body` 与身体同色同渐变；`leaf` 用 `--aora-leaf`（`#34B36B`，绿色身体上是 `#7BCB5A`，宿主设同名自定义属性，静态渲染直接写入十六进制）；`inner` 是 ink 与 45% 白的混合。
     `outline` / `glass` 里 body 调的 parts 与身体做多边形并集（`unionOutline`，按身体环的身份缓存）后统一描边，不留接缝；并集失败或淡入淡出途中退回逐个描边。`sticker` 的纸边与 `paper` 的硬阴影把 parts 一并包进去。`soft` 与 `riso` 多遍叠绘，body 调的 parts 每一遍都跟着身体走（`bodyPieces`）：soft 的径向高光渐变按身体外框取 `userSpaceOnUse`，耳朵吃到的明暗与它在整个形象上的位置一致，地面阴影按「身体加 body 调 parts」的外框定宽度和落点；riso 的第二色、白色提亮和网点都覆盖到 parts，leaf / inner 配件按各自颜色盖在印刷层之上。
+    画材变体（`render/vector/media.ts`）不用 `partLayers`，自己从轮廓重画身体和每个 part：线描画材（pencil / neon / chalk）与 outline 一样把 body 调的 parts 并进身体轮廓、不画 inner；涂色画材（marker / crayon / watercolor）把 body 调的 parts 画在身体下面，leaf / inner / hair 用各自颜色和同一支笔画在上面。折纸（origami，几何在 `render/vector/origami.ts`）同涂色画材的分层，每个 piece 拉直成多边形后从一点折到各角，按面的朝向和山折谷折交替叠白或叠黑，折法按轮廓缓存。
   - 像素（`render/pixel/parts.ts`）：body 调的 parts 写进身体的蒙版；leaf / inner 作为带 tint 的配件按 paint id 绘制，三个变体通用。
+
+### 主题的涂鸦、签名动作与分层绘制
+
+- **数据与画法分开**：主题入口用 `ThemePackage.decor`（`DecorSpec`，按心情或状态排的涂鸦）和 `ThemePackage.motions`（美术部件点名的签名动作）带来自己的装饰和动作。画法在共享的 `themes/extras/` 里，打成独立的 `themes/extras.js`，由主题的 `extras: EXTRAS` 带进来；核心只留挂钩 `themes/extras-hook.ts`，主包和 `/static` 都不含画法（`test/extras.test.ts` 检查）。
+- **分层绘制**：live 角色只要穿主题皮肤，或播放主题的涂鸦和动作，就分层绘制（`drawsInLayers`）。根 SVG 自己的组只留最底层，其余图层由 `themes/extras/stage.ts` 写进根 SVG 里的一个 `<foreignObject>`，每层是 HTML 盒子里的一个 SVG。身体的弹簧运动是承载图层的盒子的 transform，签名动作和涂鸦是内部盒子的 CSS 动画，所以浏览器只做合成，不重画带纹理的皮肤。关键帧写进每个文档或 shadow root 共用的一个 `<style data-aora-motion>`，按帧内容的哈希命名。
+- **WebKit 的约束**：WebKit 合成 `<foreignObject>` 里的 HTML 时不套用 SVG 自身的变换。所以 `<foreignObject>` 放在根 SVG 的原点、尺寸等于显示尺寸，用它自己的 transform 抵消 viewBox，让其中一个单位等于一个 CSS 像素；只有这个变换的净效果为零，各浏览器才画在同一个位置。
+- **静态输出不变**：`test/static-golden.test.ts` 钉住了分层之前的逐字节输出。
 
 ## 3. 风格系列（Style Series）
 
 "风格系列"是比 `variant` 更高的一层：它决定角色**用什么画法**被画出来。同一个状态、同一个表情、同一个形状在每个系列里都存在，
 新增状态或形状时所有系列自动获得。
 
-| 系列 id   | 画法                                                                                                                                                             | 变体（variant）                                                                                                                                                                                         | 参数示例                                                                     |
-| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| `vector`  | 平滑 SVG 路径                                                                                                                                                    | `solid`（纯色，玻璃之外都是平涂） / `outline` / `glass`（半透明着色、细边，剪影内一层光泽与高光） / `sticker` / `paper` / `soft`（径向渐变、高光、地面投影） / `riso`（错位第二色、半调网点、正片叠底） | 线宽、贴纸边宽与投影、剪纸阴影偏移/角度/倾斜、软萌投影与高光、孔版错位与半调 |
-| `pixel`   | 把快照栅格化到网格，输出合并后的 `<path>` + `crispEdges`                                                                                                         | `crisp`（实心方块） / `dot`（圆点 LED） / `block`（带缝方块）                                                                                                                                           | 网格分辨率、缝宽、明暗阶数、运动量化帧率、外框、辉光                         |
-| `kaomoji` | 不画身体，用 SVG `<text>` 写颜文字：形状决定括号（`render/kaomoji/table.ts` 的 `SHAPE_WRAPPERS`，没有条目的形状用 `DEFAULT_WRAPPER` 圆括号），状态决定表情和尾巴 | `plain`（纯文字） / `bubble`（衬一块淡墨色胶囊）                                                                                                                                                        | 字重、是否带情绪符号                                                         |
+| 系列 id   | 画法                                                                                                                                                             | 变体（variant）                                                                                                                                                                                                                                                                                          | 参数示例                                                                                             |
+| --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| `vector`  | 平滑 SVG 路径                                                                                                                                                    | `solid`（纯色，玻璃之外都是平涂） / `outline` / `glass`（半透明着色、细边，剪影内一层光泽与高光） / `sticker` / `paper` / `soft`（径向渐变、高光、地面投影） / `riso`（错位第二色、半调网点、正片叠底） / 画材 `pencil` / `marker` / `crayon` / `watercolor` / `neon` / `chalk` / 折纸 `origami`（见下） | 线宽、贴纸边宽与投影、剪纸阴影偏移/角度/倾斜、软萌投影与高光、孔版错位与半调、手抖、纸纹、排线、辉光 |
+| `pixel`   | 把快照栅格化到网格，输出合并后的 `<path>` + `crispEdges`                                                                                                         | `crisp`（实心方块） / `dot`（圆点 LED） / `block`（带缝方块）                                                                                                                                                                                                                                            | 网格分辨率、缝宽、明暗阶数、运动量化帧率、外框、辉光                                                 |
+| `kaomoji` | 不画身体，用 SVG `<text>` 写颜文字：形状决定括号（`render/kaomoji/table.ts` 的 `SHAPE_WRAPPERS`，没有条目的形状用 `DEFAULT_WRAPPER` 圆括号），状态决定表情和尾巴 | `plain`（纯文字） / `bubble`（衬一块淡墨色胶囊）                                                                                                                                                                                                                                                         | 字重、是否带情绪符号                                                                                 |
 
 注册方式（`src/styles/`）：
 
@@ -87,7 +95,7 @@ defineStyle({
 
 ### 脸（face style）
 
-`FACE_STYLES = ['cute', 'eyes', 'line']`，默认 `cute`。脸是模拟的一部分，不属于某个系列，三种脸在每个系列里都有画法：
+`FACE_STYLES` 是三种基础脸 `cute`、`eyes`、`line` 加上十种手绘脸（`DRAWN_FACE_STYLES`），默认 `cute`。脸是模拟的一部分，不属于某个系列，每种脸在每个系列里都有画法：
 
 - `cute`：脸涂在身体上（圆点眼、小嘴、粉色腮红），44 个状态各有一组眼型 / 嘴型 / 腮红（`STATE_CUTE_EYES`、`STATE_CUTE_MOUTH`、`STATE_BLUSH`），单位是点半径；部分状态带情绪特效（`STATE_FX`：Zz、金色闪光、红色感叹号、三道线、粉心、泪滴、右上角转圈的小弧），特效是 `motion/fx.ts` 里时间的纯函数，随快照的 `fx` 字段交给渲染器，各变体用同一组颜色。belt 状态（16 个）在 `cute` 脸下**不把身体缩成小圆点**：整个角色连同脸都留着，belt 说的事改由 `motion/fx-activity.ts` 的活动特效在身体旁边说（见下表），同样走快照的 `fx`，向量、像素、颜文字三个系列自动一致。特效一律不绕着身体画：贴着轮廓的环读起来像选中框而不像角色在做事，小尺寸下还是整个角色上最抢眼的东西；加载轮、进度条、雷达波、小轨道这些「仪表」都放在右上角（`CORNER_X` / `CORNER_Y`，`motion/fx-units.ts`），和思考的三个点、Zz 同一个位置。
 
@@ -113,7 +121,8 @@ defineStyle({
   活动特效和情绪特效同属 `FxFrame`：时间的纯函数，`settled` 帧给静态输出和减弱动效，渲染器只认 `dot` / `arc` / `line` / `pencil` 等几种图元。`beltBlend` 弹簧在 `cute` 脸下目标为 0，所以 `snapshot.belt` 为 `null`、`body.outline` 就是图纸原样。belt 只在 `eyes` / `line` 脸下接管身体（这两种脸没有特效这一套），代码在 `motion/belts.ts`；没有选项能在 `cute` 脸下启用它。
 
 - `eyes` / `line`：另外两种脸，有各自的眼型表、嘴型表和摆放逻辑。`cute` 与它们之间用 `cuteBlend` 弹簧过渡，运行时切换不跳变。
-- 脸色是 CSS 变量：`--aora-face`（色相身体上为白，黑色身体上缺省，回落为页面底色，等于挖空）、`--aora-face-soft`（soft 变体的深色脸）、`--aora-ink2`（riso 的第二色，粉色改用金色）。宿主用 `getInkVars(color)` 一次写全，不要只写 `--aora-fg`。
+- 手绘脸（`brow`、`glossy`、`sparkle`、`button`、`shades`、`droopy`、`bigmouth`、`pie`、`screen`、`symbol`）：cute 一族（`isCuteFamily`），沿用 cute 的点半径、眼线、腮红、特效和保留身体的腰带规则。每种脸是 `face/drawn/designs/<id>.ts` 里的一张 `FaceDesign`：布局、按名字的表情（每个表情是一组数字，19 个 cute 名字都有自己的画法）、状态表、嘴型表、颜色角色、要静音的特效、颜文字字形，以及把数字变成图层的构建函数；共用 cute 的表时在数据里直接写出来。模拟在 cute 眼睛之外再跑一对手绘眼睛（同一个 `eyeMorph` 弹簧），换脸时用 `faceFade` 交叉淡化。几何是 `FaceGeometry.drawn`：每只眼、面盘、嘴里的若干图层，每层是闭合轮廓加颜色角色（`face`、`pupil`、`feature`、`glint`、`iris`、强调色、`light`），由各渲染器按变体和配色解释（向量 `render/vector/drawn.ts`，像素 `render/pixel/drawn.ts`，颜文字 `drawnFaceText`）。放上身体前先量外廓、按头部投影检查，放不下就同时缩小并下移（`face/drawn/place.ts`）。
+- 脸色是 CSS 变量：`--aora-face`（色相身体上为白，黑色身体上缺省，回落为页面底色，等于挖空）、`--aora-face-soft`（soft、crayon、watercolor 的深色脸，也是手绘脸画在身体上的眉毛和眼睛）、`--aora-face-pupil` / `--aora-face-glint`（手绘脸的瞳孔与身体上眼睛的高光，只有黑色身体需要写）、`--aora-ink2`（riso 的第二色，粉色改用金色）。宿主用 `getInkVars(color)` 一次写全，不要只写 `--aora-fg`。
 
 约束：
 
@@ -131,6 +140,10 @@ defineStyle({
 - 分享参数 `?s=` 的前缀带版本号（`aorabot1.`）；解码对每个字段做校验，注册表不认识的字段回落默认值（系列回落到 `DEFAULT_STYLE_ID`），链接不会坏。
 - 代码片段（`snippet.ts`）与首页注册表（`home/registry.ts`）读同一个 `Preset`。
 - 站点专属的东西（UI 状态）留在 `docs/app/`，不往引擎里塞；如果别的宿主也需要同一份描述，再下沉到引擎，而不是复制。
+
+### 主题展的两面角色墙
+
+主题展（`docs/app/themes/`）不写任何主题的名字。书架页 `/themes/` 的角色墙和卡册页 `/themes/<id>` 的贴纸墙都从引擎数据派生：格子数和位置来自 `THEME_MANIFEST` 的 `cards`（主题加载前就能排好、预留尺寸），每个格子里的角色由 `themeLook`（经 `catalog.ts` 的 `buildAlbum`）决定形状、颜色、皮肤和脸，再用 `renderStaticSvg` 画成静态 SVG；底色、布纹和强调色来自站点的 `looks/<id>.ts`。所以一个主题进了引擎的清单、有了自己的入口和 look 文件，两面墙就自动带上它，不用改墙的代码；引擎改进了画法，墙也跟着变。墙上的角色一律是图片（`walls/images.ts`）：静态 SVG 连同它读的页面变量、`color-scheme: light dark`，以及贴纸的白边和投影（SVG 滤镜，按贴纸格子的像素换算）一起写进一份自带样式的 SVG 文档，转成 blob URL，`decode()` 之后才以 CSS `border-image` 显示（不用 `<img>` 或背景图，装饰就不会变成页面的 LCP 元素），所以换一张只是换图，滤镜只在解码时算一次。页面已经画过的图（卡片、书册窗口的静态图，经 `walls/still.ts` 的缓存）直接拿来用；其余的在 `walls/stills.worker.ts` 的 Worker 里画，Worker 在第一次需要它时才启动（引擎的 static 入口和主题入口都能在 Worker 里跑，用的是页面已经缓存的同一批 chunk，引擎那部分和首页控制台的 Worker 共用一个 chunk），Worker 起不来时退回主线程的空闲时间片。书架墙自己不加载主题，只用书册已经装好的主题、书册窗口已经画过的图（经 `walls/still.ts` 的缓存），排行只用已经到齐的图，所以缺主题时也是均匀铺满；贴纸墙的贴纸接近视口才画，每张两层图片交叉淡入，只有屏幕上的贴纸计时，窄屏或四核以下的设备轮换的贴纸更少、换得更慢，切到后台、离开视口和减弱动效时都停下。
 
 ## 5. React 层
 
@@ -204,7 +217,7 @@ packages/react/src/
   appearance/ locale/ styles/ utils/                                           外观上下文、i18n、令牌与样式、通用 hooks
 packages/surfaces/src/     walkthrough/ scenes/ template/ occupancy/ cast/ locale/ styles/
 docs/theme/                Rspress 外壳与文档内嵌组件（components/：ApiTable、StateMatrix、StyleParamsDemo …；styles/；generated/）
-docs/app/                  home/（控制台 + 角色墙） sponsor/ shared/（share、snippet、i18n、families …）
+docs/app/                  home/（控制台 + 角色墙） themes/（主题展：书架、卡册、looks/、walls/） sponsor/ shared/（share、snippet、i18n、families …）
 docs/content/{en,zh}/      mdx（两种语言的页面一一对应，构建时检查）
 ```
 

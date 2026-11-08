@@ -6,7 +6,7 @@ import { API } from '@theme';
 
 ```tsx preview
 import { useState } from 'react';
-import { AgentStateProvider, useAgentState, CharacterMark, ActivityTicker } from '@aora-bot/react';
+import { AgentStateProvider, useAgentState, CharacterMark, ActivityLine } from '@aora-bot/react';
 
 function Sessions() {
   const agent = useAgentState();
@@ -71,7 +71,7 @@ function Face() {
   return (
     <div className="site-demo site-demo--column" style={{ alignItems: 'center' }}>
       <CharacterMark shape="mochi" color="cyan" state={state} sizePx={96} />
-      <ActivityTicker text={tips ?? state} />
+      <ActivityLine text={tips ?? state} />
     </div>
   );
 }

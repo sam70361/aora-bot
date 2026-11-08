@@ -9,13 +9,13 @@ import {
   type ShapeFamily,
   type ShapeId,
 } from '@aora-bot/react';
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { memo, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useI18n, useLocalized } from '../shared/i18n.js';
 import type { Preset } from '../shared/share.js';
-import { NextIcon, PrevIcon } from './icons.js';
-import { Radio, RadioGroup, ScrollRootProvider, useNearVisible } from './Radio.js';
+import { NextIcon, PrevIcon } from '../shared/icons.js';
+import { Radio, RadioGroup, ScrollRootProvider, useNearVisible } from '../shared/Radio.js';
+import { StillMark } from '../shared/StillMark.js';
 import type { StyleChoice, StyleGroup } from './registry.js';
-import { StillMark } from './StillMark.js';
 
 interface PreviewProps {
   sizePx: number;
@@ -50,7 +50,7 @@ export const lookOf = (preset: Preset) => ({
 });
 
 /** Left edge: every series, every variant, each drawn in its own style. */
-export function StyleRail({
+export const StyleRail = memo(function StyleRail({
   groups,
   preset,
   onPick,
@@ -107,10 +107,10 @@ export function StyleRail({
       </ScrollRootProvider>
     </aside>
   );
-}
+});
 
 /** Right edge: every swatch as a dot, then the faces, each drawn on the current character. */
-export function ColorRail({
+export const ColorRail = memo(function ColorRail({
   faces,
   preset,
   onColor,
@@ -123,6 +123,7 @@ export function ColorRail({
 }) {
   const t = useI18n();
   const label = useLabel();
+  const [faceList, setFaceList] = useState<HTMLDivElement | null>(null);
 
   return (
     <aside className="site-capsule site-home__rail site-home__rail--color">
@@ -145,34 +146,42 @@ export function ColorRail({
         ))}
       </RadioGroup>
       <p className="site-home__cap site-home__cap--next">{t('home.rail.face')}</p>
-      <RadioGroup label={t('home.rail.face')} className="site-home__faces">
-        {faces.map((face) => (
-          <Radio
-            key={face}
-            value={face}
-            className="site-home__opt site-home__opt--face"
-            checked={face === preset.face}
-            label={label.face(face) || face}
-            onSelect={() => onFace(face)}
-          >
-            <StillMark
-              shape={preset.shape}
-              color={preset.color}
-              style={preset.style}
-              variant={preset.variant}
-              styleOptions={preset.params}
-              face={face}
-              sizePx={32}
-            />
-          </Radio>
-        ))}
-      </RadioGroup>
+      {/* Drawn on the client like every other preview: inlined into the server's page, these few were most of its bytes. */}
+      <ScrollRootProvider value={faceList}>
+        <RadioGroup
+          ref={setFaceList}
+          label={t('home.rail.face')}
+          className="site-home__scroll site-home__faces"
+        >
+          {faces.map((face) => (
+            <Radio
+              key={face}
+              value={face}
+              className="site-home__opt site-home__opt--face"
+              checked={face === preset.face}
+              label={label.face(face) || face}
+              onSelect={() => onFace(face)}
+            >
+              <Preview
+                sizePx={32}
+                margin="80px"
+                shape={preset.shape}
+                color={preset.color}
+                style={preset.style}
+                variant={preset.variant}
+                styleOptions={preset.params}
+                face={face}
+              />
+            </Radio>
+          ))}
+        </RadioGroup>
+      </ScrollRootProvider>
     </aside>
   );
-}
+});
 
 /** Bottom edge: every body in the registry, family by family, with previous and next. */
-export function ShapeStrip({
+export const ShapeStrip = memo(function ShapeStrip({
   families,
   preset,
   onPick,
@@ -186,7 +195,7 @@ export function ShapeStrip({
   const [track, setTrack] = useState<HTMLDivElement | null>(null);
   const centred = useRef(false);
 
-  const order = families.flatMap((family) => family.shapes);
+  const order: readonly ShapeId[] = families.flatMap((family) => family.shapes);
   const step = (by: number) => {
     const at = order.indexOf(preset.shape);
     onPick(order[(at + by + order.length) % order.length]!);
@@ -254,4 +263,4 @@ export function ShapeStrip({
       </button>
     </div>
   );
-}
+});

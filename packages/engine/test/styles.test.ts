@@ -124,6 +124,12 @@ describe('parameters by variant', () => {
     expect(keys('vector', 'outline')).toEqual(['strokeWidth']);
     expect(keys('vector', 'soft')).toEqual(['softShadow', 'softGloss']);
     expect(keys('vector', 'riso')).toEqual(['risoOffset', 'risoHalftone']);
+    expect(keys('vector', 'pencil')).toEqual(['strokeWidth', 'wobble', 'grain', 'hatching']);
+    expect(keys('vector', 'marker')).toEqual(['strokeWidth', 'wobble']);
+    expect(keys('vector', 'crayon')).toEqual(['wobble', 'grain']);
+    expect(keys('vector', 'watercolor')).toEqual(['wobble', 'grain']);
+    expect(keys('vector', 'neon')).toEqual(['strokeWidth', 'neonGlow']);
+    expect(keys('vector', 'chalk')).toEqual(['strokeWidth', 'wobble', 'grain', 'hatching']);
     expect(keys('pixel', 'dot')).toEqual(['grid', 'gap', 'shades', 'fps', 'glow']);
   });
 

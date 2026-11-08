@@ -5,7 +5,7 @@ import { API } from '@theme';
 Three dots, pulsing out of phase, for an avatar whose agent is busy.
 
 ```tsx preview
-import { AgentAvatar, WorkingBadge } from '@aora-bot/react';
+import { AgentPortrait, WorkingBadge } from '@aora-bot/react';
 
 export default function Demo() {
   return (
@@ -15,7 +15,7 @@ export default function Demo() {
         { id: 'grace', name: 'Grace' },
       ].map((agent) => (
         <span key={agent.id} style={{ position: 'relative', display: 'inline-flex' }}>
-          <AgentAvatar agent={agent} sizePx={44} state="working" />
+          <AgentPortrait agent={agent} sizePx={44} state="working" />
           <span style={{ position: 'absolute', bottom: -2, insetInlineEnd: -4 }}>
             <WorkingBadge />
           </span>
@@ -38,7 +38,7 @@ Each dot starts with a negative animation delay so the badge is already mid-cycl
 
 ## Where it goes
 
-Beside the [`AvatarStatusDot`](/components/avatar-chrome) in purpose, in the same corner in practice: a presence dot says whether the agent is _here_, the badge says whether it is _busy_, and an avatar that showed both at once would have nowhere to put the second. In a roster, pair it with a `working` status tone rather than stacking the two.
+Beside the [`AvatarStatusDot`](/components/avatar-frame) in purpose, in the same corner in practice: a presence dot says whether the agent is _here_, the badge says whether it is _busy_, and an avatar that showed both at once would have nowhere to put the second. In a roster, pair it with a `working` status tone rather than stacking the two.
 
 ## Accessibility
 
@@ -50,5 +50,5 @@ The badge is an `img` named by the locale's `avatar.working` (or `label`), not a
 
 ## Next
 
-- [Badges and status](/components/avatar-chrome) — unread counts and status dots
+- [Badges and status](/components/avatar-frame) — unread counts and status dots
 - [Agent roster](/scenarios/agent-roster) — twenty faces down the side

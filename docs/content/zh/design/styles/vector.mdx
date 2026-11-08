@@ -2,7 +2,7 @@ import { StyleParamsDemo } from '@theme';
 
 # 矢量风格
 
-`vector` 系列把角色画成平滑的 SVG 路径。它有七种变体，区别只在颜料：几何、动画和面部在所有变体里都一样，所以新状态或新形状会同时出现在每一种变体里。
+`vector` 系列把角色画成平滑的 SVG 路径。它有十三种变体，区别只在颜料：几何、动画和面部在所有变体里都一样，所以新状态或新形状会同时出现在每一种变体里。后六种是画材：同一个角色用铅笔、马克笔、蜡笔、水彩、霓虹灯管和粉笔画出来。
 
 ```tsx preview
 import { getStyle } from '@aora-bot/engine';
@@ -24,17 +24,25 @@ export default function Demo() {
 }
 ```
 
-| 变体      | 身体                                     | `cute` 脸的颜色            | 参数                                     |
-| --------- | ---------------------------------------- | -------------------------- | ---------------------------------------- |
-| `solid`   | 用墨色平涂                               | 白色（`--aora-face`）      | —                                        |
-| `outline` | 描边，里面染 8% 的墨色                   | 墨色                       | `strokeWidth`                            |
-| `glass`   | 半透明的身体，细边，顶部和内沿的光泽     | 墨色                       | `strokeWidth`                            |
-| `sticker` | 填色，外面一圈白边和阴影                 | 纸色（`--aora-paper`）     | `stickerWidth`、`stickerShadow`          |
-| `paper`   | 填色，下面垫一层更深的自己               | 白色                       | `paperOffset`、`paperAngle`、`paperTilt` |
-| `soft`    | 径向渐变，脚下一块地面阴影，可选小高光   | 深棕（`--aora-face-soft`） | `softShadow`、`softGloss`                |
-| `riso`    | 两色错位印刷，叠印处正片叠底，带半调网点 | 白色                       | `risoOffset`、`risoHalftone`             |
+| 变体         | 身体                                             | `cute` 脸的颜色            | 参数                                         |
+| ------------ | ------------------------------------------------ | -------------------------- | -------------------------------------------- |
+| `solid`      | 用墨色平涂                                       | 白色（`--aora-face`）      | —                                            |
+| `outline`    | 描边，里面染 8% 的墨色                           | 墨色                       | `strokeWidth`                                |
+| `glass`      | 半透明的身体，细边，顶部和内沿的光泽             | 墨色                       | `strokeWidth`                                |
+| `sticker`    | 填色，外面一圈白边和阴影                         | 纸色（`--aora-paper`）     | `stickerWidth`、`stickerShadow`              |
+| `paper`      | 填色，下面垫一层更深的自己                       | 白色                       | `paperOffset`、`paperAngle`、`paperTilt`     |
+| `soft`       | 径向渐变，脚下一块地面阴影，可选小高光           | 深棕（`--aora-face-soft`） | `softShadow`、`softGloss`                    |
+| `riso`       | 两色错位印刷，叠印处正片叠底，带半调网点         | 白色                       | `risoOffset`、`risoHalftone`                 |
+| `pencil`     | 抖动的双线石墨笔触，背光一侧排线，纸面颗粒       | 石墨：变灰的墨色           | `strokeWidth`、`wobble`、`grain`、`hatching` |
+| `marker`     | 淡色错位底，来回涂满的笔触，深色双重描边         | 白色，外描一圈深色马克笔   | `strokeWidth`、`wobble`                      |
+| `crayon`     | 蜡质填色透出纸纹，边缘毛糙，压重的外沿           | 深棕（`--aora-face-soft`） | `wobble`、`grain`                            |
+| `watercolor` | 浅色晕染，积色、水渍、颜料沉淀，干后的深边       | 深棕（`--aora-face-soft`） | `wobble`、`grain`                            |
+| `neon`       | 带灯芯的发光灯管，内部一层微光                   | 灯管的灯芯色               | `strokeWidth`、`neonGlow`                    |
+| `chalk`      | 碎裂的粉笔线，斜向排线，线边的粉尘               | 粉笔：变浅或变深的墨色     | `strokeWidth`、`wobble`、`grain`、`hatching` |
+| `origami`    | 揉皱再压平的纸片，细碎柔和的明暗面，纸片微微浮起 | 与 `solid` 相同            | —                                            |
+| `relief`     | 厚卡纸从背后压凸：左上亮边、右下暗边             | 与 `solid` 相同            | —                                            |
 
-`solid`、`outline`、`glass` 在 [`CharacterMark`](/components/character-mark) 里已有说明。本页讲其余几种变体，以及 `outline` 给出的单色线条画法。
+`solid`、`outline`、`glass` 在 [`CharacterMark`](/components/character-mark) 里已有说明。本页讲其余几种变体、画材，以及 `outline` 给出的单色线条画法。
 
 ## 贴纸
 
@@ -234,6 +242,352 @@ export default function Demo() {
 }
 ```
 
+## 画材
+
+`pencil`、`marker`、`crayon`、`watercolor`、`neon`、`chalk` 用手把同一帧画出来。身体和它的配件（耳朵、叶子、头发）从轮廓重画：抖动的双线、排线、来回涂抹、毛糙的蜡边、干后的深边、发光的灯管。脸（任何脸型）、特效、HUD 刻度盘、腰带和彩纸只能当作一个整体来处理，所以它们整体吃到画材：铅笔和粉笔给它们加颗粒，霓虹让它们发光，马克笔给脸描边。铅笔的特效是石墨色；其余画材保留特效自己的颜色，像彩色灯管或彩色粉笔。`origami` 和 `relief` 不是画出来，而是用纸做出来的：身体和每个配件各是一张纸，或揉皱或压凸，脸和特效照常画在上面。
+
+它们都不画背景，放在什么页面上就在什么页面上读得清，浅色深色都行，用的是和其他变体同一套墨色令牌：
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+const media = ['pencil', 'marker', 'crayon', 'watercolor', 'neon', 'chalk', 'origami', 'relief'];
+const surfaces = [
+  { bg: '#fcfcfc', scheme: 'light' },
+  { bg: '#16161a', scheme: 'dark' },
+];
+
+export default function Demo() {
+  return (
+    <div style={{ display: 'grid', gap: 12 }}>
+      {surfaces.map(({ bg, scheme }) => (
+        <div
+          key={bg}
+          className="site-demo"
+          style={{ padding: 12, borderRadius: 16, background: bg, colorScheme: scheme }}
+        >
+          {media.map((variant) => (
+            <div className="site-demo__cell" key={variant}>
+              <CharacterMark shape="cat" color="orange" state="happy" sizePx={96} variant={variant} />
+              <span className="site-demo__label">{variant}</span>
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+- **线条跟着页面走。** `pencil`、`neon`、`chalk` 是线描，所以和 `outline` 一样，脸和线条用的是朝页面对比色偏移的墨色：石墨在浅色页面上变深、在深色页面上变成银色；粉笔在浅色页面上变深、在深色页面上变浅；霓虹灯芯在深色页面上发白、在浅色页面上变深。
+- **涂色画材用深色脸。** `crayon` 和 `watercolor` 用更深的颜料画脸，也就是 `soft` 的深棕（`--aora-face-soft`）；黑色身体在深色时，`getInkVars('black')` 会把它变成白色。`marker` 保留白色的脸，外面描一圈深色马克笔。
+- **配件保留自己的颜色。** 涂色画材里叶子是绿的、耳朵内侧更浅；线描画材用线条色画所有配件，和 `outline` 一样不画耳朵内侧。
+
+所有纹理都有固定种子，静态渲染每次都一样；每条笔触对每个轮廓只算一次并缓存。颗粒放在颜料里——一张小的斑点图做成图案，或者每组一个蒙版——而不是每帧重算；辉光只用一次模糊。所以一页二十个动画角色，不管哪种画材，都能保持在 60 fps 左右。
+
+画材也知道自己显示多大。宽度在 80 到 40 像素之间时，颗粒和排线逐渐淡出——小角色上一个斑点不到一像素，只会把脸变淡——画材的线条也不会细于大约一像素，所以 24 像素下铅笔和粉笔和 `outline` 一样清楚。动态角色自己测量尺寸；静态渲染按 `sizePx` 算，没给就画完整细节。
+
+### 铅笔
+
+墨色的淡淡底色，背光一侧的排线，轮廓画两遍：一遍闭合，一遍更松、越过起点。`wobble` 是手抖的幅度，`grain` 是石墨漏掉多少纸纹，`hatching` 控制排线。
+
+```tsx preview
+import { renderStaticSvgDataUrl } from '@aora-bot/react';
+
+const cases = [
+  { label: '默认', styleOptions: {} },
+  { label: 'wobble 0', styleOptions: { wobble: 0 } },
+  { label: 'wobble 8', styleOptions: { wobble: 8 } },
+  { label: 'grain 0', styleOptions: { grain: 0 } },
+  { label: 'hatching false', styleOptions: { hatching: false } },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {cases.map(({ label, styleOptions }) => (
+        <div className="site-demo__cell" key={label}>
+          <img
+            alt=""
+            width={96}
+            height={96}
+            src={renderStaticSvgDataUrl({
+              shape: 'blob',
+              color: 'blue',
+              state: 'happy',
+              variant: 'pencil',
+              styleOptions,
+            })}
+          />
+          <span className="site-demo__label">{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### 涂鸦
+
+一层稍微错位的淡色底，一道不抬笔来回涂满形状的笔触，一圈深色双重描边。笔触之间的空隙透出淡色底。脸和特效也用同一支深色马克笔描边。`strokeWidth` 决定马克笔的宽度，涂抹的笔触跟着变。
+
+```tsx preview
+import { renderStaticSvgDataUrl } from '@aora-bot/react';
+
+const cases = [
+  { label: '默认', styleOptions: {} },
+  { label: 'strokeWidth 6', styleOptions: { strokeWidth: 6 } },
+  { label: 'strokeWidth 16', styleOptions: { strokeWidth: 16 } },
+  { label: 'wobble 0', styleOptions: { wobble: 0 } },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {cases.map(({ label, styleOptions }) => (
+        <div className="site-demo__cell" key={label}>
+          <img
+            alt=""
+            width={96}
+            height={96}
+            src={renderStaticSvgDataUrl({
+              shape: 'strawberry',
+              color: 'red',
+              state: 'happy',
+              variant: 'marker',
+              styleOptions,
+            })}
+          />
+          <span className="site-demo__label">{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### 蜡笔
+
+蜡质的填色透出纸纹，边缘毛糙，沿轮廓压重的地方有一圈更深的外沿。`grain` 是透出多少纸面，`wobble` 是边缘有多毛糙。
+
+```tsx preview
+import { renderStaticSvgDataUrl } from '@aora-bot/react';
+
+const cases = [
+  { label: '默认', styleOptions: {} },
+  { label: 'grain 0.5', styleOptions: { grain: 0.5 } },
+  { label: 'grain 2', styleOptions: { grain: 2 } },
+  { label: 'wobble 8', styleOptions: { wobble: 8 } },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {cases.map(({ label, styleOptions }) => (
+        <div className="site-demo__cell" key={label}>
+          <img
+            alt=""
+            width={96}
+            height={96}
+            src={renderStaticSvgDataUrl({
+              shape: 'bunny',
+              color: 'pink',
+              state: 'happy',
+              variant: 'crayon',
+              styleOptions,
+            })}
+          />
+          <span className="site-demo__label">{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### 水彩
+
+比墨色略浅的晕染，一处积色，一处被水推开、边缘发深的水渍，纸面凹处沉淀的颜料，以及晕染干后留下的深边。积色和水渍只画在不出界的地方，所以有凹口的形状会少一些。
+
+```tsx preview
+import { renderStaticSvgDataUrl } from '@aora-bot/react';
+
+const cases = [
+  { label: '默认', styleOptions: {} },
+  { label: 'grain 0', styleOptions: { grain: 0 } },
+  { label: 'wobble 0', styleOptions: { wobble: 0 } },
+  { label: 'wobble 8', styleOptions: { wobble: 8 } },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {cases.map(({ label, styleOptions }) => (
+        <div className="site-demo__cell" key={label}>
+          <img
+            alt=""
+            width={96}
+            height={96}
+            src={renderStaticSvgDataUrl({
+              shape: 'cloud',
+              color: 'cyan',
+              state: 'happy',
+              variant: 'watercolor',
+              styleOptions,
+            })}
+          />
+          <span className="site-demo__label">{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### 霓虹
+
+墨色的灯管带一道灯芯，身体上和身体周围的一切——脸、特效、刻度盘、腰带——都以自己的颜色发光，所以粉色的心发粉光。`neonGlow` 是光晕半径（形状空间单位）；`0` 只留灯管本身，绘制几乎不花成本。
+
+```tsx preview
+import { renderStaticSvgDataUrl } from '@aora-bot/react';
+
+const cases = [
+  { label: 'neonGlow 0', styleOptions: { neonGlow: 0 } },
+  { label: '默认', styleOptions: {} },
+  { label: 'neonGlow 16', styleOptions: { neonGlow: 16 } },
+  { label: 'strokeWidth 18', styleOptions: { strokeWidth: 18 } },
+];
+
+export default function Demo() {
+  return (
+    <div
+      className="site-demo"
+      style={{ padding: 12, borderRadius: 16, background: '#16161a', colorScheme: 'dark' }}
+    >
+      {cases.map(({ label, styleOptions }) => (
+        <div className="site-demo__cell" key={label}>
+          <img
+            alt=""
+            width={96}
+            height={96}
+            src={renderStaticSvgDataUrl({
+              shape: 'star',
+              color: 'violet',
+              state: 'happy',
+              variant: 'neon',
+              colorScheme: 'page',
+              styleOptions,
+            })}
+          />
+          <span className="site-demo__label">{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### 粉笔
+
+沿线一层粉尘，斜向排线填色，线条本身和旁边一道更淡的重描，全都在颗粒上碎开。`hatching` 控制斜向排线，`grain` 是表面吃掉多少粉笔。
+
+```tsx preview
+import { renderStaticSvgDataUrl } from '@aora-bot/react';
+
+const cases = [
+  { label: '默认', styleOptions: {} },
+  { label: 'grain 0.4', styleOptions: { grain: 0.4 } },
+  { label: 'hatching false', styleOptions: { hatching: false } },
+  { label: 'strokeWidth 18', styleOptions: { strokeWidth: 18 } },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {cases.map(({ label, styleOptions }) => (
+        <div className="site-demo__cell" key={label}>
+          <img
+            alt=""
+            width={96}
+            height={96}
+            src={renderStaticSvgDataUrl({
+              shape: 'tofu',
+              color: 'green',
+              state: 'happy',
+              variant: 'chalk',
+              styleOptions,
+            })}
+          />
+          <span className="site-demo__label">{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### 折纸
+
+每个配件都是一张揉皱后又压平的纸。轮廓保持原样，所以外形依旧圆润；轮廓内部用一组抖动的网格点和轮廓上的部分点做三角剖分，每个三角形是一个小折面，各自微微倾斜，再按朝向左上方光源的程度提亮或压暗。身体比耳朵、叶子揉得更细。明暗用白色和黑色叠在原色上，令牌色和渐变色一样能折，淡淡的折痕勾出每个面。每张纸下面垫一小块投影，一个角色的几张纸读起来像是拼在一起的。月牙、对话气泡这类凹形也能干净地切开，不会越出自己的边。
+
+折纸不读参数。揉皱的随机种子取自轮廓本身，对每个轮廓只算一次并缓存，静态渲染每次都一样。
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+const cast = [
+  { shape: 'circle', color: 'cream', face: 'capsule' },
+  { shape: 'cat', color: 'orange' },
+  { shape: 'star', color: 'yellow', face: 'specs' },
+  { shape: 'crescent', color: 'violet' },
+  { shape: 'bunny', color: 'pink' },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {cast.map((props) => (
+        <div className="site-demo__cell" key={props.shape}>
+          <CharacterMark {...props} state="happy" sizePx={96} variant="origami" />
+          <span className="site-demo__label">{props.shape}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### 浮雕
+
+每个配件是一张从背后压凸的厚卡纸。左上边缘是一道白色亮边，右下边缘是一道较深的暗边，两者都画在配件内部，卡纸本身投下一片柔和的阴影，离开页面浮起。耳朵这类小配件的边会按比例变窄，不会把整块填满。亮边和暗边用白色和黑色叠在原色上，令牌色和渐变色一样能压凸。
+
+浮雕不读参数，也没有纹理，重绘开销和 `paper` 差不多。
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+const cast = [
+  { shape: 'circle', color: 'cream', face: 'capsule' },
+  { shape: 'cat', color: 'orange' },
+  { shape: 'star', color: 'yellow', face: 'specs' },
+  { shape: 'crescent', color: 'violet' },
+  { shape: 'bunny', color: 'pink' },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {cast.map((props) => (
+        <div className="site-demo__cell" key={props.shape}>
+          <CharacterMark {...props} state="happy" sizePx={96} variant="relief" />
+          <span className="site-demo__label">{props.shape}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
 ## 单线
 
 `outline` 变体本来就是单线画法。它是不是单色，取决于墨色。不给 `ink` 时，描边、眼睛和五官用的是 `--aora-fg`，而 `CharacterMark` 会把它设成调色板里的颜色——所以轮廓是蓝色、紫色，由 `color` 决定。想让它改用文字颜色，就给它 `currentColor`：
@@ -290,18 +644,22 @@ const svg = renderStaticSvg({ variant: 'outline', ink: { flat: 'currentColor' } 
 
 参数属于整个系列，每个变体只读自己的那部分。越界的数值会被夹到范围内并吸附到步长；类型不对则回落到默认值；未知的键会被丢弃。
 
-| 参数            | 变体             | 默认    | 范围          | 含义                           |
-| --------------- | ---------------- | ------- | ------------- | ------------------------------ |
-| `strokeWidth`   | outline 与 glass | 10      | 4–28，步长 1  | 线宽，形状空间单位             |
-| `stickerWidth`  | sticker          | 12      | 4–20，步长 1  | 白边超出身体的距离             |
-| `stickerShadow` | sticker          | `true`  | —             | 贴纸是否投下柔和的阴影         |
-| `paperOffset`   | paper            | 9       | 0–20，步长 1  | 硬阴影的距离                   |
-| `paperAngle`    | paper            | 55      | 0–360，步长 5 | 硬阴影的方向，从正右方顺时针计 |
-| `paperTilt`     | paper            | −3      | −8–8，步长 1  | 剪纸整体的倾斜角度（度）       |
-| `softShadow`    | soft             | `true`  | —             | 脚下是否有地面阴影             |
-| `softGloss`     | soft             | `false` | —             | 是否带一点高光                 |
-| `risoOffset`    | riso             | 10      | 0–20，步长 1  | 两遍印刷的错位距离             |
-| `risoHalftone`  | riso             | `true`  | —             | 是否罩半调网点                 |
+| 参数            | 变体                                        | 默认    | 范围          | 含义                                             |
+| --------------- | ------------------------------------------- | ------- | ------------- | ------------------------------------------------ |
+| `strokeWidth`   | outline、glass、pencil、marker、neon、chalk | 10      | 4–28，步长 1  | 线宽，形状空间单位；glass 和画材按各自的比例取用 |
+| `stickerWidth`  | sticker                                     | 12      | 4–20，步长 1  | 白边超出身体的距离                               |
+| `stickerShadow` | sticker                                     | `true`  | —             | 贴纸是否投下柔和的阴影                           |
+| `paperOffset`   | paper                                       | 9       | 0–20，步长 1  | 硬阴影的距离                                     |
+| `paperAngle`    | paper                                       | 55      | 0–360，步长 5 | 硬阴影的方向，从正右方顺时针计                   |
+| `paperTilt`     | paper                                       | −3      | −8–8，步长 1  | 剪纸整体的倾斜角度（度）                         |
+| `softShadow`    | soft                                        | `true`  | —             | 脚下是否有地面阴影                               |
+| `softGloss`     | soft                                        | `false` | —             | 是否带一点高光                                   |
+| `risoOffset`    | riso                                        | 10      | 0–20，步长 1  | 两遍印刷的错位距离                               |
+| `risoHalftone`  | riso                                        | `true`  | —             | 是否罩半调网点                                   |
+| `wobble`        | pencil、marker、crayon、watercolor、chalk   | 4       | 0–8，步长 1   | 手绘线条偏离轮廓的幅度，形状空间单位             |
+| `grain`         | pencil、crayon、watercolor、chalk           | 1       | 0–2，步长 0.1 | 纸纹强度，相对每种画材自己的强度；0 为干净       |
+| `hatching`      | pencil 与 chalk                             | `true`  | —             | 铅笔是否排线打阴影，粉笔是否斜线填色             |
+| `neonGlow`      | neon                                        | 8       | 0–20，步长 1  | 光晕半径，形状空间单位；0 只留灯管               |
 
 选一个变体，面板只列出该变体会读取的参数。它由注册表生成，所以和上面的表保持一致。
 
@@ -322,5 +680,5 @@ character.update({ variant: 'paper', styleOptions: { paperOffset: 12, paperAngle
 
 - [CharacterMark](/components/character-mark) — 组件本身，以及前三种变体
 - [颜文字风格](/design/styles/kaomoji) — 把角色写成一行文字
-- [五官](/design/face) — 每种变体都能戴的三种脸
+- [五官](/design/face) — 每种变体都能戴的脸
 - [主题](/guide/theming) — 给角色上色的变量

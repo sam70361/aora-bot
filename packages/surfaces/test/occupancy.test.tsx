@@ -3,7 +3,7 @@ import { act, type ReactNode } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { renderToString } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { LocaleProvider, MarkStageProvider } from '@aora-bot/react';
+import { LocaleProvider, CharacterStageProvider } from '@aora-bot/react';
 import { OccupancyList, type OccupancyRow } from '../src/occupancy/OccupancyList.js';
 import { OccupancyMark } from '../src/occupancy/OccupancyMark.js';
 
@@ -86,9 +86,9 @@ describe('OccupancyList', () => {
 
   it('shares one animation across the rows through the stage', () => {
     const el = render(
-      <MarkStageProvider>
+      <CharacterStageProvider>
         <OccupancyList rows={ROWS} />
-      </MarkStageProvider>,
+      </CharacterStageProvider>,
     );
     act(() => {
       vi.advanceTimersByTime(32);
@@ -100,9 +100,9 @@ describe('OccupancyList', () => {
 
   it('opts out of the stage when a line weight is asked for', () => {
     const el = render(
-      <MarkStageProvider>
+      <CharacterStageProvider>
         <OccupancyList rows={[ROWS[1]!]} lineWeight={1.2} face="line" />
-      </MarkStageProvider>,
+      </CharacterStageProvider>,
     );
     act(() => {
       vi.advanceTimersByTime(32);

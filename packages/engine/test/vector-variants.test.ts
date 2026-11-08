@@ -2,7 +2,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createCharacter } from '../src/render/character.js';
 import { renderStaticSvg } from '../src/render/static-svg.js';
+import { COLOR_IDS, FACE_STYLES } from '../src/core/types.js';
 import { fnv1a32 } from '../src/math/hash.js';
+import { MEDIA, mediumSize } from '../src/render/vector/media.js';
 import { createSimulation, type SimulationOptions } from '../src/sim/simulation.js';
 import type { FrameSnapshot } from '../src/sim/snapshot.js';
 import { getStyle, resolveStyleOptions, validateStyleOptions } from '../src/styles/index.js';
@@ -52,7 +54,12 @@ function stillFrame(
  * the paint and the transforms readable and still moves if one coordinate does.
  */
 function compact(svg: string): string {
-  return svg.replace(/ d="([^"]+)"/g, (_m, d: string) => ` d="${d.length}:${fnv1a32(d).toString(36)}"`);
+  return svg
+    .replace(/ d="([^"]+)"/g, (_m, d: string) => ` d="${d.length}:${fnv1a32(d).toString(36)}"`)
+    .replace(
+      / href="(data:[^"]+)"/g,
+      (_m, url: string) => ` href="${url.length}:${fnv1a32(url).toString(36)}"`,
+    );
 }
 
 function staticSvg(variant: string, extra: Record<string, unknown> = {}): string {
@@ -304,6 +311,10 @@ describe('style parameters', () => {
       softGloss: false,
       risoOffset: 10,
       risoHalftone: true,
+      wobble: 4,
+      grain: 1,
+      hatching: true,
+      neonGlow: 8,
     });
     for (const key of Object.keys(style.defaults)) expect(style.params).toHaveProperty(key);
   });
@@ -334,7 +345,23 @@ describe('style parameters', () => {
   });
 
   it('lists the variants the series understands', () => {
-    expect(style.variants).toEqual(['solid', 'outline', 'glass', 'sticker', 'paper', 'soft', 'riso']);
+    expect(style.variants).toEqual([
+      'solid',
+      'outline',
+      'glass',
+      'sticker',
+      'paper',
+      'soft',
+      'riso',
+      'pencil',
+      'marker',
+      'crayon',
+      'watercolor',
+      'neon',
+      'chalk',
+      'origami',
+      'relief',
+    ]);
     expect(style.defaultVariant).toBe('solid');
   });
 });
@@ -423,7 +450,7 @@ describe('switching variant on a running character', () => {
    */
   const bare = (el: Element): string =>
     el.outerHTML
-      .replace(/aora-(clip|ink|shadow|soft|halftone|gloss)-[\w-]+/g, 'ID')
+      .replace(/aora-(clip|ink|shadow|soft|halftone|gloss|media)-[\w-]+/g, 'ID')
       .replace(/<([\w-]+)((?:\s+[\w:-]+="[^"]*")+)\s*>/g, (_m, tag: string, list: string) => {
         const sorted = (list.match(/[\w:-]+="[^"]*"/g) ?? []).sort();
         return `<${tag} ${sorted.join(' ')}>`;
@@ -443,20 +470,28 @@ describe('switching variant on a running character', () => {
       paper: bare(mount({ variant: 'paper' }).element),
       soft: bare(mount({ variant: 'soft' }).element),
       riso: bare(mount({ variant: 'riso' }).element),
+      pencil: bare(mount({ variant: 'pencil' }).element),
+      neon: bare(mount({ variant: 'neon' }).element),
+      watercolor: bare(mount({ variant: 'watercolor' }).element),
     };
-    expect(new Set(Object.values(fresh)).size).toBe(6);
+    expect(new Set(Object.values(fresh)).size).toBe(9);
 
     const c = mount({ variant: 'solid' });
     for (const next of [
       'sticker',
       'paper',
       'outline',
+      'pencil',
       'sticker',
       'solid',
+      'neon',
       'paper',
       'soft',
+      'watercolor',
       'riso',
+      'chalk',
       'glass',
+      'pencil',
       'solid',
     ] as const) {
       c.update({ variant: next });
@@ -588,5 +623,204 @@ describe('the mood effects keep their colours on every variant', () => {
     LAYERED_VARIANTS.flatMap((variant) => EFFECTS.map(([state, hex]) => [variant, state, hex] as const)),
   )('%s / %s draws in %s', (variant, state, hex) => {
     expect(staticSvg(variant, { state }).toUpperCase()).toContain(hex);
+  });
+});
+
+/*
+ * The drawing media: the same snapshot drawn by hand. They are checked for
+ * what makes them safe to put anywhere — no background, no noise filter, defs
+ * that never collide — and for reading on every face, colour and theme.
+ */
+const MEDIA_SHAPES = ['blob', 'cat', 'sprout'] as const;
+
+describe.each(MEDIA)('%s: static snapshots', (variant) => {
+  const cases = MEDIA_SHAPES.flatMap((shape) => STATES.map((state) => [shape, state] as const));
+
+  it.each(cases)('%s / %s', (shape, state) => {
+    expect(compact(renderStaticSvg({ shape, state, variant, color: 'violet' }))).toMatchSnapshot();
+  });
+});
+
+describe('drawing media', () => {
+  const ids = (svg: string) => attrs(svg, '\\w+', 'id');
+  const outsideDefs = (svg: string) => svg.replace(/<defs>[\s\S]*?<\/defs>/g, '');
+
+  it('is deterministic, and keeps its defs apart from another medium of the same character inlined beside it', () => {
+    for (const variant of MEDIA) {
+      expect(staticSvg(variant, { state: 'happy' })).toBe(staticSvg(variant, { state: 'happy' }));
+    }
+    const all = MEDIA.map((variant) => ids(staticSvg(variant, { state: 'happy' })));
+    for (let i = 0; i < all.length; i++) {
+      for (let j = i + 1; j < all.length; j++) {
+        expect(
+          all[i]!.filter((id) => all[j]!.includes(id)),
+          `${MEDIA[i]} / ${MEDIA[j]}`,
+        ).toEqual([]);
+      }
+    }
+    // Different settings of one medium inlined together keep apart too.
+    const fine = ids(staticSvg('crayon', { styleOptions: { grain: 0.5 } }));
+    expect(ids(staticSvg('crayon')).filter((id) => fine.includes(id) && id.includes('grain'))).toEqual([]);
+  });
+
+  it.each(MEDIA)('%s paints no background and runs no noise filter', (variant) => {
+    const svg = staticSvg(variant, { state: 'thinking' });
+    expect(outsideDefs(svg)).not.toContain('<rect');
+    expect(svg).not.toContain('feTurbulence');
+    expect(svg).not.toContain('feImage');
+  });
+
+  it('grains crayon and watercolour fills through a pattern, and drops it with the grain', () => {
+    for (const variant of ['crayon', 'watercolor'] as const) {
+      const svg = staticSvg(variant);
+      expect(svg).toContain('<pattern');
+      expect(svg).toContain('data:image/png;base64,');
+      expect(attrs(svg, 'path', 'fill').some((f) => f.startsWith('url(#'))).toBe(true);
+      const clean = staticSvg(variant, { styleOptions: { grain: 0 } });
+      expect(clean).not.toContain('<pattern');
+      expect(clean).not.toContain('data:image');
+    }
+  });
+
+  it('grains pencil and chalk through one mask on the body, face included, and drops it with the grain', () => {
+    for (const variant of ['pencil', 'chalk'] as const) {
+      const svg = staticSvg(variant, { state: 'happy' });
+      const mask = attrs(svg, 'g', 'mask');
+      expect(mask.length).toBeGreaterThan(0);
+      // The face sits inside the masked group, whatever face style draws it.
+      const masked = svg.slice(svg.indexOf(`mask="${mask[0]}"`));
+      expect(masked).toContain('data-aora-face');
+      expect(staticSvg(variant, { styleOptions: { grain: 0 } })).not.toContain('<mask');
+    }
+  });
+
+  it('glows neon through a blur, and leaves the bare tube at neonGlow 0', () => {
+    const svg = staticSvg('neon');
+    expect(svg).toContain('feGaussianBlur');
+    expect(attrs(svg, 'g', 'filter').length).toBeGreaterThan(0);
+    expect(staticSvg('neon', { styleOptions: { neonGlow: 0 } })).not.toContain('<filter');
+  });
+
+  it('outlines the marker face with the dark marker', () => {
+    const svg = staticSvg('marker', { state: 'happy' });
+    expect(svg).toContain('feMorphology');
+    const rim = attrs(svg, 'g', 'filter')[0]!;
+    expect(svg.slice(svg.indexOf(`filter="${rim}"`))).toContain('data-aora-face');
+  });
+
+  it('takes the wobble, the hatching and the line width from its parameters', () => {
+    expect(staticSvg('pencil', { styleOptions: { wobble: 0 } })).not.toBe(staticSvg('pencil'));
+    expect(staticSvg('marker', { styleOptions: { wobble: 8 } })).not.toBe(staticSvg('marker'));
+    const paths = (svg: string) => attrs(svg, 'path', 'd').length;
+    for (const variant of ['pencil', 'chalk'] as const) {
+      expect(paths(staticSvg(variant, { styleOptions: { hatching: false } }))).toBeLessThan(
+        paths(staticSvg(variant)),
+      );
+    }
+    const thin = attrs(staticSvg('chalk', { styleOptions: { strokeWidth: 4 } }), 'path', 'stroke-width');
+    const thick = attrs(staticSvg('chalk', { styleOptions: { strokeWidth: 20 } }), 'path', 'stroke-width');
+    expect(Math.max(...thick.map(Number))).toBeGreaterThan(Math.max(...thin.map(Number)));
+  });
+
+  it.each(MEDIA.flatMap((variant) => FACE_STYLES.map((face) => [variant, face] as const)))(
+    '%s draws the %s face',
+    (variant, face) => {
+      // Not a busy state: there the eyes and line faces give the body to a belt and fade.
+      for (const state of ['happy', 'sad'] as const) {
+        expect(renderStaticSvg({ shape: 'cat', variant, face, state, color: 'orange' })).toContain(
+          'data-aora-face',
+        );
+      }
+    },
+  );
+
+  it.each(MEDIA)('%s follows the page on every palette colour', (variant) => {
+    for (const color of COLOR_IDS) {
+      const svg = renderStaticSvg({ shape: 'blob', variant, color, state: 'happy' });
+      expect(svg).toContain('@media (prefers-color-scheme: dark)');
+      // A face drawn as a line takes the ink shifted towards the page's contrast, which flips with the page.
+      if (['pencil', 'neon', 'chalk'].includes(variant)) expect(svg).toMatch(/-shift: #fff/);
+    }
+    // A painted dark face turns white on a black body, which is dark on a light page.
+    if (variant === 'crayon' || variant === 'watercolor') {
+      expect(renderStaticSvg({ shape: 'blob', variant, color: 'black' })).toMatch(/-soft: #FFFFFF/);
+    }
+  });
+
+  it('draws pencil effects in graphite, and every other medium in the effects own colours', () => {
+    expect(staticSvg('pencil', { state: 'happy' }).toUpperCase()).not.toContain('#FF6F91');
+    for (const variant of ['marker', 'crayon', 'watercolor', 'neon', 'chalk'] as const) {
+      for (const [state, hex] of [
+        ['happy', '#FF6F91'],
+        ['celebrate', '#F5B428'],
+        ['sad', '#7CC7FF'],
+      ] as const) {
+        expect(staticSvg(variant, { state }).toUpperCase(), `${variant} / ${state}`).toContain(hex);
+      }
+    }
+  });
+
+  it.each([
+    ['blob', 'happy', 'pencil'],
+    ['cat', 'thinking', 'chalk'],
+    ['sprout', 'happy', 'crayon'],
+    ['tofu', 'powering-down', 'watercolor'],
+    ['bunny', 'happy', 'marker'],
+    ['star', 'thinking', 'neon'],
+  ] as const)('%s / %s / %s: live draws the outlines static does', (shape, state, variant) => {
+    const frame = stillFrame(shape, state, variant);
+    const options = resolveStyleOptions(style);
+    const host = document.createElement('div');
+    const live = style.createRenderer(host, { seed: 'media', styleOptions: options });
+    live.draw(frame);
+    const markup = style.renderStatic(frame, { color: 'blue', uid: 'x', styleOptions: options });
+    const fromLive = Array.from(live.element.querySelectorAll('path'))
+      .filter((el) => !el.closest('defs') && el.getAttribute('opacity') !== '0')
+      .map((el) => el.getAttribute('d'));
+    const fromStatic = attrs(markup, 'path', 'd');
+    expect(fromStatic.length).toBeGreaterThan(0);
+    for (const d of fromStatic) expect(fromLive).toContain(d);
+    live.destroy();
+  });
+
+  it('leaves its fine detail out of a small character and keeps its lines a pixel wide', () => {
+    const at = (variant: string, sizePx?: number) =>
+      renderStaticSvg({ shape: 'blob', color: 'blue', state: 'happy', variant, sizePx });
+    const widest = (svg: string) => Math.max(...attrs(outsideDefs(svg), 'path', 'stroke-width').map(Number));
+    for (const variant of ['pencil', 'chalk'] as const) {
+      // The face sits inside the masked group at a size where the grain shows, and is clean at 24 px.
+      expect(at(variant, 240)).toContain('<mask');
+      expect(at(variant)).toContain('<mask');
+      expect(at(variant, 24)).not.toContain('<mask');
+      expect(attrs(at(variant, 24), 'path', 'd').length).toBeLessThan(
+        attrs(at(variant, 240), 'path', 'd').length,
+      );
+    }
+    for (const variant of ['crayon', 'watercolor'] as const)
+      expect(at(variant, 24)).not.toContain('<pattern');
+    // In between, the grain fades rather than switching off.
+    expect(ids(at('crayon', 60)).some((id) => id.endsWith('-grain5'))).toBe(true);
+    // A medium's line covers about a pixel, as outline's does at 24 px; a large one keeps its own width.
+    for (const variant of ['pencil', 'chalk', 'neon', 'marker'] as const) {
+      expect(widest(at(variant, 24))).toBeGreaterThan(widest(at(variant, 240)));
+      expect(widest(at(variant, 240))).toBe(widest(at(variant)));
+    }
+    expect(mediumSize(resolveStyleOptions(style) as never, 0, 1).minLine).toBe(0);
+  });
+
+  it('keeps the node count steady while animating', () => {
+    vi.useFakeTimers({ toFake: ['requestAnimationFrame', 'cancelAnimationFrame', 'performance'] });
+    for (const variant of ['pencil', 'neon', 'crayon'] as const) {
+      const host = document.createElement('span');
+      document.body.appendChild(host);
+      const c = createCharacter(host, { shape: 'cat', state: 'bouncing', variant, reducedMotion: false });
+      vi.advanceTimersByTime(200);
+      const count = c.element.querySelectorAll('*').length;
+      vi.advanceTimersByTime(800);
+      expect(c.element.querySelectorAll('*').length, variant).toBe(count);
+      c.destroy();
+    }
+    vi.useRealTimers();
+    document.body.replaceChildren();
   });
 });

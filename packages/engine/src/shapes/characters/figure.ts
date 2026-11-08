@@ -13,9 +13,11 @@ export const FIGURE: FamilyArt<'figure'> = {
     parts: [{ tone: 'body', d: 'M44 88A6 6 0 1 0 56 88A6 6 0 1 0 44 88Z' }],
     face: [50, 56],
   },
+  // A big round head (r 35) over a hem of three soft lobes (r 12.5 to 13) and two small nub arms, leaning 5 degrees
+  // as it drifts. The notches between the lobes are shallow and filleted, so the hem stays one soft edge at 24 px.
   ghost: {
-    body: 'M50 14C72 14 86 30 86 52V84Q80 78 74 84Q68 90 62 84Q56 78 50 84Q44 90 38 84Q32 78 26 84Q20 90 14 84V52C14 30 28 14 50 14Z',
-    face: [50, 50],
+    body: 'M16.9 53.4A35 35 0 1 1 84 56.4A2.5 2.5 0 0 0 86.2 59.7A4.5 4.5 0 0 1 90 65.9L81.2 86.8A13 13 0 0 1 59.9 90.9A2.5 2.5 0 0 0 56.4 90.8A12.5 12.5 0 0 1 37.5 89.2A2.5 2.5 0 0 0 34 88.6A13 13 0 0 1 13.9 81.5L8.5 62A4.5 4.5 0 0 1 13.9 56.4A2.5 2.5 0 0 0 16.9 53.4Z',
+    face: [51, 43],
   },
   bot: {
     body: 'M24 32H76Q88 32 88 44V76Q88 88 76 88H24Q12 88 12 76V44Q12 32 24 32Z',
@@ -51,5 +53,17 @@ export const FIGURE: FamilyArt<'figure'> = {
       { tone: 'inner', d: 'M59.5 83A4.5 4.5 0 1 1 68.5 83A4.5 4.5 0 1 1 59.5 83Z' },
     ],
     face: [50, 62],
+  },
+  // A round planet (r 31) in a tilted ring (an ellipse 80 x 21, 7 wide) drawn in `hair`. The ring is cut away
+  // where it passes behind the planet and stands clear of it at the sides, so the two read apart.
+  planet: {
+    body: 'M81 46A31 31 0 0 1 19 46A31 31 0 0 1 81 46Z',
+    parts: [
+      {
+        tone: 'hair',
+        d: 'M80.5 44.1A30.6 30.6 0 0 0 79.6 38.1A43.5 14 -10 0 1 92.8 45.4A43.5 14 -10 0 1 7.2 60.6A43.5 14 -10 0 1 19.5 47.8A30.6 30.6 0 0 0 20.5 54A36.5 7 -10 0 0 14.1 59.3A36.5 7 -10 0 0 85.9 46.7A36.5 7 -10 0 0 80.5 44.1Z',
+      },
+    ],
+    face: [50, 39],
   },
 };

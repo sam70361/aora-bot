@@ -1,12 +1,13 @@
-import { CUTE_MOUTH_IDS } from '@aora-bot/engine';
+import { CUTE_MOUTH_IDS, DRAWN_FACE_STYLES, listStyles } from '@aora-bot/engine';
 import {
   CHARACTER_STATES,
+  COLOR_IDS,
   CharacterMark,
   EYE_TOPOLOGY_IDS,
   FACE_STYLES,
   MOUTHS,
   MOUTH_IDS,
-  MarkStageProvider,
+  CharacterStageProvider,
   NOSE_IDS,
   SHAPE_IDS,
   STATE_GROUPS,
@@ -28,7 +29,8 @@ import { Cell } from './Cell.js';
 import { Menu } from '../../app/shared/Menu.js';
 
 /*
- * Demos for the faces: the cute mouths, the line face's nose and mouths, and the switch between styles.
+ * Demos for the faces: the cute mouths, the line face's nose and mouths, the drawn faces across states,
+ * series and colours, and the switch between styles.
  *
  * The static grids use `renderStaticSvgDataUrl` so the geometry can be
  * compared at rest; the live demos mount real characters so the morph between
@@ -121,6 +123,130 @@ export function FaceStyleRow({
         <div className="site-swatch" key={face}>
           <Cell id={face} name={label('face', face)}>
             <img src={renderStaticSvgDataUrl({ shape, color, state, face })} width={96} height={96} alt="" />
+          </Cell>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/** The states a drawn-face grid shows by default: rest, the strongest feelings, sleep and a busy state. */
+const DRAWN_FACE_STATES: readonly CharacterState[] = [
+  'idle',
+  'happy',
+  'laughing',
+  'angry',
+  'sad',
+  'surprised',
+  'sleeping',
+  'thinking',
+  'celebrate',
+];
+
+/** Every drawn face across a spread of states, drawn statically: each row one face, each column one state. */
+export function DrawnFaceGrid({
+  shape = 'mochi' as ShapeId,
+  color = 'blue' as ColorId,
+  states = DRAWN_FACE_STATES,
+}) {
+  const label = useDisplayName();
+  return (
+    <div className="site-table">
+      <table>
+        <thead>
+          <tr>
+            <th />
+            {states.map((state) => (
+              <th key={state}>
+                <code>{state}</code>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {DRAWN_FACE_STYLES.map((face) => (
+            <tr key={face}>
+              <td>
+                <code>{face}</code> {label('face', face)}
+              </td>
+              {states.map((state) => (
+                <td key={state}>
+                  <img
+                    src={renderStaticSvgDataUrl({ shape, color, state, face })}
+                    width={64}
+                    height={64}
+                    alt=""
+                  />
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+/** One drawn face in every series: the vector variants, the pixel variants and the kaomoji, from one snapshot. */
+export function DrawnFaceSeries({
+  shape = 'mochi' as ShapeId,
+  color = 'blue' as ColorId,
+  state = 'happy' as CharacterState,
+}) {
+  const label = useDisplayName();
+  const series = listStyles().flatMap((style) =>
+    style.variants.map((variant) => ({ style: style.id, variant })),
+  );
+  return (
+    <div className="site-table">
+      <table>
+        <thead>
+          <tr>
+            <th />
+            {series.map(({ style, variant }) => (
+              <th key={`${style}:${variant}`}>
+                <code>{variant}</code>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {DRAWN_FACE_STYLES.map((face) => (
+            <tr key={face}>
+              <td>
+                <code>{face}</code> {label('face', face)}
+              </td>
+              {series.map(({ style, variant }) => (
+                <td key={`${style}:${variant}`}>
+                  <img
+                    src={renderStaticSvgDataUrl({ shape, color, state, face, style, variant })}
+                    width={56}
+                    height={56}
+                    alt=""
+                  />
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+/** One drawn face on every palette colour, so a light ink and a dark one can be checked side by side. */
+export function DrawnFacePalette({ face = 'brow' as FaceStyle, state = 'happy' as CharacterState }) {
+  return (
+    <div className="site-swatches">
+      {COLOR_IDS.map((color) => (
+        <div className="site-swatch" key={color}>
+          <Cell id={color}>
+            <img
+              src={renderStaticSvgDataUrl({ shape: 'mochi', color, state, face })}
+              width={64}
+              height={64}
+              alt=""
+            />
           </Cell>
         </div>
       ))}
@@ -276,7 +402,7 @@ export function LineStateGrid({
   const label = useDisplayName();
   const text = useLocalized();
   return (
-    <MarkStageProvider maxSources={TABLE_SOURCES}>
+    <CharacterStageProvider maxSources={TABLE_SOURCES}>
       {STATE_GROUPS.map((group) => {
         const name = label('group', group.id);
         return (
@@ -307,7 +433,7 @@ export function LineStateGrid({
           </div>
         );
       })}
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 

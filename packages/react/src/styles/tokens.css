@@ -248,8 +248,8 @@
   }
 
   /*
-   * The group activity mark's ink transition is registered in
-   * `ActivityMark.tsx` rather than here.
+   * The group activity badge's ink transition is registered in
+   * `ActivityBadge.tsx` rather than here.
    *
    * A custom property is a string to the engine unless its type is declared,
    * and an untyped property snaps rather than animating — but `@property`

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { COLOR_IDS, type ColorId } from '../src/core/types.js';
+import { COLOR_IDS, CORE_COLOR_IDS, type ColorId } from '../src/core/types.js';
 import {
   COLOR_SWATCHES,
   getInkColor,
@@ -24,7 +24,7 @@ const HEX = /^#[0-9A-Fa-f]{6}$/;
 
 describe('COLOR_SWATCHES', () => {
   it('covers every colour the engine offers, exactly once', () => {
-    expect(COLOR_SWATCHES.map((s) => s.id)).toEqual([...COLOR_IDS]);
+    expect(COLOR_SWATCHES.map((s) => s.id)).toEqual([...CORE_COLOR_IDS]);
   });
 
   it('gives each hue a chip colour and both ink values', () => {

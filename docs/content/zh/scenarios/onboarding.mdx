@@ -11,7 +11,7 @@ import { StateMatrix } from '@theme';
 ```tsx preview
 import { useState } from 'react';
 import { CharacterMark } from '@aora-bot/react';
-import { AvatarSlot, CastStage, DemoDesktop, useCastScene, type CastStep } from '@aora-bot/surfaces';
+import { PortraitSlot, CastLineup, DemoDesktop, useCastScene, type CastStep } from '@aora-bot/surfaces';
 
 const members = [
   { id: 'guide', shape: 'cloud', color: 'cyan', bobPx: 4 },
@@ -47,7 +47,7 @@ export default function Demo() {
   return (
     <div className="site-demo site-demo--stack">
       <DemoDesktop title="首次运行" widthPx={300} style={{ maxWidth: '100%' }}>
-        <CastStage
+        <CastLineup
           members={members}
           steps={steps}
           stepIndex={scene.stepIndex}
@@ -57,11 +57,11 @@ export default function Demo() {
           onArrive={(id, index) => id === 'mine' && index === steps.length - 1 && setArrived(true)}
         >
           <span className="site-demo__slot">
-            <AvatarSlot arrived={landed && arrived} sizePx={64}>
+            <PortraitSlot arrived={landed && arrived} sizePx={64}>
               <CharacterMark shape="pear" color="green" sizePx={56} />
-            </AvatarSlot>
+            </PortraitSlot>
           </span>
-        </CastStage>
+        </CastLineup>
       </DemoDesktop>
       <div className="site-controls">
         <button className="site-btn" onClick={scene.prev}>
@@ -97,7 +97,7 @@ export default function Demo() {
 
 ## 用到的组件
 
-- [`CastStage`](/components/cast-stage) 与 `useCastScene`——多个角色按剧本移动，`AvatarSlot` 是其中一个最终落脚的位置。
+- [`CastLineup`](/components/cast-lineup) 与 `useCastScene`——多个角色按剧本移动，`PortraitSlot` 是其中一个最终落脚的位置。
 - [`DemoDesktop`](/components/walkthrough)、`JobBubbles`、`SuggestionCards`、`LandingWait`、`HandOff` 与 `Composer`——引导流程的零件：放演示的窗口、进行中的工作、三个起点、空白屏幕、一个智能体交接给另一个，以及一个角色会留意的输入框。
 - [`CharacterMark`](/components/character-mark)——`onSettle` 告诉宿主 `spawning` 或 `waking` 什么时候走完了。
 
@@ -126,6 +126,6 @@ export default function Demo() {
 
 ## 接下来
 
-- [CastStage](/components/cast-stage)——多个角色依次入场
+- [CastLineup](/components/cast-lineup)——多个角色依次入场
 - [Walkthrough 系列](/components/walkthrough)——桌面、气泡、卡片与输入框
 - [BootLoop](/components/boot-loop)——程序化生成的启动序列

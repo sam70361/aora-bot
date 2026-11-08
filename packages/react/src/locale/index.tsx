@@ -10,6 +10,7 @@ import type {
   ShapeFamilyId,
   ShapeId,
 } from '@aora-bot/engine';
+import { themeLabel } from '@aora-bot/engine/labels';
 import { createContext, useContext, useMemo, type ReactNode } from 'react';
 import { enUS } from './en-US.js';
 import { zhCN } from './zh-CN.js';
@@ -95,7 +96,7 @@ export interface Labels {
  * every label lookup.
  */
 export function useLabel(): Labels {
-  const { t } = useLocale();
+  const { id: localeId, t } = useLocale();
   return useMemo<Labels>(() => {
     // The one cast: an open id has no literal key to check.
     const open = (prefix: string, id: string, fallback: string = id): string => {
@@ -103,10 +104,13 @@ export function useLabel(): Labels {
       const text = t(key as LocaleKey);
       return text === key ? fallback : text;
     };
+    // A theme names its own characters, skins and colours; before it is installed the id stands in.
+    const themed = (kind: 'shape' | 'variant' | 'color', id: string): string | undefined =>
+      themeLabel(kind, id)?.[localeId === 'zh-CN' ? 'zh' : 'en'];
     return {
-      shape: (id) => t(`shape.${id}`),
+      shape: (id) => open('shape', id, themed('shape', id)),
       shapeFamily: (id) => t(`shapeFamily.${id}`),
-      color: (id) => t(`color.${id}`),
+      color: (id) => open('color', id, themed('color', id)),
       state: (id) => t(`state.${id}`),
       stateDesc: (id) => t(`stateDesc.${id}`),
       belt: (id) => t(`belt.${id}`),
@@ -116,11 +120,11 @@ export function useLabel(): Labels {
       face: (id) => t(`face.${id}`),
       nose: (id) => t(`nose.${id}`),
       style: (id, fallback) => open('style', id, fallback),
-      variant: (id, fallback) => open('variant', id, fallback),
+      variant: (id, fallback) => open('variant', id, themed('variant', id) ?? fallback),
       stateGroup: (id, fallback) => open('state.group', id, fallback),
       param: (style, key, fallback = key) => open('param', `${style}.${key}`, fallback),
     };
-  }, [t]);
+  }, [localeId, t]);
 }
 
 export { enUS, zhCN };

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { allShapes, getShape } from '../src/shapes/registry.js';
-import { CENTER, SHAPE_IDS } from '../src/core/types.js';
+import { CENTER, SHAPE_IDS, SHAPE_SPACE } from '../src/core/types.js';
 import { renderStaticSvg, renderStaticSvgDataUrl } from '../src/render/static-svg.js';
 import { spring, stepSpring, springPosition } from '../src/math/spring.js';
 import { autoColorForKey, autoShapeForKey, fnv1a32 } from '../src/math/hash.js';
@@ -20,7 +20,7 @@ describe('shape registry', () => {
     expect(shape.path.startsWith('M')).toBe(true);
     expect(shape.path).not.toContain('NaN');
 
-    // Normalisation targets 228.44 across the larger axis, centred on CENTER.
+    // Normalisation targets just under SHAPE_SPACE across the larger axis, centred on CENTER.
     // Ears, leaves and antennae count towards that box, so the extent is
     // measured over the body ring and its parts together. The ring is a
     // 96-ray sampling, so a sharp ear tip can fall a few units short of the
@@ -29,7 +29,7 @@ describe('shape registry', () => {
     const top = Math.min(...ys);
     const bottom = Math.max(...ys);
     expect(shape.bottom - shape.top).toBeGreaterThan(100);
-    expect(bottom - top).toBeLessThanOrEqual(229);
+    expect(bottom - top).toBeLessThanOrEqual(SHAPE_SPACE);
     expect(Math.abs((top + bottom) / 2 - CENTER)).toBeLessThan(5);
 
     expect(shape.radius).toBeGreaterThan(80);

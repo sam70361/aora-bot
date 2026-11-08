@@ -1,12 +1,16 @@
 import type { SceneNode } from './scene.js';
 
 export const SVG_NS = 'http://www.w3.org/2000/svg';
+const XHTML_NS = 'http://www.w3.org/1999/xhtml';
 
 /** What was last written to each element, so a frame only touches what changed. */
 const written = new WeakMap<Element, Map<string, string>>();
+/** The node each element was last made to look like: a scene hands a kept node over again for a part that did not change. */
+const synced = new WeakMap<Element, SceneNode>();
 
 /**
- * Make `el` look like `node`: attributes, text and children.
+ * Make `el` look like `node`: attributes, text and children. A `div` node is
+ * an HTML element, so a layered scene can hold SVG in HTML boxes.
  *
  * Children are matched by position and tag. Lists in a scene (particles, HUD
  * primitives, belt dots) change length every frame, and reusing the nodes
@@ -14,6 +18,8 @@ const written = new WeakMap<Element, Map<string, string>>();
  * mismatch at some position replaces just that one node.
  */
 export function syncElement(el: Element, node: SceneNode): void {
+  if (synced.get(el) === node) return;
+  synced.set(el, node);
   let prev = written.get(el);
   if (!prev) {
     prev = new Map();
@@ -46,16 +52,22 @@ export function syncElement(el: Element, node: SceneNode): void {
 export function syncChildren(parent: Element, nodes: readonly SceneNode[]): void {
   while (parent.childElementCount > nodes.length) parent.lastElementChild!.remove();
 
-  for (let i = 0; i < nodes.length; i++) {
-    const wanted = nodes[i]!;
-    let child = parent.children[i];
+  // A sibling walk, not `children[i]`: a live collection is slow to index.
+  let child = parent.firstElementChild;
+  for (const wanted of nodes) {
+    if (child && synced.get(child) === wanted) {
+      child = child.nextElementSibling;
+      continue;
+    }
     if (!child || child.localName !== wanted.tag) {
-      const fresh = document.createElementNS(SVG_NS, wanted.tag);
+      // A layered scene's boxes are HTML; everything else a scene draws is SVG.
+      const fresh = document.createElementNS(wanted.tag === 'div' ? XHTML_NS : SVG_NS, wanted.tag);
       if (child) child.replaceWith(fresh);
       else parent.appendChild(fresh);
       child = fresh;
     }
     syncElement(child, wanted);
+    child = child.nextElementSibling;
   }
 }
 

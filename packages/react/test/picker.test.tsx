@@ -5,9 +5,9 @@ import { createRoot, type Root } from 'react-dom/client';
 import { renderToString } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { LocaleProvider } from '../src/locale/index.js';
-import { AgentCharacterPicker } from '../src/picker/AgentCharacterPicker.js';
-import { CharacterPicker } from '../src/picker/CharacterPicker.js';
-import { CompactCharacterPicker } from '../src/picker/CompactCharacterPicker.js';
+import { AgentCharacterSelector } from '../src/picker/AgentCharacterSelector.js';
+import { CharacterSelector } from '../src/picker/CharacterSelector.js';
+import { CompactCharacterSelector } from '../src/picker/CompactCharacterSelector.js';
 
 let root: Root | null = null;
 let host: HTMLElement | null = null;
@@ -40,12 +40,12 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-describe('AgentCharacterPicker', () => {
+describe('AgentCharacterSelector', () => {
   const value = { shape: 'blob', color: 'blue' } as const;
 
   it('stages a pick and only reports it on commit', () => {
     const onCommit = vi.fn();
-    const el = render(<AgentCharacterPicker value={value} onCommit={onCommit} />);
+    const el = render(<AgentCharacterSelector value={value} onCommit={onCommit} />);
 
     click(byLabel(el, 'Hexagon'));
     expect(onCommit).not.toHaveBeenCalled();
@@ -60,7 +60,7 @@ describe('AgentCharacterPicker', () => {
   it('discards the staged pick on cancel', () => {
     const onCommit = vi.fn();
     const onCancel = vi.fn();
-    const el = render(<AgentCharacterPicker value={value} onCommit={onCommit} onCancel={onCancel} />);
+    const el = render(<AgentCharacterSelector value={value} onCommit={onCommit} onCancel={onCancel} />);
 
     click(byLabel(el, 'Cloud'));
     click(buttonWithText(el, 'Cancel'));
@@ -72,7 +72,7 @@ describe('AgentCharacterPicker', () => {
 
   it('commits every pick in immediate mode and drops the buttons', () => {
     const onCommit = vi.fn();
-    const el = render(<AgentCharacterPicker value={value} onCommit={onCommit} immediate />);
+    const el = render(<AgentCharacterSelector value={value} onCommit={onCommit} immediate />);
 
     click(byLabel(el, 'Star'));
     expect(onCommit).toHaveBeenCalledWith({ shape: 'star', color: 'blue' });
@@ -80,7 +80,7 @@ describe('AgentCharacterPicker', () => {
   });
 
   it('shows no selection ring while the agent has a picture of its own', () => {
-    const el = render(<AgentCharacterPicker value={value} hasPicture />);
+    const el = render(<AgentCharacterSelector value={value} hasPicture />);
     expect(el.querySelector('[data-selected]')).toBeNull();
     // Picking still stages, so confirming can replace the picture.
     click(byLabel(el, 'Hexagon'));
@@ -88,38 +88,38 @@ describe('AgentCharacterPicker', () => {
   });
 });
 
-describe('CharacterPicker', () => {
+describe('CharacterSelector', () => {
   it('reports the colour that was picked', () => {
     const onSelectColor = vi.fn();
-    const el = render(<CharacterPicker shape="blob" color="blue" onSelectColor={onSelectColor} />);
+    const el = render(<CharacterSelector shape="blob" color="blue" onSelectColor={onSelectColor} />);
     click(byLabel(el, 'Red'));
     expect(onSelectColor).toHaveBeenCalledWith('red');
   });
 
   it('labels options with names rather than ids', () => {
-    const html = renderToString(<CharacterPicker shape="blob" color="blue" />);
+    const html = renderToString(<CharacterSelector shape="blob" color="blue" />);
     expect(html).toContain('aria-label="Hexagon"');
     expect(html).toContain('aria-label="Amber"');
 
     const zh = renderToString(
       <LocaleProvider locale="zh-CN">
-        <CharacterPicker shape="blob" color="blue" />
+        <CharacterSelector shape="blob" color="blue" />
       </LocaleProvider>,
     );
     expect(zh).toContain('aria-label="六边"');
   });
 });
 
-describe('CompactCharacterPicker', () => {
+describe('CompactCharacterSelector', () => {
   it('offers the eight small-size shapes and the ten assignable colours', () => {
-    const el = render(<CompactCharacterPicker shape="blob" color="blue" />);
+    const el = render(<CompactCharacterSelector shape="blob" color="blue" />);
     expect(el.querySelectorAll('.aora-picker__item')).toHaveLength(AUTO_SHAPE_POOL.length);
     expect(el.querySelectorAll('.aora-picker__swatch')).toHaveLength(ASSIGNABLE_COLOR_IDS.length);
     expect(el.querySelector('[aria-label="Black"]')).toBeNull();
   });
 
   it('renders on the server', () => {
-    const html = renderToString(<CompactCharacterPicker shape="hex" color="green" lineWeight={1.1} />);
+    const html = renderToString(<CompactCharacterSelector shape="hex" color="green" lineWeight={1.1} />);
     expect(html).toContain('aora-picker--compact');
     expect(html).not.toContain('NaN');
   });

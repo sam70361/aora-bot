@@ -2,7 +2,8 @@ import { autoPause as createAutoPause, type AutoPauseHandle } from '../auto-paus
 import type { CharacterOptions, CharacterVariant, InkPaint } from '../core/options.js';
 import { clamp } from '../math/easing.js';
 import { createSimulation, type Gaze, type Scheduler } from '../sim/simulation.js';
-import { DEFAULT_STYLE_ID, getStyle, resolveStyleOptions } from '../styles/index.js';
+import { acceptsVariant, DEFAULT_STYLE_ID, getStyle, resolveStyleOptions } from '../styles/index.js';
+import { requireTheme } from '../themes/state.js';
 import { prefersReducedMotion, ticker } from '../ticker.js';
 import type { LiveRenderer } from './renderer.js';
 
@@ -71,6 +72,8 @@ export function createCharacter(host: Element, options: CharacterOptions = {}): 
   /** The caller's own parameters, kept raw so a series switch can resolve them against the new series. */
   let styleOptions = options.styleOptions;
   let variant = options.variant ?? style.defaultVariant;
+  requireTheme('variant', variant, styleId);
+  if (options.shape) requireTheme('shape', options.shape);
 
   const mountRenderer = (): LiveRenderer =>
     style.createRenderer(host, {
@@ -119,9 +122,9 @@ export function createCharacter(host: Element, options: CharacterOptions = {}): 
   let running = false;
   let unsubscribe: (() => void) | null = null;
 
-  function frame(dt: number): void {
+  function frame(dt: number, ticking = false): void {
     sim.step(dt);
-    renderer.draw(sim.snapshot());
+    renderer.draw(sim.snapshot(), ticking);
   }
 
   function start(): void {
@@ -130,13 +133,15 @@ export function createCharacter(host: Element, options: CharacterOptions = {}): 
       return;
     }
     running = true;
-    unsubscribe = ticker.add((dt) => frame(dt));
+    renderer.hold?.(false);
+    unsubscribe = ticker.add((dt) => frame(dt, true));
   }
 
   function stop(): void {
     running = false;
     unsubscribe?.();
     unsubscribe = null;
+    renderer.hold?.(true);
   }
 
   // Auto-pause holds the loop without touching `paused`, so the host's own
@@ -181,6 +186,7 @@ export function createCharacter(host: Element, options: CharacterOptions = {}): 
     style = next;
     styleId = next.id;
     renderer = mountRenderer();
+    if (!running) renderer.hold?.(true);
     if (anchor?.parentNode === host) host.insertBefore(renderer.element, anchor);
     followRect = null;
     watchVisibility();
@@ -206,13 +212,16 @@ export function createCharacter(host: Element, options: CharacterOptions = {}): 
         switchStyle(next.style);
         switched = true;
         // A variant the new series does not have would silently draw as its fallback.
-        if (next.variant === undefined && !style.variants.includes(variant)) {
+        if (next.variant === undefined && !acceptsVariant(style, variant)) {
           change = { ...next, variant: style.defaultVariant };
         }
       } else if (next.styleOptions) {
         renderer.configure(resolveStyleOptions(style, next.styleOptions));
       }
-      if (change.variant) variant = change.variant;
+      if (change.variant) {
+        requireTheme('variant', change.variant, styleId);
+        variant = change.variant;
+      }
 
       sim.update(change);
 
@@ -276,6 +285,7 @@ export function createCharacter(host: Element, options: CharacterOptions = {}): 
   };
 
   if (!paused) start();
+  else renderer.hold?.(true);
   frame(0);
 
   return controller;

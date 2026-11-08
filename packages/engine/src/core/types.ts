@@ -1,5 +1,12 @@
+import {
+  THEME_MANIFEST,
+  type BuiltinThemeId,
+  type ThemeColorId,
+  type ThemeShapeId,
+} from '../themes/manifest.js';
+
 /** Shape space is a square of this size; every generated path is normalised into it. */
-export const SHAPE_SPACE = 229;
+export const SHAPE_SPACE = 240;
 
 /** Centre of shape space. All generators build around this point. */
 export const CENTER = SHAPE_SPACE / 2;
@@ -30,17 +37,17 @@ export type Point = readonly [number, number];
 export type Ring = Point[];
 
 /**
- * The roster on its shelves.
+ * The core roster on its shelves.
  *
- * This is the one place a character is filed. `SHAPE_IDS` is these shelves
- * laid end to end, so a character is in exactly one family by construction;
- * pickers and docs read the shelves for their captions.
- */
-export const SHAPE_FAMILIES = [
+ * This is the one place a core character is filed, so it is in exactly one
+ * family by construction. A family marked `listed: false` is drawn and
+ * accepted by id everywhere but left out of the default lists. Themes add
+ * characters of their own (`THEME_MANIFEST`), which load with their theme.
+ */ export const ALL_SHAPE_FAMILIES = [
   {
     id: 'round',
     label: { en: 'Round', zh: '圆润' },
-    shapes: ['mochi', 'circle', 'blob', 'pebble', 'egg', 'bun'],
+    shapes: ['circle', 'mochi', 'blob', 'pebble', 'egg', 'bun'],
   },
   { id: 'rect', label: { en: 'Rounded rectangle', zh: '方圆' }, shapes: ['tofu', 'pill'] },
   { id: 'polygon', label: { en: 'Polygon', zh: '多边' }, shapes: ['hex', 'onigiri', 'gem'] },
@@ -52,39 +59,121 @@ export const SHAPE_FAMILIES = [
   {
     id: 'garden',
     label: { en: 'Garden', zh: '田园' },
-    shapes: ['sprout', 'mushroom', 'acorn', 'cactus'],
+    shapes: ['sprout', 'mushroom', 'acorn', 'cactus', 'eggplant'],
   },
   {
     id: 'fruit',
     label: { en: 'Fruit', zh: '水果' },
-    shapes: ['pear', 'apple', 'strawberry', 'cherry'],
+    shapes: ['pear', 'apple', 'strawberry', 'cherry', 'avocado', 'melon'],
+  },
+  {
+    id: 'treat',
+    label: { en: 'Treats', zh: '美食' },
+    shapes: ['pudding', 'toast', 'icecream', 'cupcake', 'fries', 'candy', 'burger'],
   },
   {
     id: 'figure',
     label: { en: 'Figure', zh: '造型' },
-    shapes: ['star', 'heart', 'flame', 'bell', 'ghost', 'bot', 'crescent', 'boba'],
+    shapes: ['star', 'heart', 'flame', 'bell', 'ghost', 'bot', 'crescent', 'boba', 'planet'],
   },
-  { id: 'sea', label: { en: 'Sea', zh: '海洋' }, shapes: ['fish', 'octopus'] },
+  {
+    id: 'object',
+    label: { en: 'Objects', zh: '物件' },
+    shapes: ['cottage', 'chat', 'gift', 'bulb'],
+  },
+  { id: 'sea', label: { en: 'Sea', zh: '海洋' }, shapes: ['fish', 'octopus', 'seal', 'puffer'] },
   {
     id: 'critter',
     label: { en: 'Critter', zh: '小动物' },
-    shapes: ['cat', 'bunny', 'bear', 'chick', 'penguin', 'pig', 'fox'],
+    shapes: [
+      'cat',
+      'bunny',
+      'bear',
+      'chick',
+      'penguin',
+      'pig',
+      'fox',
+      'lion',
+      'hamster',
+      'hedgehog',
+      'koala',
+      'bat',
+    ],
   },
   {
     id: 'people',
     label: { en: 'People', zh: '人物' },
     shapes: ['bob', 'topknot', 'spiky', 'curly', 'twinbuns'],
   },
-] as const;
+] as const satisfies readonly FamilyEntry[];
 
-export type ShapeFamily = (typeof SHAPE_FAMILIES)[number];
-export type ShapeFamilyId = (typeof SHAPE_FAMILIES)[number]['id'];
-export type ShapeId = (typeof SHAPE_FAMILIES)[number]['shapes'][number];
+interface FamilyEntry {
+  readonly id: string;
+  readonly label: { readonly en: string; readonly zh: string };
+  readonly listed?: boolean;
+  readonly shapes: readonly string[];
+}
 
-/** The roster in catalogue order, `mochi` (the default shape) first. */
+type CoreFamily = (typeof ALL_SHAPE_FAMILIES)[number];
+/** A character the core draws. */
+export type CoreShapeId = CoreFamily['shapes'][number];
+/** Any character the engine knows: the core's, and those of the shipped themes, which draw once their theme is installed. */
+export type ShapeId = CoreShapeId | ThemeShapeId;
+/** A family of the core roster, listed or not. */
+export type AnyShapeFamily = CoreFamily;
+export type AnyShapeFamilyId = AnyShapeFamily['id'];
+/** The id of a family the default lists can show: a listed core family, or a theme with listed characters. */
+export type ShapeFamilyId = Exclude<CoreFamily, { listed: false }>['id'] | BuiltinThemeId;
+
+/** A family the default lists show. */
+export interface ShapeFamily {
+  readonly id: ShapeFamilyId;
+  readonly label: { readonly en: string; readonly zh: string };
+  readonly shapes: readonly ShapeId[];
+}
+
+const isListed = (family: FamilyEntry): boolean => family.listed !== false;
+
+/**
+ * The listed families: what pickers, the console and the docs show. A
+ * theme's listed characters (`ThemeManifestEntry.listedShapes`) follow the
+ * core's as a family of their own, and draw once their theme is loaded.
+ */
+export const SHAPE_FAMILIES: readonly ShapeFamily[] = [
+  ...(ALL_SHAPE_FAMILIES as readonly FamilyEntry[]).filter(isListed).map((family) => family as ShapeFamily),
+  ...THEME_MANIFEST.filter((theme) => theme.listedShapes.length > 0).map((theme): ShapeFamily => ({
+    id: theme.id,
+    label: theme.name,
+    shapes: theme.listedShapes,
+  })),
+];
+
+/** The listed roster in catalogue order, `mochi` (the default shape) first. */
 export const SHAPE_IDS: readonly ShapeId[] = SHAPE_FAMILIES.flatMap((family) => family.shapes);
 
-export const COLOR_IDS = [
+/** Every character the core draws, listed or not: what the core's generator and stored data cover. */
+export const CORE_SHAPE_IDS: readonly CoreShapeId[] = ALL_SHAPE_FAMILIES.flatMap((family) => family.shapes);
+
+/**
+ * Every character the engine knows, listed ones first: the core's, then the
+ * shipped themes'. A theme's characters draw once the theme is installed
+ * (`themeOwning`, `loadTheme`); this list is for checking an id.
+ */
+export const ALL_SHAPE_IDS: readonly ShapeId[] = [
+  ...new Set<ShapeId>([...SHAPE_IDS, ...CORE_SHAPE_IDS, ...THEME_MANIFEST.flatMap((theme) => theme.shapes)]),
+];
+
+/** Whether a character is in the default lists. */
+export const isListedShape = (id: string): boolean => (SHAPE_IDS as readonly string[]).includes(id);
+
+/**
+ * The palette, every colour the engine paints. The default lists (`COLOR_IDS`)
+ * leave out the ones in `UNLISTED_COLOR_IDS`, which are accepted by id
+ * everywhere and offered by themes; taking an id out of that list lists it.
+ * A colour only one theme paints with is that theme's own
+ * (`ThemeManifestEntry.colors`), drawn once it is installed and never listed.
+ */
+export const CORE_COLOR_IDS = [
   'black',
   'brown',
   'red',
@@ -97,10 +186,41 @@ export const COLOR_IDS = [
   'magenta',
   'pink',
   'gray',
+  'night',
+  'cocoa',
+  'sky',
+  'blush',
+  'lilac',
+  'cream',
+  'butter',
+  'ivory',
+  'meadow',
 ] as const;
 
-export type ColorId = (typeof COLOR_IDS)[number];
+/** Colours drawn everywhere but left out of the default lists: those more than one theme paints with. */
+export const UNLISTED_COLOR_IDS: readonly CoreColorId[] = [
+  'night',
+  'cocoa',
+  'sky',
+  'blush',
+  'lilac',
+  'cream',
+  'butter',
+  'ivory',
+  'meadow',
+];
 
+export type CoreColorId = (typeof CORE_COLOR_IDS)[number];
+export type ColorId = CoreColorId | ThemeColorId;
+
+/** The listed palette: what pickers and the console show. */
+export const COLOR_IDS: readonly ColorId[] = CORE_COLOR_IDS.filter((id) => !UNLISTED_COLOR_IDS.includes(id));
+
+/** Every colour the engine knows, listed ones first. */
+export const ALL_COLOR_IDS: readonly ColorId[] = [
+  ...CORE_COLOR_IDS,
+  ...THEME_MANIFEST.flatMap((theme): readonly ColorId[] => theme.colors),
+];
 /** Colours that deterministic assignment may pick. `black` is reserved for defaults. */
 export const ASSIGNABLE_COLOR_IDS = COLOR_IDS.filter((c) => c !== 'black') as Exclude<ColorId, 'black'>[];
 
@@ -125,9 +245,63 @@ export const AUTO_SHAPE_POOL: ShapeId[] = [
  * a parametric mouth at the same line weight as the eyes, and moves the three
  * as one plate. All styles share every state and pose; only the feature set
  * and the expression tables differ.
+ *
+ * The rest are drawn faces (`DRAWN_FACE_STYLES`): faces of the cute family
+ * whose eyes are built from several painted layers — whites, pupils, lids,
+ * brows, lenses, screens, symbols — each with its own expression and mouth
+ * tables (`face/drawn/designs/`). They keep the cute face's layout,
+ * cheeks and effects, and differ from it as data.
+ *
+ * `FACE_STYLES` is the order pickers list them in: the first drawn face,
+ * `capsule`, leads, then the three base faces, then the other drawn faces.
  */
-export const FACE_STYLES = ['cute', 'eyes', 'line'] as const;
+export const DRAWN_FACE_STYLES = [
+  'capsule',
+  'brow',
+  'glossy',
+  'sparkle',
+  'button',
+  'shades',
+  'droopy',
+  'bigmouth',
+  'pie',
+  'screen',
+  'symbol',
+  'teardrop',
+  'specs',
+] as const;
+export type DrawnFaceStyle = (typeof DRAWN_FACE_STYLES)[number];
+
+const [LEAD_FACE, ...LATER_FACES] = DRAWN_FACE_STYLES;
+export const FACE_STYLES = [LEAD_FACE, 'cute', 'eyes', 'line', ...LATER_FACES] as const;
 export type FaceStyle = (typeof FACE_STYLES)[number];
+
+/** Drawn faces a host or a theme defined (`defineFace`), by id. */
+const DEFINED_FACES = new Set<string>();
+
+/** File a face `defineFace` registered, so every check of a face id knows it. */
+export const markDefinedFace = (id: string): void => {
+  DEFINED_FACES.add(id);
+};
+
+/**
+ * Whether a face is a drawn one: a cute-family face with its own layered
+ * eyes, built in or defined with `defineFace`. A defined face's id passes as
+ * a `DrawnFaceStyle`, as a `defineShape` id passes as a `ShapeId`.
+ */
+export const isDrawnFace = (face: string | undefined): face is DrawnFaceStyle =>
+  (DRAWN_FACE_STYLES as readonly string[]).includes(face ?? '') || DEFINED_FACES.has(face ?? '');
+
+/** Whether the engine draws a face: one of `FACE_STYLES`, or one defined with `defineFace`. */
+export const isFaceStyle = (face: string | undefined): face is FaceStyle =>
+  (FACE_STYLES as readonly string[]).includes(face ?? '') || DEFINED_FACES.has(face ?? '');
+
+/**
+ * Whether a face is of the cute family: the cute face itself or a drawn one.
+ * These share the cute layout, cheeks and mood effects, and keep the body
+ * whole in the belt states.
+ */
+export const isCuteFamily = (face: string | undefined): boolean => face === 'cute' || isDrawnFace(face);
 
 /**
  * Nose shapes for the line face. A trait, not an expression: chosen once per
@@ -240,9 +414,10 @@ export interface Pose {
 export type PoseHome = Omit<Pose, 'scale'>;
 
 /**
- * Five multipliers applied on top of a shape's fitted face box.
- * `size` scales the whole face, `gap` the distance between eyes,
- * `height` the vertical offset, and the last two the eye dimensions.
+ * Five multipliers applied on top of a shape's fitted face box, all 1 by
+ * default. `size` scales the whole face, `gap` the distance between eyes,
+ * `height` the vertical offset, and the last two the eye dimensions. A
+ * state's own adjustments multiply into them.
  */
 export interface FaceTune {
   size: number;
@@ -253,11 +428,11 @@ export interface FaceTune {
 }
 
 export const DEFAULT_FACE_TUNE: FaceTune = {
-  size: 0.86,
-  gap: 1.18,
+  size: 1,
+  gap: 1,
   height: 1,
-  eyeWidth: 0.96,
-  eyeHeight: 0.92,
+  eyeWidth: 1,
+  eyeHeight: 1,
 };
 
 /**
@@ -294,9 +469,21 @@ export interface FaceBox {
  * - `inner`: the ink mixed with white, for the inside of an ear.
  * - `hair`: the ink a step darker on a filled body, and solid ink on an
  *   outlined one, as a line drawing fills in its hair.
+ *
+ * A part with a `color` of its own is laid flat in that colour on a filled
+ * body, whatever its tone, and keeps every other rule of its tone: the face
+ * keeps off a hair part, and an outlined body draws it as its tone's line.
  */
 export const PART_TONES = ['body', 'leaf', 'inner', 'hair'] as const;
 export type PartTone = (typeof PART_TONES)[number];
+
+/**
+ * A part's own colour: a palette colour, painted in that swatch's ink and so
+ * following the page between light and dark as a body of that colour does,
+ * or any CSS colour, used as it is. A part with its own colour is ringed in a
+ * line derived from that colour, so it reads on a body of the same colour.
+ */
+export type PartColor = ColorId | (string & Record<never, never>);
 
 /**
  * A piece of the figure that is not the body ring: another outline in shape
@@ -306,6 +493,43 @@ export type PartTone = (typeof PART_TONES)[number];
 export interface ShapePart {
   tone: PartTone;
   outline: Ring;
+  /** The part's own colour, in place of the ink its tone derives from. */
+  color?: PartColor;
+  /**
+   * A prop laid over the figure (a hat, a lantern) rather than a piece of it.
+   * Where it covers the body the face keeps off it, as it does off hair.
+   */
+  prop?: boolean;
+  /** The smallest width, in CSS pixels across the character, at which the part is drawn: fine detail. */
+  minPx?: number;
+  /** A trim a skin leaves undecorated: no stitches, hatching or marks of its own. */
+  plain?: boolean;
+  /** A prop drawn under the face (make-up, a painted mark): the face fit does not keep off it. */
+  underFace?: boolean;
+  /** The signature motion it plays (a motion its theme declares), with its pivot in shape space. */
+  motion?: PartMotionRef;
+}
+
+/**
+ * Where a signature motion meets the figure, in shape space: the pivot the
+ * art gives, if it gives one, and the art's own units (`unit` shape units
+ * each, its origin at `offset`), so a move or a point written in the art's
+ * units lands where it was drawn.
+ */
+export interface MotionAnchor {
+  readonly pivot?: Point;
+  readonly unit: number;
+  readonly offset: Point;
+}
+
+/** The motion a part names: the id its theme declares it under, and where it meets the part. */
+export interface PartMotionRef extends MotionAnchor {
+  readonly id: string;
+}
+
+/** The motions a whole figure plays (`DrawnArt.motion`), and where they meet it. */
+export interface FigureMotionRef extends MotionAnchor {
+  readonly ids: readonly string[];
 }
 
 /** A fully derived shape entry in the registry. */
@@ -336,4 +560,8 @@ export interface ShapeDef {
   face: FaceBox;
   /** Extra pieces of the figure, drawn with the body: ears, antennas, leaves. Usually empty. */
   parts: readonly ShapePart[];
+  /** The signature motions the whole figure plays, as its theme's art names them. */
+  motion?: FigureMotionRef;
+  /** What uncoloured hair is shaded towards, as a share of the ink's lightness (`DrawnArt.hairDeep`). */
+  hairDeep?: number;
 }

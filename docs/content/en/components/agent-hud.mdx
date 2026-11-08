@@ -56,7 +56,7 @@ const hud = useAgentHud();
 
 ## Appearance
 
-`agent` supplies the shape, ink, face and nose the same way [`AgentAvatar`](/components/agent-avatar) resolves them: explicit fields first, then `preset`, then a deterministic derivation from `id`. `face`, `nose` and `lineWeight` override the agent's, so a line-face HUD in a heavier pen is one prop away. The line weight is shared by the nose, the mouth and the dial — see [the line face across surfaces](/design/face#the-line-face-across-surfaces).
+`agent` supplies the shape, ink, face and nose the same way [`AgentPortrait`](/components/agent-portrait) resolves them: explicit fields first, then `preset`, then a deterministic derivation from `id`. `face`, `nose` and `lineWeight` override the agent's, so a line-face HUD in a heavier pen is one prop away. The line weight is shared by the nose, the mouth and the dial — see [the line face across surfaces](/design/face#the-line-face-across-surfaces).
 
 ## API
 

@@ -6,6 +6,13 @@ export {
   VIEWBOX_STR,
   SHAPE_IDS,
   SHAPE_FAMILIES,
+  ALL_SHAPE_IDS,
+  ALL_SHAPE_FAMILIES,
+  CORE_SHAPE_IDS,
+  ALL_COLOR_IDS,
+  CORE_COLOR_IDS,
+  UNLISTED_COLOR_IDS,
+  isListedShape,
   PART_TONES,
   COLOR_IDS,
   ASSIGNABLE_COLOR_IDS,
@@ -14,6 +21,10 @@ export {
   DEFAULT_POSE,
   DEFAULT_POSE_HOME,
   FACE_STYLES,
+  DRAWN_FACE_STYLES,
+  isDrawnFace,
+  isFaceStyle,
+  isCuteFamily,
   NOSE_IDS,
   MOUTH_IDS,
   CUTE_MOUTH_IDS,
@@ -25,7 +36,13 @@ export type {
   ShapeId,
   ShapeFamily,
   ShapeFamilyId,
+  AnyShapeFamily,
+  AnyShapeFamilyId,
+  CoreShapeId,
+  CoreColorId,
   PartTone,
+  PartColor,
+  PartMotionRef,
   ShapePart,
   ColorId,
   Pose,
@@ -34,6 +51,7 @@ export type {
   FaceBox,
   ShapeDef,
   FaceStyle,
+  DrawnFaceStyle,
   NoseId,
   MouthId,
   CuteMouthId,
@@ -42,13 +60,90 @@ export type {
 } from './core/types.js';
 
 // Shapes
-export { getShape, allShapes, defineShape, getShapeScale, getEyeScaleForShape } from './shapes/registry.js';
+export {
+  getShape,
+  allShapes,
+  defineShape,
+  defineShapeWithProps,
+  getShapeScale,
+  getEyeScaleForShape,
+} from './shapes/registry.js';
+export type { PropPart } from './shapes/registry.js';
 export { fitFace } from './shapes/fit-face.js';
 export * as shapeGenerators from './shapes/generators.js';
 
 // Cast
-export { CAST, CAST_IDS, castMember, isCastId } from './core/cast.js';
-export type { CharacterPreset, CastId } from './core/cast.js';
+export { CAST, CAST_IDS, ALL_CAST_IDS, CORE_CAST_IDS, allCast, castMember, isCastId } from './core/cast.js';
+
+// Themes
+export {
+  THEME_IDS,
+  THEME_MANIFEST,
+  THEME_MEMBER_KINDS,
+  ThemeNotInstalledError,
+  defineTheme,
+  getTheme,
+  installTheme,
+  isFixed,
+  isThemeInstalled,
+  listThemes,
+  loadTheme,
+  loadThemes,
+  themeChoices,
+  themeDefault,
+  themeLabel,
+  themeLook,
+  themeOwning,
+  themesNeeded,
+} from './themes/index.js';
+export type {
+  BuiltinThemeId,
+  StyleChoice,
+  ThemeDefinition,
+  ThemeDimension,
+  ThemeLook,
+  ThemeManifestEntry,
+  ThemeMember,
+  ThemeMemberKind,
+  ThemeOwnedKind,
+  ThemePackage,
+  ThemeShapeId,
+  ThemeSource,
+  ThemeVariant,
+} from './themes/index.js';
+export type {
+  GrainSpec,
+  HatchSpec,
+  MediumContext,
+  MediumDefinition,
+  MediumKit,
+  MediumPiece,
+} from './render/vector/media.js';
+export type {
+  DecorAnimation,
+  DecorGlyph,
+  DecorItem,
+  DecorLayer,
+  DecorPaint,
+  DecorSpec,
+  DecorTone,
+  DecorZone,
+  LightnessBand,
+  MoodAccent,
+  MoodLean,
+  MotionEasing,
+  MotionGate,
+  MotionKey,
+  MotionWave,
+  PartEmitter,
+  PartKeys,
+  PartMotion,
+  PartSwing,
+} from './themes/extras/index.js';
+export type { ExtrasKit, ThemeExtras, ThemeExtrasFactory } from './themes/extras-hook.js';
+export { MOOD_LEAN, STATE_MOODS, moodOf } from './motion/mood.js';
+export type { StateMood } from './motion/mood.js';
+export type { CharacterPreset, CastId, CoreCastId, ThemeCastMember } from './core/cast.js';
 
 // Palette
 export {
@@ -94,6 +189,35 @@ export type {
   PlacedFeature,
   PlacementOptions,
 } from './face/placement.js';
+export {
+  FACE_DESIGNS,
+  getFaceDesign,
+  defineFace,
+  definedFaces,
+  definedFaceLabel,
+  drawnPairFor,
+  drawnFaceText,
+  morphDrawnPair,
+  EYE_CLASSES,
+  CUTE_EYE_CLASSES,
+  FACE_PAINTS,
+  FACE_ACCENTS,
+} from './face/drawn/index.js';
+export type {
+  AnyFaceDesign,
+  FaceDesign,
+  DrawnEye,
+  DrawnPair,
+  EyeClass,
+  FaceLayer,
+  FacePaint,
+  FaceAccent,
+  DrawnFaceGeometry,
+  DrawnShape,
+} from './face/drawn/index.js';
+export { FACE_KIT } from './face/drawn/kit.js';
+export type { FaceKit } from './face/drawn/kit.js';
+export type { EyeContext, DrawnLayout } from './face/drawn/types.js';
 export {
   MOUTHS,
   NOSES,
@@ -245,9 +369,12 @@ export {
   DEFAULT_STYLE_ID,
   STYLE_IDS,
   defineStyle,
+  defineVectorMedium,
   getStyle,
   hasStyle,
   listStyles,
+  allVariants,
+  acceptsVariant,
   paramsForVariant,
   resolveStyleOptions,
   validateStyleOptions,
@@ -262,7 +389,14 @@ export type {
 export type { StyleVariant } from './core/options.js';
 
 // The kaomoji series' plain-text form
-export { kaomoji, wrapperFor, STATE_FACES, STATE_TAILS, SHAPE_WRAPPERS } from './render/kaomoji/table.js';
+export {
+  kaomoji,
+  faceText,
+  wrapperFor,
+  STATE_FACES,
+  STATE_TAILS,
+  SHAPE_WRAPPERS,
+} from './render/kaomoji/table.js';
 export type { Wrapper } from './render/kaomoji/table.js';
 
 // Agent integration (also available from the `/agent` subpath with no runtime)

@@ -17,7 +17,7 @@ States come in four groups, and every one is live below, sharing a single stage.
 | `STATE_EYE_TOPOLOGIES` | Expressions of the `eyes` and `line` faces             |
 | `STATE_EYE_SWITCH_MS`  | Randomised interval between them                       |
 | `STATE_BLINK_MS`       | Blink interval, or `null` for states that do not blink |
-| `STATE_FACE_TUNE`      | Face adjustments layered over the default              |
+| `STATE_FACE_TUNE`      | Face ratios multiplied into the default                |
 | `STATE_GAZE`           | Gaze drift amplitude and how often it retargets        |
 | `STATE_BELT`           | Belt overlay of the `eyes` and `line` faces            |
 | `STATE_MOUTH`          | Mouth worn in line-face mode                           |
@@ -89,12 +89,12 @@ Like the mood effects these are pure functions of time, carried on the snapshot 
 The `eyes` and `line` faces draw these states with a belt: the body collapses to a core and the belt takes over. See [belts and particles](/internals/belts) for how the transition works and how each belt is drawn. The demo below uses `face="eyes"` so the belts themselves are visible.
 
 ```tsx preview
-import { MarkStageProvider, StagedMark, STATE_BELT } from '@aora-bot/react';
+import { CharacterStageProvider, StagedMark, STATE_BELT } from '@aora-bot/react';
 
 export default function Demo() {
   const entries = Object.entries(STATE_BELT) as [string, string][];
   return (
-    <MarkStageProvider maxSources={entries.length}>
+    <CharacterStageProvider maxSources={entries.length}>
       <div className="site-demo">
         {entries.map(([state, belt]) => (
           <div className="site-demo__cell" key={state}>
@@ -106,7 +106,7 @@ export default function Demo() {
           </div>
         ))}
       </div>
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 ```
@@ -124,7 +124,7 @@ Every state in one table: the eyes it cycles, its mouth, its effect (`cute` face
 Most applications do not think in these terms. Two helpers translate.
 
 ```tsx preview
-import { characterStateForAgent, activityFromTool, TOOL_ACTIVITIES } from '@aora-bot/react';
+import { characterStateForAgent, activityForTool, TOOL_ACTIVITIES } from '@aora-bot/react';
 
 export default function Demo() {
   return (
@@ -142,7 +142,7 @@ export default function Demo() {
               <code>{tool}</code>
             </td>
             <td>
-              <code>{activityFromTool(tool).state}</code>
+              <code>{activityForTool(tool).state}</code>
             </td>
           </tr>
         ))}

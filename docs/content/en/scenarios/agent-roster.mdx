@@ -11,10 +11,10 @@ Three rows and a group. Each row reads its state from the registry and shows the
 ```tsx preview
 import { useState } from 'react';
 import {
-  AgentAvatar,
-  AvatarStack,
+  AgentPortrait,
+  AvatarGroup,
   AvatarStatusDot,
-  MarkStageProvider,
+  CharacterStageProvider,
   UnreadBadge,
   WorkingBadge,
   useMarkCommand,
@@ -36,7 +36,7 @@ function Row({ agent }: { agent: (typeof agents)[number] }) {
   return (
     <div className="site-demo__row">
       <span className="site-demo__avatar">
-        <AgentAvatar agent={agent} state={snapshot.state} sizePx={40} />
+        <AgentPortrait agent={agent} state={snapshot.state} sizePx={40} />
         <span className="site-demo__dot">
           <AvatarStatusDot tone={running ? 'working' : 'online'} label={running ? 'working' : 'online'} />
         </span>
@@ -82,17 +82,17 @@ function Row({ agent }: { agent: (typeof agents)[number] }) {
 
 export default function Demo() {
   return (
-    <MarkStageProvider>
+    <CharacterStageProvider>
       <div className="site-demo site-demo--column">
         {agents.map((agent) => (
           <Row key={agent.id} agent={agent} />
         ))}
         <div className="site-demo__row">
-          <AvatarStack members={[...agents, { id: 'echo' }, { id: 'sol' }]} sizePx={40} />
+          <AvatarGroup members={[...agents, { id: 'echo' }, { id: 'sol' }]} sizePx={40} />
           <span>Everyone</span>
         </div>
       </div>
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 ```
@@ -105,12 +105,12 @@ The list of agents down the side of a workspace: who exists, who is busy, who ha
 
 ## Components
 
-- [`AgentAvatar`](/components/agent-avatar) — picture, group cluster or character, chosen from the agent record.
-- [`AvatarStack`](/components/avatar-stack) — a group's members, each punched out of the one behind it in its own silhouette.
-- [`AvatarStatusDot`](/components/avatar-chrome) and [`UnreadBadge`](/components/avatar-chrome) — presence and counts in the corner.
+- [`AgentPortrait`](/components/agent-portrait) — picture, group cluster or character, chosen from the agent record.
+- [`AvatarGroup`](/components/avatar-group) — a group's members, each punched out of the one behind it in its own silhouette.
+- [`AvatarStatusDot`](/components/avatar-frame) and [`UnreadBadge`](/components/avatar-frame) — presence and counts in the corner.
 - [`WorkingBadge`](/components/working-badge) — three dots out of phase, for a row that is busy but whose face should stay still.
 - [`useMarkCommands`](/components/mark-commands) — `holdFacts`, `holdState`, `releaseState`; the roster and the chat read the same registry.
-- [`MarkStageProvider`](/components/mark-stage) — twenty idle blobs cost one engine.
+- [`CharacterStageProvider`](/components/character-stage) — twenty idle blobs cost one engine.
 
 ## How the states move
 
@@ -134,6 +134,6 @@ Read the registry with `useMarkCommand(id, 'avatar')`. The surface matters: `com
 
 ## Next
 
-- [AgentAvatar](/components/agent-avatar) — a stable face per id
-- [AvatarStack](/components/avatar-stack) — overlapping group avatars
-- [Badges and status](/components/avatar-chrome) — unread counts and status dots
+- [AgentPortrait](/components/agent-portrait) — a stable face per id
+- [AvatarGroup](/components/avatar-group) — overlapping group avatars
+- [Badges and status](/components/avatar-frame) — unread counts and status dots

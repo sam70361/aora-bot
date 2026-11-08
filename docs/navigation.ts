@@ -90,39 +90,39 @@ const SECTIONS: Section[] = [
         en: 'CharacterMarkMirror',
         zh: '角色镜像',
       },
-      { link: '/components/mark-stage', en: 'MarkStageProvider', zh: '共享舞台' },
+      { link: '/components/character-stage', en: 'CharacterStageProvider', zh: '共享舞台' },
       { link: '/components/mark-commands', en: 'Mark commands', zh: '角色指令' },
       { link: '/components/hud-plate', en: 'HudPlate', zh: 'HUD 底盘' },
-      { link: '/components/agent-avatar', en: 'AgentAvatar', zh: '头像' },
-      { link: '/components/avatar-stack', en: 'AvatarStack', zh: '头像组' },
-      { link: '/components/avatar-chrome', en: 'Badges and status', zh: '徽标与状态' },
+      { link: '/components/agent-portrait', en: 'AgentPortrait', zh: '头像' },
+      { link: '/components/avatar-group', en: 'AvatarGroup', zh: '头像组' },
+      { link: '/components/avatar-frame', en: 'Badges and status', zh: '徽标与状态' },
       { link: '/components/working-badge', en: 'WorkingBadge', zh: '忙碌徽标' },
-      { link: '/components/character-picker', en: 'CharacterPicker', zh: '角色选择器' },
+      { link: '/components/character-selector', en: 'CharacterSelector', zh: '角色选择器' },
       {
-        link: '/components/agent-character-picker',
-        en: 'AgentCharacterPicker',
+        link: '/components/agent-character-selector',
+        en: 'AgentCharacterSelector',
         zh: '暂存选择器',
       },
       {
-        link: '/components/compact-character-picker',
-        en: 'CompactCharacterPicker',
+        link: '/components/compact-character-selector',
+        en: 'CompactCharacterSelector',
         zh: '紧凑选择器',
       },
-      { link: '/components/avatar-editor', en: 'AvatarEditor', zh: '头像编辑器' },
+      { link: '/components/avatar-studio', en: 'AvatarStudio', zh: '头像编辑器' },
       { link: '/components/template-dialog', en: 'TemplateDialog', zh: '模板对话框' },
       { link: '/components/use-publish-mark', en: 'usePublishMark', zh: '发布状态' },
-      { link: '/components/activity-mark', en: 'ActivityMark', zh: '活动标记' },
-      { link: '/components/activity-ticker', en: 'ActivityTicker', zh: '活动跑马' },
+      { link: '/components/activity-badge', en: 'ActivityBadge', zh: '活动标记' },
+      { link: '/components/activity-line', en: 'ActivityLine', zh: '活动跑马' },
       { link: '/components/occupancy-list', en: 'OccupancyList', zh: '占用列表' },
       { link: '/components/restricted-scene', en: 'RestrictedScene', zh: '受限场景' },
       { link: '/components/boot-loop', en: 'BootLoop', zh: '启动序列' },
-      { link: '/components/cast-stage', en: 'CastStage', zh: '群像舞台' },
+      { link: '/components/cast-lineup', en: 'CastLineup', zh: '群像舞台' },
       {
         link: '/components/walkthrough',
         en: 'Walkthrough surfaces',
         zh: '引导页组件',
       },
-      { link: '/components/confetti-layer', en: 'ConfettiLayer', zh: '彩纸层' },
+      { link: '/components/celebration-layer', en: 'CelebrationLayer', zh: '彩纸层' },
       { link: '/components/locale-provider', en: 'LocaleProvider', zh: '多语言' },
       { link: '/components/api-index', en: 'API index', zh: '索引' },
     ],
@@ -216,11 +216,13 @@ export const sidebarFor = (lang: Lang): Sidebar => ({
 });
 
 /*
- * Five items, and only five: the console (the home page, where a character is
- * built by clicking), the docs, the scenarios, the sponsor page, and the
- * classic Emotion Ball, which keeps its own site and license. The docs
- * item stands for every space the one sidebar draws from, so the bar does not
- * need an edit when a page is added, and the sidebar is the map.
+ * Seven items, and only seven: the console (the home page, where a character is
+ * built by clicking), the theme exhibition beside it, the docs, the scenarios,
+ * what is new in each release, the sponsor page, and the classic Emotion Ball, which keeps its own site and
+ * license. The docs item stands for every space the one sidebar draws from, so
+ * the bar does not need an edit when a page is added, and the sidebar is the
+ * map. The exhibition item likewise covers the shelf and every album, so a
+ * theme the engine ships needs no edit here.
  *
  * `activeMatch` is a regular expression tested against the pathname, so one
  * unprefixed pattern highlights correctly under `/en/` as well. The console
@@ -232,12 +234,14 @@ export const navFor = (lang: Lang): Nav => {
 
   return [
     { text: t('Console', '控制台'), link: '/', activeMatch: '^/(en/?)?(index(\\.html)?)?$' },
+    { text: t('Themes', '主题展'), link: '/themes/', activeMatch: '/themes(/|$)' },
     {
       text: t('Docs', '文档'),
       link: '/guide/getting-started',
       activeMatch: '/(guide|components|design|internals)/',
     },
     { text: t('Scenarios', '场景'), link: '/scenarios/', activeMatch: '/scenarios/' },
+    { text: t("What's New", '更新日志'), link: '/whats-new', activeMatch: '/whats-new' },
     { text: t('Sponsor', '打赏作者'), link: '/sponsor', activeMatch: '/sponsor' },
     { text: t('Emotion Ball', '表情馆'), link: 'https://sam70361.github.io/aora-bot/' },
   ];

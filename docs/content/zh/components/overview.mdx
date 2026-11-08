@@ -16,9 +16,9 @@ React 层刻意很小。大部分工作发生在引擎里；这些组件决定�
 
 **单独一个角色。** `CharacterMark`。
 
-**很多角色，其中大多数长得一样。** `MarkStageProvider` 加 `StagedMark`。每种不同的形状-状态组合一个引擎，其余用镜像。
+**很多角色，其中大多数长得一样。** `CharacterStageProvider` 加 `StagedMark`。每种不同的形状-状态组合一个引擎，其余用镜像。
 
-**用户或智能体的头像。** `AgentAvatar`。它在照片、群组簇和角色之间替你选择，并从 id 推导稳定外观，所以你不必存储一份。
+**用户或智能体的头像。** `AgentPortrait`。它在照片、群组簇和角色之间替你选择，并从 id 推导稳定外观，所以你不必存储一份。
 
 **会报告自己在做什么的智能体。** `AgentStateProvider` 加 `CharacterMark`。钩子和中继讲的是[情绪协议](/design/protocol)；仲裁器决定脸上显示哪一个会话。
 
@@ -26,9 +26,9 @@ React 层刻意很小。大部分工作发生在引擎里；这些组件决定�
 
 **同一个智能体同时画在几个地方。** [角色指令](/components/mark-commands)——事实只发布一次，这个智能体的每一个名册行、头像和活动行都跟着走。
 
-**让人选择或编辑外观。** 设置表单里用 `CharacterPicker`；对话框里用 [`AgentCharacterPicker`](/components/agent-character-picker)；注册表单旁用 [`CompactCharacterPicker`](/components/compact-character-picker)；还允许上传图片时用 [`AvatarEditor`](/components/avatar-editor)；外观属于一个正在创建的模板时用 [`TemplateDialog`](/components/template-dialog)。
+**让人选择或编辑外观。** 设置表单里用 `CharacterSelector`；对话框里用 [`AgentCharacterSelector`](/components/agent-character-selector)；注册表单旁用 [`CompactCharacterSelector`](/components/compact-character-selector)；还允许上传图片时用 [`AvatarStudio`](/components/avatar-studio)；外观属于一个正在创建的模板时用 [`TemplateDialog`](/components/template-dialog)。
 
-**一整个场景。** 死胡同用 [`RestrictedScene`](/components/restricted-scene)，不确定时长的等待用 [`BootLoop`](/components/boot-loop)，有脚本的表演用 [`CastStage`](/components/cast-stage)，引导流程用[引导页组件](/components/walkthrough)。
+**一整个场景。** 死胡同用 [`RestrictedScene`](/components/restricted-scene)，不确定时长的等待用 [`BootLoop`](/components/boot-loop)，有脚本的表演用 [`CastLineup`](/components/cast-lineup)，引导流程用[引导页组件](/components/walkthrough)。
 
 **用手绘吉祥物代替程序化角色。** `SpriteMark`，用同一套协议编号索引帧。
 

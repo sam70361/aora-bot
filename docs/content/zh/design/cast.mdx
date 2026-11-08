@@ -13,7 +13,7 @@ import { CastGrid } from '@theme';
 ```tsx
 <CharacterMark preset="bao" state="happy" />
 <StagedMark preset="dew" />
-<AgentAvatar agent={{ id: 'u-1', preset: 'nimbo' }} />
+<AgentPortrait agent={{ id: 'u-1', preset: 'nimbo' }} />
 ```
 
 预设只在没有给出 `shape` 和 `color` 时提供它们，别无其他：与 `preset` 一起传入 `shape` 会覆盖预设的形状。它是原语之上的一层便利，不是新的维度。
@@ -44,12 +44,12 @@ interface CharacterPreset {
   shape: ShapeId;
   color: ColorId;
   accent: string; // 角色设计时用的十六进制色
-  face?: FaceStyle; // 按线条脸绘制的预设
+  face?: FaceStyle; // 自带脸型的预设
   nose?: NoseId;
 }
 ```
 
-`color` 是最接近的调色板条目，也是实际渲染的墨色。`accent` 是角色绘制时的精确色相；保留它是为了文档里的色板，以及有自己调色板的宿主。内置成员都不设置 `face` 或 `nose`——阵容保持默认脸——但宿主自己的预设可以，而且所有选择器都会尊重它们。
+`color` 是最接近的调色板条目，也是实际渲染的墨色。`accent` 是角色绘制时的精确色相；保留它是为了文档里的色板，以及有自己调色板的宿主。内置成员里只有球球（`dot`）设置了 `face`，戴胶囊眼 `capsule`，其余成员保持默认脸，也都不设置 `nose`；宿主自己的预设同样可以设置，所有选择器都会尊重它们。
 
 ## 查找
 
@@ -57,7 +57,7 @@ interface CharacterPreset {
 castMember('mochi'); // CharacterPreset
 castMember('nobody'); // null —— 存下来的偏好过期了也安全
 isCastId('byte'); // true
-CAST_IDS; // ['mochi', 'dot', 'pip', 'byte', …]
+CAST_IDS; // ['dot', 'mochi', 'pip', 'byte', …]
 ```
 
 `castMember` 对未知编号返回 `null` 而不是抛出，所以存储的偏好里出现未知编号时会降级为默认角色，而不是让页面崩溃。
@@ -65,4 +65,4 @@ CAST_IDS; // ['mochi', 'dot', 'pip', 'byte', …]
 ## 接下来
 
 - [形状](/design/shapes)——每个角色的图纸
-- [CastStage](/components/cast-stage)——多个角色依次入场
+- [CastLineup](/components/cast-lineup)——多个角色依次入场

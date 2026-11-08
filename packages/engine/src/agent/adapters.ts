@@ -59,7 +59,7 @@ export const cursor: AgentAdapter = {
 
 /**
  * Generic tool names, for hosts that report which tool is running rather
- * than which lifecycle event fired. This is the table `ActivityMark` reads.
+ * than which lifecycle event fired. This is the table `ActivityBadge` reads.
  */
 export const TOOL_STATES: Record<string, CharacterState> = {
   search: 'searching',

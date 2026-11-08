@@ -19,13 +19,33 @@ import type {
  * How the `vector` style paints the body.
  *
  * The geometry, the animation and the face are identical across all of them —
- * only the paint changes. Keeping them as one renderer rather than five
- * means a new state or a new shape arrives in every style at once.
+ * only the paint changes. Keeping them as one renderer rather than fifteen
+ * means a new state or a new shape arrives in every style at once. Eight are
+ * media: the same snapshot drawn by hand in pencil, marker, crayon,
+ * watercolour, neon tubes or chalk, or made of paper, crumpled as origami or
+ * pressed up as relief. Theme
+ * skins are drawn by the same
+ * machinery under ids of their own, which `StyleVariant` accepts.
  */
-export type CharacterVariant = 'solid' | 'outline' | 'glass' | 'sticker' | 'paper' | 'soft' | 'riso';
+export type CharacterVariant =
+  | 'solid'
+  | 'outline'
+  | 'glass'
+  | 'sticker'
+  | 'paper'
+  | 'soft'
+  | 'riso'
+  | 'pencil'
+  | 'marker'
+  | 'crayon'
+  | 'watercolor'
+  | 'neon'
+  | 'chalk'
+  | 'origami'
+  | 'relief';
 
 /**
- * A variant id as the options accept it. The five above belong to `vector`;
+ * A variant id as the options accept it. The ones above belong to `vector`;
  * other style series declare their own, and `getStyle(id).variants` says
  * which ones a given series understands.
  */
@@ -66,7 +86,11 @@ export interface CharacterOptions {
   /**
    * Face style. `cute` (default) paints small round eyes, a small mouth and
    * blush in a face colour; `eyes` draws two cut-out eyes alone; `line`
-   * adds a stroked nose and a parametric mouth at the eyes' line weight.
+   * adds a stroked nose and a parametric mouth at the eyes' line weight. The
+   * drawn faces (`DRAWN_FACE_STYLES`: `capsule`, `brow`, `glossy`, `sparkle`,
+   * `button`, `shades`, `droopy`, `bigmouth`, `pie`, `screen`, `symbol`,
+   * `teardrop`, `specs`) keep the cute
+   * face's layout, cheeks and effects and draw eyes of their own.
    */
   face?: FaceStyle;
   /**
@@ -171,7 +195,7 @@ export interface StaticOptions {
   expression?: ExpressionId;
   /** Derive the expression and face tune from an animation state. */
   state?: CharacterState;
-  /** Face style. Defaults to `cute`. */
+  /** Face style, any of `FACE_STYLES`. Defaults to `cute`. */
   face?: FaceStyle;
   /** Nose for the line face. Defaults to one derived from the shape and colour; `null` draws none. */
   nose?: NoseId | null;

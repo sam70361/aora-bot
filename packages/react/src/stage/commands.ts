@@ -280,9 +280,9 @@ export function createMarkCommandRegistry(): MarkCommandRegistry {
 export const MarkCommandContext = createContext<MarkCommands | null>(null);
 
 /**
- * The registry used when there is no `MarkStageProvider` overhead.
+ * The registry used when there is no `CharacterStageProvider` overhead.
  *
- * A single `ActivityMark` dropped into a page has nothing to share with, but
+ * A single `ActivityBadge` dropped into a page has nothing to share with, but
  * its own hover and poke must still work, so the hooks fall back to one
  * module-level registry rather than to a no-op. Agent ids are unique by
  * definition, so two unrelated trees that both talk about `nova` genuinely do

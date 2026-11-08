@@ -24,21 +24,27 @@ The id is any URL-safe string up to 128 characters: a username, an email hash, a
 
 Every parameter is optional and goes in the query string.
 
-| Parameter | Accepts                                                                | Default      | Effect                                                              |
-| --------- | ---------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------- |
-| `style`   | `vector`, `pixel`, `kaomoji`                                           | `vector`     | The [style series](/design/styles/vector) the character is drawn in |
-| `variant` | A variant of the chosen style, listed below                            | style's own  | Paint variant within the style                                      |
-| `state`   | Any [state](/design/states), such as `happy`, `thinking` or `sleeping` | resting face | The face and pose the character holds                               |
-| `shape`   | Any [shape](/design/shapes) id, such as `mochi` or `hex`               | from the id  | Replaces the character's body                                       |
-| `color`   | Any hue of the [palette](/design/palette), such as `blue` or `pink`    | from the id  | Replaces the character's colour                                     |
-| `face`    | `cute`, `eyes` or `line`, see [Faces](/design/face)                    | `cute`       | The face style                                                      |
-| `size`    | An integer from `16` to `1024`                                         | `128`        | Width and height of the SVG in pixels; other values are clamped     |
+| Parameter | Accepts                                                                         | Default      | Effect                                                                |
+| --------- | ------------------------------------------------------------------------------- | ------------ | --------------------------------------------------------------------- |
+| `style`   | `vector`, `pixel`, `kaomoji`                                                    | `vector`     | The [style series](/design/styles/vector) the character is drawn in   |
+| `variant` | A variant of the chosen style, listed below                                     | style's own  | Paint variant within the style                                        |
+| `state`   | Any [state](/design/states), such as `happy`, `thinking` or `sleeping`          | resting face | The face and pose the character holds                                 |
+| `shape`   | Any [shape](/design/shapes) id, such as `mochi` or `hex`                        | from the id  | Replaces the character's body                                         |
+| `color`   | Any colour of the [palette](/design/palette), such as `blue`, `pink` or `night` | from the id  | Replaces the character's colour                                       |
+| `face`    | A face from `FACE_STYLES`, see [Faces](/design/face)                            | `cute`       | The face style                                                        |
+| `size`    | An integer from `16` to `1024`                                                  | `128`        | Width and height of the SVG in pixels; other values are clamped       |
+| `pool`    | An integer from `46` up to the cast size                                        | whole cast   | How many cast members, in joining order, an arbitrary id may land on  |
+| `theme`   | A theme id, listed below                                                        | none         | Picks from the theme's cast and fills unset parameters from the theme |
+
+Themes: `halloween`, `christmas`, `spring-festival`, `mid-autumn`, `easter`, `summer`, `valentine`.
 
 Variants by style:
 
-- `vector`: `solid` (default), `outline`, `glass`, `sticker`, `paper`, `soft`, `riso`
+- `vector`: `solid` (default), `outline`, `glass`, `sticker`, `paper`, `soft`, `riso`, `pencil`, `marker`, `crayon`, `watercolor`, `neon`, `chalk`, `origami`, `relief`
 - `pixel`: `crisp` (default), `dot`, `block`
 - `kaomoji`: `plain` (default), `bubble`
+
+Themes add skins of their own, which the endpoint accepts by name: `doodle` and `grainy` for `vector`, from the Halloween theme. The palette's `night` (a near-black that stays dark on a dark page) and `cream` are accepted the same way, though the console does not list them.
 
 Every parameter of the chosen style is also a query key, for example `strokeWidth` or `paperOffset` for `vector`, `grid` or `outline` for `pixel`, `weight` or `tail` for `kaomoji`. Numbers are written as numbers and booleans as `true` or `false` (`1` and `0` also work). The ranges are listed on the style pages: [vector](/design/styles/vector), [pixel](/design/styles/pixel) and [kaomoji](/design/styles/kaomoji).
 
@@ -55,7 +61,16 @@ A value outside these lists, such as `style=oil`, `color=plaid`, `size=big` or a
 
 ## Which character you get
 
-If the id is exactly a [cast](/design/cast) id, you get that character: `/avatar/luna.svg` is Luna. Any other id is hashed to one of the 46 cast members, so the choice is stable and spreads evenly. `shape`, `color` and `face` replace what the id picked, so an id with all three set is only a file name. Because the cast has 46 members, two different ids can land on the same character; treat the avatar as a friendly default, not as a unique identity.
+If the id is exactly a [cast](/design/cast) id, you get that character: `/avatar/luna.svg` is Luna. Any other id is hashed to one of the cast members, so the choice is stable and spreads evenly. The hash is consistent: when the cast grows from n to m members, only about (m − n) / m of ids change character, and each of those moves onto one of the new members, so an avatar already in use rarely changes. To keep every avatar exactly as it is regardless of later additions, fix the pool size with `pool`, for example `pool=46` for the first 46 members. `shape`, `color` and `face` replace what the id picked, so an id with all three set is only a file name. Because the cast is small, two different ids can land on the same character; treat the avatar as a friendly default, not as a unique identity.
+
+## Themes
+
+`theme=halloween` picks the character from the theme's cast instead of the default pool, with the same consistent hash, and fills every parameter the request leaves out from the theme: its first skin (`doodle`), its first face, its first state (`happy`; every theme opens all the engine's states), and the member's colour: the one the theme gives it, else its own when the theme offers it, else one of the theme's colours picked by the id. A dimension the theme fixes takes its fixed value. Any parameter you set wins: `theme=halloween&variant=solid&state=angry` keeps the theme's character and drops its skin and state. A `style` other than the theme's drops its skin too. `pool` applies to the default pool only and is refused with `theme`.
+
+```text
+https://aora-bot.vercel.app/avatar/alice.svg?theme=halloween
+https://aora-bot.vercel.app/avatar/alice.svg?theme=halloween&variant=grainy&color=cream
+```
 
 The result is fixed for a given engine version. A release that redraws a character or changes the cast can change what an id looks like.
 
@@ -74,6 +89,25 @@ import { castMember, renderStaticSvg } from '@aora-bot/engine/static';
 
 const luna = castMember('luna')!;
 const svg = renderStaticSvg({ shape: luna.shape, color: luna.color, state: 'happy', sizePx: 64 });
+```
+
+A theme's characters, skins and colours live in the theme's own entry. Load it before rendering one of them, or the render throws `ThemeNotInstalledError`:
+
+```ts
+import { loadTheme, renderStaticSvg } from '@aora-bot/engine/static';
+
+await loadTheme('halloween');
+const svg = renderStaticSvg({ shape: 'pumpkin', color: 'orange', variant: 'doodle', sizePx: 64 });
+```
+
+To draw a theme's member exactly as this endpoint does, take its look from `themeLook`, the one rule the endpoint uses too:
+
+```ts
+import { loadTheme, renderStaticSvg, themeLook } from '@aora-bot/engine/static';
+
+await loadTheme('halloween');
+const look = themeLook('halloween', 'floaty')!;
+const svg = renderStaticSvg({ ...look, sizePx: 64 });
 ```
 
 `renderAvatarDataUrl(key)` does the same for an arbitrary key in one line. It picks from the engine's own pool, so it does not return the characters this endpoint picks for the same id. See [Server rendering](/guide/server-rendering) for the details.

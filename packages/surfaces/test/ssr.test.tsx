@@ -1,17 +1,17 @@
 import { renderToString } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import {
-  AvatarSlot,
+  PortraitSlot,
   BootLoop,
-  CastMember,
-  CastStage,
+  CastFigure,
+  CastLineup,
   Composer,
   DemoDesktop,
   DeviceBezel,
   HandOff,
   JobBubbles,
   LandingWait,
-  LoadingMark,
+  LoadingCharacter,
   OccupancyList,
   OccupancyMark,
   RestrictedScene,
@@ -40,23 +40,23 @@ describe('server rendering', () => {
     ['RestrictedScene', <RestrictedScene />],
     ['DeviceBezel', <DeviceBezel>screen</DeviceBezel>],
     ['BootLoop', <BootLoop />],
-    ['LoadingMark', <LoadingMark />],
+    ['LoadingCharacter', <LoadingCharacter />],
     ['TemplateDialog', <TemplateDialog onSave={async () => {}} onCancel={() => {}} />],
     ['VisibilityControls', <VisibilityControls value="private" onSelect={() => {}} />],
     ['ShareCard', <ShareCard name="Triage" url="https://example.com/t/1" />],
     ['OccupancyList', <OccupancyList rows={[{ id: 'r', label: 'Room', agents: [agent] }]} />],
     ['OccupancyMark', <OccupancyMark agent={agent} />],
-    ['CastStage', <CastStage members={[{ id: 'a', shape: 'blob', color: 'blue' }]} steps={[]} />],
+    ['CastLineup', <CastLineup members={[{ id: 'a', shape: 'blob', color: 'blue' }]} steps={[]} />],
     [
-      'CastMember',
-      <CastMember
+      'CastFigure',
+      <CastFigure
         member={{ id: 'a', shape: 'blob', color: 'blue' }}
         position={null}
         easing="ease"
         durationMs={0}
       />,
     ],
-    ['AvatarSlot', <AvatarSlot>x</AvatarSlot>],
+    ['PortraitSlot', <PortraitSlot>x</PortraitSlot>],
   ])('%s renders without a DOM', (_name, element) => {
     const html = renderToString(element);
     expect(html).toBeTruthy();

@@ -15,15 +15,15 @@
     "en": "Draws a running character again elsewhere for almost nothing.",
     "zh": "几乎零成本地把正在运行的角色再画一遍。"
   },
-  "overview.markStage": {
+  "overview.characterStage": {
     "en": "Shares one animation between every character of the same appearance.",
     "zh": "让外观相同的角色共享同一份动画。"
   },
-  "overview.agentAvatar": {
+  "overview.agentPortrait": {
     "en": "Picture, group cluster or character, chosen automatically.",
     "zh": "照片、群组簇或角色，自动选择其一。"
   },
-  "overview.avatarStack": {
+  "overview.avatarGroup": {
     "en": "Overlapping group members, each punched out of the one behind.",
     "zh": "交叠的群组成员，每一个都从后方抠出轮廓。"
   },
@@ -31,19 +31,19 @@
     "en": "Counters and presence dots that sit on an avatar.",
     "zh": "叠在头像上的计数与在线状态点。"
   },
-  "overview.characterPicker": {
+  "overview.characterSelector": {
     "en": "Shape and ink chooser, with a selection ring in the shape itself.",
     "zh": "形状与墨色选择器，选中环跟随形状本身。"
   },
-  "overview.activityMark": {
+  "overview.activityBadge": {
     "en": "What an agent is doing, as a character and a label from one source.",
     "zh": "角色与文案来自同一数据源，表示智能体正在做什么。"
   },
-  "overview.activityTicker": {
+  "overview.activityLine": {
     "en": "Crossfading single line that cannot change the row height.",
     "zh": "交叉淡入的单行文字，不会把行高撑乱。"
   },
-  "overview.confettiLayer": {
+  "overview.celebrationLayer": {
     "en": "Celebration particles with no character attached.",
     "zh": "独立的庆祝粒子，不依附任何角色。"
   },
@@ -82,7 +82,7 @@
     "en": "A small spinner badge for an avatar whose agent is busy.",
     "zh": "智能体忙碌时叠在头像上的小转圈徽标。"
   },
-  "overview.avatarEditor": {
+  "overview.avatarStudio": {
     "en": "Character, generated image or upload with crop, behind one dialog.",
     "zh": "角色、生成图或上传裁切，收在一个对话框里。"
   },
@@ -98,11 +98,11 @@
     "en": "Which agents hold which shared resource, one row per resource.",
     "zh": "哪些智能体占用了哪些共享资源，一行一个。"
   },
-  "overview.agentCharacterPicker": {
+  "overview.agentCharacterSelector": {
     "en": "A picker that stages the choice until it is confirmed.",
     "zh": "先暂存、确认后才生效的角色选择器。"
   },
-  "overview.compactCharacterPicker": {
+  "overview.compactCharacterSelector": {
     "en": "The picker folded into a row for tight spaces.",
     "zh": "为狭小空间折成一行的选择器。"
   },
@@ -263,6 +263,35 @@
   "home.tune.none": { "en": "This style has nothing to tune.", "zh": "这个画风没有可调的参数。" },
   "home.prevShape": { "en": "Previous shape", "zh": "上一个形状" },
   "home.nextShape": { "en": "Next shape", "zh": "下一个形状" },
+  "themes.eyebrow": { "en": "Aora Bot themes", "zh": "Aora Bot 主题展" },
+  "themes.shelf.title": { "en": "Theme albums", "zh": "主题卡册" },
+  "themes.shelf.lede": {
+    "en": "Each theme is an album and each character a card. Open an album, pick a card, and watch it come to life.",
+    "zh": "每个主题是一本卡册，每个角色是一张卡。翻开一本，点开一张，看它动起来。"
+  },
+  "themes.album.title": { "en": "{{name}} album", "zh": "{{name}}卡册" },
+  "themes.album.description": {
+    "en": "Every character in the {{name}} theme, as cards you can open, try on and copy.",
+    "zh": "{{name}}主题的全部角色卡：点开一张，换表情，复制代码。"
+  },
+  "themes.open": { "en": "Open", "zh": "翻开" },
+  "themes.vol": { "en": "VOL.{{n}}", "zh": "VOL.{{n}}" },
+  "themes.album.vol": { "en": "Collector's album VOL.{{n}}", "zh": "收藏卡册 VOL.{{n}}" },
+  "themes.inks": { "en": "Inks in this album", "zh": "本册油墨" },
+  "themes.page": { "en": "Page {{n}}", "zh": "第 {{n}} 页" },
+  "themes.count": { "en": "{{count}} cards", "zh": "{{count}} 张角色卡" },
+  "themes.back": { "en": "All albums", "zh": "全部卡册" },
+  "themes.switch": { "en": "Albums", "zh": "卡册" },
+  "themes.cards": { "en": "Cards", "zh": "角色卡" },
+  "themes.draw": { "en": "Draw a card", "zh": "抽一张" },
+  "themes.prev": { "en": "Previous card", "zh": "上一张" },
+  "themes.next": { "en": "Next card", "zh": "下一张" },
+  "themes.close": { "en": "Close", "zh": "关闭" },
+  "themes.stickers": { "en": "Sticker wall", "zh": "贴纸墙" },
+  "themes.stickers.hint": {
+    "en": "Every sticker changes its mood on a beat of its own.",
+    "zh": "每张贴纸按自己的节奏换表情。"
+  },
   "sponsor.title": { "en": "Sponsor", "zh": "打赏作者" },
   "sponsor.lead": {
     "en": "If Aora Bot gave your interface a little more expression, you are welcome to buy the author a coffee.",

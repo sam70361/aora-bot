@@ -5,7 +5,7 @@ import { API } from '@theme';
 三个错相脉动的点，给正在忙碌的智能体头像用。
 
 ```tsx preview
-import { AgentAvatar, WorkingBadge } from '@aora-bot/react';
+import { AgentPortrait, WorkingBadge } from '@aora-bot/react';
 
 export default function Demo() {
   return (
@@ -15,7 +15,7 @@ export default function Demo() {
         { id: 'grace', name: 'Grace' },
       ].map((agent) => (
         <span key={agent.id} style={{ position: 'relative', display: 'inline-flex' }}>
-          <AgentAvatar agent={agent} sizePx={44} state="working" />
+          <AgentPortrait agent={agent} sizePx={44} state="working" />
           <span style={{ position: 'absolute', bottom: -2, insetInlineEnd: -4 }}>
             <WorkingBadge />
           </span>
@@ -38,7 +38,7 @@ export default function Demo() {
 
 ## 放在哪里
 
-用途上它和 [`AvatarStatusDot`](/components/avatar-chrome) 相邻，位置上也在同一个角：在线点回答智能体*在不在*，徽标回答它*忙不忙*，一个头像若同时显示两者，第二个就无处可放。在名册里，请与 `working` 状态色调搭配，而不是把两者叠在一起。
+用途上它和 [`AvatarStatusDot`](/components/avatar-frame) 相邻，位置上也在同一个角：在线点回答智能体*在不在*，徽标回答它*忙不忙*，一个头像若同时显示两者，第二个就无处可放。在名册里，请与 `working` 状态色调搭配，而不是把两者叠在一起。
 
 ## 无障碍
 
@@ -50,5 +50,5 @@ export default function Demo() {
 
 ## 接下来
 
-- [徽标与状态](/components/avatar-chrome)——未读数与状态点
+- [徽标与状态](/components/avatar-frame)——未读数与状态点
 - [智能体名册](/scenarios/agent-roster)——侧边栏里的二十张脸

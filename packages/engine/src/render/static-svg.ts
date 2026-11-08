@@ -10,9 +10,13 @@ import {
 } from '../motion/states.js';
 import { getShape, getShapeScale } from '../shapes/registry.js';
 import { createSimulation } from '../sim/simulation.js';
+import { requireTheme } from '../themes/state.js';
 import { DEFAULT_STYLE_ID, getStyle, resolveStyleOptions } from '../styles/index.js';
+import { getFaceDesign } from '../face/drawn/index.js';
 import {
   CENTER,
+  isCuteFamily,
+  isDrawnFace,
   VIEWBOX,
   VIEWBOX_STR,
   type CuteMouthId,
@@ -32,6 +36,8 @@ const STATE_CUTE_EXPRESSION = firstOf(STATE_CUTE_EYES);
 
 function resolveExpression(options: StaticOptions, face: FaceStyle): string {
   if (options.expression) return options.expression;
+  // A drawn face has its own table, and its own names for what it shows.
+  if (isDrawnFace(face)) return getFaceDesign(face).states[options.state ?? IDLE_STATE][0] ?? 'dot';
   const table = face === 'cute' ? STATE_CUTE_EXPRESSION : STATE_EXPRESSION;
   if (options.state) return table[options.state] ?? 'neutral';
   return 'neutral';
@@ -50,11 +56,17 @@ const BELT_SAMPLE_TIME = 0.62;
  * the live character's own pipeline with the time taken out. No DOM, no
  * timers, so it is safe during server rendering and static site generation,
  * and the output is deterministic.
+ *
+ * A theme's character, skin or colour draws once its theme is installed:
+ * `await loadTheme(id)` (or `installTheme`) first, or this throws
+ * `ThemeNotInstalledError`. `themesNeeded` says which themes a set of ids needs.
  */
 export function renderStaticSvg(options: StaticOptions = {}): string {
   const shapeId = options.shape ?? 'mochi';
   const colorId = options.color ?? 'black';
   const style = getStyle(options.style ?? DEFAULT_STYLE_ID);
+  requireTheme('color', colorId);
+  if (options.variant !== undefined) requireTheme('variant', options.variant, style.id);
   const colorScheme = options.colorScheme ?? 'system';
 
   const face: FaceStyle = options.face ?? 'cute';
@@ -68,7 +80,7 @@ export function renderStaticSvg(options: StaticOptions = {}): string {
   const mouthId: MouthId | CuteMouthId | null =
     face === 'line'
       ? (options.mouth ?? (options.state ? mouthForState(options.state) : 'soft'))
-      : face === 'cute'
+      : isCuteFamily(face)
         ? (options.mouth ?? null)
         : null;
 
@@ -102,7 +114,14 @@ export function renderStaticSvg(options: StaticOptions = {}): string {
   sim.dispose();
 
   // The default face hashes exactly as before so existing output is unchanged.
-  const faceKey = face === 'line' ? `line${noseId ?? ''}${mouthId ?? ''}` : face === 'cute' ? 'cute' : '';
+  const faceKey =
+    face === 'line'
+      ? `line${noseId ?? ''}${mouthId ?? ''}`
+      : face === 'cute'
+        ? 'cute'
+        : isDrawnFace(face)
+          ? `${face}${mouthId ?? ''}`
+          : '';
   // A paint override changes what the ids refer to, so it is part of the key.
   const inkKey = options.ink ? JSON.stringify(options.ink) : '';
   // The inline `<style>` is document-global, so the two schemes must not share class names.

@@ -1,0 +1,2215 @@
+/*
+ * Themes — /themes/ and /themes/<id>.
+ *
+ * The exhibition: a shelf of booklets in front of a wall of their members,
+ * then one album per theme with a header, a sticker wall, binder pages of
+ * cards in sleeves, and a dialog for the card that is open. The page around
+ * them is the site's own surface, type, radius and controls. Five things wear
+ * a theme, through the `--look-*` properties its look file sets on them: the
+ * booklet, the album header, the sticker wall, the cards and the dialog's
+ * card; the shelf's wall only borrows each theme's cloth for its tiles.
+ * Nothing here names a theme; the variations a look can choose (a border, a
+ * plate, a title layout) are attributes these rules read.
+ *
+ * Every character box is sized before it draws (a fixed aspect ratio, or an
+ * absolute box inside one), and a placeholder card is the same box as a drawn
+ * one, so a theme loading late fills space and never moves it. Motion is
+ * transform and opacity only.
+ */
+
+@layer site.pages {
+  .site-themes {
+    --site-themes-max: 76rem;
+    display: grid;
+    gap: var(--aora-space-8);
+    box-sizing: border-box;
+    width: min(100%, var(--site-themes-max) + var(--site-page-pad) * 2);
+    min-height: calc(100dvh - var(--site-nav-offset));
+    margin: 0 auto;
+    padding: clamp(var(--aora-space-6), 5vh, var(--aora-space-12)) var(--site-page-pad) var(--aora-space-16);
+    align-content: start;
+  }
+
+  .site-themes--album {
+    gap: var(--aora-space-6);
+  }
+
+  /* ---- shared pieces ----------------------------------------------------------- */
+
+  .site-themes__pattern {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+
+  /* The seal: an emblem on a foil disc, with its two detail inks. */
+  .site-themes__seal {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    width: 1.625rem;
+    height: 1.625rem;
+    border-radius: 50%;
+    background: var(--look-foil);
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.55),
+      inset 0 -2px 3px rgb(0 0 0 / 0.18),
+      0 1px 2px rgb(0 0 0 / 0.25);
+    color: var(--look-emblem-ink);
+  }
+
+  .site-themes__sealArt {
+    width: 72%;
+    height: 72%;
+    overflow: visible;
+    fill: currentColor;
+
+    & .e2:not([fill]) {
+      fill: var(--look-emblem-2);
+    }
+
+    & .e2[stroke-width] {
+      stroke: var(--look-emblem-2);
+    }
+
+    & .e3:not([fill]) {
+      fill: var(--look-emblem-3);
+    }
+
+    & .e3[stroke-width] {
+      stroke: var(--look-emblem-3);
+    }
+  }
+
+  .site-themes__seal--tab {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .site-themes__seal--large {
+    width: 46%;
+    height: 46%;
+  }
+
+  /* A cover title. The size comes from where it is set; everything else from the look. */
+  .site-themes__display {
+    display: block;
+    font-family: var(--look-title-font);
+    font-weight: var(--look-title-weight);
+    letter-spacing: var(--look-title-tracking);
+    line-height: 1.1;
+    color: var(--look-title-color);
+    text-shadow: var(--look-title-shadow);
+
+    &[data-layout='line'] {
+      white-space: nowrap;
+    }
+
+    &[data-layout='stacked'] .site-themes__word {
+      display: block;
+    }
+
+    &[data-layout='vertical'] {
+      writing-mode: vertical-rl;
+      text-orientation: upright;
+    }
+
+    &[data-plate] {
+      display: inline-block;
+      align-self: flex-start;
+      padding: 0.08em 0.4em 0.12em;
+      border-radius: 0.24em;
+      background: var(--look-plate);
+      box-shadow: 0 0.08em 0 var(--look-plate-shade);
+      outline: 0.05em dashed var(--look-plate-stitch);
+      outline-offset: -0.18em;
+    }
+
+    &[data-outline] .site-themes__glyph {
+      -webkit-text-stroke: var(--look-title-stroke) var(--look-title-stroke-color);
+      paint-order: stroke fill;
+    }
+
+    &[data-fill] {
+      text-shadow: none;
+    }
+
+    &[data-fill] .site-themes__glyph {
+      background: var(--look-title-fill);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      filter: var(--look-title-drop, none);
+    }
+  }
+
+  .site-themes__bookletName .site-themes__display[data-fill] .site-themes__glyph {
+    background: var(--look-booklet-fill, var(--look-title-fill));
+    background-clip: text;
+    -webkit-background-clip: text;
+    filter: var(--look-booklet-drop, var(--look-title-drop, none));
+  }
+
+  .site-themes__word {
+    display: inline-block;
+    white-space: nowrap;
+    transform: skewX(var(--look-title-skew));
+  }
+
+  .site-themes__glyph {
+    display: inline-block;
+  }
+
+  .site-themes__gloss {
+    margin: 0;
+    overflow: hidden;
+    font-family: var(--look-gloss-font);
+    font-style: var(--look-gloss-style);
+    letter-spacing: var(--look-gloss-tracking);
+    text-overflow: ellipsis;
+    text-transform: var(--look-gloss-case);
+    white-space: nowrap;
+    opacity: 0.88;
+  }
+
+  /* ---- shelf ----------------------------------------------------------------- */
+
+  .site-themes__intro {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--aora-space-8);
+  }
+
+  /*
+   * The shelf's wall: decoration behind the title, out of the layout and
+   * contained, its box set here so nothing moves when it fills. It reaches the
+   * page's edges through the page padding, starts under the navbar and ends
+   * just into the shelf. The mask keeps it off the title and lede, which sit
+   * on clear paper, and lets it run at its own strength behind the fan of
+   * card backs, which are opaque. Painted at an opacity just above zero while
+   * it fills, because zero skips painting, then faded in.
+   */
+  .site-themes__wall {
+    --_full: light-dark(rgb(0 0 0 / 0.72), rgb(0 0 0 / 0.6));
+    position: absolute;
+    inset: calc(var(--aora-space-12) * -1) calc(var(--site-page-pad) * -1) calc(var(--aora-space-6) * -1);
+    z-index: -1;
+    overflow: hidden;
+    contain: strict;
+    opacity: 0.004;
+    pointer-events: none;
+    transition: opacity 1.2s var(--aora-ease-out);
+    mask-image:
+      linear-gradient(90deg, transparent 38%, var(--_full) 68%, var(--_full) 95%, transparent),
+      linear-gradient(to bottom, transparent, #000 3.5rem, #000 calc(100% - 4.5rem), transparent);
+    mask-composite: intersect;
+
+    &[data-ready] {
+      opacity: 1;
+    }
+
+    &[data-paused] .site-themes__wallRow {
+      animation-play-state: paused;
+    }
+  }
+
+  .site-themes__wallField {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--site-wall-gap);
+    translate: -50% -50%;
+    rotate: var(--site-wall-tilt);
+  }
+
+  /* One row is its content twice, so a drift of half its width is one seamless loop. */
+  .site-themes__wallRow {
+    display: flex;
+    flex: none;
+    width: max-content;
+    animation: site-themes-wall-drift var(--site-wall-dur) linear infinite;
+    animation-delay: calc(var(--site-wall-dur) * var(--site-wall-phase) * -1);
+
+    &[data-reverse] {
+      animation-direction: reverse;
+    }
+  }
+
+  @keyframes site-themes-wall-drift {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* No card: a pool of the tile's own theme cloth under it, fading out well inside the tile. */
+  .site-themes__wallTile {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: var(--site-wall-tile);
+    height: var(--site-wall-tile);
+    margin-inline-end: var(--site-wall-gap);
+    background: radial-gradient(
+      closest-side,
+      light-dark(
+        color-mix(in oklab, var(--site-wall-pool) 22%, transparent),
+        color-mix(in oklab, var(--site-wall-pool) 34%, transparent)
+      ),
+      transparent
+    );
+  }
+
+  /* A tile's image is a border image, not an `<img>` or a background: decoration must not become the page's largest contentful paint. */
+  .site-themes__wallMark {
+    display: block;
+    width: 80%;
+    height: 80%;
+    border-image-slice: 0 fill;
+    border-image-width: 0;
+  }
+
+  .site-themes__introText {
+    display: grid;
+    gap: var(--aora-space-3);
+    max-width: 40rem;
+  }
+
+  .site-themes__eyebrow {
+    margin: 0;
+    font-size: var(--aora-text-sm);
+    font-weight: var(--aora-weight-semibold);
+    letter-spacing: 0.06em;
+    color: var(--aora-accent);
+  }
+
+  .site-themes__title {
+    margin: 0;
+    font-size: clamp(2rem, 4.4vw, 3rem);
+    font-weight: var(--aora-weight-bold);
+    letter-spacing: -0.04em;
+    line-height: var(--aora-leading-tight);
+  }
+
+  .site-themes__lede {
+    margin: 0;
+    font-size: var(--aora-text-lg);
+    line-height: var(--aora-leading-relaxed);
+    color: var(--aora-text-muted);
+    text-wrap: pretty;
+  }
+
+  /* Three card backs fanned from a point below them. */
+  .site-themes__fan {
+    position: relative;
+    width: 17rem;
+    height: 11.5rem;
+  }
+
+  .site-themes__fanCard {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 6.5rem;
+    aspect-ratio: 2 / 3;
+    border-radius: 0.75rem;
+    box-shadow: 0 14px 24px -12px rgb(40 20 5 / 0.5);
+    container-type: inline-size;
+    transform-origin: 50% 120%;
+    translate: -50% 0;
+
+    &:nth-child(1) {
+      rotate: -16deg;
+    }
+
+    &:nth-child(2) {
+      z-index: 1;
+    }
+
+    &:nth-child(3) {
+      rotate: 16deg;
+    }
+  }
+
+  .site-themes__shelf {
+    --_gap: var(--aora-space-10);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+    gap: var(--aora-space-12) var(--_gap);
+    margin: 0;
+    padding: 0 var(--aora-space-4);
+    list-style: none;
+  }
+
+  /*
+   * The shelf the booklets stand on: a neutral board with a lit edge and a
+   * soft shadow, drawn by each slot across half the gap on either side, so a
+   * row reads as one shelf.
+   */
+  .site-themes__slot {
+    position: relative;
+    padding-bottom: 1.375rem;
+
+    &::before,
+    &::after {
+      content: '';
+      position: absolute;
+      inset-inline: calc(var(--_gap) / -2);
+      pointer-events: none;
+    }
+
+    &::before {
+      bottom: 0.75rem;
+      height: 0.625rem;
+      background: light-dark(oklch(0.9 0.01 85), oklch(0.3 0.006 85));
+    }
+
+    &::after {
+      bottom: 0;
+      height: 0.75rem;
+      background: light-dark(oklch(0.85 0.012 85), oklch(0.26 0.006 85));
+      box-shadow: 0 12px 16px -10px var(--aora-shadow-c3);
+    }
+
+    &:first-child::before,
+    &:first-child::after {
+      border-start-start-radius: 4px;
+      border-end-start-radius: 4px;
+    }
+
+    &:last-child::before,
+    &:last-child::after {
+      border-start-end-radius: 4px;
+      border-end-end-radius: 4px;
+    }
+
+    & > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    &:nth-child(3n + 2) {
+      --site-themes-lean: 0.8deg;
+    }
+
+    &:nth-child(3n + 3) {
+      --site-themes-lean: -0.6deg;
+    }
+  }
+
+  /*
+   * A booklet: the cloth and its pattern, a bound spine with its stitching, a
+   * corner ornament, the seal and volume, the title, a foil-edged window onto
+   * three members, a foot line, foil corners, and the page block showing at
+   * its edge. Sized by its aspect ratio and laid out in container units, so
+   * every part scales with the shelf and nothing waits on the theme.
+   */
+  .site-themes__booklet {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    aspect-ratio: 3 / 4;
+    padding: 6.5% 8% 5.5% 14%;
+    overflow: hidden;
+    border-radius: 5px 14px 14px 5px;
+    background: linear-gradient(160deg, var(--look-cover), var(--look-cover-deep));
+    box-shadow:
+      inset -2px 0 0 rgb(255 255 255 / 0.12),
+      inset 0 -3px 0 rgb(0 0 0 / 0.18),
+      0 16px 20px -14px rgb(40 20 5 / 0.75);
+    color: var(--look-cover-ink);
+    text-decoration: none;
+    container-type: inline-size;
+    transform-origin: 50% 100%;
+    rotate: var(--site-themes-lean, 0deg);
+    transition: transform var(--aora-duration-slow) cubic-bezier(0.3, 0.7, 0.3, 1.3);
+
+    & > .site-themes__pattern {
+      z-index: -1;
+    }
+
+    &:focus-visible {
+      outline-offset: 5px;
+    }
+  }
+
+  @media (hover: hover) {
+    .site-themes__booklet:hover {
+      transform: translateY(-10px);
+    }
+  }
+
+  .site-themes__spine {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 8.5cqw;
+    background: linear-gradient(
+      90deg,
+      rgb(0 0 0 / 0.38),
+      rgb(0 0 0 / 0.12) 55%,
+      rgb(255 255 255 / 0.18) 80%,
+      rgb(0 0 0 / 0.22)
+    );
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 9cqw;
+      left: 0;
+      right: 0;
+      height: 3.4cqw;
+      background: var(--look-spine-band);
+      opacity: 0.9;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 5cqw;
+      bottom: 5cqw;
+      right: -3cqw;
+      border-left: 1.5px dashed color-mix(in oklab, var(--look-cover-ink) 60%, transparent);
+    }
+  }
+
+  .site-themes__booklet[data-stitch='dotted'] .site-themes__spine::after {
+    border-left-style: dotted;
+    border-left-width: 2px;
+  }
+
+  .site-themes__booklet[data-stitch='none'] .site-themes__spine::after {
+    display: none;
+  }
+
+  .site-themes__deco {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 36cqw;
+    height: 36cqw;
+    color: var(--look-cover-ink);
+    pointer-events: none;
+  }
+
+  .site-themes__bookletTop {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 2.4cqw;
+    font: var(--aora-weight-bold) max(10px, 3.6cqw) / 1 var(--aora-font-mono);
+    letter-spacing: 0.18em;
+
+    & .site-themes__seal {
+      width: 11cqw;
+      height: 11cqw;
+    }
+  }
+
+  .site-themes__bookletName {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.4cqw;
+    min-width: 0;
+    max-width: 100%;
+    margin-top: 4.6cqw;
+
+    & .site-themes__display {
+      max-width: 100%;
+      font-size: 14cqw;
+    }
+
+    & .site-themes__display[data-layout='vertical'] {
+      font-size: 13cqw;
+    }
+
+    & .site-themes__gloss {
+      max-width: 100%;
+      font-size: max(10px, 3.8cqw);
+    }
+  }
+
+  /* Vertical titles stand beside their gloss rather than above it. */
+  .site-themes__bookletName:has([data-layout='vertical']) {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 3cqw;
+  }
+
+  .site-themes__window {
+    --aora-bg-base: var(--look-art);
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    margin-top: 5cqw;
+    overflow: hidden;
+    border: 2px solid transparent;
+    border-radius: 5.5cqw;
+    background:
+      radial-gradient(
+          120% 90% at 50% 100%,
+          color-mix(in oklab, var(--look-art) 82%, #fff) 0%,
+          var(--look-art) 70%
+        )
+        padding-box,
+      var(--look-foil) border-box;
+    box-shadow:
+      inset 0 4px 10px rgb(0 0 0 / 0.35),
+      0 1px 0 rgb(255 255 255 / 0.25);
+  }
+
+  .site-themes__windowSlot {
+    position: absolute;
+    bottom: 9%;
+    display: grid;
+    place-items: center;
+    width: 44%;
+    aspect-ratio: 1;
+
+    &[data-slot='0'] {
+      left: -3%;
+    }
+
+    &[data-slot='1'] {
+      z-index: 2;
+      bottom: 2%;
+      left: 50%;
+      width: 64%;
+      translate: -50% 0;
+    }
+
+    &[data-slot='2'] {
+      right: -3%;
+    }
+  }
+
+  .site-themes__bookletFoot {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2cqw;
+    min-height: 1.5em;
+    margin-top: 4cqw;
+    font-size: max(11px, 4cqw);
+    font-weight: var(--aora-weight-bold);
+    letter-spacing: 0.04em;
+  }
+
+  .site-themes__open {
+    flex: none;
+    padding: 0.15em 0.8em;
+    border-radius: var(--aora-radius-pill);
+    background: var(--look-foil);
+    color: #2a1e14;
+    white-space: nowrap;
+  }
+
+  .site-themes__foilCorner {
+    position: absolute;
+    right: 0;
+    width: 10cqw;
+    height: 10cqw;
+    background: var(--look-foil);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.4);
+    pointer-events: none;
+  }
+
+  .site-themes__foilCorner--top {
+    top: 0;
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
+  }
+
+  .site-themes__foilCorner--bottom {
+    bottom: 0;
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  }
+
+  @container (max-width: 160px) {
+    .site-themes__bookletName .site-themes__gloss,
+    .site-themes__open {
+      display: none;
+    }
+  }
+
+  /* ---- album: switch --------------------------------------------------------- */
+
+  .site-themes__switch {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--aora-space-2);
+    min-width: 0;
+  }
+
+  .site-themes__back {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--aora-space-1);
+    height: var(--aora-control-h);
+    padding: 0 var(--aora-space-3) 0 var(--aora-space-2);
+    border-radius: var(--aora-radius-pill);
+    color: var(--aora-text-muted);
+    font-size: var(--aora-text-sm);
+    font-weight: var(--aora-weight-medium);
+    text-decoration: none;
+    transition:
+      background-color var(--aora-duration-fast) var(--aora-ease-standard),
+      color var(--aora-duration-fast) var(--aora-ease-standard);
+
+    &:hover {
+      background: var(--aora-fill);
+      color: var(--aora-text);
+    }
+  }
+
+  /* The console's tab capsule: a sunken pill whose chosen item is ink. */
+  .site-themes__tabs {
+    display: flex;
+    gap: var(--aora-space-0-5);
+    max-width: 100%;
+    padding: var(--aora-space-0-5);
+    overflow-x: auto;
+    border-radius: var(--aora-radius-pill);
+    background: var(--aora-fill);
+    scrollbar-width: none;
+  }
+
+  .site-themes__tab {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--aora-space-1);
+    height: var(--aora-control-h);
+    padding: 0 var(--aora-space-3) 0 0.375rem;
+    border-radius: var(--aora-radius-pill);
+    color: var(--aora-text-muted);
+    font-size: var(--aora-text-sm);
+    font-weight: var(--aora-weight-medium);
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      background-color var(--aora-duration-fast) var(--aora-ease-standard),
+      color var(--aora-duration-fast) var(--aora-ease-standard);
+
+    &:hover {
+      color: var(--aora-text);
+    }
+
+    &[aria-current='page'] {
+      background: var(--aora-text);
+      color: var(--site-paper);
+    }
+  }
+
+  /* ---- album: header --------------------------------------------------------- */
+
+  /*
+   * The album's cover: its sky, the scene drawn against the bottom right, and
+   * the volume, title, gloss, tagline, the theme's inks and the draw action.
+   */
+  .site-themes__cover {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    align-content: start;
+    box-sizing: border-box;
+    min-height: 23rem;
+    padding: clamp(var(--aora-space-6), 4vw, var(--aora-space-12))
+      clamp(var(--aora-space-5), 4vw, var(--aora-space-12)) var(--aora-space-8);
+    overflow: hidden;
+    border-radius: var(--aora-radius-lg);
+    background: linear-gradient(180deg, var(--look-sky-top), var(--look-sky-bottom));
+    box-shadow: var(--aora-shadow-md);
+    color: var(--look-sky-ink);
+  }
+
+  .site-themes__scene {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .site-themes__sceneArt {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .site-themes__coverText {
+    display: grid;
+    justify-items: start;
+    gap: var(--aora-space-2);
+    max-width: 36rem;
+  }
+
+  .site-themes__kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--aora-space-2);
+    margin: 0;
+    font: var(--aora-weight-bold) var(--aora-text-xs) / 1 var(--aora-font-mono);
+    letter-spacing: 0.24em;
+  }
+
+  .site-themes__coverTitle {
+    margin: var(--aora-space-2) 0 0;
+    font-size: clamp(2.75rem, 6vw, 4.75rem);
+    font-weight: inherit;
+    line-height: 1.1;
+  }
+
+  .site-themes__cover .site-themes__gloss {
+    font-size: var(--aora-text-lg);
+  }
+
+  .site-themes__tagline {
+    max-width: 30rem;
+    margin: var(--aora-space-1) 0 0;
+    font-size: var(--aora-text-lg);
+    font-weight: var(--aora-weight-semibold);
+    line-height: var(--aora-leading-snug);
+    text-wrap: pretty;
+  }
+
+  /* One line of a fixed height: the inks arrive with the theme, and however many there are, nothing below moves. */
+  .site-themes__facts {
+    display: flex;
+    align-items: center;
+    gap: var(--aora-space-3);
+    max-width: 100%;
+    height: 1.75rem;
+    margin-top: var(--aora-space-1);
+    overflow: hidden;
+  }
+
+  .site-themes__fact {
+    min-width: 6em;
+    font-size: var(--aora-text-sm);
+    font-weight: var(--aora-weight-semibold);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .site-themes__inks {
+    --_dot: 1rem;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 0.375rem;
+    min-width: 0;
+    margin: 0;
+    padding: 0.125rem;
+    list-style: none;
+  }
+
+  .site-themes__ink {
+    flex: none;
+    width: var(--_dot);
+    height: var(--_dot);
+    border-radius: 50%;
+    background: var(--site-ink);
+    box-shadow:
+      0 0 0 2px color-mix(in oklab, var(--look-sky-top) 70%, #fff),
+      0 1px 3px rgb(0 0 0 / 0.25);
+  }
+
+  .site-themes__coverActions {
+    margin-top: var(--aora-space-3);
+  }
+
+  /* The console's primary button, inked in the theme's accent because it sits on the cover. */
+  .site-themes__draw {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: var(--aora-space-2);
+    height: var(--aora-control-h-lg);
+    padding: 0 var(--aora-space-5);
+    border: 0;
+    border-radius: var(--aora-radius-md);
+    background: var(--look-accent);
+    box-shadow:
+      0 2px 0 color-mix(in oklab, var(--look-accent) 55%, #000),
+      var(--aora-shadow-md);
+    color: var(--look-accent-ink);
+    font: inherit;
+    font-size: var(--aora-text-md);
+    font-weight: var(--aora-weight-semibold);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: transform var(--aora-duration-base) var(--aora-ease-out);
+
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
+
+    &:hover:not(:disabled) .site-icon__dice {
+      rotate: -14deg;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: default;
+    }
+  }
+
+  /* ---- album: sticker wall --------------------------------------------------- */
+
+  /*
+   * A sheet of the theme's cover cloth with every member stuck on it. The
+   * field has one cell per card in the manifest, square and sized by the
+   * grid, so its height is known before the theme loads. Each sticker is
+   * turned and nudged off its cell by transform. Its die-cut edge (`--_edge`
+   * in `--_paper`) and shadow are drawn inside its images, which read both
+   * from here when they are made.
+   */
+  .site-themes__stickers {
+    --aora-bg-base: var(--look-art);
+    --_sticker: 6.5rem;
+    --_edge: 1.5px;
+    --_paper: light-dark(#fffdf7, #f3ecdf);
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    gap: var(--aora-space-4);
+    padding: var(--aora-space-5) clamp(var(--aora-space-4), 3vw, var(--aora-space-8)) var(--aora-space-8);
+    overflow: hidden;
+    border-radius: var(--aora-radius-lg);
+    background: linear-gradient(160deg, var(--look-cover), var(--look-cover-deep));
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.08),
+      var(--aora-shadow-md);
+    color: var(--look-cover-ink);
+    contain: layout paint;
+
+    & > .site-themes__pattern {
+      z-index: -1;
+    }
+  }
+
+  .site-themes__stickersHead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--aora-space-2) var(--aora-space-3);
+    margin: 0;
+  }
+
+  .site-themes__stickersCap {
+    padding: 0.125rem 0.625rem;
+    border-radius: var(--aora-radius-sm);
+    background: var(--look-accent);
+    color: var(--look-accent-ink);
+    font-size: var(--aora-text-xs);
+    font-weight: var(--aora-weight-semibold);
+    letter-spacing: 0.1em;
+  }
+
+  .site-themes__stickersHint {
+    font-size: var(--aora-text-sm);
+    opacity: 0.86;
+  }
+
+  /* Rows of fixed cells, the last one centred; the stickers spill a little over their cells, so neighbours overlap. */
+  .site-themes__stickerField {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    row-gap: var(--aora-space-1);
+  }
+
+  /* Sized by its cell alone: the still arrives later and must not move it. */
+  .site-themes__sticker {
+    position: relative;
+    flex: none;
+    width: var(--_sticker);
+    aspect-ratio: 1;
+    contain: size layout;
+    translate: var(--sticker-x) var(--sticker-y);
+    rotate: var(--sticker-turn);
+    scale: 1.1;
+  }
+
+  .site-themes__stickerArt {
+    position: absolute;
+    inset: 0;
+  }
+
+  /*
+   * A state, as an image that reaches `--_bleed` past the cell for its die-cut
+   * edge and shadow; two per sticker, cross-faded. A border image, like the
+   * shelf's tiles, so decoration never becomes the largest contentful paint.
+   */
+  .site-themes__stickerImg {
+    position: absolute;
+    inset: calc(var(--_bleed) * -100%);
+    border-image-slice: 0 fill;
+    border-image-width: 0;
+    opacity: 0;
+    transition: opacity 0.22s var(--aora-ease-standard);
+    will-change: opacity;
+
+    &[data-on] {
+      opacity: 1;
+    }
+  }
+
+  /* ---- album: binder pages --------------------------------------------------- */
+
+  .site-themes__binder {
+    display: grid;
+    gap: var(--aora-space-10);
+  }
+
+  /*
+   * A binder page: the site's raised surface with the theme's faint rules, a
+   * column of punched holes down its left edge and the pages under it showing
+   * at the corner. The holes and rules are backgrounds, so they take no space.
+   */
+  .site-themes__page {
+    position: relative;
+    padding: var(--aora-space-6) var(--aora-space-8) var(--aora-space-8) calc(var(--aora-space-8) + 2.25rem);
+    border-radius: var(--aora-radius-lg);
+    background:
+      repeating-linear-gradient(180deg, transparent 0 39px, var(--look-binder-rule) 39px 40px),
+      var(--aora-surface);
+    box-shadow:
+      var(--aora-shadow-line),
+      5px 7px 0 -3px light-dark(oklch(0.93 0.008 85), oklch(0.25 0.006 85)),
+      10px 13px 0 -6px light-dark(oklch(0.89 0.01 85), oklch(0.22 0.006 85)),
+      var(--aora-shadow-sm);
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 2.25rem;
+      bottom: 2.25rem;
+      left: 1.25rem;
+      width: 1.375rem;
+      background: radial-gradient(
+          circle,
+          var(--site-paper-soft) 0 0.4rem,
+          var(--aora-line-strong) 0.43rem 0.53rem,
+          transparent 0.56rem
+        )
+        center 0 / 1.375rem 4.5rem repeat-y;
+    }
+  }
+
+  .site-themes__binder[data-ring='square'] .site-themes__page::before {
+    background: linear-gradient(
+        90deg,
+        transparent 0.3rem,
+        var(--site-paper-soft) 0.3rem 1.075rem,
+        transparent 1.075rem
+      )
+      0 0 / 100% 4.5rem;
+    -webkit-mask: repeating-linear-gradient(180deg, #000 0 0.775rem, transparent 0.775rem 4.5rem);
+    mask: repeating-linear-gradient(180deg, #000 0 0.775rem, transparent 0.775rem 4.5rem);
+  }
+
+  .site-themes__pageHead {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--aora-space-2) var(--aora-space-3);
+    margin: 0 0 var(--aora-space-5);
+  }
+
+  .site-themes__pageNo {
+    padding: 0.125rem 0.625rem;
+    border-radius: var(--aora-radius-sm);
+    background: var(--look-accent);
+    color: var(--look-accent-ink);
+    font-size: var(--aora-text-xs);
+    font-weight: var(--aora-weight-semibold);
+    letter-spacing: 0.1em;
+  }
+
+  .site-themes__pageRange {
+    font-family: var(--aora-font-mono);
+    font-size: var(--aora-text-xs);
+    color: var(--aora-text-muted);
+  }
+
+  .site-themes__pockets {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--aora-space-6) var(--aora-space-5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* A sleeve: a faint pocket around the card, and a plastic sheen across its top corner. */
+  .site-themes__pocket {
+    position: relative;
+    display: grid;
+    min-width: 0;
+    padding: 0.4375rem;
+    border-radius: 1.125rem;
+    background: linear-gradient(
+      180deg,
+      var(--look-sleeve),
+      color-mix(in oklab, var(--look-sleeve) 40%, transparent)
+    );
+    box-shadow:
+      inset 0 0 0 1px var(--look-sleeve),
+      inset 0 2px 0 rgb(255 255 255 / 0.25);
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgb(255 255 255 / 0.16) 0 12%, transparent 26%);
+      pointer-events: none;
+    }
+  }
+
+  /*
+   * An empty sleeve, its outline pressed into the plastic and the theme's seal
+   * faint in the middle. `data-empty` names the column counts it finishes the
+   * last row at; it shows only at those.
+   */
+  .site-themes__pocket[data-empty]:not([data-empty~='5']) {
+    display: none;
+  }
+
+  .site-themes__sleeve {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 2 / 3;
+    border: 1.5px dashed color-mix(in oklab, var(--look-sleeve) 45%, var(--aora-line-strong));
+    border-radius: 0.75rem;
+    background: color-mix(in oklab, var(--look-sleeve) 30%, transparent);
+  }
+
+  .site-themes__seal--sleeve {
+    width: 2.25rem;
+    height: 2.25rem;
+    opacity: 0.38;
+    filter: saturate(0.6);
+  }
+
+  /* ---- cards ----------------------------------------------------------------- */
+
+  /*
+   * A card: a fixed 2:3 box laid out in container units, so a card in a
+   * sleeve and the card in the dialog are one design at two sizes. It leans
+   * toward the pointer through `--tilt-x` and `--tilt-y`, which only its
+   * transform reads.
+   */
+  .site-themes__card {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    padding: 0;
+    border: 0;
+    border-radius: 6cqw;
+    background: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    container-type: inline-size;
+    transform: perspective(44rem) translateY(var(--site-themes-lift, 0)) rotateX(var(--tilt-x, 0deg))
+      rotateY(var(--tilt-y, 0deg));
+    transition: transform var(--aora-duration-slower) var(--aora-ease-out);
+
+    &[data-tilting] {
+      transition-duration: 90ms;
+      transition-timing-function: linear;
+    }
+
+    &:focus-visible {
+      --site-themes-lift: -4px;
+    }
+
+    &:disabled {
+      cursor: default;
+    }
+  }
+
+  @media (hover: hover) {
+    .site-themes__card:hover:not(:disabled) {
+      --site-themes-lift: -4px;
+    }
+  }
+
+  .site-themes__face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3.6cqw;
+    box-sizing: border-box;
+    padding: 5.4cqw 5.4cqw 5cqw;
+    overflow: hidden;
+    border: max(2px, 1.6cqw) solid transparent;
+    border-radius: 6cqw;
+    background:
+      linear-gradient(var(--look-stock), var(--look-stock)) padding-box,
+      var(--look-foil) border-box;
+    box-shadow:
+      0 1px 0 rgb(0 0 0 / 0.1),
+      0 3px 0 -1px color-mix(in oklab, var(--look-stock) 75%, #000),
+      0 12px 22px -12px rgb(0 0 0 / 0.45);
+    color: var(--look-stock-ink);
+    text-align: center;
+
+    &[data-border='double']::before,
+    &[data-border='stitched']::before {
+      content: '';
+      position: absolute;
+      inset: 1.8cqw;
+      border: 1.5px solid color-mix(in oklab, var(--look-accent) 55%, transparent);
+      border-radius: 4.4cqw;
+      pointer-events: none;
+    }
+
+    &[data-border='stitched']::before {
+      border-style: dashed;
+    }
+  }
+
+  .site-themes__faceTop {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1.6cqw;
+    min-height: max(22px, 11cqw);
+
+    & .site-themes__seal {
+      width: max(22px, 11cqw);
+      height: max(22px, 11cqw);
+      margin-left: auto;
+    }
+  }
+
+  .site-themes__number {
+    font: var(--aora-weight-bold) max(11px, 5cqw) / 1 var(--aora-font-mono);
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .site-themes__total {
+    color: var(--look-stock-muted);
+    font-weight: var(--aora-weight-medium);
+  }
+
+  .site-themes__face[data-number='badge'] .site-themes__number {
+    padding: 0.3em 0.6em;
+    border-radius: var(--aora-radius-pill);
+    background: var(--look-accent);
+    color: var(--look-accent-ink);
+
+    & .site-themes__total {
+      color: inherit;
+      opacity: 0.75;
+    }
+  }
+
+  .site-themes__face[data-number='tab'] .site-themes__number {
+    align-self: flex-start;
+    margin-top: -5.4cqw;
+    padding: 0.7em 0.6em 0.45em;
+    border-radius: 0 0 2.6cqw 2.6cqw;
+    background: var(--look-accent);
+    color: var(--look-accent-ink);
+
+    & .site-themes__total {
+      color: inherit;
+      opacity: 0.75;
+    }
+  }
+
+  .site-themes__art {
+    --aora-bg-base: var(--look-art);
+    position: relative;
+    isolation: isolate;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: 4.4cqw;
+    background: var(--look-art);
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      border-radius: inherit;
+      box-shadow:
+        inset 0 0 0 1px rgb(0 0 0 / 0.08),
+        inset 0 3px 8px rgb(0 0 0 / 0.12);
+      pointer-events: none;
+    }
+  }
+
+  .site-themes__figure {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    left: 50%;
+    display: grid;
+    place-items: center;
+    height: 80%;
+    aspect-ratio: 1;
+    translate: -50% -50%;
+  }
+
+  /* While the theme loads: a soft silhouette in the window, with a sheen passing over it. */
+  .site-themes__placeholder {
+    position: absolute;
+    top: 52%;
+    left: 50%;
+    height: 56%;
+    aspect-ratio: 1 / 0.92;
+    overflow: hidden;
+    border-radius: 48% 48% 42% 42%;
+    background:
+      radial-gradient(
+        circle at 37% 46%,
+        color-mix(in oklab, var(--look-stock-ink) 22%, transparent) 0 4.5%,
+        transparent 5%
+      ),
+      radial-gradient(
+        circle at 63% 46%,
+        color-mix(in oklab, var(--look-stock-ink) 22%, transparent) 0 4.5%,
+        transparent 5%
+      ),
+      color-mix(in oklab, var(--look-stock-ink) 9%, transparent);
+    translate: -50% -50%;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(100deg, transparent 30%, rgb(255 255 255 / 0.4) 50%, transparent 70%);
+      transform: translateX(-100%);
+      animation: site-themes-shimmer 1.5s ease-in-out infinite;
+    }
+  }
+
+  @keyframes site-themes-shimmer {
+    to {
+      transform: translateX(100%);
+    }
+  }
+
+  .site-themes__corner {
+    position: absolute;
+    z-index: 1;
+    width: 13%;
+    aspect-ratio: 1;
+    color: var(--look-accent);
+    opacity: 0.85;
+    pointer-events: none;
+  }
+
+  .site-themes__corner--start {
+    top: 4%;
+    left: 4%;
+  }
+
+  .site-themes__corner--end {
+    right: 4%;
+    bottom: 4%;
+    rotate: 180deg;
+  }
+
+  .site-themes__plate {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6cqw;
+    min-width: 0;
+    line-height: 1.25;
+  }
+
+  .site-themes__plateName,
+  .site-themes__plateGloss {
+    max-width: 100%;
+    min-height: 1.25em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .site-themes__plateName {
+    font-size: max(13px, 7.6cqw);
+    font-weight: 800;
+    letter-spacing: 0.04em;
+  }
+
+  .site-themes__plateGloss {
+    color: var(--look-stock-muted);
+    font-family: var(--look-gloss-font);
+    font-style: var(--look-gloss-style);
+    font-size: max(10px, 4.8cqw);
+    letter-spacing: 0.04em;
+  }
+
+  .site-themes__face[data-name='ribbon'] .site-themes__plateName {
+    box-sizing: border-box;
+    padding: 0.12em 1.1em;
+    background: var(--look-accent);
+    color: var(--look-accent-ink);
+    clip-path: polygon(0 0, 100% 0, calc(100% - 0.55em) 50%, 100% 100%, 0 100%, 0.55em 50%);
+  }
+
+  .site-themes__face[data-name='tag'] .site-themes__plateName {
+    box-sizing: border-box;
+    padding: 0.04em 0.8em;
+    border: 1.5px solid color-mix(in oklab, var(--look-accent) 70%, transparent);
+    border-radius: var(--aora-radius-pill);
+  }
+
+  /* The light the pointer catches: a soft spot that follows it across the card, by transform alone. */
+  .site-themes__glare {
+    position: absolute;
+    inset: -50%;
+    z-index: 5;
+    background: radial-gradient(circle at 50% 50%, rgb(255 255 255 / 0.34), rgb(255 255 255 / 0) 34%);
+    opacity: 0;
+    transform: translate(var(--glare-x, 0), var(--glare-y, 0));
+    transition: opacity var(--aora-duration-slow) var(--aora-ease-standard);
+    pointer-events: none;
+  }
+
+  .site-themes__card[data-tilting] .site-themes__glare {
+    opacity: 1;
+  }
+
+  /* ---- card back ------------------------------------------------------------- */
+
+  .site-themes__cardBack {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    box-sizing: border-box;
+    overflow: hidden;
+    border: max(2px, 1.6cqw) solid transparent;
+    border-radius: 6cqw;
+    background:
+      linear-gradient(160deg, var(--look-cover), var(--look-cover-deep)) padding-box,
+      var(--look-foil) border-box;
+    box-shadow: 0 12px 22px -12px rgb(0 0 0 / 0.45);
+    color: var(--look-cover-ink);
+  }
+
+  .site-themes__backInset {
+    position: absolute;
+    inset: 4.5cqw;
+    border: 1.5px solid color-mix(in oklab, var(--look-cover-ink) 55%, transparent);
+    border-radius: 3.6cqw;
+  }
+
+  .site-themes__cardBack[data-inset='dashed'] .site-themes__backInset {
+    border-style: dashed;
+  }
+
+  .site-themes__cardBack[data-inset='double'] .site-themes__backInset {
+    border-width: 3px;
+    border-style: double;
+  }
+
+  .site-themes__medallion {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 58cqw;
+    aspect-ratio: 1;
+  }
+
+  .site-themes__ring {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    color: var(--look-cover-ink);
+  }
+
+  .site-themes__backName {
+    position: absolute;
+    bottom: 11cqw;
+    max-width: 80%;
+    overflow: hidden;
+    font-family: var(--look-gloss-font);
+    font-size: max(9px, 6cqw);
+    font-weight: var(--aora-weight-semibold);
+    letter-spacing: 0.2em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* The idle warm-up: the dialog's size, fixed and contained, so it takes no space; opacity stays one 8-bit step above zero because zero skips painting. */
+  .site-themes__warmup {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    width: min(58rem, 100vw - 2rem);
+    height: min(36rem, 100dvh - 2rem);
+    overflow: hidden;
+    opacity: 0.004;
+    pointer-events: none;
+    contain: strict;
+  }
+
+  @media (width < 720px) {
+    .site-themes__warmup {
+      width: 100vw;
+      height: min(94dvh, 48rem);
+    }
+  }
+
+  /* ---- dialog ---------------------------------------------------------------- */
+
+  /* The page under an open card does not scroll; the gutter is always reserved, so nothing moves. */
+  :root:has(.site-themes__dialog[open]) {
+    overflow: hidden;
+  }
+
+  /*
+   * A fixed size, so moving between cards or states inside it never resizes
+   * it. The sheet fills it edge to edge, which is how a click on the backdrop
+   * is told from a click inside.
+   */
+  .site-themes__dialog {
+    box-sizing: border-box;
+    width: min(58rem, 100% - 2rem);
+    max-width: none;
+    height: min(36rem, 100dvh - 2rem);
+    max-height: none;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    border-radius: var(--aora-radius-lg);
+    background: var(--aora-surface-raised);
+    box-shadow: var(--aora-shadow-line), var(--aora-shadow-lg);
+    color: var(--aora-text);
+
+    &[open] {
+      animation: site-themes-open var(--aora-duration-slow) var(--aora-ease-out);
+    }
+
+    &::backdrop {
+      background: oklch(0.2 0.01 85 / 0.5);
+    }
+  }
+
+  @keyframes site-themes-open {
+    from {
+      opacity: 0;
+      transform: translateY(0.5rem) scale(0.98);
+    }
+  }
+
+  .site-themes__sheet {
+    display: grid;
+    grid-template-columns: minmax(0, 24rem) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    height: 100%;
+  }
+
+  /* The cover cloth, as the left page of an open album, with the card standing on it. */
+  .site-themes__stage {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    background: linear-gradient(160deg, var(--look-cover), var(--look-cover-deep));
+    box-shadow: inset -18px 0 24px -18px rgb(0 0 0 / 0.45);
+  }
+
+  .site-themes__deal {
+    position: relative;
+    z-index: 1;
+    height: min(80%, 26rem);
+    aspect-ratio: 2 / 3;
+  }
+
+  /*
+   * The card's opacity lives on this wrapper and its turn on the flipper
+   * inside: opacity below 1 flattens a 3D element, which would show both faces
+   * at once. The perspective is set here because it reaches direct children only.
+   */
+  .site-themes__fade {
+    position: absolute;
+    inset: 0;
+    perspective: 60rem;
+  }
+
+  .site-themes__flipper {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+  }
+
+  .site-themes__side {
+    position: absolute;
+    inset: 0;
+    container-type: inline-size;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+
+    & .site-themes__face,
+    & .site-themes__cardBack {
+      box-shadow:
+        0 1px 0 rgb(0 0 0 / 0.1),
+        0 4px 0 -1px color-mix(in oklab, var(--look-stock) 70%, #000),
+        0 26px 40px -18px rgb(0 0 0 / 0.6);
+    }
+
+    & .site-themes__figure {
+      height: 86%;
+    }
+  }
+
+  .site-themes__side--back {
+    transform: rotateY(180deg);
+  }
+
+  /* The shadow the card casts on the cloth: a soft pool that grows and fades as the card lifts. */
+  .site-themes__lift {
+    position: absolute;
+    right: 6%;
+    bottom: -7%;
+    left: 6%;
+    height: 12%;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgb(0 0 0 / 0.42), transparent);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .site-themes__sweep {
+    position: absolute;
+    inset: -20%;
+    z-index: 6;
+    background: linear-gradient(
+      115deg,
+      transparent 38%,
+      rgb(255 255 255 / 0.5) 47%,
+      rgb(255 255 255 / 0.14) 53%,
+      transparent 62%
+    );
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .site-themes__particles {
+    position: absolute;
+    top: 46%;
+    left: 50%;
+    z-index: 4;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+  }
+
+  .site-themes__particle {
+    position: absolute;
+    top: calc(var(--size) / -2);
+    left: calc(var(--size) / -2);
+    width: var(--size);
+    height: var(--size);
+    opacity: 0;
+  }
+
+  .site-themes__particleArt {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    fill: currentColor;
+  }
+
+  /*
+   * Drawing a card, 1.5 seconds. The first 240ms are a warm-up nobody sees:
+   * the card shows its face and then its back at 1% opacity, so the browser
+   * paints both while the dialog is still opening rather than in the middle of
+   * the turn. Then:
+   *   240 to 540ms    the back rises off the cloth and its shadow spreads;
+   *   540 to 1110ms   it turns over in perspective, past face up and back;
+   *   1050ms          the theme's motifs burst from behind it;
+   *   1100ms          foil light sweeps across the face;
+   *   1150ms on       the dialog's text follows, line by line.
+   * The lift is depth under perspective, not scale, so the painted card is
+   * never resampled while it moves.
+   */
+  .site-themes__deal[data-motion='draw'] {
+    & .site-themes__fade {
+      animation: site-themes-fade 1500ms both;
+    }
+
+    & .site-themes__flipper {
+      animation: site-themes-draw 1500ms both;
+      will-change: transform;
+    }
+
+    & .site-themes__side {
+      backface-visibility: visible;
+      -webkit-backface-visibility: visible;
+    }
+
+    & .site-themes__side--front {
+      animation: site-themes-front 1500ms linear both;
+    }
+
+    & .site-themes__side--back {
+      animation: site-themes-back 1500ms linear both;
+    }
+
+    & .site-themes__lift {
+      animation: site-themes-lift 1260ms var(--aora-ease-out) 240ms both;
+    }
+
+    & .site-themes__sweep {
+      animation: site-themes-sweep 700ms var(--aora-ease-in-out) 1100ms both;
+    }
+
+    & .site-themes__particle {
+      animation: site-themes-burst 900ms cubic-bezier(0.12, 0.7, 0.3, 1) calc(1050ms + var(--delay)) both;
+    }
+  }
+
+  @keyframes site-themes-fade {
+    0%,
+    16% {
+      opacity: 0.01;
+      animation-timing-function: cubic-bezier(0.2, 0.8, 0.3, 1);
+    }
+    36%,
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes site-themes-draw {
+    0% {
+      transform: translate3d(0, 22%, -9rem) rotateY(0deg);
+      animation-timing-function: step-end;
+    }
+    8% {
+      transform: translate3d(0, 22%, -9rem) rotateY(180deg);
+      animation-timing-function: linear;
+    }
+    16% {
+      transform: translate3d(0, 22%, -9rem) rotateY(180deg);
+      animation-timing-function: cubic-bezier(0.2, 0.8, 0.3, 1);
+    }
+    36% {
+      transform: translate3d(0, -5%, 2.5rem) rotateY(180deg);
+      animation-timing-function: cubic-bezier(0.5, 0, 0.6, 1);
+    }
+    44% {
+      transform: translate3d(0, -6%, 3rem) rotateY(166deg);
+      animation-timing-function: cubic-bezier(0.3, 0, 0.2, 1);
+    }
+    74% {
+      transform: translate3d(0, -2%, 1.25rem) rotateY(-14deg);
+      animation-timing-function: cubic-bezier(0.35, 0, 0.4, 1);
+    }
+    88% {
+      transform: translate3d(0, 0, 0) rotateY(5deg);
+      animation-timing-function: ease-out;
+    }
+    100% {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  /*
+   * Which face shows, switched where the turn crosses edge-on (8% and 52.4%
+   * of the draw). Chrome flattens the card while an animation turns it, so
+   * `backface-visibility` would hide the back the whole way round; during a
+   * draw both faces stay visible and trade places by opacity instead.
+   */
+  @keyframes site-themes-front {
+    0%,
+    8% {
+      opacity: 1;
+    }
+    8.01%,
+    52.4% {
+      opacity: 0;
+    }
+    52.41%,
+    100% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes site-themes-back {
+    0%,
+    8% {
+      opacity: 0;
+    }
+    8.01%,
+    52.4% {
+      opacity: 1;
+    }
+    52.41%,
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes site-themes-lift {
+    0% {
+      opacity: 0;
+      transform: scale(0.6);
+    }
+    25% {
+      opacity: 0.5;
+      transform: scale(1.18);
+    }
+    80% {
+      opacity: 0.7;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 0.7;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes site-themes-sweep {
+    0% {
+      opacity: 0;
+      transform: translateX(-55%);
+    }
+    20% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(55%);
+    }
+  }
+
+  @keyframes site-themes-burst {
+    0% {
+      opacity: 0;
+      transform: translate(0, 0) scale(0.3) rotate(0deg);
+    }
+    15% {
+      opacity: 1;
+    }
+    70% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translate(var(--dx), var(--dy)) scale(1) rotate(var(--turn));
+    }
+  }
+
+  /* A card opened or stepped to is dealt onto the cloth. */
+  .site-themes__deal[data-motion='deal'] .site-themes__flipper {
+    animation: site-themes-deal 520ms cubic-bezier(0.3, 0.7, 0.3, 1.25) both;
+  }
+
+  .site-themes__deal[data-motion='deal'] .site-themes__lift,
+  .site-themes__deal:not([data-motion]) .site-themes__lift {
+    opacity: 0.7;
+  }
+
+  @keyframes site-themes-deal {
+    0% {
+      transform: translateY(1.5rem) rotate(-6deg) scale(0.94);
+    }
+    60% {
+      transform: translateY(-0.375rem) rotate(1.5deg) scale(1.01);
+    }
+    100% {
+      transform: none;
+    }
+  }
+
+  .site-themes__info[data-motion='follow'] > * {
+    animation: site-themes-follow 460ms var(--aora-ease-out) both;
+  }
+
+  .site-themes__info[data-motion='follow'] > :nth-child(1) {
+    animation-delay: 1150ms;
+  }
+
+  .site-themes__info[data-motion='follow'] > :nth-child(2) {
+    animation-delay: 1210ms;
+  }
+
+  .site-themes__info[data-motion='follow'] > :nth-child(3) {
+    animation-delay: 1270ms;
+  }
+
+  .site-themes__info[data-motion='follow'] > :nth-child(4) {
+    animation-delay: 1330ms;
+  }
+
+  @keyframes site-themes-follow {
+    from {
+      opacity: 0;
+      transform: translateY(0.75rem);
+    }
+  }
+
+  .site-themes__step {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    background: var(--aora-surface);
+    box-shadow: var(--aora-shadow-line), var(--aora-shadow-sm);
+    translate: 0 -50%;
+
+    &:hover {
+      background: var(--aora-surface-raised);
+    }
+  }
+
+  .site-themes__step--prev {
+    inset-inline-start: var(--aora-space-3);
+  }
+
+  .site-themes__step--next {
+    inset-inline-end: var(--aora-space-3);
+  }
+
+  .site-themes__info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--aora-space-4);
+    min-height: 0;
+    padding: var(--aora-space-6);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .site-themes__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--aora-space-3);
+  }
+
+  .site-themes__name {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--aora-space-1) var(--aora-space-2);
+    margin: 0;
+    font-size: var(--aora-text-2xl);
+    font-weight: var(--aora-weight-bold);
+    letter-spacing: -0.02em;
+    line-height: var(--aora-leading-tight);
+  }
+
+  .site-themes__nameGloss {
+    font-size: var(--aora-text-md);
+    font-weight: var(--aora-weight-regular);
+    letter-spacing: 0;
+    color: var(--aora-text-muted);
+  }
+
+  .site-themes__close {
+    flex: none;
+  }
+
+  .site-themes__desc {
+    margin: calc(var(--aora-space-2) * -1) 0 0;
+    font-size: var(--aora-text-md);
+    line-height: var(--aora-leading-normal);
+    color: var(--aora-text-muted);
+  }
+
+  /*
+   * Every state the theme opens, which is all of them: the groups scroll in
+   * the room between the description and the actions, so the name, the code
+   * and the share button stay in view and the dialog never grows.
+   */
+  .site-themes__expr {
+    display: grid;
+    flex: 1 1 auto;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: var(--aora-space-2);
+    min-height: 0;
+  }
+
+  .site-themes__cap {
+    margin: 0;
+    font-size: var(--aora-text-sm);
+    font-weight: var(--aora-weight-semibold);
+    letter-spacing: 0.1em;
+    color: var(--aora-text-faint);
+  }
+
+  .site-themes__groups {
+    --_fade: var(--aora-space-3);
+    display: grid;
+    align-content: start;
+    gap: var(--aora-space-2);
+    min-height: 0;
+    padding-block: var(--_fade);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      #000 var(--_fade),
+      #000 calc(100% - var(--_fade)),
+      transparent
+    );
+  }
+
+  .site-themes__group {
+    display: grid;
+    grid-template-columns: 4.5rem minmax(0, 1fr);
+    align-items: baseline;
+    gap: var(--aora-space-2);
+  }
+
+  .site-themes__groupName {
+    font-size: var(--aora-text-xs);
+    color: var(--aora-text-faint);
+  }
+
+  .site-themes__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--aora-space-1);
+  }
+
+  /* The console's tab, at the small control height; chosen is ink. */
+  .site-themes__chip {
+    height: var(--aora-control-h-sm);
+    padding: 0 0.625rem;
+    border: 0;
+    border-radius: var(--aora-radius-pill);
+    background: var(--aora-fill);
+    color: var(--aora-text-muted);
+    font: inherit;
+    font-size: var(--aora-text-sm);
+    cursor: pointer;
+    transition:
+      background-color var(--aora-duration-fast) var(--aora-ease-standard),
+      color var(--aora-duration-fast) var(--aora-ease-standard);
+
+    &:hover {
+      background: var(--aora-fill-hover);
+      color: var(--aora-text);
+    }
+
+    &[aria-checked='true'] {
+      background: var(--aora-text);
+      color: var(--site-paper);
+    }
+  }
+
+  .site-themes__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--aora-space-2);
+    margin-top: auto;
+
+    & .site-home__chip {
+      max-width: none;
+    }
+  }
+
+  /* ---- narrow ---------------------------------------------------------------- */
+
+  @media (width < 1100px) {
+    .site-themes__pockets {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .site-themes__pocket[data-empty][data-empty~='4'] {
+      display: grid;
+    }
+
+    .site-themes__pocket[data-empty]:not([data-empty~='4']) {
+      display: none;
+    }
+  }
+
+  @media (width < 900px) {
+    .site-themes__fan {
+      display: none;
+    }
+
+    .site-themes__intro {
+      grid-template-columns: minmax(0, 1fr);
+      padding-top: 7rem;
+    }
+
+    /* One column and no fan: the wall is a band above the title, fading out before it. */
+    .site-themes__wall {
+      bottom: auto;
+      height: calc(var(--aora-space-12) + 7.5rem);
+      mask-image: linear-gradient(to bottom, transparent, var(--_full) 2.5rem, var(--_full) 62%, transparent);
+    }
+
+    .site-themes__pockets {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .site-themes__pocket[data-empty][data-empty~='3'] {
+      display: grid;
+    }
+
+    .site-themes__pocket[data-empty]:not([data-empty~='3']) {
+      display: none;
+    }
+  }
+
+  @media (width < 640px) {
+    .site-themes__shelf {
+      --_gap: var(--aora-space-5);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      row-gap: var(--aora-space-8);
+      padding-inline: var(--aora-space-2);
+    }
+
+    .site-themes__booklet {
+      border-radius: 4px 10px 10px 4px;
+    }
+
+    .site-themes__cover {
+      min-height: 0;
+      padding-bottom: 11.5rem;
+    }
+
+    .site-themes__scene {
+      top: auto;
+      height: 12rem;
+    }
+
+    .site-themes__inks {
+      --_dot: 0.75rem;
+      gap: 0.25rem;
+    }
+
+    .site-themes__stickers {
+      --_sticker: 4.125rem;
+      --_edge: 1px;
+    }
+
+    .site-themes__page {
+      padding: var(--aora-space-4) var(--aora-space-3) var(--aora-space-5) calc(var(--aora-space-3) + 1.5rem);
+
+      &::before {
+        left: 0.375rem;
+        width: 1rem;
+        background-size: 1rem 3.75rem;
+      }
+    }
+
+    .site-themes__pockets {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--aora-space-4) var(--aora-space-3);
+    }
+
+    .site-themes__pocket[data-empty][data-empty~='2'] {
+      display: grid;
+    }
+
+    .site-themes__pocket[data-empty]:not([data-empty~='2']) {
+      display: none;
+    }
+  }
+
+  /* On a phone the card opens as a bottom sheet: the card on its cloth above, its controls below. */
+  @media (width < 720px) {
+    .site-themes__dialog {
+      width: 100%;
+      height: min(94dvh, 48rem);
+      margin: auto 0 0;
+      border-radius: var(--aora-radius-lg) var(--aora-radius-lg) 0 0;
+
+      &[open] {
+        animation-name: site-themes-rise;
+      }
+    }
+
+    @keyframes site-themes-rise {
+      from {
+        transform: translateY(2rem);
+        opacity: 0;
+      }
+    }
+
+    .site-themes__sheet {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    .site-themes__stage {
+      height: min(46dvh, 24rem);
+      box-shadow: inset 0 -18px 24px -18px rgb(0 0 0 / 0.45);
+    }
+
+    .site-themes__info {
+      padding: var(--aora-space-5) var(--aora-space-4);
+    }
+
+    .site-themes__group {
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--aora-space-1);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .site-themes__booklet,
+    .site-themes__card,
+    .site-themes__draw {
+      transition: none;
+    }
+
+    .site-themes__booklet:hover,
+    .site-themes__draw:hover:not(:disabled) {
+      transform: none;
+    }
+
+    .site-themes__card {
+      --site-themes-lift: 0;
+    }
+
+    .site-themes__wallRow {
+      animation: none;
+      transform: translateX(calc(var(--site-wall-phase) * -50%));
+    }
+
+    .site-themes__stickersHint {
+      display: none;
+    }
+
+    .site-themes__stickerImg {
+      transition: none;
+    }
+
+    .site-themes__dialog[open],
+    .site-themes__deal .site-themes__flipper,
+    .site-themes__deal .site-themes__fade,
+    .site-themes__deal .site-themes__side,
+    .site-themes__info > *,
+    .site-themes__placeholder::after {
+      animation: none;
+    }
+  }
+}

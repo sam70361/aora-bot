@@ -1,9 +1,9 @@
 import { useLabel, type CharacterState } from '@aora-bot/react';
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { useI18n } from '../shared/i18n.js';
 import type { StateGroup } from '../shared/state-groups.js';
 import type { Preset } from '../shared/share.js';
-import { Radio, RadioGroup, ScrollRootProvider } from './Radio.js';
+import { Radio, RadioGroup, ScrollRootProvider } from '../shared/Radio.js';
 import { lookOf, Preview } from './Rails.js';
 
 /**
@@ -14,7 +14,7 @@ import { lookOf, Preview } from './Rails.js';
  * group is longer than the dock. The row has a fixed height, so a group with
  * three states and a group with nineteen occupy the same box.
  */
-export function StateDock({
+export const StateDock = memo(function StateDock({
   groups,
   preset,
   onPick,
@@ -92,7 +92,7 @@ export function StateDock({
       </ScrollRootProvider>
     </div>
   );
-}
+});
 
 const groupOf = (groups: StateGroup[], state: CharacterState) =>
   (groups.find((g) => g.states.includes(state)) ?? groups[0])?.id ?? '';

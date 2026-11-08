@@ -8,7 +8,7 @@ Which agents are on which resource.
 
 ```tsx preview
 import { useState } from 'react';
-import { MarkStageProvider } from '@aora-bot/react';
+import { CharacterStageProvider } from '@aora-bot/react';
 import { OccupancyList, type OccupancyRow } from '@aora-bot/surfaces';
 
 const rows: OccupancyRow[] = [
@@ -38,12 +38,12 @@ const rows: OccupancyRow[] = [
 export default function Demo() {
   const [picked, setPicked] = useState<string | null>(null);
   return (
-    <MarkStageProvider>
+    <CharacterStageProvider>
       <div className="site-demo site-demo--column">
         <OccupancyList rows={rows} onSelect={(agent, row) => setPicked(`${agent.name} on ${row.label}`)} />
         <span className="site-demo__label">{picked ?? 'click a face'}</span>
       </div>
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 ```
@@ -56,7 +56,7 @@ Overflow is a count rather than a scroll. Four faces and "+7" is a true statemen
 
 ## One engine for forty rows
 
-Every `OccupancyMark` is a [`StagedMark`](/components/mark-stage), so the list needs a `MarkStageProvider` above it. A resource list is exactly the page that has forty marks on it, most in the same state at the same time, and that is the case the stage collapses to a single animation. `lineWeight` is the one prop that opts a mark out of sharing: the weight is baked into the source geometry, so a mirror cannot vary it.
+Every `OccupancyMark` is a [`StagedMark`](/components/character-stage), so the list needs a `CharacterStageProvider` above it. A resource list is exactly the page that has forty marks on it, most in the same state at the same time, and that is the case the stage collapses to a single animation. `lineWeight` is the one prop that opts a mark out of sharing: the weight is baked into the source geometry, so a mirror cannot vary it.
 
 ## Each row's state
 

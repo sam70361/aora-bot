@@ -2,10 +2,10 @@ import { DEFAULT_STYLE_ID, getStyle } from '@aora-bot/engine';
 import { DEFAULT_FACE, type Preset } from './share.js';
 
 /** The size every copied React and HTML snippet renders at. */
-const SNIPPET_SIZE_PX = 96;
+export const SNIPPET_SIZE_PX = 96;
 
-const AVATAR_ORIGIN = 'https://aora-bot.vercel.app';
-const ELEMENT_SCRIPT = `<script type="module" src="https://cdn.jsdelivr.net/npm/@aora-bot/element"></script>`;
+export const AVATAR_ORIGIN = 'https://aora-bot.vercel.app';
+export const ELEMENT_SCRIPT = `<script type="module" src="https://cdn.jsdelivr.net/npm/@aora-bot/element"></script>`;
 
 const literal = (value: unknown): string => (typeof value === 'string' ? `'${value}'` : String(value));
 

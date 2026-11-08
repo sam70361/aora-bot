@@ -57,7 +57,7 @@ export default function Demo() {
 }
 ```
 
-Each style has a page: [Vector](/design/styles/vector), [Pixel](/design/styles/pixel), [Kaomoji](/design/styles/kaomoji). There are three faces, `cute` by default; pick another with `face`, see [Faces](/design/face).
+Each style has a page: [Vector](/design/styles/vector), [Pixel](/design/styles/pixel), [Kaomoji](/design/styles/kaomoji). There are thirteen faces, `cute` by default; pick another with `face`, see [Faces](/design/face).
 
 ## The background token
 
@@ -125,7 +125,7 @@ export default function Demo() {
 Any string hashes to a stable shape and ink, so you can show a consistent character per user without storing anything.
 
 ```tsx preview
-import { AgentAvatar } from '@aora-bot/react';
+import { AgentPortrait } from '@aora-bot/react';
 
 const people = ['ada@example.com', 'grace@example.com', 'alan@example.com', 'edsger@example.com'];
 
@@ -134,7 +134,7 @@ export default function Demo() {
     <div className="site-demo">
       {people.map((id) => (
         <div className="site-demo__cell" key={id}>
-          <AgentAvatar agent={{ id }} sizePx={52} />
+          <AgentPortrait agent={{ id }} sizePx={52} />
           <span className="site-demo__label">{id.split('@')[0]}</span>
         </div>
       ))}

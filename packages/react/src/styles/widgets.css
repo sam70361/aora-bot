@@ -1,6 +1,6 @@
 /*
  * The widgets the primitives ship with: shared controls, the HUD plate, the
- * pickers, the avatar editor with its crop stage, and the avatar trigger.
+ * pickers, the avatar studio with its crop stage, and the avatar trigger.
  *
  * Kept apart from `components.css`, which styles marks and avatars — a handful
  * of rules each, all of them about a character. These are forms and dialogs, and
@@ -104,7 +104,7 @@
   :is(
     .aora-button,
     .aora-field,
-    .aora-avatar-trigger__button,
+    .aora-avatar-button__button,
     .aora-editable__button,
     .aora-editor__tab
   ):focus-visible,
@@ -222,7 +222,7 @@
     gap: var(--aora-space-3);
   }
 
-  /* ---- avatar editor --------------------------------------------------- */
+  /* ---- avatar studio --------------------------------------------------- */
 
   /*
    * A size container with a definite width, capped by its parent. The width
@@ -441,13 +441,13 @@
 
   /* ---- trigger and editable avatar ------------------------------------- */
 
-  .aora-avatar-trigger,
+  .aora-avatar-button,
   .aora-editable {
     position: relative;
     display: inline-flex;
   }
 
-  .aora-avatar-trigger__button,
+  .aora-avatar-button__button,
   .aora-editable__button {
     position: relative;
     display: inline-flex;
@@ -493,7 +493,7 @@
    * wrapper is as wide as the avatar, so the editor's `100%` cap would
    * otherwise fold it down to the avatar's width.
    */
-  .aora-avatar-trigger__editor,
+  .aora-avatar-button__editor,
   .aora-editable__editor {
     position: absolute;
     top: calc(100% + var(--aora-space-2));

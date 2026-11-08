@@ -13,7 +13,7 @@ _Tour_ walks a card through every [protocol id](/design/protocol) in turn.
 ```tsx
 <CharacterMark preset="bao" state="happy" />
 <StagedMark preset="dew" />
-<AgentAvatar agent={{ id: 'u-1', preset: 'nimbo' }} />
+<AgentPortrait agent={{ id: 'u-1', preset: 'nimbo' }} />
 ```
 
 A preset supplies `shape` and `color` when they are not given, and nothing else: passing `shape` alongside `preset` overrides the preset's shape. It is a convenience layer over the primitives, not a new axis.
@@ -44,12 +44,12 @@ interface CharacterPreset {
   shape: ShapeId;
   color: ColorId;
   accent: string; // the hex the character was designed in
-  face?: FaceStyle; // for presets drawn as line faces
+  face?: FaceStyle; // for presets designed with a face of their own
   nose?: NoseId;
 }
 ```
 
-`color` is the nearest palette entry and is what renders. `accent` is the exact hue the character was drawn in; it is kept for documentation swatches and for hosts with their own palette. No shipped member sets `face` or `nose` — the cast keeps the default face — but a host's own presets can, and every picker honours them.
+`color` is the nearest palette entry and is what renders. `accent` is the exact hue the character was drawn in; it is kept for documentation swatches and for hosts with their own palette. Of the shipped members only Dot (`dot`) sets `face`, wearing `capsule`; the rest keep the default face, and none sets `nose`. A host's own presets can set either, and every picker honours them.
 
 ## Looking one up
 
@@ -57,7 +57,7 @@ interface CharacterPreset {
 castMember('mochi'); // CharacterPreset
 castMember('nobody'); // null — a stored preference can go stale safely
 isCastId('byte'); // true
-CAST_IDS; // ['mochi', 'dot', 'pip', 'byte', …]
+CAST_IDS; // ['dot', 'mochi', 'pip', 'byte', …]
 ```
 
 `castMember` returns `null` rather than throwing for an unknown id, so a stored preference that names an unknown id degrades to the default character instead of crashing the page.
@@ -65,4 +65,4 @@ CAST_IDS; // ['mochi', 'dot', 'pip', 'byte', …]
 ## Next
 
 - [Shapes](/design/shapes) — the drawing behind each character
-- [CastStage](/components/cast-stage) — several characters entering in turn
+- [CastLineup](/components/cast-lineup) — several characters entering in turn

@@ -1,5 +1,53 @@
 # Changelog
 
+## Unreleased
+
+### `@aora-bot/engine`
+
+- **Characters.** Eleven new characters, each with a cast member: a `treat` family (`pudding`, `toast`, `icecream`, `cupcake`, `fries`, `candy` and `burger`), `avocado` and `melon` in fruit, `eggplant` in garden and `lion` in critter. `ghost` is redrawn rounder, with a scalloped hem of three soft lobes and two small arms.
+- **Characters.** Eleven more characters, each with a cast member: an `object` family (`cottage`, `chat`, `gift` and `bulb`), `hamster`, `hedgehog`, `koala` and `bat` in critter, `seal` and `puffer` in sea, and `planet` in figure.
+- **Faces.** Ten drawn faces join `FACE_STYLES` (`DRAWN_FACE_STYLES`): `brow`, `glossy`, `sparkle`, `button`, `shades`, `droopy`, `bigmouth`, `pie`, `screen` and `symbol`. Each is a complete face of the cute family — its own eyes for all 44 states, its own or explicitly shared mouths, layout, blink and gaze — written as one `FaceDesign` table and drawn as layers with paint roles, so it reads in every vector variant, in pixel and in kaomoji (`kaomoji(shape, state, face)`, `faceText`). States morph field by field, a switch to or from a drawn face cross-fades, and a face that does not fit a narrow body shrinks and sits lower until it does. `getInkVars('black')` adds `--aora-face-pupil` and `--aora-face-glint` for them.
+- **Faces.** Three more drawn faces: `capsule` (two upright capsule eyes, mirrored, with the cute mouth; it now leads `FACE_STYLES` and the face pickers), `teardrop` (jelly drops: a dark rim round the body's deepened ink, with two highlights) and `specs` (pupils with an iris behind round glasses joined by a bridge, with a glint that sweeps the lenses). `defineFace` registers a host's or theme's own drawn face (fitted at runtime, `FACE_KIT` for the shared geometry), and `defineVectorMedium` registers a vector variant.
+- **Cast.** Dot (`dot`, 球球) is a cream-white ball wearing `capsule` and leads the cast; `circle` leads the round family and the shape list.
+- **Variants.** Two paper media join the `vector` series. `origami` keeps each piece's outline round and crumples the sheet inside it into many soft, low facets, each lit by how it faces the light, with faint creases, on a small shadow of its own. `relief` presses each piece up from behind as one thick card: a lit rim up and to the left, a shaded rim down and to the right, standing off the page on a soft shadow. Neither reads parameters; the geometry is seeded by the outline and cached, and static output is deterministic.
+- **Canvas.** Shape space is now 240 units square (`SHAPE_SPACE`), centred at 120 (`CENTER`), and the drawing box is `-24 -24 288 288` (`VIEWBOX`, `VIEWBOX_STR`). Built-in and registered outlines are normalised to the new size, so custom shapes need no change; code that hard-coded shape-space coordinates should read the constants.
+- **Face tune.** Every `FaceTune` field is now a ratio of the fitted face, with 1 meaning as fitted (`DEFAULT_FACE_TUNE` is all ones). `STATE_FACE_TUNE` holds per-state ratios that multiply into the base, so a host's tune and a state's adjustment compose.
+- **Celebrations.** Confetti and ribbons are redesigned: a new seven-colour palette (`CONFETTI_COLORS`), bursts spread on the golden angle, paper that lifts, tumbles and settles under its own drag, and ribbons that grow, coast and reel back in. `SPIN_REST` is exported. `Trail` now carries `squash` and `reel` in place of `tilt` and `retract`.
+- **Variants.** Six drawing media join the `vector` series: `pencil` (a double graphite line, hatching on the shadow side, paper grain), `marker` (a scribbled fill over a pale offset pass, a dark double outline), `crayon` (a waxy fill with the paper's tooth showing and a ragged edge), `watercolor` (a light wash with pooled pigment, a bloom, granulation and a dried edge), `neon` (a glowing tube with a core) and `chalk` (crumbling chalk lines, diagonal strokes, dust). The body and its pieces are redrawn from their outlines; the face in every face style, the effects, the HUD, the belt and the confetti take the medium as a group. None paints a background, and each reads on a light or a dark page through the ink tokens; `crayon` and `watercolor` wear the dark face of `soft`. New parameters: `wobble`, `grain`, `hatching` and `neonGlow`, and `strokeWidth` now also sets the line of `pencil`, `marker`, `neon` and `chalk`. Textures are seeded, so static output is deterministic. Below 80 px the grain and the hatching fade out and a medium's line stays about a pixel wide, so at 24 px every medium's face reads as clearly as `outline`'s; a live character measures its own width, a static one goes by `sizePx`.
+- **Part colours.** A shape part may carry its own `color` (`PartColor`: a palette colour, which follows the page as a body of that colour does, or any CSS colour). Its tone's recipe is applied to that colour instead of the ink, and the part is ringed in a line derived from it, so a black hat reads on a black body. It is drawn in every vector variant (as a line in its colour on the outlined ones), in every medium and in the pixel style, in live and static output alike.
+- **Props.** `defineShapeWithProps(id, { base, props, at, scale })` defines a character as another one wearing props; `defineShape` takes `props` too. A prop is a part with `prop: true`: the face keeps off any prop that lies over the body, as it keeps off hair.
+- **Themes.** A theme is its own entry, `@aora-bot/engine/themes/<id>`: its characters (baked into points, with their face boxes and fits), cast, skins and labels, as plain data and painters. The core keeps only the mechanism and a manifest (`THEME_MANIFEST`: each theme's names, the ids it owns and a loader). `installTheme(entry)` installs one, idempotently; `await loadTheme(id)` loads it through the manifest. Until then a synchronous call naming one of its ids throws `ThemeNotInstalledError`, and `themesNeeded(ids)` says which themes a set of ids needs. A theme installed in the main entry is adopted by `/static` on the same page, and the other way round. `defineTheme`, `getTheme` and `listThemes` read a theme's definition: its cast and, per console dimension, an open list or a fixed value. The first is Halloween: 23 characters and two skins of the `vector` series, `doodle` and `grainy`, which take every colour from the ink. The main entry carries none of it.
+- **Visibility.** What only a theme names is drawn and accepted by id everywhere but left out of the default lists. `SHAPE_FAMILIES`, `SHAPE_IDS`, `CAST` and `COLOR_IDS` hold the listed ones; `ALL_SHAPE_IDS`, `ALL_CAST_IDS` and `ALL_COLOR_IDS` every id the engine knows, and `CORE_SHAPE_IDS` the core's own. A theme's manifest entry lists the characters it promotes into the default lists (`listedShapes`); a style's unlisted variants are accepted (`acceptsVariant`, `allVariants`) but not in `variants`.
+- **Palette.** Two unlisted colours, `night`, a near-black that stays dark on a dark page, and `cream`, a warm off-white; taking one out of `UNLISTED_COLOR_IDS` lists it. The face rule black follows is now general and measured from the ink (`faceInks`): a very dark ink takes the white face and white hair shading, a very light one the dark face with light pupils, which is what black does on a dark page. Yellow and cream now wear the dark face, in every variant.
+
+### `@aora-bot/react`
+
+- **Renamed components.** Several exports have clearer names; the old names are removed. `CharacterPicker`, `CompactCharacterPicker` and `AgentCharacterPicker` are now `CharacterSelector`, `CompactCharacterSelector` and `AgentCharacterSelector`; `AgentAvatar` is `AgentPortrait`; `AvatarStack` is `AvatarGroup` (with `layoutAvatarGroup`, `groupMetrics`, `groupMetricsForPx` and `GROUP_MAX_VISIBLE`); `AvatarChrome` is `AvatarFrame`; `AvatarEditor`, `AvatarTrigger` and `EditableAvatar` are `AvatarStudio`, `AvatarButton` and `AvatarField`; `MarkStageProvider` is `CharacterStageProvider`; `ActivityMark`, `GroupActivityMark` and `ActivityTicker` are `ActivityBadge`, `GroupActivityBadge` and `ActivityLine`; `ConfettiLayer` is `CelebrationLayer`. Hooks follow: `usePokeCycle` is `useTapCycle`, `useActivityPresence` is `useActivityStatus`, `useSpawnEntrance` is `useArrival`, and `activityFromTool` is `activityForTool`. Props types, CSS class names and documentation routes are renamed to match.
+- **Sizes.** A character mark defaults to 32 px. Avatar sizes are `xs` 16, `sm` 24, `md` 32, `lg` 40 and `xl` 80 px; an activity badge is 32 px, 24 px in a group, which cycles every 2.4 s with a 600 ms ink transition.
+- **Avatar studio.** Uploads up to 20 MB are accepted; the source is fitted within 1600 px, cropped on a 120 px stage and exported at 360 px, with zoom from 1 to 4 in steps of 0.25.
+- Labels for `relief` (浮雕) in both locales.
+- Labels for the six new variants and their parameters in both locales.
+- Labels for the two new colours in both locales; a theme's characters and skins are named by the theme (`themeLabel`). A mark that names a theme's character, member, skin or colour holds its box, loads the theme and then draws; `@aora-bot/react/themes/<id>` re-exports a theme's entry, and the theme API is re-exported.
+
+### `@aora-bot/surfaces`
+
+- **Renamed components.** `CastStage`, `CastMember` and `AvatarSlot` are now `CastLineup`, `CastFigure` and `PortraitSlot`; `LoadingMark` is `LoadingCharacter`.
+
+### `@aora-bot/element`
+
+- `shape`, `character`, `variant` and `color` accept a theme's ids: the element holds its size, loads the theme and then draws.
+- The element defaults to 32 px.
+
+### Docs
+
+- A What's New page in the navbar summarises each release.
+- Pages for the paper media, and component pages under their new names.
+
+### Avatar endpoint
+
+- An arbitrary id now picks its member by a jump consistent hash over `AVATAR_POOL`, the cast in the order it joined. Every id keeps the member it had with the first 46; as the cast grows from n to m members, about (m − n) / m of ids move, each onto a new member. The `pool` parameter fixes how many members an id may land on, so `pool=46` keeps every avatar exactly as it was.
+- `theme=<id>` picks from that theme's cast with the same hash, grown from `THEME_POOL_BASE`, and fills every parameter the request leaves out from the theme: its skin, face, state and colour, or a fixed dimension's value. Theme characters stay out of the default pool; `shape`, `variant` and `color` accept them by id. Every shipped theme is installed on the server.
+
 ## 0.1.3
 
 All four packages are released at this version to carry the Aora Bot License 1.1. The code is unchanged.

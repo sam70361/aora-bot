@@ -1,3 +1,4 @@
+import { FACE_INK, SOFT_FACE_INK } from '../../core/palette.js';
 import type { PixelVariant } from './rasterise.js';
 
 /** The pixel style's parameters, as `resolveStyleOptions` hands them over. */
@@ -54,8 +55,16 @@ export const EYE_TOKEN = 'var(--aora-bg, var(--aora-bg-base, #fcfcfc))';
 /** The cute face's colour, matching `render/vector/build.ts`'s `FACE_TOKEN`. */
 export const FACE_TOKEN = 'var(--aora-face, var(--aora-bg, var(--aora-bg-base, #fcfcfc)))';
 
+/** A drawn face's pupils, brows and body-drawn light, matching the tokens of the same names in `render/vector/build.ts`. */
+export const PUPIL_TOKEN = `var(--aora-face-pupil, ${SOFT_FACE_INK})`;
+export const FEATURE_TOKEN = `var(--aora-face-soft, ${SOFT_FACE_INK})`;
+export const GLINT_TOKEN = `var(--aora-face-glint, ${FACE_INK})`;
+
 /** The default ink, matching `render/vector/build.ts`'s `INK_TOKEN`. */
 export const INK_TOKEN = 'var(--aora-fg, currentColor)';
+
+/** What state effects are drawn in, matching `render/vector/build.ts`'s `FX_TOKEN`. */
+export const FX_TOKEN = `var(--aora-fx, ${INK_TOKEN})`;
 
 /** What an eye is on a dark LED panel: lit. */
 export const LED_EYE = '#FFFFFF';

@@ -5,7 +5,7 @@
 几个部件：任何脚本都能发出的[数字协议](/design/protocol)；把多个嘈杂来源合成一个平稳状态的**仲裁器**；通过 HTTP、stdin、`postMessage` 或服务端事件承载消息的**通道**；以及把结果接进角色的 React hooks。
 
 ```tsx preview
-import { AgentStateProvider, useAgentState, CharacterMark, ActivityTicker } from '@aora-bot/react';
+import { AgentStateProvider, useAgentState, CharacterMark, ActivityLine } from '@aora-bot/react';
 
 function Face() {
   const { state, tips, update, remove } = useAgentState();
@@ -14,7 +14,7 @@ function Face() {
   return (
     <div className="site-demo site-demo--column" style={{ alignItems: 'center' }}>
       <CharacterMark shape="blob" color="blue" state={state} sizePx={120} />
-      <ActivityTicker text={tips ?? state} />
+      <ActivityLine text={tips ?? state} />
       <div className="site-controls">
         <button className="site-btn" onClick={() => report('a', '30', '正在思考')}>
           a: 30 思考
@@ -160,18 +160,18 @@ export default function Demo() {
 }
 ```
 
-对于知道正在运行哪个*工具*、而不是触发了哪个生命周期事件的宿主，`stateForTool('grep')` 读另一张表 `TOOL_STATES`，也就是 [`ActivityMark`](/components/activity-mark) 用的那张。
+对于知道正在运行哪个*工具*、而不是触发了哪个生命周期事件的宿主，`stateForTool('grep')` 读另一张表 `TOOL_STATES`，也就是 [`ActivityBadge`](/components/activity-badge) 用的那张。
 
 ### 活动动词与名册事实
 
 第三张表回答第三个问题。`TOOL_STATES` 回答「哪个工具在跑」；`ACTIVITY_VERBS` 回答「你会告诉用户它在做什么」——也就是屏幕上已经写在角色旁边的那句话。`stateForActivity('coding')` 把动词解析为状态，不认识的一律是泛化的工作，于是只有那句话——「Running commands…」——的宿主也能驱动角色。查表用 `Object.hasOwn`，因为动词来自线上，`"constructor"` 不能在原型链上找到东西。
 
 ```tsx preview
-import { ACTIVITY_VERB_IDS, MarkStageProvider, StagedMark, stateForActivity } from '@aora-bot/react';
+import { ACTIVITY_VERB_IDS, CharacterStageProvider, StagedMark, stateForActivity } from '@aora-bot/react';
 
 export default function Demo() {
   return (
-    <MarkStageProvider>
+    <CharacterStageProvider>
       <div className="site-demo">
         {ACTIVITY_VERB_IDS.map((verb) => (
           <div className="site-demo__cell" key={verb}>
@@ -180,12 +180,12 @@ export default function Demo() {
           </div>
         ))}
       </div>
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 ```
 
-名册里的一行通常比一个动词知道得多一点：智能体是否 `running`、是否在 `composing` 回复、它报的 `activity` 是什么。`characterStateForRoster(facts, surface)` 把这些 `RosterFacts` 解析为状态，答案取决于角色画在哪里。在 `chat` 行里，撰写状态就是重点——回复正在你眼前被写出来。在 `avatar` 面上，撰写每几百毫秒来来去去，二十张脸在两个状态之间闪是噪音，所以头像保持待机，直到有值得展示的东西。`activityMode="facts"` 的 `ActivityMark` 和[角色指令](/components/mark-commands)注册表都经过这个函数，于是同一个智能体的每个面都一致。
+名册里的一行通常比一个动词知道得多一点：智能体是否 `running`、是否在 `composing` 回复、它报的 `activity` 是什么。`characterStateForRoster(facts, surface)` 把这些 `RosterFacts` 解析为状态，答案取决于角色画在哪里。在 `chat` 行里，撰写状态就是重点——回复正在你眼前被写出来。在 `avatar` 面上，撰写每几百毫秒来来去去，二十张脸在两个状态之间闪是噪音，所以头像保持待机，直到有值得展示的东西。`activityMode="facts"` 的 `ActivityBadge` 和[角色指令](/components/mark-commands)注册表都经过这个函数，于是同一个智能体的每个面都一致。
 
 ```ts
 characterStateForRoster({ running: true, composing: true }, 'chat'); // 'composing'

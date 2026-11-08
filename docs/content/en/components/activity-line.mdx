@@ -1,0 +1,41 @@
+import { API } from '@theme';
+
+# ActivityLine
+
+Crossfading single line of text.
+
+```tsx preview
+import { useEffect, useState } from 'react';
+import { ActivityLine } from '@aora-bot/react';
+
+const lines = ['Searching the web', 'Reading results', 'Writing a summary', 'Done'];
+
+export default function Demo() {
+  const [i, setI] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setI((n) => (n + 1) % lines.length), 1600);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <div className="site-demo site-demo--center">
+      <ActivityLine text={lines[i]} />
+    </div>
+  );
+}
+```
+
+## Why not just swap the text
+
+Both the outgoing and incoming lines are in the DOM during the transition, stacked in the same grid cell. The row is therefore always as tall as the taller of the two, and as wide as it needs to be, throughout the fade.
+
+Replacing the text in place instead makes a list of activity rows jitter every few seconds as the words change length — a small thing that is very visible when several rows are animating at once.
+
+## API
+
+<API component="ActivityLine" />
+
+## Next
+
+- [ActivityBadge](/components/activity-badge) — what a tool call looks like
+- [Chat stream](/scenarios/chat-stream) — a status line with a face

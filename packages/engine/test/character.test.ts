@@ -1,5 +1,6 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { VIEWBOX_STR } from '../src/core/types.js';
 import { createCharacter as createDefault, mapPointerToGaze } from '../src/render/character.js';
 import { LINE_WEIGHT, LINE_WEIGHT_RANGE, resolveLineWeight } from '../src/face/features.js';
 import { STATE_SETTLE_TO } from '../src/motion/states.js';
@@ -57,7 +58,7 @@ describe('createCharacter', () => {
 
     expect(host.children).toHaveLength(1);
     expect(host.firstElementChild).toBe(character.element);
-    expect(character.element.getAttribute('viewBox')).toBe('-24 -24 277 277');
+    expect(character.element.getAttribute('viewBox')).toBe(VIEWBOX_STR);
 
     character.destroy();
     expect(host.children).toHaveLength(0);

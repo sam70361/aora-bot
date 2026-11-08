@@ -1,7 +1,7 @@
 import { CENTER, SHAPE_SPACE } from '../../core/types.js';
 import type { FrameSnapshot } from '../../sim/snapshot.js';
 import { node, r2, type SceneNode } from '../scene.js';
-import { kaomoji, measureEms, STATE_FACES, wrapperFor } from './table.js';
+import { faceText, kaomoji, measureEms, wrapperFor } from './table.js';
 
 /** The kaomoji series' parameters, as `resolveStyleOptions` hands them over. */
 export interface KaomojiOptions {
@@ -63,8 +63,8 @@ export function buildKaomojiScene(
   const b = frame.body;
   const [open, close] = wrapperFor(frame.shape);
   const text = options.tail
-    ? kaomoji(frame.shape, frame.state)
-    : `${open}${STATE_FACES[frame.state]}${close}`;
+    ? kaomoji(frame.shape, frame.state, frame.face.style)
+    : `${open}${faceText(frame.state, frame.face.style)}${close}`;
   const ems = measureEms(text);
   const size = Math.min(MAX_FONT, (SHAPE_SPACE * FILL) / Math.max(ems, 1));
 

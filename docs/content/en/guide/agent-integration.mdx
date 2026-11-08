@@ -5,7 +5,7 @@ Show what an AI agent is doing, as a face.
 The pieces: a [numeric protocol](/design/protocol) any script can emit; an **arbiter** that turns several noisy sources into one calm state; **channels** that carry messages over HTTP, stdin, `postMessage` or server-sent events; and React hooks that wire the result into a character.
 
 ```tsx preview
-import { AgentStateProvider, useAgentState, CharacterMark, ActivityTicker } from '@aora-bot/react';
+import { AgentStateProvider, useAgentState, CharacterMark, ActivityLine } from '@aora-bot/react';
 
 function Face() {
   const { state, tips, update, remove } = useAgentState();
@@ -14,7 +14,7 @@ function Face() {
   return (
     <div className="site-demo site-demo--column" style={{ alignItems: 'center' }}>
       <CharacterMark shape="blob" color="blue" state={state} sizePx={120} />
-      <ActivityTicker text={tips ?? state} />
+      <ActivityLine text={tips ?? state} />
       <div className="site-controls">
         <button className="site-btn" onClick={() => report('a', '30', 'Thinking about it')}>
           a: 30 thinking
@@ -160,18 +160,18 @@ export default function Demo() {
 }
 ```
 
-For hosts that know which _tool_ is running rather than which lifecycle event fired, `stateForTool('grep')` reads a second table, `TOOL_STATES`, which is the one [`ActivityMark`](/components/activity-mark) uses.
+For hosts that know which _tool_ is running rather than which lifecycle event fired, `stateForTool('grep')` reads a second table, `TOOL_STATES`, which is the one [`ActivityBadge`](/components/activity-badge) uses.
 
 ### Activity verbs and roster facts
 
 A third table answers a third question. `TOOL_STATES` answers "which tool is running"; `ACTIVITY_VERBS` answers "what would you tell the user it is doing" — the sentence already on screen next to the character. `stateForActivity('coding')` resolves a verb to a state, and anything unrecognised is generic work, so a host that has only the sentence — "Running commands…" — can still drive a character. The lookup uses `Object.hasOwn`, because the verb comes off the wire and `"constructor"` must not find something on the prototype.
 
 ```tsx preview
-import { ACTIVITY_VERB_IDS, MarkStageProvider, StagedMark, stateForActivity } from '@aora-bot/react';
+import { ACTIVITY_VERB_IDS, CharacterStageProvider, StagedMark, stateForActivity } from '@aora-bot/react';
 
 export default function Demo() {
   return (
-    <MarkStageProvider>
+    <CharacterStageProvider>
       <div className="site-demo">
         {ACTIVITY_VERB_IDS.map((verb) => (
           <div className="site-demo__cell" key={verb}>
@@ -180,12 +180,12 @@ export default function Demo() {
           </div>
         ))}
       </div>
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 ```
 
-A roster row usually knows a little more than one verb: whether the agent is `running`, whether it is `composing` a reply, and what `activity` it named. `characterStateForRoster(facts, surface)` resolves those `RosterFacts` to a state, and the answer depends on where the character is drawn. In a `chat` row the composing state is the point — the reply is being written in front of you. On an `avatar` surface, composing comes and goes every few hundred milliseconds, and twenty faces flicking between two states is noise, so the avatar stays idle until there is something worth showing. `ActivityMark` with `activityMode="facts"` and the [mark commands](/components/mark-commands) registry both go through this function, so every surface for one agent agrees.
+A roster row usually knows a little more than one verb: whether the agent is `running`, whether it is `composing` a reply, and what `activity` it named. `characterStateForRoster(facts, surface)` resolves those `RosterFacts` to a state, and the answer depends on where the character is drawn. In a `chat` row the composing state is the point — the reply is being written in front of you. On an `avatar` surface, composing comes and goes every few hundred milliseconds, and twenty faces flicking between two states is noise, so the avatar stays idle until there is something worth showing. `ActivityBadge` with `activityMode="facts"` and the [mark commands](/components/mark-commands) registry both go through this function, so every surface for one agent agrees.
 
 ```ts
 characterStateForRoster({ running: true, composing: true }, 'chat'); // 'composing'

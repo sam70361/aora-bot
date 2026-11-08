@@ -2,17 +2,17 @@
 import { act, type ReactNode } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { AgentAvatar } from '../src/avatar/AgentAvatar.js';
-import { AvatarStatusDot, UnreadBadge, WorkingBadge } from '../src/avatar/AvatarChrome.js';
+import { AgentPortrait } from '../src/avatar/AgentPortrait.js';
+import { AvatarStatusDot, UnreadBadge, WorkingBadge } from '../src/avatar/AvatarFrame.js';
 import {
-  AvatarStack,
+  AvatarGroup,
   GroupAvatar,
-  layoutAvatarStack,
+  layoutAvatarGroup,
   participantsFromMembers,
-  stackMetrics,
-  stackMetricsForPx,
+  groupMetrics,
+  groupMetricsForPx,
   STACK_OVERLAP,
-} from '../src/avatar/AvatarStack.js';
+} from '../src/avatar/AvatarGroup.js';
 import { AVATAR_SIZES } from '../src/avatar/identity.js';
 
 let root: Root | null = null;
@@ -54,9 +54,9 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
-describe('layoutAvatarStack', () => {
+describe('layoutAvatarGroup', () => {
   it('spaces discs by the visible part of one, and measures the cluster', () => {
-    const { offsets, overlap, width } = layoutAvatarStack(3, 40, { overlap: 0.5 });
+    const { offsets, overlap, width } = layoutAvatarGroup(3, 40, { overlap: 0.5 });
     expect(overlap).toBe(0.5);
     expect(offsets).toEqual([0, 20, 40]);
     // Two hidden halves plus one whole disc.
@@ -64,51 +64,51 @@ describe('layoutAvatarStack', () => {
   });
 
   it('reserves a slot for the overflow chip when asked', () => {
-    expect(layoutAvatarStack(3, 40, { overlap: 0.5, withOverflow: true }).width).toBe(100);
+    expect(layoutAvatarGroup(3, 40, { overlap: 0.5, withOverflow: true }).width).toBe(100);
   });
 
   it('defaults to the shared overlap, and measures nothing as nothing', () => {
-    expect(layoutAvatarStack(2, 100).overlap).toBe(STACK_OVERLAP);
-    expect(layoutAvatarStack(0, 40)).toMatchObject({ offsets: [], width: 0 });
-    expect(layoutAvatarStack(-3, 40).offsets).toEqual([]);
+    expect(layoutAvatarGroup(2, 100).overlap).toBe(STACK_OVERLAP);
+    expect(layoutAvatarGroup(0, 40)).toMatchObject({ offsets: [], width: 0 });
+    expect(layoutAvatarGroup(-3, 40).offsets).toEqual([]);
   });
 
   it('gives each avatar size proportions that survive at that size', () => {
-    expect(stackMetrics('xs')).toMatchObject({ sizePx: AVATAR_SIZES.xs, maxVisible: 2 });
-    expect(stackMetrics('xl').sizePx).toBe(AVATAR_SIZES.xl);
+    expect(groupMetrics('xs')).toMatchObject({ sizePx: AVATAR_SIZES.xs, maxVisible: 2 });
+    expect(groupMetrics('xl').sizePx).toBe(AVATAR_SIZES.xl);
     // Small clusters overlap harder, or three 16px discs become a smear.
-    expect(stackMetrics('xs').overlap).toBeGreaterThan(stackMetrics('xl').overlap);
+    expect(groupMetrics('xs').overlap).toBeGreaterThan(groupMetrics('xl').overlap);
   });
 });
 
-describe('stackMetricsForPx', () => {
+describe('groupMetricsForPx', () => {
   it('finds the band for each named size exactly', () => {
     for (const size of ['xs', 'sm', 'md', 'lg', 'xl'] as const) {
-      expect(stackMetricsForPx(AVATAR_SIZES[size]), size).toEqual(stackMetrics(size));
+      expect(groupMetricsForPx(AVATAR_SIZES[size]), size).toEqual(groupMetrics(size));
     }
   });
 
   it('rounds an in-between size to the nearest band, not the one below', () => {
-    // 34px is nearly `lg` (36); rounding down would give it the tighter `md`
+    // 37px is nearly `lg` (40); rounding down would give it the tighter `md`
     // overlap and make it look denser than the size above it.
-    expect(stackMetricsForPx(34)).toEqual(stackMetrics('lg'));
-    expect(stackMetricsForPx(24)).toEqual(stackMetrics('sm'));
-    expect(stackMetricsForPx(18)).toEqual(stackMetrics('xs'));
+    expect(groupMetricsForPx(37)).toEqual(groupMetrics('lg'));
+    expect(groupMetricsForPx(24)).toEqual(groupMetrics('sm'));
+    expect(groupMetricsForPx(18)).toEqual(groupMetrics('xs'));
     // Off either end it clamps rather than extrapolating.
-    expect(stackMetricsForPx(200)).toEqual(stackMetrics('xl'));
-    expect(stackMetricsForPx(1)).toEqual(stackMetrics('xs'));
+    expect(groupMetricsForPx(200)).toEqual(groupMetrics('xl'));
+    expect(groupMetricsForPx(1)).toEqual(groupMetrics('xs'));
   });
 });
 
-describe('AvatarStack', () => {
+describe('AvatarGroup', () => {
   const members = [{ id: 'a' }, { id: 'b' }, { id: 'c' }, { id: 'd' }];
   const discs = (el: HTMLElement) => [...el.querySelectorAll('.aora-stack__item')];
   const lefts = (el: HTMLElement) => discs(el).map((d) => (d as HTMLElement).style.left);
 
   it('applies the size band, so a small cluster shows fewer faces and overlaps harder', () => {
-    const small = render(<AvatarStack members={members} sizePx={AVATAR_SIZES.xs} />);
+    const small = render(<AvatarGroup members={members} sizePx={AVATAR_SIZES.xs} />);
     // Two at xs, not three: three 16px discs at the usual overlap are a smear.
-    expect(discs(small)).toHaveLength(stackMetrics('xs').maxVisible);
+    expect(discs(small)).toHaveLength(groupMetrics('xs').maxVisible);
     expect(small.querySelector('.aora-stack__overflow')!.textContent).toBe('+2');
     const smallStep = Number.parseFloat(lefts(small)[1]!);
 
@@ -116,22 +116,22 @@ describe('AvatarStack', () => {
     root = null;
     host!.remove();
 
-    const large = render(<AvatarStack members={members} sizePx={AVATAR_SIZES.xl} />);
-    expect(discs(large)).toHaveLength(stackMetrics('xl').maxVisible);
+    const large = render(<AvatarGroup members={members} sizePx={AVATAR_SIZES.xl} />);
+    expect(discs(large)).toHaveLength(groupMetrics('xl').maxVisible);
     // The step is the visible part of one disc, so a harder overlap at xs
     // means a smaller step relative to its own size.
     expect(smallStep / AVATAR_SIZES.xs).toBeLessThan(Number.parseFloat(lefts(large)[1]!) / AVATAR_SIZES.xl);
   });
 
   it('lets explicit props win over the band', () => {
-    const el = render(<AvatarStack members={members} sizePx={AVATAR_SIZES.xs} overlap={0} maxVisible={4} />);
+    const el = render(<AvatarGroup members={members} sizePx={AVATAR_SIZES.xs} overlap={0} maxVisible={4} />);
     expect(discs(el)).toHaveLength(4);
     expect(lefts(el)).toEqual(['0px', '16px', '32px', '48px']);
     expect(el.querySelector('.aora-stack__overflow')).toBeNull();
   });
 
   it('overrides the face of every member, not only the first', () => {
-    const el = render(<AvatarStack members={members} sizePx={40} face="line" nose="hook" maxVisible={4} />);
+    const el = render(<AvatarGroup members={members} sizePx={40} face="line" nose="hook" maxVisible={4} />);
     const srcs = [...el.querySelectorAll('img')].map((i) => i.getAttribute('src')!);
     expect(srcs).toHaveLength(4);
     for (const src of srcs) expect(decodeURIComponent(src)).toContain('stroke-linecap');
@@ -254,11 +254,11 @@ describe('UnreadBadge', () => {
   });
 });
 
-describe('AgentAvatar', () => {
+describe('AgentPortrait', () => {
   const agent = { id: 'nova', name: 'Nova' };
 
   it('draws the mark smaller than the circle when asked, without moving the circle', () => {
-    const el = render(<AgentAvatar agent={agent} sizePx={64} fillPx={40} still />);
+    const el = render(<AgentPortrait agent={agent} sizePx={64} fillPx={40} still />);
     const wrapper = el.querySelector('.aora-avatar') as HTMLElement;
     expect(wrapper.style.width).toBe('64px');
     expect(wrapper.getAttribute('style')).toContain('--aora-avatar-fill: 40px');
@@ -266,18 +266,18 @@ describe('AgentAvatar', () => {
   });
 
   it('fills the circle by default', () => {
-    const el = render(<AgentAvatar agent={agent} sizePx={44} still />);
+    const el = render(<AgentPortrait agent={agent} sizePx={44} still />);
     expect((el.querySelector('.aora-avatar') as HTMLElement).getAttribute('style')).toContain(
       '--aora-avatar-fill: 44px',
     );
   });
 
   it('holds the state through a shape morph, so the change is one thing and not two', () => {
-    const el = render(<AgentAvatar agent={agent} state="idle" isMorphingShape />);
+    const el = render(<AgentPortrait agent={agent} state="idle" isMorphingShape />);
     const state = () => el.querySelector('.aora-mark')!.getAttribute('data-state');
     expect(state()).toBe('idle');
 
-    rerender(<AgentAvatar agent={agent} state="happy" isMorphingShape />);
+    rerender(<AgentPortrait agent={agent} state="happy" isMorphingShape />);
     expect(state()).toBe('idle');
     advance(1399);
     expect(state()).toBe('idle');
@@ -286,13 +286,13 @@ describe('AgentAvatar', () => {
   });
 
   it('changes state immediately when nothing is morphing', () => {
-    const el = render(<AgentAvatar agent={agent} state="idle" />);
-    rerender(<AgentAvatar agent={agent} state="happy" />);
+    const el = render(<AgentPortrait agent={agent} state="idle" />);
+    rerender(<AgentPortrait agent={agent} state="happy" />);
     expect(el.querySelector('.aora-mark')!.getAttribute('data-state')).toBe('happy');
   });
 
   it('keeps the face and nose passthrough', () => {
-    const el = render(<AgentAvatar agent={{ ...agent, face: 'line', nose: 'hook' }} />);
+    const el = render(<AgentPortrait agent={{ ...agent, face: 'line', nose: 'hook' }} />);
     expect(el.querySelector('.aora-mark')!.getAttribute('data-face')).toBe('line');
   });
 });

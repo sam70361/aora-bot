@@ -1,3 +1,4 @@
+import { requireTheme } from '../themes/state.js';
 import { COLOR_IDS, type ColorId } from './types.js';
 
 export interface Swatch {
@@ -95,13 +96,78 @@ export const COLOR_SWATCHES: readonly Swatch[] = [
     ink: { light: '#83889A', dark: '#797D8E' },
     gradient: { lightFrom: '#9AA0B0', lightTo: '#585C6A', darkFrom: '#797D8E', darkTo: '#5E626F' },
   },
+  {
+    id: 'night',
+    value: '#2A2433',
+    // Near-black on either page: unlike black it does not turn white on a dark one.
+    ink: { light: '#2A2433', dark: '#2F2839' },
+    gradient: { lightFrom: '#3D3449', lightTo: '#1C1823', darkFrom: '#3A3245', darkTo: '#211C29' },
+  },
+  {
+    id: 'cocoa',
+    value: '#6C4330',
+    ink: { light: '#7A4C36', dark: '#8A5A42' },
+    gradient: { lightFrom: '#93624A', lightTo: '#5E3A28', darkFrom: '#9C6A50', darkTo: '#6E4632' },
+  },
+  {
+    id: 'sky',
+    value: '#9CCDE6',
+    ink: { light: '#A9D6EA', dark: '#9ACBE2' },
+    gradient: { lightFrom: '#C6E6F4', lightTo: '#86BDD9', darkFrom: '#B4DCEE', darkTo: '#7DB2CE' },
+  },
+  {
+    id: 'blush',
+    value: '#F7AEC1',
+    ink: { light: '#FFB4C7', dark: '#F5ABBE' },
+    gradient: { lightFrom: '#FFD0DC', lightTo: '#E890A8', darkFrom: '#FCC6D4', darkTo: '#DD889F' },
+  },
+  {
+    id: 'lilac',
+    value: '#C2ABEA',
+    ink: { light: '#CBB5F0', dark: '#BFA8E8' },
+    gradient: { lightFrom: '#DDCDF6', lightTo: '#AA92DD', darkFrom: '#D3C1F2', darkTo: '#A189D4' },
+  },
+  {
+    id: 'cream',
+    value: '#E9D9B6',
+    ink: { light: '#F1E2C1', dark: '#EADBB9' },
+    gradient: { lightFrom: '#FAF0DA', lightTo: '#E2CDA1', darkFrom: '#F3E6CA', darkTo: '#D8C397' },
+  },
+  {
+    id: 'butter',
+    value: '#F7D883',
+    ink: { light: '#FFE38F', dark: '#F5D886' },
+    gradient: { lightFrom: '#FFEDB5', lightTo: '#EBC766', darkFrom: '#FBE6A4', darkTo: '#DFBC5C' },
+  },
+  {
+    id: 'ivory',
+    value: '#F7EFDF',
+    ink: { light: '#FFF8EA', dark: '#F7EFDF' },
+    gradient: { lightFrom: '#FFFCF5', lightTo: '#F0E4CC', darkFrom: '#FBF6EC', darkTo: '#E6DAC2' },
+  },
+  {
+    id: 'meadow',
+    value: '#74C288',
+    ink: { light: '#7CC98F', dark: '#76C08A' },
+    gradient: { lightFrom: '#A3DCB1', lightTo: '#5EB073', darkFrom: '#98D4A8', darkTo: '#58A56C' },
+  },
 ];
 
 const BY_ID = new Map<ColorId, Swatch>(COLOR_SWATCHES.map((s) => [s.id, s]));
 
 const fallback = (): Swatch => BY_ID.get('black')!;
 
-export const getSwatch = (id: ColorId): Swatch => BY_ID.get(id) ?? fallback();
+/** Add a theme's colour to the palette (`installTheme`). Replaces one with the same id. */
+export function registerSwatch(swatch: Swatch): void {
+  BY_ID.set(swatch.id, swatch);
+}
+
+export const getSwatch = (id: ColorId): Swatch => {
+  const swatch = BY_ID.get(id);
+  if (swatch) return swatch;
+  requireTheme('color', id);
+  return BY_ID.get(id) ?? fallback();
+};
 
 export const getSwatchHex = (id: ColorId): string => getSwatch(id).value;
 
@@ -127,48 +193,175 @@ export const FACE_INK = '#FFFFFF';
 export const SOFT_FACE_INK = '#2B2420';
 /** The riso variant's second ink on a pink body; every other colour uses the default in `RISO_TOKEN`. */
 export const RISO_INK_ON_PINK = '#F5B428';
-/** A black sticker's face, light and dark: the paper, then black's own light-page ink once the body has turned white. */
-export const stickerFace = (): { light: string; dark: string } => ({
-  light: FACE_INK,
-  dark: getInkColor('black', 'light'),
-});
-const stickerFaceCss = (): string => {
-  const { light, dark } = stickerFace();
-  return `light-dark(${light}, ${dark})`;
+/** What hair is shaded towards: black, except on a body too dark for black to show. */
+export const HAIR_SHADE = '#000000';
+/** The hair shade in a live scene: a token, so the host can turn it white for a dark body (`getInkVars`). */
+export const HAIR_SHADE_TOKEN = `var(--aora-hair-shade, ${HAIR_SHADE})`;
+
+/**
+ * How a body's ink sits against a face, per page: `dark` (black on a light
+ * page, night), `light` (black on a dark page, yellow, cream) or `mid`, which
+ * is every other hue. Measured from the ink's relative luminance, so a colour
+ * added to the palette takes the rule its ink calls for.
+ */
+export type InkTone = 'dark' | 'light' | 'mid';
+
+/** Relative luminance above which a white face no longer reads on the ink. */
+const LIGHT_INK = 0.4;
+/** Relative luminance below which black hair and dark features no longer read on the ink. */
+const DARK_INK = 0.04;
+
+function luminance(hex: string): number {
+  const channel = (i: number): number => {
+    const v = Number.parseInt(hex.slice(i, i + 2), 16) / 255;
+    return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+  };
+  return 0.2126 * channel(1) + 0.7152 * channel(3) + 0.0722 * channel(5);
+}
+
+export const inkTone = (hex: string): InkTone => {
+  const l = luminance(hex);
+  return l > LIGHT_INK ? 'light' : l < DARK_INK ? 'dark' : 'mid';
 };
 
-/** What hair is shaded towards: black, except on a black body while it is still dark, where black would not show. */
-export const HAIR_SHADE = '#000000';
-/** The hair shade in a live scene: a token, so the host can turn it white for a black body (`getInkVars`). */
-export const HAIR_SHADE_TOKEN = `var(--aora-hair-shade, ${HAIR_SHADE})`;
-export const hairShade = (id: ColorId): { light: string; dark: string } =>
-  id === 'black' ? { light: '#FFFFFF', dark: HAIR_SHADE } : { light: HAIR_SHADE, dark: HAIR_SHADE };
+/** The face's paints on a body of one tone. */
+export interface FaceInks {
+  /** The cute face, and a drawn face's whites. */
+  face: string;
+  /** The dark face of the painted variants, and a drawn face's brows and body-drawn eyes. */
+  soft: string;
+  /** The sticker's face. */
+  sticker: string;
+  /** What hair is shaded towards. */
+  hair: string;
+  /** A drawn face's pupils: what reads on `face`. */
+  pupil: string;
+  /** The light on a body-drawn eye: what reads on `soft`. */
+  glint: string;
+}
+
+/**
+ * The face rule. A dark body takes a white face, white features and white
+ * hair shading; a light one takes the dark face throughout, with light
+ * pupils on its dark whites, which is what black does on a dark page.
+ */
+const FACE_RULE: Record<InkTone, FaceInks> = {
+  dark: {
+    face: FACE_INK,
+    soft: FACE_INK,
+    sticker: FACE_INK,
+    hair: '#FFFFFF',
+    pupil: SOFT_FACE_INK,
+    glint: SOFT_FACE_INK,
+  },
+  light: {
+    face: SOFT_FACE_INK,
+    soft: SOFT_FACE_INK,
+    sticker: '#1F1F1F',
+    hair: HAIR_SHADE,
+    pupil: FACE_INK,
+    glint: FACE_INK,
+  },
+  mid: {
+    face: FACE_INK,
+    soft: SOFT_FACE_INK,
+    sticker: FACE_INK,
+    hair: HAIR_SHADE,
+    pupil: SOFT_FACE_INK,
+    glint: FACE_INK,
+  },
+};
+
+/**
+ * A colour's face paints on a light and on a dark page, and whether its face
+ * is a cut-out: a colour whose ink changes tone with the page (black) has its
+ * face cut out of the page, which reads on either.
+ */
+export function faceInks(id: ColorId): { light: FaceInks; dark: FaceInks; cutOut: boolean; plain: boolean } {
+  const { ink } = getSwatch(id);
+  const light = inkTone(ink.light);
+  const dark = inkTone(ink.dark);
+  return {
+    light: FACE_RULE[light],
+    dark: FACE_RULE[dark],
+    cutOut: light !== dark,
+    plain: light === 'mid' && dark === 'mid',
+  };
+}
+
+/** A colour's sticker face, light and dark. */
+export const stickerFace = (id: ColorId = 'black'): { light: string; dark: string } => {
+  const { light, dark } = faceInks(id);
+  return { light: light.sticker, dark: dark.sticker };
+};
+
+/** What a colour's hair is shaded towards, light and dark. */
+export const hairShade = (id: ColorId): { light: string; dark: string } => {
+  const { light, dark } = faceInks(id);
+  return { light: light.hair, dark: dark.hair };
+};
+
+/** Contrast against the page below which a mark drawn in the ink is lost on it. */
+const EFFECT_CONTRAST = 1.6;
+
+const contrast = (a: number, b: number): number => (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+
+/**
+ * What a colour's state effects (zz, dots, rings, marks) are drawn in on a
+ * light and on a dark page, where the ink would be lost on that page: the
+ * face the face rule gives that ink, so the marks read and match the face.
+ * `null` on a page where the ink itself reads.
+ */
+export function effectInks(id: ColorId): { light: string | null; dark: string | null } {
+  const { ink } = getSwatch(id);
+  const rule = faceInks(id);
+  return {
+    light: contrast(luminance(ink.light), 1) < EFFECT_CONTRAST ? rule.light.face : null,
+    dark: contrast(luminance(ink.dark), 0) < EFFECT_CONTRAST ? rule.dark.face : null,
+  };
+}
+
+const pairCss = (light: string, dark: string): string =>
+  light === dark ? light : `light-dark(${light}, ${dark})`;
 
 /**
  * The CSS custom properties a host puts on a character for this colour.
  *
- * `--aora-fg` is the body ink. `--aora-face` is what the cute face is painted
- * in: white on every hue, but absent for black, whose body inverts on a dark
- * page, so the face falls back to the page background and reads as a cut-out
- * on either one. `--aora-face-soft` is the soft variant's dark face, which a
- * black body turns white on a light page. `--aora-face-sticker` is the
- * sticker's face, which is its white paper except on black: the body turns
- * white on a dark page, and the face takes the light page's black instead.
- * `--aora-hair-shade` is what hair is shaded towards, white on a black body
- * while it is dark. `--aora-ink2` is the riso variant's second ink, which only
- * pink needs to change.
+ * `--aora-fg` is the body ink. The rest follow the face rule (`faceInks`):
+ * on a hue in the middle of the range only `--aora-face` is written, white,
+ * and the tokens' defaults do the rest. A colour with a dark or a light ink
+ * writes them all: `--aora-face` (absent where the face is a cut-out of the
+ * page, as on black), `--aora-face-soft` (the soft variant's face and a drawn
+ * face's features), `--aora-face-sticker`, `--aora-hair-shade`,
+ * `--aora-face-pupil` (what reads on the face) and `--aora-face-glint` (what
+ * reads on the features). `--aora-fx` is what state effects are drawn in,
+ * written only for an ink lost on one of the pages (`effectInks`).
+ * `--aora-ink2` is the riso variant's second ink, which only pink needs to
+ * change.
  */
-export const getInkVars = (id: ColorId): Record<string, string> => ({
-  '--aora-fg': getInkColorCss(id),
-  ...(id === 'black'
-    ? {
-        '--aora-face-soft': `light-dark(${FACE_INK}, ${SOFT_FACE_INK})`,
-        '--aora-face-sticker': stickerFaceCss(),
-        '--aora-hair-shade': `light-dark(${hairShade(id).light}, ${hairShade(id).dark})`,
-      }
-    : { '--aora-face': FACE_INK }),
-  ...(id === 'pink' ? { '--aora-ink2': RISO_INK_ON_PINK } : null),
-});
+export const getInkVars = (id: ColorId): Record<string, string> => {
+  const { light, dark, cutOut, plain } = faceInks(id);
+  const pair = (key: keyof FaceInks): string => pairCss(light[key], dark[key]);
+  const effects = effectInks(id);
+  const { ink } = getSwatch(id);
+  return {
+    '--aora-fg': getInkColorCss(id),
+    ...(plain
+      ? { '--aora-face': FACE_INK }
+      : {
+          ...(cutOut ? null : { '--aora-face': pair('face') }),
+          '--aora-face-soft': pair('soft'),
+          '--aora-face-sticker': pair('sticker'),
+          '--aora-hair-shade': pair('hair'),
+          '--aora-face-pupil': pair('pupil'),
+          '--aora-face-glint': pair('glint'),
+        }),
+    ...(effects.light || effects.dark
+      ? { '--aora-fx': pairCss(effects.light ?? ink.light, effects.dark ?? ink.dark) }
+      : null),
+    ...(id === 'pink' ? { '--aora-ink2': RISO_INK_ON_PINK } : null),
+  };
+};
 
 export const INK_GRADIENT_ANGLE = 135;
 

@@ -16,7 +16,7 @@
  *   aora.surfaces                               the kit's product surfaces
  *   site.shell                                  tokens, Rspress overrides, backdrop
  *   site.components                             controls and docs-embedded components
- *   site.pages                                  home, sponsor
+ *   site.pages                                  home, sponsor, themes
  *
  * Rspress's own CSS is not layered, and an unlayered declaration beats a
  * layered one whatever the specificity. That is why `rspress-overrides.css`

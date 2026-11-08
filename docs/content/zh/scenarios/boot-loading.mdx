@@ -6,12 +6,12 @@ import { StateMatrix } from '@theme';
 
 ## 先看效果
 
-左边：三个先加载再登场的头像槽。`LoadingMark` 在 `ready` 之前一直显示轮廓；下面真正的角色始终挂载着、处于暂停，所以切换是交叉淡入，而不是第一帧对着一片空白。右边：一个已经持续到该说点什么的启动。
+左边：三个先加载再登场的头像槽。`LoadingCharacter` 在 `ready` 之前一直显示轮廓；下面真正的角色始终挂载着、处于暂停，所以切换是交叉淡入，而不是第一帧对着一片空白。右边：一个已经持续到该说点什么的启动。
 
 ```tsx preview
 import { useEffect, useState } from 'react';
-import { MarkStageProvider } from '@aora-bot/react';
-import { BootLoop, LoadingMark } from '@aora-bot/surfaces';
+import { CharacterStageProvider } from '@aora-bot/react';
+import { BootLoop, LoadingCharacter } from '@aora-bot/surfaces';
 
 function Slot({
   shape,
@@ -31,7 +31,7 @@ function Slot({
 
   return (
     <span className="site-demo__cell">
-      <LoadingMark ready={ready} shape={shape} color={color} state="spawning" sizePx={48} />
+      <LoadingCharacter ready={ready} shape={shape} color={color} state="spawning" sizePx={48} />
       <span className="site-demo__label">{ready ? 'ready' : 'loading'}</span>
     </span>
   );
@@ -41,7 +41,7 @@ export default function Demo() {
   const [cycles, setCycles] = useState(0);
 
   return (
-    <MarkStageProvider>
+    <CharacterStageProvider>
       <div className="site-demo">
         <div className="site-demo__row">
           <Slot shape="pebble" color="cyan" delay={900} />
@@ -56,12 +56,12 @@ export default function Demo() {
           body={cycles < 3 ? undefined : '这次比平时慢一些。'}
         />
       </div>
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 ```
 
-槽只拿到 `state="spawning"`，别的什么都没给：真正的角色在 `ready` 之前处于暂停，所以它的状态时钟从交叉淡入那一刻开始走，`gather` 腰带播放，两秒后渲染器自己转到 `idle`。`LoadingMark` 不转发 `onSettle`；需要知道这一刻的宿主，在记录到手之后直接用 `CharacterMark`。`BootLoop` 从 effect 而不是从计时器里上报周期数，这样在回调里重渲染的宿主也不会让计时器在周期中途重启。
+槽只拿到 `state="spawning"`，别的什么都没给：真正的角色在 `ready` 之前处于暂停，所以它的状态时钟从交叉淡入那一刻开始走，`gather` 腰带播放，两秒后渲染器自己转到 `idle`。`LoadingCharacter` 不转发 `onSettle`；需要知道这一刻的宿主，在记录到手之后直接用 `CharacterMark`。`BootLoop` 从 effect 而不是从计时器里上报周期数，这样在回调里重渲染的宿主也不会让计时器在周期中途重启。
 
 ## 什么时候用
 
@@ -69,10 +69,10 @@ export default function Demo() {
 
 ## 用到的组件
 
-- [`LoadingMark`](/components/boot-loop)——角色自己的轮廓做成闪动的遮罩，`ready` 时交叉淡入真正的角色。
+- [`LoadingCharacter`](/components/boot-loop)——角色自己的轮廓做成闪动的遮罩，`ready` 时交叉淡入真正的角色。
 - [`BootLoop`](/components/boot-loop)——设备边框里的不定时长等待；`onCycle` 让宿主逐步升级提示。
 - [`CharacterMark`](/components/character-mark)——`loading`、`spawning`、`onSettle`。
-- [`MarkStageProvider`](/components/mark-stage)——一页占位符一起翻转时应该共用一个引擎。
+- [`CharacterStageProvider`](/components/character-stage)——一页占位符一起翻转时应该共用一个引擎。
 - [`HudPlate`](/components/hud-plate)——启动用 `sync` 表盘，它表达的是一个生命周期而不是一个分数：尝试连接前是 `idle`，连接中是 `syncing`，落地时是 `done` 或 `error`。只有宿主手里有真实分数时才用 `progress`；按编造速率填满的环，只是绕了一圈的撒谎进度条。
 
 ## 状态怎么走

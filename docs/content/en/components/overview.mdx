@@ -16,9 +16,9 @@ Four tiers. The engine knows nothing about React; the core wraps it in component
 
 **One character, on its own.** `CharacterMark`.
 
-**Many characters, most of them alike.** `MarkStageProvider` plus `StagedMark`. One engine per distinct shape-and-state pair, mirrors for the rest.
+**Many characters, most of them alike.** `CharacterStageProvider` plus `StagedMark`. One engine per distinct shape-and-state pair, mirrors for the rest.
 
-**An avatar for a user or agent.** `AgentAvatar`. It picks between a picture, a group cluster and a character for you, and derives a stable appearance from an id so you do not have to store one.
+**An avatar for a user or agent.** `AgentPortrait`. It picks between a picture, a group cluster and a character for you, and derives a stable appearance from an id so you do not have to store one.
 
 **An agent that reports what it is doing.** `AgentStateProvider` plus `CharacterMark`. Hooks and a relay speak the [emotion protocol](/design/protocol); the arbiter decides which session the face shows.
 
@@ -26,9 +26,9 @@ Four tiers. The engine knows nothing about React; the core wraps it in component
 
 **One agent drawn in several places at once.** [Mark commands](/components/mark-commands) — publish facts once, and every roster row, avatar and activity line for that agent follows.
 
-**Letting someone choose or edit an appearance.** `CharacterPicker` in a settings form; [`AgentCharacterPicker`](/components/agent-character-picker) in a dialog; [`CompactCharacterPicker`](/components/compact-character-picker) beside a sign-up form; [`AvatarEditor`](/components/avatar-editor) when a picture is also allowed; [`TemplateDialog`](/components/template-dialog) when the appearance belongs to a template being created.
+**Letting someone choose or edit an appearance.** `CharacterSelector` in a settings form; [`AgentCharacterSelector`](/components/agent-character-selector) in a dialog; [`CompactCharacterSelector`](/components/compact-character-selector) beside a sign-up form; [`AvatarStudio`](/components/avatar-studio) when a picture is also allowed; [`TemplateDialog`](/components/template-dialog) when the appearance belongs to a template being created.
 
-**A whole scene.** [`RestrictedScene`](/components/restricted-scene) for a dead end, [`BootLoop`](/components/boot-loop) for an indeterminate wait, [`CastStage`](/components/cast-stage) for a scripted piece, the [walkthrough](/components/walkthrough) parts for an onboarding flow.
+**A whole scene.** [`RestrictedScene`](/components/restricted-scene) for a dead end, [`BootLoop`](/components/boot-loop) for an indeterminate wait, [`CastLineup`](/components/cast-lineup) for a scripted piece, the [walkthrough](/components/walkthrough) parts for an onboarding flow.
 
 **A painted mascot instead of a generated one.** `SpriteMark`, keyed by the same protocol ids.
 

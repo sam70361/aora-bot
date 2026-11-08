@@ -459,28 +459,35 @@ export const STATE_BLINK_MS: Record<CharacterState, [number, number] | null> = O
   }),
 ) as Record<CharacterState, [number, number] | null>;
 
-/** Per-state face adjustments layered over DEFAULT_FACE_TUNE. */
+/** Per-state face adjustments, multiplied into the character's own face tune. */
 export const STATE_FACE_TUNE: Partial<Record<CharacterState, Partial<FaceTune>>> = {
-  angry: { gap: 1.28, size: 0.78 },
-  working: { size: 0.9, eyeWidth: 1.12, eyeHeight: 1.05 },
-  surprised: { size: 0.94, gap: 1.22 },
-  scared: { size: 0.96, gap: 1.26 },
-  shy: { size: 0.8, gap: 1.1, height: 1.06 },
-  sad: { size: 0.82, height: 1.05 },
-  proud: { size: 0.88, height: 0.94 },
-  excited: { size: 0.92 },
-  celebrate: { size: 0.92 },
-  sleeping: { size: 0.84, height: 1.04 },
-  thinking: { gap: 1.22 },
-  suspicious: { gap: 1.24, size: 0.82 },
-  refusing: { gap: 1.24, size: 0.84 },
-  curious: { size: 0.9 },
-  humming: { size: 0.84, height: 1.02 },
+  angry: { gap: 1.08, size: 0.9 },
+  working: { size: 1.05, eyeWidth: 1.16, eyeHeight: 1.14 },
+  surprised: { size: 1.1, gap: 1.04 },
+  scared: { size: 1.12, gap: 1.06 },
+  shy: { size: 0.93, gap: 0.94, height: 1.06 },
+  sad: { size: 0.95, height: 1.05 },
+  proud: { size: 1.02, height: 0.94 },
+  excited: { size: 1.07 },
+  celebrate: { size: 1.07 },
+  sleeping: { size: 0.98, height: 1.04 },
+  thinking: { gap: 1.04 },
+  suspicious: { gap: 1.05, size: 0.95 },
+  refusing: { gap: 1.05, size: 0.98 },
+  curious: { size: 1.05 },
+  humming: { size: 0.98, height: 1.02 },
 };
 
 export function faceTuneForState(state: CharacterState, base: FaceTune): FaceTune {
-  const override = STATE_FACE_TUNE[state];
-  return override ? { ...base, ...override } : base;
+  const adjust = STATE_FACE_TUNE[state];
+  if (!adjust) return base;
+  return {
+    size: base.size * (adjust.size ?? 1),
+    gap: base.gap * (adjust.gap ?? 1),
+    height: base.height * (adjust.height ?? 1),
+    eyeWidth: base.eyeWidth * (adjust.eyeWidth ?? 1),
+    eyeHeight: base.eyeHeight * (adjust.eyeHeight ?? 1),
+  };
 }
 
 /** Gaze drift: amplitude in shape units and the interval between new targets. */

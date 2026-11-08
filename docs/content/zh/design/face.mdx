@@ -1,6 +1,9 @@
 import {
   FaceStyleDemo,
   FaceStyleRow,
+  DrawnFaceGrid,
+  DrawnFaceSeries,
+  DrawnFacePalette,
   MouthGrid,
   MouthTable,
   NoseGrid,
@@ -11,7 +14,7 @@ import {
 
 # 五官
 
-脸是角色的一部分，不属于某个画风。三种脸在向量、像素、颜文字各系列里都能画，共用同一套状态、姿态和眨眼。默认是 `cute`。
+脸是角色的一部分，不属于某个画风。十三种脸——`cute`、`eyes`、`line` 三种基础脸和十种[手绘脸](#手绘脸)——在向量、像素、颜文字各系列里都能画，共用同一套状态、姿态和眨眼。默认是 `cute`。
 
 <FaceStyleDemo />
 
@@ -29,7 +32,59 @@ import {
 | `eyes`         | 两个挖空的眼睛，剩下的交给轮廓。                                                                  |
 | `line`         | 在眼睛之外加上鼻子和嘴，全部是同一线宽的笔画。                                                    |
 
-默认脸是 `cute`；传 `face="eyes"` 或 `face="line"` 选择另外两种。`eyes` 和 `line` 有各自的几何与眼型表。运行中切换 `face` 不会跳变：`cute` 与它们之间用 `cuteBlend` 弹簧过渡。
+默认脸是 `cute`；传 `face="eyes"` 或 `face="line"` 选择另外两种基础脸，传手绘脸的 id 选择[手绘脸](#手绘脸)。`eyes` 和 `line` 有各自的几何与眼型表。运行中切换 `face` 不会跳变：`cute` 与它们之间用 `cuteBlend` 弹簧过渡。
+
+## 手绘脸
+
+`DRAWN_FACE_STYLES` 里的十三种脸属于 cute 一族：沿用 cute 脸的点半径、眼线、腮红和情绪特效，腰带状态下身体同样保持完整。不同的是眼睛由若干层带颜色角色的轮廓画成——眼白、瞳孔、眼皮、眉毛、镜片、屏幕、符号——而且每种脸都是一套完整的脸：每个状态有自己的眼型，有自己的嘴型表（或明确写出共用 cute 的那张），有自己的布局、眨眼和视线，有自己的像素和颜文字画法。
+
+| `face`     | 名称   | 画法                                                                                                                                                                                                            |
+| ---------- | ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `capsule`  | 胶囊眼 | 两枚竖直的深色胶囊，左右对称，配 cute 脸的嘴。开心和难过时两眼顶端往里靠，生气时往外撇，受惊时鼓成圆点，闭眼时躺平成一道短线。                                                                                  |
+| `brow`     | 浓眉眼 | 带瞳孔的大白眼和两道粗眉。眉毛在所有状态下都分开，只有生气时越过中线压成一个 V；眉毛低处会把上眼皮一起压下来。                                                                                                  |
+| `glossy`   | 水汪眼 | 每只眼是一整块深色的亮面，两三个大高光加底部一道水光；睁大时更亮，难过时含泪并滑下一滴眼泪。                                                                                                                    |
+| `sparkle`  | 闪亮眼 | 高瘦的白眼、加粗的上睫毛带翘尾；虹膜是身体自己的墨色加深，下方泛白光，配一组高光。害怕时瞳孔收小。                                                                                                              |
+| `button`   | 纽扣眼 | 缝上去的四孔纽扣：眨眼是压扁，生气和难过是歪斜加一道针脚眉；笑眼、闭眼、叉和星都用针脚缝出来，星星是一块毡布。                                                                                                  |
+| `shades`   | 墨镜脸 | 一副圆角墨镜，镜片里的小眼睛照样眨眼、笑、流泪、变叉变星；生气和难过时镜片歪斜，睡觉时墨镜推到头顶、露出闭着的眼。                                                                                              |
+| `droopy`   | 半睁眼 | 永远半睁：上眼皮平切、瞳孔低垂、带眼袋。只有受惊时眼皮全开、瞳孔缩成针尖；害怕时一侧冒汗。                                                                                                                      |
+| `bigmouth` | 大嘴脸 | 小豆眼抬高，嘴放大到 1.9 倍、线宽 1.3 倍，每个状态都有嘴；张开的嘴里长出舌头，平顶的嘴露出一排牙。                                                                                                              |
+| `pie`      | 派切眼 | 老式橡皮管动画的高椭圆白眼，粗描边，黑瞳孔切掉一块扇形当高光；闭眼是带三根睫毛的弧线。                                                                                                                          |
+| `screen`   | 屏幕脸 | 深色面罩上两块发光的小屏。情绪状态里屏幕按表情变形、随心情变色；忙碌状态显示各自的动画：扫描、加载圈、进度条、均衡器、数据块、雷达。                                                                            |
+| `symbol`   | 符号眼 | 平时是圆眼；几种情绪换成爱心、闪光、问号、螺旋，工作状态换成进度环、放大镜、齿轮、时钟、对话气泡、雷达等符号。                                                                                                  |
+| `teardrop` | 水滴眼 | 上圆下尖的果冻水滴，尖端略朝鼻侧：深色描边里盛着加深的身体墨色，所以眼睛随角色变色（`glossy` 始终是黑的），外上方一个大高光、内下方一个小高光；生气和难过时一道斜眼皮压住上缘，笑眼是上拱的弧，闭眼是下垂的弧。 |
+| `specs`    | 眼镜脸 | 白眼、身体墨色的暖调虹膜、深色瞳孔和一点高光，外面一副圆框眼镜和拱形鼻梁。眼镜大半跟着视线走，眼珠在镜片里转；眨眼时镜框轻轻下沉，镜片不时扫过一道光。                                                          |
+
+<DrawnFaceGrid />
+
+### 一张设计表
+
+每种手绘脸是 `face/drawn/designs/<id>.ts` 里的一个 `FaceDesign`：
+
+- `layout`：以 cute 点半径为单位、从 cute 眼线量起的布局——抬高、眼距、嘴的位置、嘴的缩放与线宽、腮红位置，以及视线有多少分给整只眼睛、多少留给瞳孔。
+- `expressions`：每个表情是一组数字。19 个 cute 表情的名字每种脸都有自己的画法，所以状态表可以按名字共用；屏幕脸、符号脸另有自己的表情（加载圈、放大镜……）。
+- `states`、`mouths`、`stateMouth`：状态到表情序列、状态到嘴型。共用 cute 的表时直接写 `states: STATE_CUTE_EYES`、`mouths: CUTE_MOUTHS`；屏幕脸和符号脸在 cute 序列上覆盖忙碌状态，大嘴脸给 cute 不画嘴的状态补上嘴。
+- `mouthPaint`、`quietFx`、`kaomoji`：嘴用什么颜色角色画、眼睛已经表达了哪些特效（水汪眼自己会流泪，就不再要 `tear`）、文字里的眼睛和嘴。
+- `eye`（以及可选的 `plate`、`inMouth`）：把一组数字变成图层。
+
+表情之间按字段插值，所以状态切换时部件是长出来或淡入的，不会突然出现；眨眼由各脸自己决定是合上眼皮还是压扁。
+
+### 颜色角色
+
+图层带的是颜色角色，不是颜色。`face` 是 cute 脸的颜色（眼白），`pupil` 是在它上面读得出的颜色，`feature` 是在身体上读得出的颜色（眉毛、睫毛、直接画在身体上的眼睛，即 soft 变体的脸色），`glint` 是在 `feature` 上读得出的高光，`iris` 是身体墨色加深，其余是固定的强调色（金色星星、泪滴、舌头、爱心、怒气、纽扣的线和底色、深色玻璃）和屏幕的发光色。黑色身体会随页面明暗翻转，所以 `getInkVars('black')` 额外写 `--aora-face-pupil` 和 `--aora-face-glint`，静态输出也同样随配色方案切换。
+
+<DrawnFacePalette />
+
+### 三个系列
+
+- 向量：每个变体决定颜色角色画成什么。实心类变体里眼白是脸色；`outline`、`glass`、`pencil`、`neon`、`chalk` 这些线条变体里，一律是线色或页面色，眼白、镜片、屏幕外加一圈描边；把特效画成单色的变体，强调色也换成线色。riso 的错版、paper 的投影、贴纸的纸边照常作用在身体上。
+- 像素：每层按覆盖率栅格化，一层要么整层画、要么不画；两只眼用同一个镜像投影和对称的锚点栅格化，对称的表情对称到格子，眨眼、斜视、单侧的眼泪也不会被抹平；比一格还小的高光直接省略，不会在瞳孔上打洞。
+- 颜文字：每种脸有自己的眼睛字形，按 11 种眼型各写一个；状态的眼睛取它表里的第一个表情，嘴取状态的嘴。
+
+<DrawnFaceSeries />
+
+### 窄的身体
+
+设计按自己的尺寸画。放上身体之前，先量出它所有固定部件的外廓——眉毛、镜框、面罩、符号，以及嘴的宽度——经过头部的投影放到身体上检查：每一段都要落在身体那一高度的宽度之内、头发和盖在头顶的叶子之下。放不下时沿一条路径同时缩小（最小 0.45 倍）并下移（最多 1.6 个点半径），用二分法找到刚好放得下的那一点，嘴和腮红跟着移动。漂离脸的部件（滑落的眼泪、升起的 Z）不计入外廓。放得下的身体上，脸保持设计尺寸。
 
 ## cute：默认的脸
 
@@ -87,7 +142,7 @@ morphMouth(MOUTHS.frown, MOUTHS.grin, t); // 永远是一张嘴
 
 六条折线。每一条都是沿鼻梁向下的一道开放笔画，末端一个小转折做鼻尖，以眼睛半径为单位存成 16 个点。传 `nose={null}` 不画鼻子——只有眼睛和嘴的素线条脸。
 
-没有给鼻子时，会像形状和墨色一样从角色的 key 推导一个：`autoNoseForKey('agent-42')` 稳定，并且把 key 均匀分布在六种之间。`AgentAvatar` 用的就是它，所以每个智能体都有固定的鼻子，而你不需要存任何东西。
+没有给鼻子时，会像形状和墨色一样从角色的 key 推导一个：`autoNoseForKey('agent-42')` 稳定，并且把 key 均匀分布在六种之间。`AgentPortrait` 用的就是它，所以每个智能体都有固定的鼻子，而你不需要存任何东西。
 
 ## 每个状态都有一张嘴
 
@@ -109,7 +164,7 @@ morphMouth(MOUTHS.frown, MOUTHS.grin, t); // 永远是一张嘴
 
 ## 实时切换
 
-已挂载的角色可以改变 `face`。眼睛尺寸、笔画下限和五官透明度都在同一个 `lineBlend` 弹簧上缓动，所以嘴随眼睛收缩而淡入，而不是一切同时跳变。改变 `nose` 会把旧鼻子淡出、新鼻子淡入。
+已挂载的角色可以改变 `face`。眼睛尺寸、笔画下限和五官透明度都在同一个 `lineBlend` 弹簧上缓动，所以嘴随眼睛收缩而淡入，而不是一切同时跳变。改变 `nose` 会把旧鼻子淡出、新鼻子淡入。切到或切离一张手绘脸时走 `faceFade` 弹簧：离开的脸保持切换那一刻的样子淡出，新的脸淡入；切回 `cute` 时，底下一直在跑的 cute 眼睛接过脸。
 
 ```tsx preview
 import { useState } from 'react';
@@ -143,13 +198,13 @@ export default function Demo() {
 
 ## 适用范围
 
-所有绘制角色的组件都接受 `face` 和 `nose`：[`CharacterMark`](/components/character-mark)、`StagedMark`、[`AgentAvatar`](/components/agent-avatar)（也可通过 agent 对象和 cast 预设传入）、[`AvatarStack`](/components/avatar-stack) 以及静态渲染函数。带 `onSelectFace` 的 [`CharacterPicker`](/components/character-picker) 会显示脸型切换，线条脸激活时再显示一行鼻子。
+所有绘制角色的组件都接受 `face` 和 `nose`：[`CharacterMark`](/components/character-mark)、`StagedMark`、[`AgentPortrait`](/components/agent-portrait)（也可通过 agent 对象和 cast 预设传入）、[`AvatarGroup`](/components/avatar-group) 以及静态渲染函数。带 `onSelectFace` 的 [`CharacterSelector`](/components/character-selector) 会显示脸型切换，线条脸激活时再显示一行鼻子。
 
-在[共享舞台](/components/mark-stage)上，脸型和鼻子是外观 key 的一部分，因此带 `line` 脸和 `hook` 鼻子的 `blob`，与同样带 `line` 脸但鼻子是 `bow` 的 `blob`，是两个源，而两个鼻子不同的 `cute` blob 是同一个——只有线条脸会画鼻子，其余脸型上的鼻子没有意义，不会拆分舞台。
+在[共享舞台](/components/character-stage)上，脸型和鼻子是外观 key 的一部分，因此带 `line` 脸和 `hook` 鼻子的 `blob`，与同样带 `line` 脸但鼻子是 `bow` 的 `blob`，是两个源，而两个鼻子不同的 `cute` blob 是同一个——只有线条脸会画鼻子，其余脸型上的鼻子没有意义，不会拆分舞台。
 
 ## 线条脸在各个面上
 
-每一个把角色放到某个面上的组件——[`HudPlate`](/components/hud-plate) 与 [`AgentHud`](/components/agent-hud)、[编辑器](/components/avatar-editor)及其触发器、[模板对话框](/components/template-dialog)与分享卡、[`OccupancyList`](/components/occupancy-list)、[受限场景](/components/restricted-scene)与[启动序列](/components/boot-loop)、[`CastStage`](/components/cast-stage) 及其成员、[引导页组件](/components/walkthrough)，以及两个[选择器](/components/agent-character-picker)——都接受 `face`、`nose`、`lineWeight`，并原样向下传递。名册里是 `hook` 鼻子线条脸 `bun` 的角色，在编辑器预览、分享卡和启动序列里还是那只线条脸 bun。
+每一个把角色放到某个面上的组件——[`HudPlate`](/components/hud-plate) 与 [`AgentHud`](/components/agent-hud)、[编辑器](/components/avatar-studio)及其触发器、[模板对话框](/components/template-dialog)与分享卡、[`OccupancyList`](/components/occupancy-list)、[受限场景](/components/restricted-scene)与[启动序列](/components/boot-loop)、[`CastLineup`](/components/cast-lineup) 及其成员、[引导页组件](/components/walkthrough)，以及两个[选择器](/components/agent-character-selector)——都接受 `face`、`nose`、`lineWeight`，并原样向下传递。名册里是 `hook` 鼻子线条脸 `bun` 的角色，在编辑器预览、分享卡和启动序列里还是那只线条脸 bun。
 
 `lineWeight` 是第三个特征，和鼻子一样每个角色只选一次。它是 `LINE_WEIGHT` 的倍数，被夹在 `LINE_WEIGHT_RANGE`（0.8–1.25）之内，一个数字同时到达鼻子、嘴**和 HUD 表盘**：身体外那圈环用与身体内五官相同的线宽描边，于是脸和它的表盘是同一幅画，而不是一张脸旁边摆了一张图表。范围刻意很窄。这个线宽是决定一个角色读起来像钢笔画还是马克笔画的唯一数字；放开让宿主随意设置，列表里就会有一个角色的线宽和邻居不同，整套就破了。
 
@@ -178,7 +233,7 @@ export default function Demo() {
 }
 ```
 
-[`CharacterPicker`](/components/character-picker) 也接受 `lineWeight`，网格里的预览就用和正在编辑的角色相同的那支笔来画。
+[`CharacterSelector`](/components/character-selector) 也接受 `lineWeight`，网格里的预览就用和正在编辑的角色相同的那支笔来画。
 
 ## 接下来
 

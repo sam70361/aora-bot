@@ -239,6 +239,31 @@ export function mouthOutline(spec: MouthSpec, radius: number, samples = 16): Poi
   return upper.concat(lower.slice(1, -1));
 }
 
+/**
+ * The opening of a mouth as two profiles over x — its upper and lower lip —
+ * in the same units and place as `mouthOutline`, for whatever is drawn
+ * inside it.
+ */
+export function mouthProfile(
+  spec: MouthSpec,
+  radius: number,
+): { x0: number; x1: number; top(x: number): number; bottom(x: number): number } {
+  const W = Math.max(spec.width * radius, 1e-6);
+  const upper = spec.upper ?? UPPER_SHARE;
+  const lip = (u: number): number =>
+    spec.dy * radius +
+    spec.bend * radius * (1 - u * u) * (1 + spec.skew * u) +
+    spec.wave * radius * Math.sin(Math.PI * u) +
+    (spec.cat ?? 0) * radius * 0.5 * (1 - Math.cos(2 * Math.PI * u));
+  const lens = (u: number): number => spec.open * radius * Math.sqrt(Math.max(0, 1 - u * u));
+  return {
+    x0: -W,
+    x1: W,
+    top: (x) => lip(x / W) - lens(x / W) * upper,
+    bottom: (x) => lip(x / W) + lens(x / W) * (1 - upper),
+  };
+}
+
 /** Signed area of a closed polygon, for tests and for deciding whether to fill. */
 export function polygonArea(points: readonly Point[]): number {
   let area = 0;

@@ -1,4 +1,4 @@
-import { getStyle, hasStyle, type StyleId, type StyleVariant } from '@aora-bot/engine';
+import { acceptsVariant, getStyle, hasStyle, type StyleId, type StyleVariant } from '@aora-bot/engine';
 
 /**
  * The variant a series will actually draw, given what the caller asked for.
@@ -12,5 +12,5 @@ import { getStyle, hasStyle, type StyleId, type StyleVariant } from '@aora-bot/e
 export function resolveVariant(styleId: StyleId, variant: StyleVariant | undefined): string | undefined {
   if (!hasStyle(styleId)) return variant;
   const style = getStyle(styleId);
-  return variant !== undefined && style.variants.includes(variant) ? variant : style.defaultVariant;
+  return variant !== undefined && acceptsVariant(style, variant) ? variant : style.defaultVariant;
 }

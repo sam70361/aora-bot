@@ -7,7 +7,8 @@
  * contentment, crosses for refusal. `kaomoji()` is the plain-text form, for
  * chat lines and terminals; the series draws the same string as SVG `<text>`.
  */
-import type { ShapeId } from '../../core/types.js';
+import { isDrawnFace, type FaceStyle, type ShapeId } from '../../core/types.js';
+import { drawnFaceText, getFaceDesign } from '../../face/drawn/index.js';
 import type { CharacterState } from '../../motion/states.js';
 
 /** What goes either side of the face. */
@@ -48,6 +49,11 @@ export const SHAPE_WRAPPERS: Partial<Record<ShapeId, Wrapper>> = {
   pig: ['∪(', ')∪'],
   fox: ['/(', ')\\'],
   boba: ['◦(', ')◦'],
+  lion: ['✺(', ')✺'],
+  candy: ['▷(', ')◁'],
+  planet: ['⊖(', ')'],
+  cottage: ['⌂(', ')'],
+  chat: ['「', '」'],
 };
 
 /** The face inside the wrapper, for every state. */
@@ -151,10 +157,18 @@ export function wrapperFor(shape: ShapeId): Wrapper {
   return SHAPE_WRAPPERS[shape] ?? DEFAULT_WRAPPER;
 }
 
-/** The character as one line of text: `(・ω・)`, `☁(^▽^) ♪`, `ฅ(・ω・)ฅ`. */
-export function kaomoji(shape: ShapeId, state: CharacterState): string {
+/**
+ * The face inside the wrapper. The cute, eyes and line faces share the
+ * table above; a drawn face writes its own eyes and mouth (`drawnFaceText`).
+ */
+export function faceText(state: CharacterState, face: FaceStyle = 'cute'): string {
+  return isDrawnFace(face) ? drawnFaceText(getFaceDesign(face), state) : STATE_FACES[state];
+}
+
+/** The character as one line of text: `(・ω・)`, `☁(^▽^) ♪`, `ฅ(・ω・)ฅ`, `(⌐■ᴗ■)`. */
+export function kaomoji(shape: ShapeId, state: CharacterState, face: FaceStyle = 'cute'): string {
   const [open, close] = wrapperFor(shape);
-  return `${open}${STATE_FACES[state]}${close}${STATE_TAILS[state]}`;
+  return `${open}${faceText(state, face)}${close}${STATE_TAILS[state]}`;
 }
 
 /**

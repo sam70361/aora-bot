@@ -5,9 +5,9 @@
 ```tsx preview
 import { useState } from 'react';
 import {
-  ActivityMark,
-  AgentAvatar,
-  MarkStageProvider,
+  ActivityBadge,
+  AgentPortrait,
+  CharacterStageProvider,
   useMarkCommand,
   useMarkCommands,
 } from '@aora-bot/react';
@@ -63,27 +63,27 @@ function Controls() {
 
 function Header() {
   const snapshot = useMarkCommand('nova', 'avatar');
-  return <AgentAvatar agent={nova} state={snapshot.state} size="lg" />;
+  return <AgentPortrait agent={nova} state={snapshot.state} size="lg" />;
 }
 
 export default function Demo() {
   return (
-    <MarkStageProvider>
+    <CharacterStageProvider>
       <div className="site-demo site-demo--column">
         <div className="site-demo">
           <Header />
-          <ActivityMark agent={nova} activityMode="facts" surface="chat" bubble />
+          <ActivityBadge agent={nova} activityMode="facts" surface="chat" bubble />
         </div>
         <Controls />
       </div>
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 ```
 
 ## 两张登记表，一个 Provider
 
-[`MarkStageProvider`](/components/mark-stage) 已经维护一张按外观索引的登记表：跑多少个引擎、哪些角色镜像哪一个。指令登记表是它按智能体索引的另一半。它记录每个智能体*正在做什么*——这才是应用真正关心的事——订阅了该智能体的每个角色都会跟着变。名册行、聊天页头、悬浮卡片可以在树的不同角落谈论同一个智能体，既不必把状态提升到共享的 React state 里，也不会引来随之而来的重渲染风暴。
+[`CharacterStageProvider`](/components/character-stage) 已经维护一张按外观索引的登记表：跑多少个引擎、哪些角色镜像哪一个。指令登记表是它按智能体索引的另一半。它记录每个智能体*正在做什么*——这才是应用真正关心的事——订阅了该智能体的每个角色都会跟着变。名册行、聊天页头、悬浮卡片可以在树的不同角落谈论同一个智能体，既不必把状态提升到共享的 React state 里，也不会引来随之而来的重渲染风暴。
 
 `useMarkCommands()` 返回写入端。没有 Provider 也能用：回退登记表只是没有本树之外的订阅者。
 
@@ -106,7 +106,7 @@ import {
   CharacterMark,
   useDeadline,
   useMarkSettle,
-  usePokeCycle,
+  useTapCycle,
   type CharacterHandle,
 } from '@aora-bot/react';
 import type { CharacterState } from '@aora-bot/react';
@@ -117,7 +117,7 @@ export default function Demo() {
   const [raw, setRaw] = useState<CharacterState>('working');
   const settled = useMarkSettle(raw, { settleMs: 1400 });
   const ref = useRef<CharacterHandle>(null);
-  const poke = usePokeCycle(ref);
+  const poke = useTapCycle(ref);
   const [token, setToken] = useState(0);
   const arrived = useDeadline(1200, [token]);
 
@@ -156,7 +156,7 @@ export default function Demo() {
 ```
 
 - `useMarkSettle(state, { settleMs })` 在输入停止变化满 `settleMs` 之前一直保持上一个状态（默认 `SETTLE_MS`，1400 毫秒；`0` 关闭）。事实抖动很常见——工具启动、80 毫秒后返回、又一个启动——每一次都渲染，就是一排脸在闪，看起来像出了故障。
-- `usePokeCycle(ref)` 返回一个函数，每次调用在句柄上跑下一个花样：转圈、跳一下、彩纸、再转圈。永远转圈到第二次点击就不好玩了。`POKE_COOLDOWN_MS`（340 毫秒）内的重复戳会被忽略；ref 上没有引擎时返回 `false`——镜像的 [`StagedMark`](/components/mark-stage) 与别人共享动画，不能独自动，调用方可以改为让外层容器跳一下。
+- `useTapCycle(ref)` 返回一个函数，每次调用在句柄上跑下一个花样：转圈、跳一下、彩纸、再转圈。永远转圈到第二次点击就不好玩了。`POKE_COOLDOWN_MS`（340 毫秒）内的重复戳会被忽略；ref 上没有引擎时返回 `false`——镜像的 [`StagedMark`](/components/character-stage) 与别人共享动画，不能独自动，调用方可以改为让外层容器跳一下。
 - `useDeadline(ms, deps)` 在依赖上次变化后满 `ms` 之前是 `false`，之后是 `true`。它省去了入场动画自带的 `setTimeout` 加 ref。
 
 ## API
@@ -180,11 +180,11 @@ export default function Demo() {
 
 `useMarkCommand(agentId, surface = 'list')`——订阅一个智能体，拿到它的 `MarkCommandSnapshot`。
 
-### useMarkSettle、usePokeCycle、useDeadline
+### useMarkSettle、useTapCycle、useDeadline
 
 见上文。`createMarkCommandRegistry()` 构造一张独立登记表，供测试或自己提供 `MarkCommandContext` 的宿主使用。
 
 ## 接下来
 
-- [MarkStageProvider](/components/mark-stage)——按外观共享引擎
+- [CharacterStageProvider](/components/character-stage)——按外观共享引擎
 - [桌面伙伴](/scenarios/desktop-companion)——活几个小时又不吵

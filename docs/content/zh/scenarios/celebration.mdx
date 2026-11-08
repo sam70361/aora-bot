@@ -10,7 +10,7 @@ import { StateMatrix } from '@theme';
 
 ```tsx preview
 import { useRef, useState } from 'react';
-import { CharacterMark, ConfettiLayer, type ConfettiHandle } from '@aora-bot/react';
+import { CharacterMark, CelebrationLayer, type ConfettiHandle } from '@aora-bot/react';
 import { ShareCard, usePublishMark } from '@aora-bot/surfaces';
 
 export default function Demo() {
@@ -22,7 +22,7 @@ export default function Demo() {
     <div className="site-demo site-demo--stack">
       <span className="site-demo__avatar">
         <CharacterMark shape="star" color="yellow" state={publish.characterState} sizePx={88} />
-        <ConfettiLayer ref={confetti} />
+        <CelebrationLayer ref={confetti} />
       </span>
       <div className="site-controls">
         <button
@@ -61,7 +61,7 @@ export default function Demo() {
 ## 用到的组件
 
 - [`CharacterMark`](/components/character-mark)——`celebrate` 自带入场效果：原地转身一圈、甩出彩带，再加十六片纸屑，在转移那一刻只放一次。
-- [`ConfettiLayer`](/components/confetti-layer)——没有角色的纸屑，可以盖在任何东西上，通过 ref 驱动。
+- [`CelebrationLayer`](/components/celebration-layer)——没有角色的纸屑，可以盖在任何东西上，通过 ref 驱动。
 - `createConfettiController`——同样的纸屑，给 React 之外的一个普通 SVG 用。
 - [`usePublishMark`](/components/use-publish-mark)——三个阶段和时序，宿主不必自己盯着那一刻。
 - `ShareCard` 与 [`TemplateDialog`](/components/template-dialog)——发布完成后交出去的东西。
@@ -88,5 +88,5 @@ export default function Demo() {
 ## 接下来
 
 - [usePublishMark](/components/use-publish-mark)——干活、庆祝、收敛
-- [ConfettiLayer](/components/confetti-layer)——盖在任何东西上的纸屑
+- [CelebrationLayer](/components/celebration-layer)——盖在任何东西上的纸屑
 - [TemplateDialog](/components/template-dialog)——名称、说明与可见性

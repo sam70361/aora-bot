@@ -10,7 +10,7 @@ import { StateMatrix } from '@theme';
 
 ```tsx preview
 import { useState } from 'react';
-import { ActivityMark, GroupActivityMark, MarkStageProvider, useMarkCommands } from '@aora-bot/react';
+import { ActivityBadge, GroupActivityBadge, CharacterStageProvider, useMarkCommands } from '@aora-bot/react';
 
 const agent = { id: 'nova', name: 'Nova' };
 const team = [{ id: 'ada' }, { id: 'grace' }, { id: 'alan' }];
@@ -37,7 +37,7 @@ function Transcript() {
 
   return (
     <div className="site-demo site-demo--column">
-      <ActivityMark
+      <ActivityBadge
         agent={agent}
         activityMode="facts"
         facts={finished ? undefined : TURN[step]}
@@ -45,7 +45,7 @@ function Transcript() {
         bubble
         onPoke={() => {}}
       />
-      <GroupActivityMark members={team} tool="run" />
+      <GroupActivityBadge members={team} tool="run" />
       <div className="site-controls">
         <button
           className="site-btn"
@@ -74,14 +74,14 @@ function Transcript() {
 
 export default function Demo() {
   return (
-    <MarkStageProvider>
+    <CharacterStageProvider>
       <Transcript />
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 ```
 
-`ActivityMark` 的 `surface` 默认是 `chat`，所以第四步显示 `composing`：同样的事实在 `avatar` 表面上读出来仍是 `idle`——二十个头像每几百毫秒在两张脸之间闪动，是噪音而不是信息。
+`ActivityBadge` 的 `surface` 默认是 `chat`，所以第四步显示 `composing`：同样的事实在 `avatar` 表面上读出来仍是 `idle`——二十个头像每几百毫秒在两张脸之间闪动，是噪音而不是信息。
 
 ## 什么时候用
 
@@ -89,10 +89,10 @@ export default function Demo() {
 
 ## 用到的组件
 
-- [`ActivityMark`](/components/activity-mark)——一个智能体、一行：角色加动词。`activityMode="facts"` 读取共享注册表而不是工具名。
-- [`GroupActivityMark`](/components/activity-mark#群组)——多个智能体轮流占据一个位置，群组不会变成一堵角色墙。
-- [`ActivityTicker`](/components/activity-ticker)——动词以替换而非改写的方式切换，行高保持不变。
-- [`MarkStageProvider`](/components/mark-stage)——每种外观一个引擎，也是命令注册表的所在。
+- [`ActivityBadge`](/components/activity-badge)——一个智能体、一行：角色加动词。`activityMode="facts"` 读取共享注册表而不是工具名。
+- [`GroupActivityBadge`](/components/activity-badge#群组)——多个智能体轮流占据一个位置，群组不会变成一堵角色墙。
+- [`ActivityLine`](/components/activity-line)——动词以替换而非改写的方式切换，行高保持不变。
+- [`CharacterStageProvider`](/components/character-stage)——每种外观一个引擎，也是命令注册表的所在。
 - [`useMarkCommands`](/components/mark-commands)——`holdFacts`、`holdState` 与 `poke`，让名册和对话谈的是同一个智能体。
 - [`HudPlate`](/components/hud-plate)——一轮的长度已知时（比如五次工具调用里的第三次），把数字放在角色旁边，可读也可被朗读。
 
@@ -109,7 +109,7 @@ export default function Demo() {
 | `working`   | `alerting`  | 工具失败（用 `ttlMs` 持有） |
 | 任一        | 整行离场    | 持有到期                    |
 
-`spawning` 由 `useSpawnEntrance` 在智能体本次会话首次出现时播放一次，此后不再播放——滚出视野再滚回来的那一行并没有"到达两次"。引擎会在 `STATE_SETTLE_TO.spawning.afterMs`（2 秒）后把它收敛到 `idle`，宿主不需要自己计时。
+`spawning` 由 `useArrival` 在智能体本次会话首次出现时播放一次，此后不再播放——滚出视野再滚回来的那一行并没有"到达两次"。引擎会在 `STATE_SETTLE_TO.spawning.afterMs`（2 秒）后把它收敛到 `idle`，宿主不需要自己计时。
 
 `celebrate` 和 `alerting` 是事件而不是条件：协议编号 `33` 和 `34` 都是一次性的。用 `ttlMs` 持有它们，回复落地之后这一行就不会一直庆祝下去。
 
@@ -121,6 +121,6 @@ export default function Demo() {
 
 ## 接下来
 
-- [ActivityMark](/components/activity-mark)——一次工具调用长什么样
-- [ActivityTicker](/components/activity-ticker)——滚动的活动动词
+- [ActivityBadge](/components/activity-badge)——一次工具调用长什么样
+- [ActivityLine](/components/activity-line)——滚动的活动动词
 - [AgentStateProvider](/components/agent-state)——把多个会话仲裁成一张脸

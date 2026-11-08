@@ -18,8 +18,16 @@ import { vectorStyle } from './vector.js';
 
 export { DEFAULT_STYLE_ID, STYLE_IDS, type BuiltinStyleId } from './ids.js';
 export type { StyleDefinition, StyleId, StyleOptionIssue, StyleParam } from './types.js';
-export { defineStyle, paramsForVariant, resolveStyleOptions, validateStyleOptions } from './registry.js';
+export {
+  acceptsVariant,
+  allVariants,
+  defineStyle,
+  paramsForVariant,
+  resolveStyleOptions,
+  validateStyleOptions,
+} from './registry.js';
 export { vectorStyle };
+export { defineVectorMedium } from './vector.js';
 export { pixelStyle };
 export { kaomojiStyle };
 

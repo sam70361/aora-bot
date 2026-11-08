@@ -14,7 +14,7 @@ import {
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { useLocale } from '../locale/index.js';
 import { useReducedMotion } from '../stage/hooks.js';
-import { StagedMark } from '../stage/MarkStage.js';
+import { StagedMark } from '../stage/CharacterStage.js';
 import { cx } from '../utils/cx.js';
 
 export type { SpriteManifest, SpriteClip } from '@aora-bot/engine';
@@ -144,7 +144,7 @@ export function SpriteMark({
   baseUrl,
   state,
   emotionId,
-  sizePx = 28,
+  sizePx = 32,
   fps: fpsOverride,
   paused = false,
   fallback = 'character',

@@ -19,7 +19,7 @@ export interface ActivityPresence {
 }
 
 /** Mount on show, play the exit animation, then unmount. */
-export function useActivityPresence(
+export function useActivityStatus(
   visible: boolean,
   { exitMs = ACTIVITY_EXIT_MS }: { exitMs?: number } = {},
 ): ActivityPresence {
@@ -81,7 +81,7 @@ export interface SpawnEntrance {
  * decision has to be made on the render that first draws the character, or the
  * arrival would start a frame late and jump.
  */
-export function useSpawnEntrance(agentId: string): SpawnEntrance {
+export function useArrival(agentId: string): SpawnEntrance {
   const [isFirst] = useState(() => !introduced.has(agentId));
 
   useEffect(() => {

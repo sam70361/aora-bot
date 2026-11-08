@@ -5,9 +5,9 @@ Tell every mark of one agent what it is doing, from anywhere on the page.
 ```tsx preview
 import { useState } from 'react';
 import {
-  ActivityMark,
-  AgentAvatar,
-  MarkStageProvider,
+  ActivityBadge,
+  AgentPortrait,
+  CharacterStageProvider,
   useMarkCommand,
   useMarkCommands,
 } from '@aora-bot/react';
@@ -63,27 +63,27 @@ function Controls() {
 
 function Header() {
   const snapshot = useMarkCommand('nova', 'avatar');
-  return <AgentAvatar agent={nova} state={snapshot.state} size="lg" />;
+  return <AgentPortrait agent={nova} state={snapshot.state} size="lg" />;
 }
 
 export default function Demo() {
   return (
-    <MarkStageProvider>
+    <CharacterStageProvider>
       <div className="site-demo site-demo--column">
         <div className="site-demo">
           <Header />
-          <ActivityMark agent={nova} activityMode="facts" surface="chat" bubble />
+          <ActivityBadge agent={nova} activityMode="facts" surface="chat" bubble />
         </div>
         <Controls />
       </div>
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 ```
 
 ## Two registries, one provider
 
-[`MarkStageProvider`](/components/mark-stage) already keeps an appearance-keyed registry: how many engines run, and which marks mirror which. The command registry is its agent-keyed half. It records what each agent is _doing_ — the thing an application actually has an opinion about — and every mark subscribed to that agent follows. A roster row, a chat header and a hover card can all talk about the same agent from different corners of the tree without lifting anything into shared React state, and without the re-render storm that would come with it.
+[`CharacterStageProvider`](/components/character-stage) already keeps an appearance-keyed registry: how many engines run, and which marks mirror which. The command registry is its agent-keyed half. It records what each agent is _doing_ — the thing an application actually has an opinion about — and every mark subscribed to that agent follows. A roster row, a chat header and a hover card can all talk about the same agent from different corners of the tree without lifting anything into shared React state, and without the re-render storm that would come with it.
 
 `useMarkCommands()` returns the write side. It works without a provider too: the fallback registry simply has no subscribers other than the marks in the same tree.
 
@@ -106,7 +106,7 @@ import {
   CharacterMark,
   useDeadline,
   useMarkSettle,
-  usePokeCycle,
+  useTapCycle,
   type CharacterHandle,
 } from '@aora-bot/react';
 import type { CharacterState } from '@aora-bot/react';
@@ -117,7 +117,7 @@ export default function Demo() {
   const [raw, setRaw] = useState<CharacterState>('working');
   const settled = useMarkSettle(raw, { settleMs: 1400 });
   const ref = useRef<CharacterHandle>(null);
-  const poke = usePokeCycle(ref);
+  const poke = useTapCycle(ref);
   const [token, setToken] = useState(0);
   const arrived = useDeadline(1200, [token]);
 
@@ -156,7 +156,7 @@ export default function Demo() {
 ```
 
 - `useMarkSettle(state, { settleMs })` holds the last state until the input has stopped changing for `settleMs` (`SETTLE_MS`, 1400 ms by default; `0` disables). Facts churn — a tool starts, returns in 80 ms, another starts — and rendering each one is a roster of faces flicking, which reads as a fault.
-- `usePokeCycle(ref)` returns a function that runs the next flourish on the handle each call: spin, hop, confetti, spin again. Always spinning stops being fun on the second click. Pokes inside `POKE_COOLDOWN_MS` (340 ms) are ignored, and the function returns `false` when the ref has no engine — a mirrored [`StagedMark`](/components/mark-stage) shares its animation and cannot move alone, so the caller can hop the wrapper instead.
+- `useTapCycle(ref)` returns a function that runs the next flourish on the handle each call: spin, hop, confetti, spin again. Always spinning stops being fun on the second click. Pokes inside `POKE_COOLDOWN_MS` (340 ms) are ignored, and the function returns `false` when the ref has no engine — a mirrored [`StagedMark`](/components/character-stage) shares its animation and cannot move alone, so the caller can hop the wrapper instead.
 - `useDeadline(ms, deps)` is `false` until `ms` has passed since the dependencies last changed, then `true`. It saves an arrival animation its own `setTimeout` and ref.
 
 ## API
@@ -180,11 +180,11 @@ Returns `MarkCommands`:
 
 `useMarkCommand(agentId, surface = 'list')` — subscribe to one agent and get its `MarkCommandSnapshot`.
 
-### useMarkSettle, usePokeCycle, useDeadline
+### useMarkSettle, useTapCycle, useDeadline
 
 See above. `createMarkCommandRegistry()` builds a standalone registry for tests or for a host that provides `MarkCommandContext` itself.
 
 ## Next
 
-- [MarkStageProvider](/components/mark-stage) — share engines by appearance
+- [CharacterStageProvider](/components/character-stage) — share engines by appearance
 - [Desktop companion](/scenarios/desktop-companion) — alive for hours without being noisy

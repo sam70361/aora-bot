@@ -6,16 +6,19 @@ import {
   getInkColorCss,
   useLabel,
   type CharacterHandle,
+  type CharacterState,
+  type ColorId,
+  type FaceStyle,
+  type ShapeId,
 } from '@aora-bot/react';
-import { useDeferredValue, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
-import { COPIED_RESET_MS, copyText } from '../shared/clipboard.js';
+import { useCallback, useDeferredValue, useMemo, useRef, useState, type CSSProperties } from 'react';
+import { CodeChip, ShareButton } from '../shared/CopyControls.js';
 import { useI18n } from '../shared/i18n.js';
+import { ArrowIcon, DiceIcon } from '../shared/icons.js';
 import { useLocalePath } from '../shared/locale-path.js';
-import { DEFAULT_FACE, shareUrl, type Preset } from '../shared/share.js';
-import { SNIPPET_FORMATS, copyFor, lineFor, type SnippetFormat } from '../shared/snippet.js';
+import { DEFAULT_FACE, type Preset } from '../shared/share.js';
+import { copyFor, lineFor } from '../shared/snippet.js';
 import { StateDock } from './Dock.js';
-import { ArrowIcon, CheckIcon, CopyIcon, DiceIcon, LinkIcon } from './icons.js';
-import { Radio, RadioGroup } from './Radio.js';
 import { ColorRail, ShapeStrip, StyleRail } from './Rails.js';
 import type { Registry, StyleChoice } from './registry.js';
 import { TuneButton } from './Tune.js';
@@ -24,7 +27,7 @@ import { Wall } from './Wall.js';
 export interface ConsoleProps {
   registry: Registry;
   preset: Preset;
-  patch: (changes: Partial<Preset>) => void;
+  patch: (changes: Partial<Preset> | ((preset: Preset) => Partial<Preset>)) => void;
   replace: (preset: Preset) => void;
 }
 
@@ -56,6 +59,16 @@ export function Console({ registry, preset, patch, replace }: ConsoleProps) {
 
   const styleChoices = useMemo(() => registry.styles.flatMap((group) => group.choices), [registry]);
 
+  // Stable, so the memoised rails redraw once the deferred look reaches them, not also in the urgent render of a pick.
+  const pickStyle = useCallback(
+    (choice: StyleChoice) => patch((current) => withStyle(current, choice)),
+    [patch],
+  );
+  const pickShape = useCallback((shape: ShapeId) => patch({ shape }), [patch]);
+  const pickColor = useCallback((color: ColorId) => patch({ color }), [patch]);
+  const pickFace = useCallback((face: FaceStyle) => patch({ face }), [patch]);
+  const pickState = useCallback((state: CharacterState) => patch({ state }), [patch]);
+
   const shuffle = () => {
     // The first group is the one the characters rest in; a random expression should not be a nap.
     const states = registry.stateGroups.slice(1).flatMap((group) => group.states);
@@ -76,11 +89,7 @@ export function Console({ registry, preset, patch, replace }: ConsoleProps) {
     >
       <Wall styles={styleChoices} face={DEFAULT_FACE} />
 
-      <StyleRail
-        groups={registry.styles}
-        preset={look}
-        onPick={(choice) => patch(withStyle(preset, choice))}
-      />
+      <StyleRail groups={registry.styles} preset={look} onPick={pickStyle} />
 
       <div className="site-home__centre">
         <div className="site-home__head">
@@ -122,14 +131,14 @@ export function Console({ registry, preset, patch, replace }: ConsoleProps) {
           </p>
         </div>
 
-        <StateDock groups={registry.stateGroups} preset={look} onPick={(state) => patch({ state })} />
+        <StateDock groups={registry.stateGroups} preset={look} onPick={pickState} />
 
         <div className="site-home__actions">
           <a className="site-home__start" href={path('/guide/getting-started')}>
             {t('home.start')}
             <ArrowIcon />
           </a>
-          <CodeChip preset={preset} />
+          <CodeChip line={(format) => lineFor(format, preset)} copy={(format) => copyFor(format, preset)} />
           <TuneButton preset={preset} onChange={(params) => patch({ params })} />
           <ShareButton preset={preset} />
           <button
@@ -144,100 +153,9 @@ export function Console({ registry, preset, patch, replace }: ConsoleProps) {
         </div>
       </div>
 
-      <ColorRail
-        faces={registry.faces}
-        preset={look}
-        onColor={(color) => patch({ color })}
-        onFace={(face) => patch({ face })}
-      />
+      <ColorRail faces={registry.faces} preset={look} onColor={pickColor} onFace={pickFace} />
 
-      <ShapeStrip families={registry.families} preset={look} onPick={(shape) => patch({ shape })} />
+      <ShapeStrip families={registry.families} preset={look} onPick={pickShape} />
     </section>
-  );
-}
-
-/** A button that says "copied" for a moment, without its box changing size. */
-function useCopied(): [boolean, (text: string) => Promise<void>] {
-  const [copied, setCopied] = useState(false);
-  useEffect(() => {
-    if (!copied) return;
-    const timer = setTimeout(() => setCopied(false), COPIED_RESET_MS);
-    return () => clearTimeout(timer);
-  }, [copied]);
-  return [copied, async (text) => setCopied(await copyText(text))];
-}
-
-/**
- * The character in one of three formats on one line, and a button that copies
- * it: the snippet with its imports or script, or the avatar link. The format
- * switch and the copy button are siblings in the chip, so neither sits inside
- * the other.
- */
-function CodeChip({ preset }: { preset: Preset }) {
-  const t = useI18n();
-  const [copied, copy] = useCopied();
-  const [format, setFormat] = useState<SnippetFormat>('react');
-  const line = lineFor(format, preset);
-  const names: Record<SnippetFormat, string> = {
-    react: 'React',
-    html: 'HTML',
-    avatar: t('home.format.avatar'),
-  };
-
-  return (
-    <div className="site-home__chip">
-      <RadioGroup label={t('home.format')} className="site-home__formats">
-        {SNIPPET_FORMATS.map((id) => (
-          <Radio
-            key={id}
-            value={id}
-            className="site-home__format"
-            checked={id === format}
-            label={names[id]}
-            onSelect={() => setFormat(id)}
-          >
-            {names[id]}
-          </Radio>
-        ))}
-      </RadioGroup>
-      <button
-        type="button"
-        className="site-home__copy"
-        aria-label={format === 'avatar' ? t('home.copyLink') : t('home.copyCode')}
-        title={line}
-        onClick={() => copy(copyFor(format, preset))}
-      >
-        <code>{line}</code>
-        <span className="site-home__chipIcon" data-copied={copied || undefined}>
-          <CopyIcon />
-          <CheckIcon />
-        </span>
-        <span className="site-home__sr" aria-live="polite">
-          {copied ? t('home.copied') : ''}
-        </span>
-      </button>
-    </div>
-  );
-}
-
-function ShareButton({ preset }: { preset: Preset }) {
-  const t = useI18n();
-  const [copied, copy] = useCopied();
-
-  return (
-    <button
-      type="button"
-      className="site-home__tool"
-      data-copied={copied || undefined}
-      aria-label={t('home.share')}
-      title={t('home.share')}
-      onClick={() => copy(shareUrl(preset))}
-    >
-      <LinkIcon />
-      <CheckIcon />
-      <span className="site-home__sr" aria-live="polite">
-        {copied ? t('home.copied') : ''}
-      </span>
-    </button>
   );
 }

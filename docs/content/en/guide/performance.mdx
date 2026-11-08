@@ -20,17 +20,17 @@ The loop stops entirely when the last character unmounts.
 
 ## Share animations between identical characters
 
-The larger win is not running the same animation twice. `MarkStageProvider` hosts one hidden character per distinct **appearance** and every visible instance becomes a `<use href>` reference to it.
+The larger win is not running the same animation twice. `CharacterStageProvider` hosts one hidden character per distinct **appearance** and every visible instance becomes a `<use href>` reference to it.
 
 ```tsx preview
-import { MarkStageProvider, StagedMark } from '@aora-bot/react';
+import { CharacterStageProvider, StagedMark } from '@aora-bot/react';
 
 const COLOURS = ['blue', 'green', 'violet', 'orange', 'magenta', 'cyan'] as const;
 
 export default function Demo() {
   // Sixty marks, two distinct appearances, two running engines.
   return (
-    <MarkStageProvider>
+    <CharacterStageProvider>
       <div className="site-demo">
         {Array.from({ length: 60 }, (_, i) => (
           <StagedMark
@@ -42,21 +42,21 @@ export default function Demo() {
           />
         ))}
       </div>
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 ```
 
 ### What counts as the same appearance
 
-Shape, state and face style — ink and size are excluded, so sixty agents that are all idle blobs cost one engine even when every one of them is a different ink. [`MarkStageProvider`](/components/mark-stage) explains the key, and why agent identity is the wrong thing to key on.
+Shape, state and face style — ink and size are excluded, so sixty agents that are all idle blobs cost one engine even when every one of them is a different ink. [`CharacterStageProvider`](/components/character-stage) explains the key, and why agent identity is the wrong thing to key on.
 
 ### The cap
 
 `maxSources` caps how many engines run at once, 36 by default. Past it the page degrades by leaving some characters still rather than by slowing all of them down.
 
 ```tsx
-<MarkStageProvider maxSources={16}>{children}</MarkStageProvider>
+<CharacterStageProvider maxSources={16}>{children}</CharacterStageProvider>
 ```
 
 ## Pause what is not visible
@@ -145,5 +145,5 @@ The number that matters is _engines_, not characters. Mirrors are close to free,
 ## Next
 
 - [Server rendering](/guide/server-rendering) — Next.js and static generation
-- [MarkStageProvider](/components/mark-stage) — share engines by appearance
+- [CharacterStageProvider](/components/character-stage) — share engines by appearance
 - [Rendering structure](/internals/rendering) — one SVG, every attribute written by hand

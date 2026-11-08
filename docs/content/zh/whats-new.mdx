@@ -1,0 +1,54 @@
+---
+title: 更新日志
+description: Aora Bot 每个版本的变化，最新的在最前面。
+sidebar: false
+---
+
+# 更新日志
+
+各版本的变化，最新的在最前面。每个包、导出和参数的逐条变更见[完整变更日志](https://github.com/sam70361/aora-bot/blob/main/CHANGELOG.md)。
+
+## 下一个版本
+
+尚未发布到 npm，仓库里的各个包已经包含这些改动。
+
+### 角色与五官
+
+- 新增 22 个角色，每个都有阵容成员，包括甜点（`treat`）和物件（`object`）两个家族；`ghost` 重画得更圆润。
+- 新增 13 种绘制脸。`capsule` 现在排在脸型列表和选择器的第一位，`teardrop` 和 `specs` 也重新绘制。每种绘制脸都覆盖全部 44 种状态，在所有矢量变体、像素和颜文字里都能用。用 `defineFace` 可以注册自己的脸。
+- 球球（`dot`）是一个戴 `capsule` 脸的奶白色小球，现在排在角色阵容第一位。
+
+### 画风
+
+- 六种手绘画材：`pencil`、`marker`、`crayon`、`watercolor`、`neon`、`chalk`。
+- 两种纸艺画风：`origami`（折纸）把纸揉皱再压平，形成柔和的小折面；`relief`（浮雕）是一张从背后压凸的厚卡纸。详见[矢量风格](/design/styles/vector)。
+- 用 `defineVectorMedium` 可以注册自己的矢量变体。
+- 形状配件可以有自己的颜色，`defineShapeWithProps` 可以给角色加道具。
+
+### 主题
+
+- 主题是独立入口（`@aora-bot/engine/themes/<id>`），用到时才加载，各自带有角色、阵容、皮肤和文案。所有主题都在[主题展](/themes/)里。
+
+### 不兼容变更
+
+- 形状空间改为 240 单位（`SHAPE_SPACE`），视口为 `-24 -24 288 288`。自定义轮廓会自动归一化。
+- `FaceTune` 的各字段改为相对适配结果的比例，1 表示保持适配结果。
+- React 和 surfaces 组件改了名字，例如 `CharacterPicker` 改为 `CharacterSelector`，`AvatarStack` 改为 `AvatarGroup`，`AgentAvatar` 改为 `AgentPortrait`，`CastStage` 改为 `CastLineup`。完整对照见变更日志。
+- React 和 `<aora-bot>` 里的角色默认尺寸改为 32 px。
+- 彩纸和彩带重新设计，配色也换了一套。
+
+## 0.1.3
+
+- 四个包都改用 Aora Bot 许可证 1.1：使用 Aora Bot 的产品公开发布后，免费用户需在一处注明出处。代码没有改动。
+- 新增[版权声明](/guide/copyright)页面，每个页面末尾附版权说明。
+
+## 0.1.2
+
+- `<aora-bot>` 支持 `style-options`，用一个 JSON 对象传入画风参数。
+- 头像接口支持 `shape`、`color`、`face`，以及按名称传入的各项画风参数。
+- 控制台可以把角色复制成 React 代码、`<aora-bot>` 标签或头像链接。
+
+## 0.1.1
+
+- 首个版本：引擎、React 组件、`<aora-bot>` Web Component、产品组件、头像接口和本文档站。
+- 46 个角色、三种脸型、44 种动画状态，以及矢量、像素、颜文字三个画风系列。

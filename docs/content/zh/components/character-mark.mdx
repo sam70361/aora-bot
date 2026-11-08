@@ -93,7 +93,7 @@ export default function Demo() {
 
 ## 什么时候用它
 
-角色独自出现时用 `CharacterMark`——英雄区、空状态、页头里的单个头像。一次要好几个角色时，优先用 [`MarkStageProvider`](/components/mark-stage)，它让长得一样的角色共享一份动画。
+角色独自出现时用 `CharacterMark`——英雄区、空状态、页头里的单个头像。一次要好几个角色时，优先用 [`CharacterStageProvider`](/components/character-stage)，它让长得一样的角色共享一份动画。
 
 ## 跟随指针
 
@@ -359,6 +359,6 @@ useEffect(() => {
 
 ## 接下来
 
-- [MarkStageProvider](/components/mark-stage)——按外观共享引擎
+- [CharacterStageProvider](/components/character-stage)——按外观共享引擎
 - [状态](/design/states)——全部动画状态，分组列出
 - [HudPlate](/components/hud-plate)——表盘旁边的一个数字

@@ -23,7 +23,7 @@
 </span>
 ```
 
-`ActivityMark` 替你做这件事——它从同一来源渲染角色和文本标签，两者不可能互相矛盾。
+`ActivityBadge` 替你做这件事——它从同一来源渲染角色和文本标签，两者不可能互相矛盾。
 
 ## 当角色是唯一内容
 
@@ -31,7 +31,7 @@
 
 ```tsx
 <span role="img" aria-label={`${user.name} 的头像`}>
-  <AgentAvatar agent={user} />
+  <AgentPortrait agent={user} />
 </span>
 ```
 
@@ -64,11 +64,11 @@ if (!prefersReducedMotion()) confetti.current?.burst();
 
 ```tsx
 <button type="button" aria-label="更换头像" onClick={open}>
-  <AgentAvatar agent={user} />
+  <AgentPortrait agent={user} />
 </button>
 ```
 
-`CharacterPicker` 已经是一对单选组：每个选项都有 `role="radio"`、可访问名称和可见焦点环。方向键和 `Tab` 的行为符合预期。
+`CharacterSelector` 已经是一对单选组：每个选项都有 `role="radio"`、可访问名称和可见焦点环。方向键和 `Tab` 的行为符合预期。
 
 ## 颜色
 

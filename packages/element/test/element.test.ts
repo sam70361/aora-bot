@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { castMember } from '@aora-bot/engine';
+import { castMember, FACE_STYLES } from '@aora-bot/engine';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { AoraBotElement, defineAoraBot } from '../src/index.js';
 
@@ -104,7 +104,7 @@ describe('<aora-bot>', () => {
       face: 'mustache',
       nose: 'pickle',
       'style-id': 'watercolour',
-      variant: 'neon',
+      variant: 'oil',
       'eye-scale': 'big',
       'line-weight': '',
       size: 'wide',
@@ -133,6 +133,14 @@ describe('<aora-bot>', () => {
     expect(update).toHaveBeenNthCalledWith(3, expect.objectContaining({ style: 'pixel' }));
     expect(update).toHaveBeenNthCalledWith(4, expect.objectContaining({ face: 'line' }));
     expect(update).toHaveBeenNthCalledWith(5, expect.objectContaining({ paused: true }));
+  });
+
+  it('accepts every face the engine lists, drawn faces included', () => {
+    const el = mount({ character: 'mochi' });
+    const update = vi.spyOn(el.controller!, 'update');
+    const faces = FACE_STYLES.filter((face) => face !== 'cute');
+    for (const face of faces) el.setAttribute('face', face);
+    expect(update.mock.calls.map(([options]) => options.face)).toEqual(faces);
   });
 
   it('returns an option to its default when the attribute is removed', () => {

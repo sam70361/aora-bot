@@ -3,9 +3,9 @@ import { act, useEffect, type ReactNode } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { renderToString } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { AvatarSlot } from '../src/cast/AvatarSlot.js';
-import { CastMember } from '../src/cast/CastMember.js';
-import { CastStage } from '../src/cast/CastStage.js';
+import { PortraitSlot } from '../src/cast/PortraitSlot.js';
+import { CastFigure } from '../src/cast/CastFigure.js';
+import { CastLineup } from '../src/cast/CastLineup.js';
 import { useCastScene, type CastScene, type CastStep } from '../src/cast/useCastScene.js';
 
 const STEPS: CastStep[] = [
@@ -142,14 +142,14 @@ describe('useCastScene', () => {
   });
 });
 
-describe('CastStage', () => {
+describe('CastLineup', () => {
   const members = [
     { id: 'lead', shape: 'blob' as const, bobPx: 4 },
     { id: 'helper', shape: 'hex' as const },
   ];
 
   it('places the members of the current step and takes the rest off stage', () => {
-    const el = render(<CastStage members={members} steps={STEPS} stepIndex={1} />);
+    const el = render(<CastLineup members={members} steps={STEPS} stepIndex={1} />);
     const lead = el.querySelector<HTMLElement>('[data-member="lead"]')!;
     const helper = el.querySelector<HTMLElement>('[data-member="helper"]')!;
 
@@ -157,18 +157,18 @@ describe('CastStage', () => {
     expect(helper.style.transform).toContain('70px');
     expect(helper.dataset.off).toBeUndefined();
 
-    act(() => root!.render(<CastStage members={members} steps={STEPS} stepIndex={2} />));
+    act(() => root!.render(<CastLineup members={members} steps={STEPS} stepIndex={2} />));
     expect(el.querySelector<HTMLElement>('[data-member="helper"]')!.dataset.off).toBe('true');
   });
 
   it('adopts the state a step names', () => {
-    const el = render(<CastStage members={members} steps={STEPS} stepIndex={2} />);
+    const el = render(<CastLineup members={members} steps={STEPS} stepIndex={2} />);
     const lead = el.querySelector('[data-member="lead"] .aora-mark')!;
     expect(lead.getAttribute('data-state')).toBe('happy');
   });
 
   it('moves with a spring sampled into a linear() easing', () => {
-    const el = render(<CastStage members={members} steps={STEPS} />);
+    const el = render(<CastLineup members={members} steps={STEPS} />);
     const lead = el.querySelector<HTMLElement>('[data-member="lead"]')!;
     expect(lead.style.transitionTimingFunction).toMatch(/^linear\(/);
     expect(lead.style.transitionDuration).toBe('560ms');
@@ -176,7 +176,7 @@ describe('CastStage', () => {
 
   it('reports an arrival once per move', () => {
     const onArrive = vi.fn();
-    const el = render(<CastStage members={members} steps={STEPS} onArrive={onArrive} />);
+    const el = render(<CastLineup members={members} steps={STEPS} onArrive={onArrive} />);
     const lead = el.querySelector('[data-member="lead"]')!;
 
     act(() => lead.dispatchEvent(new window.Event('transitionend', { bubbles: true })));
@@ -192,10 +192,10 @@ describe('CastStage', () => {
   });
 
   it('bobs on a separate element from the one that glides', () => {
-    const el = render(<CastStage members={members} steps={STEPS} />);
-    const bob = el.querySelector<HTMLElement>('[data-member="lead"] .aora-s-cast-stage__bob')!;
+    const el = render(<CastLineup members={members} steps={STEPS} />);
+    const bob = el.querySelector<HTMLElement>('[data-member="lead"] .aora-s-cast-lineup__bob')!;
     expect(bob.style.getPropertyValue('--aora-s-cast-bob-amp')).toBe('4px');
-    expect(el.querySelector('[data-member="helper"] .aora-s-cast-stage__bob')).toBeNull();
+    expect(el.querySelector('[data-member="helper"] .aora-s-cast-lineup__bob')).toBeNull();
   });
 });
 
@@ -203,16 +203,16 @@ describe('cast surfaces', () => {
   const members = [{ id: 'lead', preset: 'bao' as const }];
 
   it.each([
-    ['CastStage', <CastStage members={members} steps={STEPS} />],
+    ['CastLineup', <CastLineup members={members} steps={STEPS} />],
     [
-      'CastStage with scenery',
-      <CastStage members={members} steps={STEPS} stepIndex={2} face="line" nose="bow">
-        <AvatarSlot arrived />
-      </CastStage>,
+      'CastLineup with scenery',
+      <CastLineup members={members} steps={STEPS} stepIndex={2} face="line" nose="bow">
+        <PortraitSlot arrived />
+      </CastLineup>,
     ],
     [
-      'CastMember',
-      <CastMember
+      'CastFigure',
+      <CastFigure
         member={{ id: 'solo', shape: 'hex' }}
         position={{ x: 4, y: 8, scale: 0.8 }}
         easing="linear(0, 1)"
@@ -220,10 +220,10 @@ describe('cast surfaces', () => {
       />,
     ],
     [
-      'CastMember off stage',
-      <CastMember member={{ id: 'solo' }} position={null} easing="ease" durationMs={1} />,
+      'CastFigure off stage',
+      <CastFigure member={{ id: 'solo' }} position={null} easing="ease" durationMs={1} />,
     ],
-    ['AvatarSlot', <AvatarSlot />],
+    ['PortraitSlot', <PortraitSlot />],
   ])('%s renders without a DOM', (_name, element) => {
     const html = renderToString(element);
     expect(html).toBeTruthy();

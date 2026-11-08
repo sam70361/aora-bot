@@ -11,10 +11,10 @@ import { StateMatrix } from '@theme';
 ```tsx preview
 import { useState } from 'react';
 import {
-  AgentAvatar,
-  AvatarStack,
+  AgentPortrait,
+  AvatarGroup,
   AvatarStatusDot,
-  MarkStageProvider,
+  CharacterStageProvider,
   UnreadBadge,
   WorkingBadge,
   useMarkCommand,
@@ -36,7 +36,7 @@ function Row({ agent }: { agent: (typeof agents)[number] }) {
   return (
     <div className="site-demo__row">
       <span className="site-demo__avatar">
-        <AgentAvatar agent={agent} state={snapshot.state} sizePx={40} />
+        <AgentPortrait agent={agent} state={snapshot.state} sizePx={40} />
         <span className="site-demo__dot">
           <AvatarStatusDot tone={running ? 'working' : 'online'} label={running ? '工作中' : '在线'} />
         </span>
@@ -82,17 +82,17 @@ function Row({ agent }: { agent: (typeof agents)[number] }) {
 
 export default function Demo() {
   return (
-    <MarkStageProvider>
+    <CharacterStageProvider>
       <div className="site-demo site-demo--column">
         {agents.map((agent) => (
           <Row key={agent.id} agent={agent} />
         ))}
         <div className="site-demo__row">
-          <AvatarStack members={[...agents, { id: 'echo' }, { id: 'sol' }]} sizePx={40} />
+          <AvatarGroup members={[...agents, { id: 'echo' }, { id: 'sol' }]} sizePx={40} />
           <span>全体</span>
         </div>
       </div>
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 ```
@@ -105,12 +105,12 @@ export default function Demo() {
 
 ## 用到的组件
 
-- [`AgentAvatar`](/components/agent-avatar)——照片、群组簇或角色，按智能体记录自动选择。
-- [`AvatarStack`](/components/avatar-stack)——群组成员，每一个都按自己的轮廓从后一个身上抠出。
-- [`AvatarStatusDot`](/components/avatar-chrome) 与 [`UnreadBadge`](/components/avatar-chrome)——角落里的在线状态与计数。
+- [`AgentPortrait`](/components/agent-portrait)——照片、群组簇或角色，按智能体记录自动选择。
+- [`AvatarGroup`](/components/avatar-group)——群组成员，每一个都按自己的轮廓从后一个身上抠出。
+- [`AvatarStatusDot`](/components/avatar-frame) 与 [`UnreadBadge`](/components/avatar-frame)——角落里的在线状态与计数。
 - [`WorkingBadge`](/components/working-badge)——三个错相的点，给那些在忙、但脸不必动的行。
 - [`useMarkCommands`](/components/mark-commands)——`holdFacts`、`holdState`、`releaseState`；名册和对话读的是同一份注册表。
-- [`MarkStageProvider`](/components/mark-stage)——二十个空闲的果冻只花一个引擎。
+- [`CharacterStageProvider`](/components/character-stage)——二十个空闲的果冻只花一个引擎。
 
 ## 状态怎么走
 
@@ -134,6 +134,6 @@ export default function Demo() {
 
 ## 接下来
 
-- [AgentAvatar](/components/agent-avatar)——每个 id 一张固定的脸
-- [AvatarStack](/components/avatar-stack)——重叠的群组头像
-- [徽标与状态](/components/avatar-chrome)——未读数与状态点
+- [AgentPortrait](/components/agent-portrait)——每个 id 一张固定的脸
+- [AvatarGroup](/components/avatar-group)——重叠的群组头像
+- [徽标与状态](/components/avatar-frame)——未读数与状态点

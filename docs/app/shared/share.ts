@@ -1,9 +1,11 @@
 import {
   CHARACTER_STATES,
-  COLOR_IDS,
+  ALL_COLOR_IDS,
   DEFAULT_STYLE_ID,
   FACE_STYLES,
-  SHAPE_IDS,
+  ALL_SHAPE_IDS,
+  allVariants,
+  themeOwning,
   getStyle,
   hasStyle,
   resolveStyleOptions,
@@ -125,12 +127,16 @@ export function decodeShare(input: string | null | undefined): Preset | null {
   const w = wire as Partial<Wire>;
 
   const style = typeof w.y === 'string' && hasStyle(w.y) ? w.y : DEFAULT_STYLE_ID;
-  const { variants, defaultVariant } = getStyle(style);
+  const series = getStyle(style);
+  // A link may name a theme's character, skin or colour: the marks load the theme, though no rail lists it.
   return {
-    shape: oneOf(SHAPE_IDS, w.s) ? w.s : DEFAULT_PRESET.shape,
-    color: oneOf(COLOR_IDS, w.c) ? w.c : DEFAULT_PRESET.color,
+    shape: oneOf(ALL_SHAPE_IDS, w.s) ? w.s : DEFAULT_PRESET.shape,
+    color: oneOf(ALL_COLOR_IDS, w.c) ? w.c : DEFAULT_PRESET.color,
     style,
-    variant: oneOf(variants, w.v) ? w.v : defaultVariant,
+    variant:
+      oneOf(allVariants(series), w.v) || (typeof w.v === 'string' && themeOwning('variant', w.v, style))
+        ? (w.v as string)
+        : series.defaultVariant,
     state: oneOf(CHARACTER_STATES, w.st) ? w.st : 'idle',
     face: oneOf(FACE_STYLES, w.f) ? w.f : DEFAULT_FACE,
     params: cleanParams(style, w.p),

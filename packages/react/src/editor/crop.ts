@@ -10,21 +10,21 @@
  */
 
 /** Refuse anything larger. Above this a data URL alone is enough to stall a tab. */
-export const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
+export const MAX_UPLOAD_BYTES = 20 * 1000 * 1000;
 
 /** Longest edge kept after loading. A source photo is usually several times this. */
-export const MAX_SOURCE_PX = 1024;
+export const MAX_SOURCE_PX = 1600;
 
 /** Side of the square crop window. */
-export const CROP_STAGE_PX = 96;
+export const CROP_STAGE_PX = 120;
 
-/** Side of the exported PNG. Four times the stage, so a retina avatar stays sharp. */
-export const EXPORT_PX = 256;
+/** Side of the exported PNG. Three times the stage, so a retina avatar stays sharp. */
+export const EXPORT_PX = 360;
 
 export const ZOOM_MIN = 1;
-export const ZOOM_MAX = 5;
-/** Step for the plus and minus buttons — eight presses from end to end. */
-export const ZOOM_STEP = (ZOOM_MAX - ZOOM_MIN) / 8;
+export const ZOOM_MAX = 4;
+/** Step for the plus and minus buttons — twelve presses from end to end. */
+export const ZOOM_STEP = 0.25;
 
 export interface Size {
   width: number;
@@ -38,7 +38,7 @@ export interface Pan {
 }
 
 export interface CropView extends Size {
-  /** 1 fills the stage on the short edge; 5 is the tightest crop offered. */
+  /** 1 fills the stage on the short edge; `ZOOM_MAX` is the tightest crop offered. */
   zoom: number;
   /** Side of the crop window. Defaults to `CROP_STAGE_PX`. */
   stagePx?: number;
@@ -49,8 +49,8 @@ export interface CropView extends Size {
  *
  * Downsampling on the way in rather than on the way out is what keeps the
  * crop stage smooth: dragging a 6000px photo around means the browser
- * resamples all of it every frame, and the extra detail cannot survive a
- * 256px export anyway.
+ * resamples all of it every frame, and the extra detail cannot survive the
+ * export anyway.
  */
 export function fitImage(width: number, height: number, max = MAX_SOURCE_PX): Size & { scale: number } {
   const longest = Math.max(width, height);

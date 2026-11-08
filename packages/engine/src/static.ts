@@ -5,6 +5,11 @@
  * rendering, but never the animation runtime. Nothing here touches `window`,
  * `document` or `requestAnimationFrame`, so it is safe in a React Server
  * Component, during static site generation, or in a worker.
+ *
+ * A theme's characters, skins and colours are in the theme's own entry:
+ * `await loadTheme(id)` (or `installTheme` with
+ * `@aora-bot/engine/themes/<id>`) before rendering one, or the render throws
+ * `ThemeNotInstalledError`.
  */
 
 export {
@@ -22,6 +27,8 @@ export {
   getStyle,
   hasStyle,
   listStyles,
+  allVariants,
+  acceptsVariant,
   resolveStyleOptions,
   validateStyleOptions,
 } from './styles/index.js';
@@ -46,9 +53,19 @@ export { getShape, allShapes, getShapeScale, getEyeScaleForShape } from './shape
 export {
   SHAPE_IDS,
   SHAPE_FAMILIES,
+  ALL_SHAPE_IDS,
+  ALL_SHAPE_FAMILIES,
+  CORE_SHAPE_IDS,
+  ALL_COLOR_IDS,
+  CORE_COLOR_IDS,
+  UNLISTED_COLOR_IDS,
+  isListedShape,
   COLOR_IDS,
   AUTO_SHAPE_POOL,
   FACE_STYLES,
+  DRAWN_FACE_STYLES,
+  isDrawnFace,
+  isCuteFamily,
   NOSE_IDS,
   MOUTH_IDS,
   CUTE_MOUTH_IDS,
@@ -60,18 +77,24 @@ export type {
   ShapeId,
   ShapeFamily,
   ShapeFamilyId,
+  AnyShapeFamily,
+  AnyShapeFamilyId,
+  CoreShapeId,
+  CoreColorId,
   PartTone,
+  PartColor,
   ShapePart,
   ColorId,
   ShapeDef,
   FaceStyle,
+  DrawnFaceStyle,
   NoseId,
   MouthId,
   CuteMouthId,
   FxKind,
   MouthSpec,
 } from './core/types.js';
-export { kaomoji } from './render/kaomoji/table.js';
+export { kaomoji, faceText } from './render/kaomoji/table.js';
 export {
   CHARACTER_STATES,
   isCharacterState,
@@ -101,5 +124,72 @@ export type {
 } from './hud/dials.js';
 export { formatHud } from './hud/format.js';
 export type { HudReading, HudLevel } from './hud/format.js';
-export { CAST, CAST_IDS, castMember, isCastId } from './core/cast.js';
-export type { CharacterPreset, CastId } from './core/cast.js';
+export { CAST, CAST_IDS, ALL_CAST_IDS, CORE_CAST_IDS, allCast, castMember, isCastId } from './core/cast.js';
+export {
+  THEME_IDS,
+  THEME_MANIFEST,
+  THEME_MEMBER_KINDS,
+  ThemeNotInstalledError,
+  defineTheme,
+  getTheme,
+  installTheme,
+  isFixed,
+  isThemeInstalled,
+  listThemes,
+  loadTheme,
+  loadThemes,
+  themeChoices,
+  themeDefault,
+  themeLabel,
+  themeLook,
+  themeOwning,
+  themesNeeded,
+} from './themes/index.js';
+export type {
+  BuiltinThemeId,
+  StyleChoice,
+  ThemeDefinition,
+  ThemeDimension,
+  ThemeLook,
+  ThemeManifestEntry,
+  ThemeMember,
+  ThemeMemberKind,
+  ThemeOwnedKind,
+  ThemePackage,
+  ThemeShapeId,
+  ThemeSource,
+  ThemeVariant,
+} from './themes/index.js';
+export type {
+  GrainSpec,
+  HatchSpec,
+  MediumContext,
+  MediumDefinition,
+  MediumKit,
+  MediumPiece,
+} from './render/vector/media.js';
+export type {
+  DecorAnimation,
+  DecorGlyph,
+  DecorItem,
+  DecorLayer,
+  DecorPaint,
+  DecorSpec,
+  DecorTone,
+  DecorZone,
+  LightnessBand,
+  MoodAccent,
+  MoodLean,
+  MotionEasing,
+  MotionGate,
+  MotionKey,
+  MotionWave,
+  PartEmitter,
+  PartKeys,
+  PartMotion,
+  PartSwing,
+} from './themes/extras/index.js';
+export type { ExtrasKit, ThemeExtras, ThemeExtrasFactory } from './themes/extras-hook.js';
+export { MOOD_LEAN, STATE_MOODS, moodOf } from './motion/mood.js';
+export type { StateMood } from './motion/mood.js';
+export type { CharacterPreset, CastId, CoreCastId, ThemeCastMember } from './core/cast.js';

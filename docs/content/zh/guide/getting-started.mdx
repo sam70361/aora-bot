@@ -124,7 +124,7 @@ export default function Demo() {
 任意字符串都能哈希成稳定的形状与墨色，因此你可以给每个用户展示固定角色，而不需要存储任何数据。
 
 ```tsx preview
-import { AgentAvatar } from '@aora-bot/react';
+import { AgentPortrait } from '@aora-bot/react';
 
 const people = ['ada@example.com', 'grace@example.com', 'alan@example.com', 'edsger@example.com'];
 
@@ -133,7 +133,7 @@ export default function Demo() {
     <div className="site-demo">
       {people.map((id) => (
         <div className="site-demo__cell" key={id}>
-          <AgentAvatar agent={{ id }} sizePx={52} />
+          <AgentPortrait agent={{ id }} sizePx={52} />
           <span className="site-demo__label">{id.split('@')[0]}</span>
         </div>
       ))}

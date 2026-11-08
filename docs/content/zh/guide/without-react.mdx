@@ -53,14 +53,14 @@ defineAoraBot();
 | `character`      | [角色阵容](/design/cast)里的 id，例如 `mochi`；决定 `shape`、`color`、`face` 和 `nose` |
 | `shape`          | 画哪个[角色](/design/shapes)，默认 `mochi`                                             |
 | `color`          | [配色](/design/palette)里的一个色相，默认 `black`                                      |
-| `face`           | `cute`（默认）、`eyes` 或 `line`，见[五官](/design/face)                               |
+| `face`           | `cute`（默认）或 `FACE_STYLES` 里的其他脸，见[五官](/design/face)                      |
 | `nose`           | 线条脸用的鼻子 id，或 `none`；默认由 `seed` 推出                                       |
 | `state`          | 它正在做什么，[动画状态](/design/states)之一，默认 `idle`                              |
 | `style-id`       | 画风：`vector`（默认）、`pixel` 或 `kaomoji`                                           |
 | `variant`        | 该画风的变体，例如 `outline` 或 `dot`                                                  |
 | `style-options`  | 该画风参数的 JSON 对象，例如 `{"paperOffset":12}`                                      |
 | `seed`           | 任意字符串；种子不同的角色不会同时眨眼                                                 |
-| `size`           | CSS 长度，或像素数；默认 `28px`                                                        |
+| `size`           | CSS 长度，或像素数；默认 `32px`                                                        |
 | `eye-color`      | 眼睛镂空处的 CSS 颜色                                                                  |
 | `badge-color`    | `notifying` 状态下角标的 CSS 颜色                                                      |
 | `eye-scale`      | 眼睛大小的正数倍率，默认 `1`                                                           |

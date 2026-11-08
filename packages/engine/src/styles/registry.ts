@@ -18,8 +18,9 @@ export function defineStyle<Options extends Record<string, unknown>>(
       throw new Error(`Style "${definition.id}": default "${key}" has no entry in params`);
     }
   }
+  const variants = allVariants(definition);
   for (const [key, spec] of Object.entries<StyleParam>(definition.params)) {
-    const unknown = spec.variants?.find((variant) => !definition.variants.includes(variant));
+    const unknown = spec.variants?.find((variant) => !variants.includes(variant));
     if (unknown !== undefined) {
       throw new Error(
         `Style "${definition.id}": param "${key}" names variant "${unknown}" which is not in variants`,
@@ -33,6 +34,38 @@ export function defineStyle<Options extends Record<string, unknown>>(
   }
   registry.set(definition.id, definition);
   return definition;
+}
+
+type VariantsOf = Pick<StyleDefinition, 'id' | 'variants' | 'unlistedVariants'>;
+
+/** Variants added to a series after it was defined, by series and variant, with the parameters each reads. */
+const ADDED = new Map<string, Map<string, readonly string[]>>();
+
+/**
+ * Add an unlisted variant to a series (`installTheme`): drawn and accepted
+ * by id, left out of `variants`. `reads` are the series' parameters it
+ * reads, which `paramsForVariant` then offers for it.
+ */
+export function addVariant(styleId: StyleId, variant: string, reads: readonly string[] = []): void {
+  let added = ADDED.get(styleId);
+  if (!added) ADDED.set(styleId, (added = new Map()));
+  added.set(variant, reads);
+}
+
+/** Every variant a series draws: the listed ones, then the unlisted ones, then those added since. */
+export function allVariants(style: VariantsOf): readonly string[] {
+  const added = [...(ADDED.get(style.id)?.keys() ?? [])];
+  const unlisted = [...(style.unlistedVariants ?? []), ...added];
+  return unlisted.length ? [...new Set([...style.variants, ...unlisted])] : style.variants;
+}
+
+/** Whether a series draws `variant`, listed or not. */
+export function acceptsVariant(style: VariantsOf, variant: string): boolean {
+  return (
+    style.variants.includes(variant) ||
+    (style.unlistedVariants?.includes(variant) ?? false) ||
+    (ADDED.get(style.id)?.has(variant) ?? false)
+  );
 }
 
 export function hasStyle(id: string): boolean {
@@ -62,7 +95,10 @@ export function listStyles(): StyleDefinition[] {
 export function paramsForVariant(style: StyleDefinition, variant: string): Record<string, StyleParam> {
   return Object.fromEntries(
     Object.entries<StyleParam>(style.params).filter(
-      ([, spec]) => !spec.variants || spec.variants.includes(variant),
+      ([key, spec]) =>
+        !spec.variants ||
+        spec.variants.includes(variant) ||
+        (ADDED.get(style.id)?.get(variant)?.includes(key) ?? false),
     ),
   );
 }

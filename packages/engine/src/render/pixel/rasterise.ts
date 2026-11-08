@@ -11,7 +11,18 @@ import { BELT_GLYPH_SIZE } from '../../motion/belts.js';
 import { ribbonColor, ribbonRuns } from '../../particles.js';
 import type { FrameSnapshot, TrailFrame } from '../../sim/snapshot.js';
 import type { EyeShape } from '../../face/placement.js';
-import { rasteriseEyes, rasteriseGlyph, rasteriseStroke, type Poly } from './face.js';
+import { withoutFineParts } from '../fine-parts.js';
+import {
+  FACE_ACCENTS,
+  getFaceDesign,
+  isFaceAccent,
+  type FaceLayer,
+  type FacePaint,
+  type Rgb,
+} from '../../face/drawn/index.js';
+import { PIXEL_SHOWN, rasteriseDrawn, rasteriseInMouth } from './drawn.js';
+import { glyphShift, rasteriseEyes, rasteriseGlyph, rasteriseStroke, type Poly } from './face.js';
+import { FEATURE_TOKEN, GLINT_TOKEN, PUPIL_TOKEN } from './options.js';
 import { PIXEL_GLYPHS } from './glyphs.js';
 import {
   apply,
@@ -46,6 +57,41 @@ export interface RasterSettings {
 
 /** The cute face's cheeks. A cell holds exactly one paint, so there is no translucent pink: this is a pre-blended flat one. */
 const PIXEL_BLUSH = '#FF9DBB';
+
+/** How far a drawn iris deepens the ink, as a shade tone. */
+const IRIS_TONE = -0.45;
+/** Channel step a display's light is snapped to, so a colour easing between moods passes through a few paints, not hundreds. */
+const LIGHT_STEP = 32;
+
+const hex2 = (v: number): string =>
+  Math.round(Math.min(255, Math.max(0, v)))
+    .toString(16)
+    .padStart(2, '0');
+
+/** A lit display colour, snapped to `LIGHT_STEP`. */
+function lightHex([r, g, b]: Rgb): string {
+  const snap = (v: number): number => Math.round(v / LIGHT_STEP) * LIGHT_STEP;
+  return `#${hex2(snap(r))}${hex2(snap(g))}${hex2(snap(b))}`.toUpperCase();
+}
+
+/** What a drawn face's paint role is in cells. */
+function drawnTint(role: FacePaint, light: Rgb | undefined, settings: RasterSettings, band: number): Tint {
+  if (isFaceAccent(role)) return { kind: 'css', value: FACE_ACCENTS[role] };
+  switch (role) {
+    case 'face':
+      return settings.face ?? settings.eye;
+    case 'pupil':
+      return { kind: 'css', value: PUPIL_TOKEN };
+    case 'feature':
+      return { kind: 'css', value: FEATURE_TOKEN };
+    case 'glint':
+      return { kind: 'css', value: GLINT_TOKEN };
+    case 'iris':
+      return { kind: 'ink', band, tone: IRIS_TONE };
+    default:
+      return { kind: 'css', value: light ? lightHex(light) : FACE_ACCENTS.glass };
+  }
+}
 
 /** Reusable buffers for one grid size. */
 export interface Scratch {
@@ -89,7 +135,7 @@ function tangentAffine(t: EyeShape['transform']): Affine {
 }
 
 export function rasterise(
-  frame: FrameSnapshot,
+  snapshot: FrameSnapshot,
   settings: RasterSettings,
   table: PaintTable,
   scratch: Scratch,
@@ -97,6 +143,8 @@ export function rasterise(
 ): void {
   const { grid } = settings;
   const size = grid.size;
+  // A cell is the finest mark the grid can make, so detail is kept or left out by the grid's width.
+  const frame = withoutFineParts(snapshot, size);
   paint.fill(0);
 
   let current = 0;
@@ -196,7 +244,7 @@ export function rasterise(
   }
 
   drawHud(frame, root, k, select, put, inkTint);
-  drawFx(frame, frame.fx?.space === 'face' ? bodyM : root, size, select, put, inkTint);
+  drawFx(frame, frame.fx?.space === 'face' ? bodyM : root, size, select, put, Math.floor(bands / 2));
   trails(frame.trails, 'front');
 
   for (const p of frame.particles) {
@@ -270,11 +318,11 @@ function drawFx(
   size: number,
   select: (tint: Tint, opacity?: number) => boolean,
   put: Put,
-  inkTint: () => Tint,
+  band: number,
 ): void {
   const fx = frame.fx;
   if (!fx || fx.items.length === 0) return;
-  const tint: Tint = fx.color ? { kind: 'css', value: fx.color } : inkTint();
+  const tint: Tint = fx.color ? { kind: 'css', value: fx.color } : { kind: 'fx', band };
   const at = (x: number, y: number): [number, number] => [
     m[0] * x + m[2] * y + m[4],
     m[1] * x + m[3] * y + m[5],
@@ -475,15 +523,33 @@ function drawBody(
           paint[row * size + col] = id;
           taken[row * size + col]! |= kind;
         };
-      const axis = rasteriseEyes(eyePoly(g.left), eyePoly(g.right), {
-        size,
-        put: writeCute(EYE, 0, features),
-      });
+      let axis =
+        (g.eyeOpacity ?? 1) >= PIXEL_SHOWN
+          ? rasteriseEyes(eyePoly(g.left), eyePoly(g.right), { size, put: writeCute(EYE, 0, features) })
+          : null;
+
+      // A drawn face lays its own eyes over the plain ones, and paints its mouth in its own role.
+      const layerPaint = (layer: FaceLayer): number =>
+        table.id(drawnTint(layer.paint, layer.light, settings, Math.floor(bands / 2)), 1);
+      const putDrawn = (col: number, row: number, id: number): void => {
+        if (col < 0 || row < 0 || col >= size || row >= size || !mask[row * size + col]) return;
+        paint[row * size + col] = id;
+        taken[row * size + col]! |= EYE;
+      };
+      const drawn = g.drawn ? rasteriseDrawn(g.drawn, bodyM, size, putDrawn, layerPaint) : null;
+      if (drawn) axis = drawn.axis ?? axis;
+      // A cell holds one paint, so the mouth takes the paint of the design that holds most of the face.
+      const design = drawn ? getFaceDesign(drawn.design.style) : null;
+      const mouthPaint = design
+        ? table.id(drawnTint(design.mouthPaint, undefined, settings, Math.floor(bands / 2)), 1)
+        : features;
 
       const mouth = g.mouth;
       if (mouth?.visible && (mouth.opacity ?? 1) >= 0.5) {
         const poly = mapPoints(mouth.points, compose(bodyM, tangentAffine(mouth.transform)));
-        rasteriseGlyph(poly, axis, { size, put: writeCute(MOUTH, EYE, features) });
+        rasteriseGlyph(poly, axis, { size, put: writeCute(MOUTH, EYE, mouthPaint) });
+        if (drawn)
+          rasteriseInMouth(drawn.design, mouth, bodyM, glyphShift(poly, axis), size, putDrawn, layerPaint);
       }
 
       const blush = g.blush;

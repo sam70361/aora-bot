@@ -1,7 +1,7 @@
 import {
   EMOTIONS,
   EMOTION_SEGMENTS,
-  MarkStageProvider,
+  CharacterStageProvider,
   SEGMENT_FALLBACK,
   StagedMark,
   useLabel,
@@ -24,7 +24,7 @@ export function ProtocolTable({ shape = 'blob' as ShapeId, color = 'blue' as Col
   const text = useLocalized();
 
   return (
-    <MarkStageProvider maxSources={TABLE_SOURCES}>
+    <CharacterStageProvider maxSources={TABLE_SOURCES}>
       {EMOTION_SEGMENTS.map((segment) => {
         const rows = EMOTIONS.filter((e) => {
           const n = Number.parseInt(e.id, 10);
@@ -83,7 +83,7 @@ export function ProtocolTable({ shape = 'blob' as ShapeId, color = 'blue' as Col
           </section>
         );
       })}
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 

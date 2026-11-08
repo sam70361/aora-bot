@@ -6,7 +6,7 @@
 
 ```tsx preview
 import { useRef } from 'react';
-import { CharacterMark, ConfettiLayer, type ConfettiHandle } from '@aora-bot/react';
+import { CharacterMark, CelebrationLayer, type ConfettiHandle } from '@aora-bot/react';
 import { usePublishMark } from '@aora-bot/surfaces';
 
 export default function Demo() {
@@ -24,7 +24,7 @@ export default function Demo() {
     <div className="site-demo site-demo--column">
       <div style={{ position: 'relative', display: 'inline-flex' }}>
         <CharacterMark shape="star" color="orange" state={publish.characterState} sizePx={80} />
-        <ConfettiLayer ref={confetti} />
+        <CelebrationLayer ref={confetti} />
       </div>
       <span className="site-demo__label">{publish.state}</span>
       <div className="site-controls">
@@ -60,7 +60,7 @@ export default function Demo() {
 
 选项：
 
-- `confetti`——指向 [`ConfettiLayer`](/components/confetti-layer) 的 ref。成功时 hook 会触发 `burst`（默认 20 片），宿主不必自己盯着那一刻。它由调用方提供而不是由 hook 返回：ref 属于它挂着的那个元素，hook 往外递 ref 会诱使人在渲染期间读 `.current`。
+- `confetti`——指向 [`CelebrationLayer`](/components/celebration-layer) 的 ref。成功时 hook 会触发 `burst`（默认 20 片），宿主不必自己盯着那一刻。它由调用方提供而不是由 hook 返回：ref 属于它挂着的那个元素，hook 往外递 ref 会诱使人在渲染期间读 `.current`。
 - `celebrateMs`——庆祝持续多久（默认 1600 毫秒）。
 - `onSettled`——庆祝结束时调用。适合在这里关闭对话框。
 
@@ -68,5 +68,5 @@ export default function Demo() {
 
 ## 接下来
 
-- [ConfettiLayer](/components/confetti-layer)——盖在任何东西上的纸屑
+- [CelebrationLayer](/components/celebration-layer)——盖在任何东西上的纸屑
 - [庆祝](/scenarios/celebration)——干活、庆祝、收起来

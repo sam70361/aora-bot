@@ -1,12 +1,28 @@
 import { getLeafColor } from '../../core/leaf.js';
-import { FACE_INK, getInkColor, getInkGradientFor, hairShade } from '../../core/palette.js';
+import {
+  effectInks,
+  faceInks,
+  getInkColor,
+  getInkGradientFor,
+  hairShade,
+  type FaceInks,
+} from '../../core/palette.js';
 import { VIEWBOX_STR } from '../../core/types.js';
 import type { StaticRenderer } from '../renderer.js';
 import { serializeNode } from '../scene.js';
+import { partColorPair, partRimPair } from '../part-color.js';
 import { schemeStyle } from '../scheme.js';
 import { emit } from './emit.js';
 import { pixelGrid } from './grid.js';
-import { EYE_TOKEN, LED_EYE, readOptions, variantOf } from './options.js';
+import {
+  EYE_TOKEN,
+  FEATURE_TOKEN,
+  GLINT_TOKEN,
+  LED_EYE,
+  PUPIL_TOKEN,
+  readOptions,
+  variantOf,
+} from './options.js';
 import { createPaintTable, type PaintDef } from './paints.js';
 import { HAIR_MIX, PIXEL_LEAF_TOKEN } from './parts.js';
 import { createScratch, rasterise } from './rasterise.js';
@@ -36,9 +52,10 @@ export const renderPixelStatic: StaticRenderer = (frame, context) => {
   const paint = new Uint16Array(grid.size * grid.size);
 
   const eyeColour = context.eyeColor ?? (variant === 'dot' ? LED_EYE : EYE_TOKEN);
-  // White on a hue; on black, the cut-out the page shows through.
+  // The face rule (`faceInks`); a colour that turns with the page has its face cut out of it.
+  const rule = faceInks(color);
   const faceColour =
-    context.eyeColor ?? (variant === 'dot' ? LED_EYE : color === 'black' ? EYE_TOKEN : FACE_INK);
+    context.eyeColor ?? (variant === 'dot' ? LED_EYE : rule.cutOut ? EYE_TOKEN : rule.light.face);
   rasterise(
     frame,
     {
@@ -63,15 +80,38 @@ export const renderPixelStatic: StaticRenderer = (frame, context) => {
     const g = scheme === 'light' ? light : dark;
     return mixHex(g.from, g.to, (band + 0.5) / bands);
   };
+  const effects = effectInks(color);
+  // A drawn face's tokens resolved by the face rule, switched with the page where the colour turns.
+  const ruled = (key: keyof FaceInks): { value: string; dark?: string } =>
+    rule.cutOut ? { value: rule.light[key], dark: rule.dark[key] } : { value: rule.light[key] };
+  const drawnColours: Record<string, { value: string; dark?: string }> = {
+    [PUPIL_TOKEN]: ruled('pupil'),
+    [FEATURE_TOKEN]: ruled('soft'),
+    [GLINT_TOKEN]: ruled('glint'),
+  };
   const colour = (def: PaintDef): { value: string; dark?: string } => {
     const tint = def.tint;
+    if (tint.kind === 'css' && drawnColours[tint.value]) return drawnColours[tint.value]!;
     if (tint.kind === 'css')
       return { value: tint.value === PIXEL_LEAF_TOKEN ? getLeafColor(color) : tint.value };
+    if (tint.kind === 'part') {
+      const pair = tint.rim ? partRimPair(tint.color) : partColorPair(tint.color);
+      if (!pair) return { value: tint.color };
+      const onLight = shadeHex(pair.light, tint.tone);
+      const onDark = shadeHex(pair.dark, tint.tone);
+      return onLight === onDark || flat ? { value: onLight } : { value: onLight, dark: onDark };
+    }
     if (tint.kind === 'hair') {
       const shade = hairShade(color);
       return {
         value: mixHex(base(tint.band, 'light'), shade.light, HAIR_MIX),
         dark: flat ? undefined : mixHex(base(tint.band, 'dark'), shade.dark, HAIR_MIX),
+      };
+    }
+    if (tint.kind === 'fx') {
+      return {
+        value: effects.light ?? base(tint.band, 'light'),
+        dark: flat ? undefined : (effects.dark ?? base(tint.band, 'dark')),
       };
     }
     return {

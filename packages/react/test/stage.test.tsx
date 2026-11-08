@@ -10,8 +10,8 @@ import {
   useMarkCommands,
   type MarkCommandRegistry,
 } from '../src/stage/commands.js';
-import { useDeadline, useMarkSettle, usePokeCycle, POKE_COOLDOWN_MS } from '../src/stage/hooks.js';
-import { MarkStageProvider } from '../src/stage/MarkStage.js';
+import { useDeadline, useMarkSettle, useTapCycle, POKE_COOLDOWN_MS } from '../src/stage/hooks.js';
+import { CharacterStageProvider } from '../src/stage/CharacterStage.js';
 
 /*
  * The command bus is a plain object, so most of it is tested without a DOM.
@@ -189,10 +189,10 @@ describe('useMarkCommand', () => {
 
   it('shares one registry across a provider', () => {
     const el = render(
-      <MarkStageProvider>
+      <CharacterStageProvider>
         <CommandProbe agentId="nova" />
         <CommandProbe agentId="nova" surface="chat" />
-      </MarkStageProvider>,
+      </CharacterStageProvider>,
     );
 
     const [list, chat] = [...el.querySelectorAll('button')];
@@ -203,11 +203,11 @@ describe('useMarkCommand', () => {
 
   it('reads the same agent differently per surface', () => {
     const el = render(
-      <MarkStageProvider>
+      <CharacterStageProvider>
         <Publisher agentId="nova" />
         <CommandProbe agentId="nova" surface="chat" />
         <CommandProbe agentId="nova" surface="avatar" />
-      </MarkStageProvider>,
+      </CharacterStageProvider>,
     );
 
     act(() => el.querySelector('button')!.click());
@@ -267,7 +267,7 @@ let lastPokeResult: boolean | null = null;
 function PokeProbe({ handle }: { handle: CharacterHandle | null }) {
   // A plain box rather than `useRef`, so the probe never writes a ref in render.
   const ref = useMemo(() => ({ current: handle }), [handle]);
-  const poke = usePokeCycle(ref);
+  const poke = useTapCycle(ref);
   return (
     <button
       type="button"
@@ -278,7 +278,7 @@ function PokeProbe({ handle }: { handle: CharacterHandle | null }) {
   );
 }
 
-describe('usePokeCycle', () => {
+describe('useTapCycle', () => {
   it('cycles spin, bounce and burst, and rate-limits itself', () => {
     const handle: CharacterHandle = { spin: vi.fn(), bounce: vi.fn(), burst: vi.fn() };
     const el = render(<PokeProbe handle={handle} />);

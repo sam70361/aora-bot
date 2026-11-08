@@ -11,7 +11,7 @@ A three-step scene: two characters arrive, one hands the work to the other, and 
 ```tsx preview
 import { useState } from 'react';
 import { CharacterMark } from '@aora-bot/react';
-import { AvatarSlot, CastStage, DemoDesktop, useCastScene, type CastStep } from '@aora-bot/surfaces';
+import { PortraitSlot, CastLineup, DemoDesktop, useCastScene, type CastStep } from '@aora-bot/surfaces';
 
 const members = [
   { id: 'guide', shape: 'cloud', color: 'cyan', bobPx: 4 },
@@ -47,7 +47,7 @@ export default function Demo() {
   return (
     <div className="site-demo site-demo--stack">
       <DemoDesktop title="First run" widthPx={300} style={{ maxWidth: '100%' }}>
-        <CastStage
+        <CastLineup
           members={members}
           steps={steps}
           stepIndex={scene.stepIndex}
@@ -57,11 +57,11 @@ export default function Demo() {
           onArrive={(id, index) => id === 'mine' && index === steps.length - 1 && setArrived(true)}
         >
           <span className="site-demo__slot">
-            <AvatarSlot arrived={landed && arrived} sizePx={64}>
+            <PortraitSlot arrived={landed && arrived} sizePx={64}>
               <CharacterMark shape="pear" color="green" sizePx={56} />
-            </AvatarSlot>
+            </PortraitSlot>
           </span>
-        </CastStage>
+        </CastLineup>
       </DemoDesktop>
       <div className="site-controls">
         <button className="site-btn" onClick={scene.prev}>
@@ -97,7 +97,7 @@ The first run. Nothing has happened yet, the product has to show what it does wi
 
 ## Components
 
-- [`CastStage`](/components/cast-stage) and `useCastScene` — several characters moving through a script, with `AvatarSlot` as the place one of them ends up.
+- [`CastLineup`](/components/cast-lineup) and `useCastScene` — several characters moving through a script, with `PortraitSlot` as the place one of them ends up.
 - [`DemoDesktop`](/components/walkthrough), `JobBubbles`, `SuggestionCards`, `LandingWait`, `HandOff` and `Composer` — the walkthrough pieces: a window to put a demo in, work in flight, three starting points, the empty screen, one agent passing to another, and an input the character pays attention to.
 - [`CharacterMark`](/components/character-mark) — `onSettle` tells the host when `spawning` or `waking` has run its course.
 
@@ -126,6 +126,6 @@ The first run. Nothing has happened yet, the product has to show what it does wi
 
 ## Next
 
-- [CastStage](/components/cast-stage) — several characters entering in turn
+- [CastLineup](/components/cast-lineup) — several characters entering in turn
 - [Walkthrough surfaces](/components/walkthrough) — desktop, bubbles, cards, composer
 - [BootLoop](/components/boot-loop) — a procedurally generated start-up

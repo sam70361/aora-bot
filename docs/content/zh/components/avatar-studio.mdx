@@ -1,0 +1,82 @@
+import { API } from '@theme';
+
+# AvatarStudio
+
+选一个角色、生成一张图，或者上传一张——都收在一个对话框里。
+
+```tsx preview
+import { useState } from 'react';
+import { AvatarField, type AvatarDraft } from '@aora-bot/react';
+
+export default function Demo() {
+  const [avatar, setAvatar] = useState<AvatarDraft>({ shape: 'hex', color: 'blue', pictureUrl: null });
+  return (
+    <div className="site-demo site-demo--column">
+      <AvatarField value={avatar} onCommit={setAvatar} />
+      <span className="site-demo__label">
+        {avatar.pictureUrl ? '图片' : `${avatar.shape}、${avatar.color}`}
+      </span>
+    </div>
+  );
+}
+```
+
+点一下头像。编辑器就地展开，先显示角色页签；上传页签把拖进来的图片放进方形裁切框。这个示例没有传 `generateImage`，所以没有生成页签。
+
+## 三个入口
+
+`AvatarField` 是带铅笔标记的头像，给个人资料卡用。`AvatarButton` 是一个普通按钮，上面用实时的 `CharacterMark` 展示当前选择，给表单行用。两者都会打开 `AvatarStudio` 并透传同样的 props；宿主想自己决定对话框放哪里时，直接用编辑器。
+
+铅笔取自引擎自己的 `pencilGlyphPath`——就是 `writing` 状态绕着角色转的那个轮廓——而不是某个图标库。这个库里只有一支铅笔；再从别处拿一支，笔画粗细就会和旁边已经带着第一支的角色对不上。
+
+## 怎样关闭
+
+`onClose` 报告 `save`、`cancel` 或 `dismiss`（Escape 或点击外部），两样暂存的东西在 dismiss 时表现不同：
+
+- 暂存的**角色**会保留。形状和墨色便宜且可逆——每一种都是合法头像，一个人点了六边形再按 Escape，意思就是要六边形。为一个两次点击的决定去找保存按钮是多余的仪式，所以 `onCommit` 会带着暂存的角色触发。
+- 暂存的**图片**不保留。它是一张还没有人从外面看过的裁切，用一张构图糟糕的照片替换掉一张脸，恰恰是人们想再考虑一下的那种改动。只有保存才会应用它。
+
+## 页签
+
+`characterTab={false}` 隐藏角色页签——群组头像没有角色可选。生成页签只在提供了 `generateImage` 时出现；它接收提示词和一个 `AbortSignal`，应当 resolve 为图片 URL 或 data URL。`initialTab` 决定打开时的页签；默认已有图片的头像从上传页签打开。
+
+```tsx
+<AvatarButton
+  value={avatar}
+  onCommit={save}
+  generateImage={(prompt, signal) => api.generateAvatar(prompt, { signal })}
+/>
+```
+
+## 裁切辅助函数
+
+上传页签由一组导出的函数搭成，自带裁切界面的宿主可以复用其中的算术和导出。
+
+| 导出                                    | 用途                                                                                                                                                            |
+| --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `readImageFile(file)`                   | 校验并读取拖放、粘贴或选择的文件。resolve 为 `{ ok, dataUrl }` 或带 `too-large` / `not-an-image` 的 `{ ok: false, reason }`——选错文件是人的行为，不是程序错误。 |
+| `loadImage(dataUrl)`                    | 解码并在进入时降采样到 `MAX_SOURCE_PX`（1024），拖动一张 6000px 的照片也能保持流畅。                                                                            |
+| `fitImage(width, height, max?)`         | 源图应当以多大的尺寸解码。                                                                                                                                      |
+| `coverScale(view)`、`clampZoom(zoom)`   | 在 `ZOOM_MIN`（1）到 `ZOOM_MAX`（5）之间的某个缩放下填满裁切框所需的比例。                                                                                      |
+| `panLimit(view)`、`clampPan(pan, view)` | 图片边缘进入裁切框之前最多能移多远，以及被限制在其中的平移量。                                                                                                  |
+| `exportPlacement(request)`              | 源图落在导出方形上的位置。                                                                                                                                      |
+| `cropToDataUrl(image, request)`         | 把裁切渲染为 `EXPORT_PX`（256）的 PNG data URL——是 `CROP_STAGE_PX`（96）舞台的四倍，视网膜屏上的头像依然清晰。                                                  |
+
+限制值同样导出：`MAX_UPLOAD_BYTES`（25 MB）、`ZOOM_STEP`。
+
+## API
+
+<API component="AvatarStudio" />
+
+### AvatarButton
+
+<API component="AvatarButton" />
+
+### AvatarField
+
+<API component="AvatarField" />
+
+## 接下来
+
+- [TemplateDialog](/components/template-dialog)——名称、说明与可见性
+- [角色设置](/scenarios/character-setup)——挑选智能体的外观

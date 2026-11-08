@@ -1,6 +1,14 @@
-import { CAST, STYLE_IDS, castMember, renderStaticSvg } from '@aora-bot/engine/static';
+import {
+  CAST,
+  STYLE_IDS,
+  castMember,
+  fnv1a32,
+  getTheme,
+  mulberry32,
+  renderStaticSvg,
+} from '@aora-bot/engine/static';
 import { describe, expect, it } from 'vitest';
-import { avatarFromUrl } from './_avatar.js';
+import { AVATAR_POOL, AVATAR_POOL_BASE, THEME_POOL_BASE, avatarFromUrl, poolIndex } from './_avatar.js';
 
 const at = (query: string) => avatarFromUrl(new URL(`http://x/api/avatar?${query}`));
 
@@ -35,16 +43,153 @@ describe('avatarFromUrl', () => {
   });
 
   it('picks a cast member for an arbitrary id and spreads ids across the cast', () => {
+    const bySvg = new Map(
+      CAST.map((m) => [renderStaticSvg({ shape: m.shape, color: m.color, face: m.face, sizePx: 128 }), m.id]),
+    );
     const members = new Set<string>();
     for (let i = 0; i < 300; i++) {
-      const svg = svgFor(`id=user-${i}`);
-      const member = CAST.find(
-        (m) => svg === renderStaticSvg({ shape: m.shape, color: m.color, sizePx: 128 }),
-      );
+      const member = bySvg.get(svgFor(`id=user-${i}`));
       expect(member, `user-${i}`).toBeDefined();
-      members.add(member!.id);
+      members.add(member!);
     }
     expect(members.size).toBeGreaterThan(CAST.length * 0.8);
+  });
+
+  it('pools every cast member exactly once', () => {
+    expect(new Set(AVATAR_POOL).size).toBe(AVATAR_POOL.length);
+    expect([...AVATAR_POOL].sort()).toEqual(CAST.map((m) => m.id).sort());
+  });
+
+  it('keeps the base pool assignment of a single uniform draw', () => {
+    for (let i = 0; i < 500; i++) {
+      const id = `user-${i}`;
+      expect(poolIndex(id, AVATAR_POOL_BASE)).toBe(Math.floor(mulberry32(fnv1a32(id))() * AVATAR_POOL_BASE));
+    }
+  });
+
+  it('moves an id only onto members added as the pool grows', () => {
+    let moved = 0;
+    const total = 4000;
+    for (let i = 0; i < total; i++) {
+      const id = `user-${i}`;
+      for (let size = AVATAR_POOL_BASE; size < AVATAR_POOL.length; size++) {
+        const before = poolIndex(id, size);
+        const after = poolIndex(id, size + 1);
+        if (after !== before) expect(after).toBe(size);
+      }
+      if (poolIndex(id, AVATAR_POOL.length) !== poolIndex(id, AVATAR_POOL_BASE)) moved++;
+    }
+    const expected = (AVATAR_POOL.length - AVATAR_POOL_BASE) / AVATAR_POOL.length;
+    expect(Math.abs(moved / total - expected)).toBeLessThan(0.03);
+  });
+
+  it('pins an id to a smaller pool with the pool parameter', () => {
+    for (let i = 0; i < 50; i++) {
+      const member = castMember(AVATAR_POOL[poolIndex(`user-${i}`, AVATAR_POOL_BASE)]!)!;
+      expect(svgFor(`id=user-${i}&pool=${AVATAR_POOL_BASE}`)).toBe(
+        renderStaticSvg({ shape: member.shape, color: member.color, sizePx: 128 }),
+      );
+    }
+    expect(svgFor(`id=a&pool=${AVATAR_POOL.length}`)).toBe(svgFor('id=a'));
+  });
+
+  it('keeps theme characters out of the default pool', () => {
+    for (const id of getTheme('halloween')!.cast) {
+      if (!CAST.some((m) => m.id === id)) expect(AVATAR_POOL, id).not.toContain(id);
+    }
+  });
+
+  it('picks from a theme cast with the same consistent hash', { timeout: 60000 }, () => {
+    const { cast } = getTheme('halloween')!;
+    expect(THEME_POOL_BASE.halloween).toBeLessThanOrEqual(cast.length);
+    const picked = new Set<string>();
+    for (let i = 0; i < 200; i++) {
+      const id = `user-${i}`;
+      const member = castMember(cast[poolIndex(id, cast.length, THEME_POOL_BASE.halloween)]!)!;
+      picked.add(member.id);
+      expect(svgFor(`id=${id}&theme=halloween`)).toBe(
+        renderStaticSvg({
+          shape: member.shape,
+          color: member.color,
+          variant: 'doodle',
+          state: 'happy',
+          face: 'cute',
+          sizePx: 128,
+        }),
+      );
+    }
+    expect(picked.size).toBeGreaterThan(cast.length * 0.8);
+  });
+
+  it('fills what a theme request leaves out from the theme, and lets every parameter override it', () => {
+    const { cast } = getTheme('halloween')!;
+    const member = castMember(cast[poolIndex('ana', cast.length, THEME_POOL_BASE.halloween)]!)!;
+    expect(svgFor('id=ana&theme=halloween&variant=solid&state=angry&color=blue&face=glossy')).toBe(
+      renderStaticSvg({
+        shape: member.shape,
+        color: 'blue',
+        variant: 'solid',
+        state: 'angry',
+        face: 'glossy',
+        sizePx: 128,
+      }),
+    );
+    expect(svgFor('id=ana&theme=halloween&style=pixel')).toBe(
+      renderStaticSvg({
+        shape: member.shape,
+        color: member.color,
+        style: 'pixel',
+        state: 'happy',
+        sizePx: 128,
+      }),
+    );
+    expect(svgFor('id=ana&theme=halloween&shape=mochi')).toBe(
+      renderStaticSvg({
+        shape: 'mochi',
+        color: member.color,
+        variant: 'doodle',
+        state: 'happy',
+        sizePx: 128,
+      }),
+    );
+  });
+
+  it('shows a borrowed member in the colour its theme gives it', () => {
+    const lucky = castMember('lucky')!;
+    expect(lucky.color).not.toBe('mint');
+    expect(svgFor('id=lucky&theme=easter')).toBe(
+      renderStaticSvg({
+        shape: lucky.shape,
+        color: 'mint',
+        variant: 'pastel',
+        state: 'happy',
+        face: 'cute',
+        sizePx: 128,
+      }),
+    );
+  });
+
+  it('accepts theme characters, skins and the unlisted colours by id with every other parameter', () => {
+    expect(svgFor('id=floaty')).toBe(renderStaticSvg({ shape: 'spook', color: 'cream', sizePx: 128 }));
+    expect(svgFor('id=a&color=night&variant=grainy')).toBe(
+      renderStaticSvg({
+        shape: castMember(AVATAR_POOL[poolIndex('a', AVATAR_POOL.length)]!)!.shape,
+        color: 'night',
+        variant: 'grainy',
+        sizePx: 128,
+      }),
+    );
+    expect(svgFor('id=a&shape=witchmochi&color=pink&variant=doodle&face=glossy&state=angry')).toBe(
+      renderStaticSvg({
+        shape: 'witchmochi',
+        color: 'pink',
+        variant: 'doodle',
+        face: 'glossy',
+        state: 'angry',
+        sizePx: 128,
+      }),
+    );
+    expect(at('id=a&variant=grainy').ok).toBe(true);
   });
 
   it('gives different ids different characters', () => {
@@ -147,6 +292,13 @@ describe('avatarFromUrl', () => {
     'size=abc',
     'size=12.5',
     'size=',
+    'pool=abc',
+    'pool=',
+    'pool=10',
+    'pool=9999',
+    'theme=nope',
+    'theme=',
+    'theme=halloween&pool=46',
   ])('rejects %s', (query) => {
     const result = at(`id=a&${query}`);
     expect(result.ok).toBe(false);

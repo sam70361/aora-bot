@@ -10,7 +10,7 @@ A publish button with a character that works, celebrates and hands over a share 
 
 ```tsx preview
 import { useRef, useState } from 'react';
-import { CharacterMark, ConfettiLayer, type ConfettiHandle } from '@aora-bot/react';
+import { CharacterMark, CelebrationLayer, type ConfettiHandle } from '@aora-bot/react';
 import { ShareCard, usePublishMark } from '@aora-bot/surfaces';
 
 export default function Demo() {
@@ -22,7 +22,7 @@ export default function Demo() {
     <div className="site-demo site-demo--stack">
       <span className="site-demo__avatar">
         <CharacterMark shape="star" color="yellow" state={publish.characterState} sizePx={88} />
-        <ConfettiLayer ref={confetti} />
+        <CelebrationLayer ref={confetti} />
       </span>
       <div className="site-controls">
         <button
@@ -61,7 +61,7 @@ The one moment a form is worth animating: something was published, a run finishe
 ## Components
 
 - [`CharacterMark`](/components/character-mark) — `celebrate` carries its own entry effect: one turn, with ribbons flung off it, and sixteen pieces of paper, once, on the transition.
-- [`ConfettiLayer`](/components/confetti-layer) — paper without a character, over anything, driven through a ref.
+- [`CelebrationLayer`](/components/celebration-layer) — paper without a character, over anything, driven through a ref.
 - `createConfettiController` — the same paper for a plain SVG outside React.
 - [`usePublishMark`](/components/use-publish-mark) — the three phases and the timing, so the host never has to notice the moment itself.
 - `ShareCard` and [`TemplateDialog`](/components/template-dialog) — what a finished publish hands over.
@@ -88,5 +88,5 @@ Failure returns to rest rather than to `sad` — see [`usePublishMark`](/compone
 ## Next
 
 - [usePublishMark](/components/use-publish-mark) — work, celebrate, settle
-- [ConfettiLayer](/components/confetti-layer) — paper over anything
+- [CelebrationLayer](/components/celebration-layer) — paper over anything
 - [TemplateDialog](/components/template-dialog) — name, instructions, visibility

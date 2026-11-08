@@ -1,8 +1,8 @@
 import { renderToString } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { AvatarEditor } from '../src/editor/AvatarEditor.js';
-import { AvatarTrigger } from '../src/editor/AvatarTrigger.js';
-import { EditableAvatar } from '../src/editor/EditableAvatar.js';
+import { AvatarStudio } from '../src/editor/AvatarStudio.js';
+import { AvatarButton } from '../src/editor/AvatarButton.js';
+import { AvatarField } from '../src/editor/AvatarField.js';
 import {
   clampPan,
   clampZoom,
@@ -31,8 +31,8 @@ describe('fitImage', () => {
   it('brings the long edge down to the limit and keeps the ratio', () => {
     const fitted = fitImage(4000, 3000);
     expect(fitted.width).toBe(MAX_SOURCE_PX);
-    expect(fitted.height).toBe(768);
-    expect(fitted.scale).toBeCloseTo(0.256, 5);
+    expect(fitted.height).toBe(1200);
+    expect(fitted.scale).toBeCloseTo(0.4, 5);
   });
 
   it('measures the long edge whichever way round the image is', () => {
@@ -127,11 +127,11 @@ describe('editor surfaces', () => {
   const value = { shape: 'blob', color: 'blue' } as const;
 
   it.each([
-    ['AvatarEditor', <AvatarEditor value={value} />],
-    ['AvatarEditor with a picture', <AvatarEditor value={{ ...value, pictureUrl: '/a.png' }} />],
-    ['AvatarEditor with generation', <AvatarEditor value={value} generateImage={async () => '/a.png'} />],
-    ['AvatarTrigger', <AvatarTrigger value={value} />],
-    ['EditableAvatar', <EditableAvatar value={value} lineWeight={1.2} />],
+    ['AvatarStudio', <AvatarStudio value={value} />],
+    ['AvatarStudio with a picture', <AvatarStudio value={{ ...value, pictureUrl: '/a.png' }} />],
+    ['AvatarStudio with generation', <AvatarStudio value={value} generateImage={async () => '/a.png'} />],
+    ['AvatarButton', <AvatarButton value={value} />],
+    ['AvatarField', <AvatarField value={value} lineWeight={1.2} />],
   ])('%s renders without a DOM', (_name, element) => {
     const html = renderToString(element);
     expect(html).toBeTruthy();
@@ -140,19 +140,19 @@ describe('editor surfaces', () => {
   });
 
   it('opens on the Upload tab when there is already a picture', () => {
-    const html = renderToString(<AvatarEditor value={{ ...value, pictureUrl: '/a.png' }} />);
+    const html = renderToString(<AvatarStudio value={{ ...value, pictureUrl: '/a.png' }} />);
     expect(html).toContain('id="aora-editor-panel-upload"');
   });
 
   it('hides the Generate tab when no generator is injected', () => {
-    expect(renderToString(<AvatarEditor value={value} />)).not.toContain('aora-editor-tab-generate');
-    expect(renderToString(<AvatarEditor value={value} generateImage={async () => '/a.png'} />)).toContain(
+    expect(renderToString(<AvatarStudio value={value} />)).not.toContain('aora-editor-tab-generate');
+    expect(renderToString(<AvatarStudio value={value} generateImage={async () => '/a.png'} />)).toContain(
       'aora-editor-tab-generate',
     );
   });
 
   it('draws the pencil from the engine generator rather than an icon', () => {
-    const html = renderToString(<EditableAvatar value={value} />);
+    const html = renderToString(<AvatarField value={value} />);
     // A path with real commands, in a box centred on the origin.
     expect(html).toMatch(/viewBox="-12 -12 24 24"/);
     expect(html).toMatch(/d="M[-\d.]/);

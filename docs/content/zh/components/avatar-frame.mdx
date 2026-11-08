@@ -1,0 +1,71 @@
+import { API } from '@theme';
+
+# 徽标与状态
+
+叠在头像上的小零件。
+
+```tsx preview
+import { AgentPortrait, UnreadBadge, AvatarStatusDot } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {[1, 9, 42, 128].map((count) => (
+        <span key={count} style={{ position: 'relative', display: 'inline-flex' }}>
+          <AgentPortrait agent={{ id: `badge-${count}` }} sizePx={44} still />
+          <span style={{ position: 'absolute', top: -4, insetInlineEnd: -8 }}>
+            <UnreadBadge count={count} />
+          </span>
+        </span>
+      ))}
+    </div>
+  );
+}
+```
+
+## UnreadBadge
+
+封顶在 `99+`，所以失控的数字撑不开布局。完整计数仍会向辅助技术播报，因此真正数字重要时，读者不会只听到「九十九加」。
+
+<API component="UnreadBadge" />
+
+## AvatarStatusDot
+
+```tsx preview
+import { AgentPortrait, AvatarStatusDot } from '@aora-bot/react';
+
+const tones = ['online', 'busy', 'away', 'offline', 'working', 'attention', 'error', 'info'] as const;
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {tones.map((tone) => (
+        <div className="site-demo__cell" key={tone}>
+          <span style={{ position: 'relative', display: 'inline-flex' }}>
+            <AgentPortrait agent={{ id: tone }} sizePx={44} still />
+            <span style={{ position: 'absolute', bottom: 0, insetInlineEnd: 0 }}>
+              <AvatarStatusDot tone={tone} pulse={tone === 'busy'} />
+            </span>
+          </span>
+          <span className="site-demo__label">{tone}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+八种色调。前四种是在线状态——`online`、`busy`、`away`、`offline`——后四种说的是智能体的工作：`working`、`attention`、`error`、`info`。两组共用同一个角，因为一个头像若同时显示两者，第二个就无处可放；名册只显示这一屏上真正重要的那个问题。
+
+点带一圈页面背景色的环，所以它能从背后的头像上读出来。`ring` 在此之上再加一圈向外扩散的光晕；`working` 和 `attention` 这两种要人注意的色调默认开启，其余默认关闭。当状态没有同时写在文字里时传入 `label`——没有 label 时点是 `aria-hidden` 的，因为颜色本身不是可访问信号。
+
+<API component="AvatarStatusDot" />
+
+## WorkingBadge
+
+三个脉动的点，给忙碌中的智能体用，尺寸正好放进状态点的那个角。同一个头像上不要把它和状态点叠着用，改用 `working` 色调即可——组件本身和它的 props 见 [WorkingBadge](/components/working-badge)。
+
+## 接下来
+
+- [WorkingBadge](/components/working-badge)——忙碌智能体的三个点
+- [AgentPortrait](/components/agent-portrait)——每个 id 一张固定的脸

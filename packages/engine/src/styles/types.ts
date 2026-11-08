@@ -33,8 +33,14 @@ export interface StyleDefinition<Options extends Record<string, unknown> = Recor
   id: StyleId;
   /** Human-readable name. */
   label: string;
-  /** The `variant` values this series understands. */
+  /** The `variant` values this series lists: what a style rail or a picker shows. */
   variants: readonly string[];
+  /**
+   * Variants the series draws but does not list, such as a theme's skins
+   * (`THEMES`). Every entry point accepts them by id; `allVariants` and
+   * `acceptsVariant` read both lists. Moving an id to `variants` lists it.
+   */
+  unlistedVariants?: readonly string[];
   /** The variant used when none is named. */
   defaultVariant: string;
   /** Parameter defaults. Every key must have a matching entry in `params`. */

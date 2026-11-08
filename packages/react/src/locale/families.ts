@@ -1,6 +1,6 @@
-// The static entry, not the main one: these tables travel with the locale,
-// and the locale is re-exported from `static.ts`, which must not drag the
-// animation runtime onto a server.
+// The labels entry, not the main or static one: these tables travel with the
+// locale, which every page that shows a name loads, and the labels entry
+// carries no shape or renderer.
 import {
   HUD_KIND_LABELS,
   HUD_KINDS,
@@ -9,7 +9,7 @@ import {
   type HudKind,
   type ShapeFamilyId,
   type StateGroupId,
-} from '@aora-bot/engine/static';
+} from '@aora-bot/engine/labels';
 
 /**
  * Prefix every id in a table with a family name, keeping the key literals.

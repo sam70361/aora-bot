@@ -9,17 +9,22 @@ export { AppearanceProvider, useAppearance } from './appearance/AppearanceProvid
 export type { AppearanceProviderProps, MarkAppearance } from './appearance/AppearanceProvider.js';
 
 // Shared stage
-export { MarkStageProvider, StagedMark, useMarkStage, STAGE_SOURCE_PX } from './stage/MarkStage.js';
+export {
+  CharacterStageProvider,
+  StagedMark,
+  useCharacterStage,
+  STAGE_SOURCE_PX,
+} from './stage/CharacterStage.js';
 export type {
-  MarkStageProviderProps,
+  CharacterStageProviderProps,
   StagedMarkProps,
   Appearance,
   StageStatus,
   StageContextValue,
-} from './stage/MarkStage.js';
+} from './stage/CharacterStage.js';
 export {
   useMarkSettle,
-  usePokeCycle,
+  useTapCycle,
   useDeadline,
   useReducedMotion,
   SETTLE_MS,
@@ -40,33 +45,33 @@ export type {
 } from './stage/commands.js';
 
 // Avatars and identity
-export { AgentAvatar } from './avatar/AgentAvatar.js';
-export type { AgentAvatarProps } from './avatar/AgentAvatar.js';
+export { AgentPortrait } from './avatar/AgentPortrait.js';
+export type { AgentPortraitProps } from './avatar/AgentPortrait.js';
 export {
-  AvatarStack,
+  AvatarGroup,
   GroupAvatar,
-  STACK_MAX_VISIBLE,
+  GROUP_MAX_VISIBLE,
   STACK_OVERLAP,
-  layoutAvatarStack,
-  stackMetrics,
-  stackMetricsForPx,
+  layoutAvatarGroup,
+  groupMetrics,
+  groupMetricsForPx,
   participantsFromMembers,
-} from './avatar/AvatarStack.js';
+} from './avatar/AvatarGroup.js';
 export type {
-  AvatarStackProps,
+  AvatarGroupProps,
   GroupAvatarProps,
   StackLayout,
   StackLayoutOptions,
   StackMetrics,
   Participants,
-} from './avatar/AvatarStack.js';
-export { UnreadBadge, AvatarStatusDot, WorkingBadge, UNREAD_BADGE_CAP } from './avatar/AvatarChrome.js';
+} from './avatar/AvatarGroup.js';
+export { UnreadBadge, AvatarStatusDot, WorkingBadge, UNREAD_BADGE_CAP } from './avatar/AvatarFrame.js';
 export type {
   UnreadBadgeProps,
   AvatarStatusDotProps,
   WorkingBadgeProps,
   StatusTone,
-} from './avatar/AvatarChrome.js';
+} from './avatar/AvatarFrame.js';
 export {
   agentShape,
   agentColor,
@@ -80,12 +85,12 @@ export {
 export type { AgentLike, AgentActivity, AvatarSize } from './avatar/identity.js';
 
 // Pickers
-export { CharacterPicker, PICKER_MARK_PX } from './picker/CharacterPicker.js';
-export type { CharacterPickerProps } from './picker/CharacterPicker.js';
-export { AgentCharacterPicker } from './picker/AgentCharacterPicker.js';
-export type { AgentCharacterPickerProps, CharacterChoice } from './picker/AgentCharacterPicker.js';
-export { CompactCharacterPicker } from './picker/CompactCharacterPicker.js';
-export type { CompactCharacterPickerProps } from './picker/CompactCharacterPicker.js';
+export { CharacterSelector, SELECTOR_MARK_PX } from './picker/CharacterSelector.js';
+export type { CharacterSelectorProps } from './picker/CharacterSelector.js';
+export { AgentCharacterSelector } from './picker/AgentCharacterSelector.js';
+export type { AgentCharacterSelectorProps, CharacterChoice } from './picker/AgentCharacterSelector.js';
+export { CompactCharacterSelector } from './picker/CompactCharacterSelector.js';
+export type { CompactCharacterSelectorProps } from './picker/CompactCharacterSelector.js';
 
 // HUD
 export { HudPlate } from './hud/HudPlate.js';
@@ -94,13 +99,13 @@ export { AgentHud } from './hud/AgentHud.js';
 export type { AgentHudProps } from './hud/AgentHud.js';
 export { useHudSpec, useAgentHud } from './hud/useHudSpec.js';
 
-// Avatar editor
-export { AvatarEditor, AVATAR_PREVIEW_PX } from './editor/AvatarEditor.js';
-export type { AvatarEditorProps, AvatarDraft, AvatarEditorTab } from './editor/AvatarEditor.js';
-export { AvatarTrigger } from './editor/AvatarTrigger.js';
-export type { AvatarTriggerProps } from './editor/AvatarTrigger.js';
-export { EditableAvatar } from './editor/EditableAvatar.js';
-export type { EditableAvatarProps } from './editor/EditableAvatar.js';
+// Avatar studio
+export { AvatarStudio, AVATAR_PREVIEW_PX } from './editor/AvatarStudio.js';
+export type { AvatarStudioProps, AvatarDraft, AvatarStudioTab } from './editor/AvatarStudio.js';
+export { AvatarButton } from './editor/AvatarButton.js';
+export type { AvatarButtonProps } from './editor/AvatarButton.js';
+export { AvatarField } from './editor/AvatarField.js';
+export type { AvatarFieldProps } from './editor/AvatarField.js';
 export {
   fitImage,
   coverScale,
@@ -123,35 +128,35 @@ export type { CropView, CropRequest, ImageSource, ReadResult, LoadedImage } from
 
 // Activity
 export {
-  ActivityMark,
-  GroupActivityMark,
+  ActivityBadge,
+  GroupActivityBadge,
   useCycle,
-  ACTIVITY_MARK_PX,
-  GROUP_MARK_PX,
+  ACTIVITY_BADGE_PX,
+  GROUP_BADGE_PX,
   GROUP_CYCLE_MS,
   GROUP_INK_MS,
-} from './activity/ActivityMark.js';
+} from './activity/ActivityBadge.js';
 export type {
-  ActivityMarkProps,
-  GroupActivityMarkProps,
+  ActivityBadgeProps,
+  GroupActivityBadgeProps,
   ActivityLabelMode,
   ActivityMode,
-} from './activity/ActivityMark.js';
+} from './activity/ActivityBadge.js';
 export {
-  useActivityPresence,
-  useSpawnEntrance,
+  useActivityStatus,
+  useArrival,
   resetSpawnEntrances,
   ACTIVITY_EXIT_MS,
   SPAWN_STATE,
 } from './activity/presence.js';
 export type { ActivityPresence, SpawnEntrance } from './activity/presence.js';
-export { ActivityTicker } from './activity/ActivityTicker.js';
-export type { ActivityTickerProps } from './activity/ActivityTicker.js';
+export { ActivityLine } from './activity/ActivityLine.js';
+export type { ActivityLineProps } from './activity/ActivityLine.js';
 export {
   TOOL_ACTIVITIES,
   ACTIVITY_LABELS,
   DEFAULT_ACTIVITY,
-  activityFromTool,
+  activityForTool,
   activityLabelForState,
   characterStateForActivity,
   isKnownActivity,
@@ -162,8 +167,8 @@ export type { ActivityDescriptor } from './activity/catalog.js';
 export { cx } from './utils/cx.js';
 
 // Effects
-export { ConfettiLayer } from './effects/ConfettiLayer.js';
-export type { ConfettiLayerProps, ConfettiHandle } from './effects/ConfettiLayer.js';
+export { CelebrationLayer } from './effects/CelebrationLayer.js';
+export type { CelebrationLayerProps, ConfettiHandle } from './effects/CelebrationLayer.js';
 
 // Agent integration
 export { AgentStateProvider, useArbiter, useAgentState, useOptionalAgentState } from './agent/AgentState.js';
@@ -181,6 +186,10 @@ export type { UseIdleSleepOptions, IdleSleep, IdlePhase } from './agent/useIdleS
 export { SpriteMark, loadSpriteManifest, useSpriteManifest } from './sprite/SpriteMark.js';
 export type { SpriteMarkProps, SpriteFallback, SpriteManifestStatus } from './sprite/SpriteMark.js';
 
+// Themes
+export { useThemesReady } from './themes/useThemes.js';
+export type { ThemedIds } from './themes/useThemes.js';
+
 // Locale
 export { LocaleProvider, useLocale, useLabel, LOCALES, enUS, zhCN } from './locale/index.js';
 export type { LocaleProviderProps, Locale, LocaleId, LocaleKey, Labels } from './locale/index.js';
@@ -190,6 +199,12 @@ export {
   // Identifiers and tables
   SHAPE_IDS,
   SHAPE_FAMILIES,
+  ALL_SHAPE_IDS,
+  ALL_SHAPE_FAMILIES,
+  CORE_SHAPE_IDS,
+  ALL_COLOR_IDS,
+  UNLISTED_COLOR_IDS,
+  isListedShape,
   getLeafColor,
   COLOR_IDS,
   ASSIGNABLE_COLOR_IDS,
@@ -242,8 +257,28 @@ export {
   // Cast
   CAST,
   CAST_IDS,
+  ALL_CAST_IDS,
+  allCast,
   castMember,
   isCastId,
+  // Themes
+  THEME_IDS,
+  THEME_MANIFEST,
+  ThemeNotInstalledError,
+  defineTheme,
+  getTheme,
+  installTheme,
+  isFixed,
+  isThemeInstalled,
+  listThemes,
+  loadTheme,
+  loadThemes,
+  themeChoices,
+  themeDefault,
+  themeLabel,
+  themeLook,
+  themeOwning,
+  themesNeeded,
   // Protocol
   EMOTIONS,
   EMOTION_IDS,
@@ -285,6 +320,7 @@ export {
   getShape,
   allShapes,
   defineShape,
+  defineShapeWithProps,
   getShapeScale,
   shapeGenerators,
   // Palette
@@ -366,6 +402,15 @@ export type {
   FaceTune,
   CastId,
   CharacterPreset,
+  PartColor,
+  PropPart,
+  ThemeDefinition,
+  ThemeDimension,
+  ThemeLook,
+  ThemeManifestEntry,
+  ThemePackage,
+  ThemeSource,
+  StyleChoice,
   EmotionId,
   EmotionDef,
   EmotionSegmentId,

@@ -1,9 +1,16 @@
-import { STATE_CUTE_EYES, STATE_CUTE_MOUTH, STATE_FX } from '@aora-bot/engine';
+import {
+  STATE_CUTE_EYES,
+  STATE_CUTE_MOUTH,
+  STATE_FX,
+  getFaceDesign,
+  isCuteFamily,
+  isDrawnFace,
+} from '@aora-bot/engine';
 import {
   CHARACTER_STATES,
   EMOTIONS,
   FACE_STYLES,
-  MarkStageProvider,
+  CharacterStageProvider,
   STATE_BELT,
   STATE_EYE_TOPOLOGIES,
   STATE_MOUTH,
@@ -72,8 +79,10 @@ const HEADER_KEY = {
  * page renders, so the matrix cannot fall out of step with the code. The
  * previews share one stage, and the face switch changes every row at once —
  * the point of the switch is to compare the faces, which separate tables would
- * not let you do. The effect column is the cute face's effect (`STATE_FX`); on
- * `eyes` and `line` it is the belt the state hands its body to.
+ * not let you do. The effect column is the cute face's effect (`STATE_FX`),
+ * less the ones a drawn face's eyes already show (`quietFx`); on `eyes` and
+ * `line` it is the belt the state hands its body to. A drawn face's eye and
+ * mouth columns are its own tables.
  */
 export function StateMatrix({ states = CHARACTER_STATES, groups = false }: StateMatrixProps) {
   const label = useLabel();
@@ -95,7 +104,7 @@ export function StateMatrix({ states = CHARACTER_STATES, groups = false }: State
     : [{ key: 'all', title: null, states: states.slice() }];
 
   return (
-    <MarkStageProvider maxSources={CHARACTER_STATES.length}>
+    <CharacterStageProvider maxSources={CHARACTER_STATES.length}>
       <div className="site-matrix">
         <div className="site-matrix__bar" role="radiogroup" aria-label={site('pg.faceStyle')}>
           {FACE_STYLES.map((style) => (
@@ -134,16 +143,19 @@ export function StateMatrix({ states = CHARACTER_STATES, groups = false }: State
           </section>
         ))}
       </div>
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 
 function Row({ state, face }: { state: CharacterState; face: FaceStyle }) {
   const label = useLabel();
-  const cute = face === 'cute';
+  // A drawn face reads its own tables; the rest of the cute family shares the cute ones.
+  const design = isDrawnFace(face) ? getFaceDesign(face) : null;
+  const cute = isCuteFamily(face);
   const belt = STATE_BELT[state];
   const fx = STATE_FX[state];
-  const mouth = cute ? STATE_CUTE_MOUTH[state] : STATE_MOUTH[state];
+  const mouth = design ? design.stateMouth[state] : cute ? STATE_CUTE_MOUTH[state] : STATE_MOUTH[state];
+  const eyes = design ? design.states[state] : cute ? STATE_CUTE_EYES[state] : STATE_EYE_TOPOLOGIES[state];
   const ids = EMOTIONS.filter((emotion) => emotion.state === state);
 
   return (
@@ -169,7 +181,7 @@ function Row({ state, face }: { state: CharacterState; face: FaceStyle }) {
               <td key={column} className="site-matrix__chips">
                 {/* The cycle order, with repeats: `idle` returns to its resting
                     eye between glances, and that is the information. */}
-                <code>{(cute ? STATE_CUTE_EYES : STATE_EYE_TOPOLOGIES)[state].join(' → ')}</code>
+                <code>{eyes.join(' → ')}</code>
               </td>
             );
           case 'mouth':
@@ -180,7 +192,7 @@ function Row({ state, face }: { state: CharacterState; face: FaceStyle }) {
               </td>
             );
           case 'effect': {
-            const effect = cute ? fx : belt;
+            const effect = cute ? (fx && !design?.quietFx.includes(fx) ? fx : undefined) : belt;
             return (
               <td key={column}>
                 {effect ? (

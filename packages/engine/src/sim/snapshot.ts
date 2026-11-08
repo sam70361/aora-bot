@@ -1,5 +1,5 @@
 import type { InkPaint, StyleVariant } from '../core/options.js';
-import type { FaceStyle, PartTone, Ring, ShapeId } from '../core/types.js';
+import type { FaceStyle, PartColor, PartMotionRef, PartTone, Ring, ShapeId } from '../core/types.js';
 import type { FaceGeometry } from '../face/placement.js';
 import type { HudPrimitives } from '../hud/dials.js';
 import type { BeltDot, BeltGlyph } from '../motion/belts.js';
@@ -27,6 +27,12 @@ export interface FrameSnapshot {
   shapeScale: number;
   /** Seconds of simulated time. */
   time: number;
+  /**
+   * Whether nothing may move: reduced motion, or a still character (static
+   * output). A renderer that animates something of its own (a theme's mood
+   * decorations, its parts' motions) draws its rest pose. Absent is `false`.
+   */
+  settled?: boolean;
   /** Paint variant, interpreted by the style (`solid` / `outline` / `glass` for `vector`). */
   variant: StyleVariant;
   /** Body paint override; `null` means the theme's foreground token. */
@@ -77,6 +83,14 @@ export interface BodyFrame {
 export interface PartFrame {
   tone: PartTone;
   outline: Ring;
+  /** The part's own colour (`ShapePart.color`), absent where it takes its tone's. */
+  color?: PartColor;
+  /** The smallest display width it is drawn at (`ShapePart.minPx`). */
+  minPx?: number;
+  /** Whether a skin leaves it undecorated (`ShapePart.plain`). */
+  plain?: boolean;
+  /** The signature motion it plays (`ShapePart.motion`). */
+  motion?: PartMotionRef;
   opacity: number;
 }
 

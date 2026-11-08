@@ -20,17 +20,17 @@ const stop = ticker.add((dt, now) => {
 
 ## 让外观相同的角色共享动画
 
-更大的收益是不要把同一个动画跑两遍。`MarkStageProvider` 为每一种不同的**外观**托管一个隐藏角色，所有可见实例都变成指向它的 `<use href>`。
+更大的收益是不要把同一个动画跑两遍。`CharacterStageProvider` 为每一种不同的**外观**托管一个隐藏角色，所有可见实例都变成指向它的 `<use href>`。
 
 ```tsx preview
-import { MarkStageProvider, StagedMark } from '@aora-bot/react';
+import { CharacterStageProvider, StagedMark } from '@aora-bot/react';
 
 const COLOURS = ['blue', 'green', 'violet', 'orange', 'magenta', 'cyan'] as const;
 
 export default function Demo() {
   // 60 个标记，2 种外观，2 个运行中的引擎。
   return (
-    <MarkStageProvider>
+    <CharacterStageProvider>
       <div className="site-demo">
         {Array.from({ length: 60 }, (_, i) => (
           <StagedMark
@@ -42,21 +42,21 @@ export default function Demo() {
           />
         ))}
       </div>
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 ```
 
 ### 什么算同一种外观
 
-形状、状态和脸型——墨色与尺寸被排除在外，所以 60 个都是 idle blob 的 agent 即便每个墨色不同，也只要一个引擎。索引键的构成、以及为什么不该按 agent id 建索引，见 [`MarkStageProvider`](/components/mark-stage)。
+形状、状态和脸型——墨色与尺寸被排除在外，所以 60 个都是 idle blob 的 agent 即便每个墨色不同，也只要一个引擎。索引键的构成、以及为什么不该按 agent id 建索引，见 [`CharacterStageProvider`](/components/character-stage)。
 
 ### 上限
 
 `maxSources` 限制同时运行的引擎数，默认 36。超出之后，页面的退化方式是让一部分角色静止，而不是让所有角色都变慢。
 
 ```tsx
-<MarkStageProvider maxSources={16}>{children}</MarkStageProvider>
+<CharacterStageProvider maxSources={16}>{children}</CharacterStageProvider>
 ```
 
 ## 暂停看不见的角色
@@ -145,5 +145,5 @@ import { prefersReducedMotion, onReducedMotionChange } from '@aora-bot/engine';
 ## 接下来
 
 - [服务端渲染](/guide/server-rendering)——Next.js 与静态生成
-- [MarkStageProvider](/components/mark-stage)——按外观共享引擎
+- [CharacterStageProvider](/components/character-stage)——按外观共享引擎
 - [渲染结构](/internals/rendering)——一个 SVG，所有属性手写

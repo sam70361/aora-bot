@@ -2,7 +2,11 @@ import { clamp } from '../math/easing.js';
 import { smoothClosedPath } from '../math/path-builder.js';
 import {
   CENTER,
+  CORE_SHAPE_IDS,
   SHAPE_IDS,
+  SHAPE_SPACE,
+  type FaceBox,
+  type PartColor,
   type PartTone,
   type Point,
   type Ring,
@@ -10,20 +14,51 @@ import {
   type ShapeId,
   type ShapePart,
 } from '../core/types.js';
-import { CHARACTERS, type CharacterArt } from './characters/index.js';
-import { fitFace } from './fit-face.js';
+import { loopPoints } from './characters/art.js';
+import { CHARACTERS, type ArtPart, type CharacterArt } from './characters/index.js';
+import { faceInputsDigest, type FaceInputs, type StoredFaceBox } from './face-boxes.js';
+import { FACE_BOXES } from './face-boxes.generated.js';
+import { eyeFactor, fitFace } from './fit-face.js';
+import { requireTheme } from '../themes/state.js';
 import { samplePath, smoothLoop } from './svg-path.js';
 
-/** Outline size every shape is normalised to before rendering. */
-const NORMALISED_SIZE = 228.44;
+/** Outline size every shape is normalised to before rendering: a hair inside shape space, so its extremes never touch the edge. */
+const NORMALISED_SIZE = SHAPE_SPACE - 0.6;
 
 /** Vertical resolution of the span lookup table. */
 const SPAN_ROWS = 160;
 
+/** A piece of a figure as a source gives it, in the coordinates of its body. */
+export interface SourcePart {
+  tone: PartTone;
+  outline: readonly Point[];
+  color?: PartColor;
+  prop?: boolean;
+  minPx?: number;
+  plain?: boolean;
+  /** A prop drawn under the face (make-up, a painted mark): the face fit does not keep off it. */
+  underFace?: boolean;
+  /**
+   * The motion it plays, about `pivot` when one is given. The art it was
+   * written in has `unit` source units to its own unit and its origin at
+   * `offset` (1 and the origin: the source's own coordinates).
+   */
+  motion?: { id: string; pivot?: Point; unit?: number; offset?: Point };
+}
+
+/** The motions a whole figure plays, about `pivot` when one is given, in the source's coordinates. */
+interface SourceMotion {
+  ids: readonly string[];
+  pivot?: Point;
+}
+
+/** A prop as a caller gives it: a part that is laid over the figure rather than part of it. */
+export type PropPart = Omit<SourcePart, 'prop'>;
+
 interface ShapeSource {
   outline: () => Point[];
   /** Pieces of the figure besides the body, in the same coordinates as `outline`. */
-  parts?: () => { tone: PartTone; outline: readonly Point[] }[];
+  parts?: () => SourcePart[];
   /** Horizontal nudge for the left eye; triangular shapes need the room. */
   leftDX?: number;
   /**
@@ -38,21 +73,170 @@ interface ShapeSource {
    * with ears has its body low in the box, and its face lower still.
    */
   face?: Point;
+  /** The signature motions the whole figure plays. */
+  motion?: SourceMotion;
+  /** A face box the art pins, in the coordinates of `outline`, taken instead of a fitted one. */
+  faceBox?: { x: number; y: number; sx: number; sy: number };
+  /** What uncoloured hair is shaded towards, as a share of the ink's lightness. */
+  hairDeep?: number;
+}
+
+const partOutline = (part: ArtPart): Point[] =>
+  'd' in part ? samplePath(part.d) : smoothLoop(loopPoints(part.loop));
+
+const fromArt = (part: ArtPart, prop?: boolean): SourcePart => ({
+  tone: part.tone,
+  outline: partOutline(part),
+  ...(part.color === undefined ? null : { color: part.color }),
+  ...(part.minPx === undefined ? null : { minPx: part.minPx }),
+  ...(part.plain ? { plain: true } : null),
+  ...(part.underFace ? { underFace: true } : null),
+  ...(part.motion ? { motion: { id: part.motion, ...(part.pivot ? { pivot: part.pivot } : null) } } : null),
+  ...(prop ? { prop } : null),
+});
+
+/** A figure's motions as its art names them, or `undefined`. */
+function figureMotionOf(art: CharacterArt): SourceMotion | undefined {
+  if (!art.motion) return undefined;
+  const ids = typeof art.motion === 'string' ? [art.motion] : art.motion;
+  return ids.length > 0 ? { ids, ...(art.pivot ? { pivot: art.pivot } : null) } : undefined;
 }
 
 function sourceFromArt(art: CharacterArt): ShapeSource {
+  const motion = figureMotionOf(art);
+  if ('base' in art) {
+    const source = propSource(
+      art.base,
+      () => art.props.map((part) => fromArt(part)),
+      art.at,
+      art.scale,
+      art,
+      motion,
+    );
+    if (art.faceBox) source.faceBox = art.faceBox;
+    if (art.hairDeep !== undefined) source.hairDeep = art.hairDeep;
+    return source;
+  }
   const parts = art.parts;
   return {
-    outline: () => (typeof art.body === 'string' ? samplePath(art.body) : smoothLoop(art.body.loop)),
-    parts: parts && (() => parts.map((part) => ({ tone: part.tone, outline: samplePath(part.d) }))),
+    outline: () =>
+      typeof art.body === 'string' ? samplePath(art.body) : smoothLoop(loopPoints(art.body.loop)),
+    parts: parts && (() => parts.map((part) => fromArt(part))),
     leftDX: art.leftDX,
     face: art.face,
+    ...(motion ? { motion } : null),
+    ...(art.faceBox ? { faceBox: art.faceBox } : null),
+    ...(art.hairDeep !== undefined ? { hairDeep: art.hairDeep } : null),
+  };
+}
+
+/** The face box a source pins, carried into shape space; `null` when it leaves the face to the fit. */
+function pinnedFace(source: ShapeSource, fitted: Normalised): FaceBox | null {
+  const pin = source.faceBox;
+  if (!pin) return null;
+  const [x, y] = fitted.map([pin.x, pin.y]);
+  const sx = pin.sx * fitted.unit;
+  const sy = pin.sy * fitted.unit;
+  return { x, y, sx, sy, eye: eyeFactor(sx, sy), leftDX: source.leftDX ?? 0 };
+}
+
+/**
+ * A shape of the roster wearing props. The base's body, parts and face are
+ * carried over as they are, scaled by `scale` about `at` in a 100 x 100 box,
+ * so the props, drawn in that box, have room round it; the whole figure is
+ * then normalised like any other.
+ */
+function propSource(
+  base: string,
+  props: () => PropPart[],
+  at: Point,
+  scale: number,
+  {
+    drop = [],
+    tint = {},
+    plain = [],
+  }: {
+    drop?: readonly number[];
+    tint?: Readonly<Record<number, PartColor>>;
+    plain?: readonly number[];
+  } = {},
+  motion?: SourceMotion,
+): ShapeSource {
+  let placed: { body: Point[]; parts: SourcePart[]; face: Point; leftDX: number } | null = null;
+  const place = () => {
+    if (placed) return placed;
+    const shape = getShape(base as ShapeId);
+    const k = (scale * 100) / SHAPE_SPACE;
+    const map = ([x, y]: Point): Point => [at[0] + (x - CENTER) * k, at[1] + (y - CENTER) * k];
+    placed = {
+      body: shape.outline.map(map),
+      parts: [
+        ...shape.parts.flatMap((part, i): SourcePart[] =>
+          drop.includes(i)
+            ? []
+            : [
+                {
+                  ...part,
+                  outline: part.outline.map(map),
+                  ...(tint[i] ? { color: tint[i] } : null),
+                  ...(plain.includes(i) ? { plain: true } : null),
+                  ...(part.motion
+                    ? {
+                        motion: {
+                          id: part.motion.id,
+                          ...(part.motion.pivot ? { pivot: map(part.motion.pivot) } : null),
+                          unit: part.motion.unit * k,
+                          offset: map(part.motion.offset),
+                        },
+                      }
+                    : null),
+                },
+              ],
+        ),
+        ...props().map((part) => ({ ...part, prop: true })),
+      ],
+      face: map([shape.face.x, shape.face.y]),
+      leftDX: shape.face.leftDX,
+    };
+    return placed;
+  };
+  return {
+    outline: () => place().body,
+    parts: () => place().parts,
+    get leftDX() {
+      return place().leftDX;
+    },
+    get face() {
+      return place().face;
+    },
+    ...(motion ? { motion } : null),
   };
 }
 
 const SOURCES: Record<string, ShapeSource> = Object.fromEntries(
-  SHAPE_IDS.map((id) => [id, sourceFromArt(CHARACTERS[id])]),
+  CORE_SHAPE_IDS.map((id) => [id, sourceFromArt(CHARACTERS[id])]),
 );
+
+/** Face boxes worked out ahead of time: the core's, and those an installed theme brings. */
+const STORED = new Map<string, StoredFaceBox>(
+  Object.entries(FACE_BOXES).flatMap(([id, box]) => (box ? [[id, box]] : [])),
+);
+
+/**
+ * Add a theme's characters (`installTheme`), with the face boxes stored for
+ * them. A box whose digest no longer matches its body is fitted afresh, as
+ * the core's are.
+ */
+export function registerArt(
+  art: Readonly<Record<string, CharacterArt>>,
+  boxes: Readonly<Record<string, StoredFaceBox>> = {},
+): void {
+  for (const [id, entry] of Object.entries(art)) {
+    SOURCES[id] = sourceFromArt(entry);
+    cache.delete(id);
+  }
+  for (const [id, box] of Object.entries(boxes)) STORED.set(id, box);
+}
 
 /** Signed area of a closed polygon, via the shoelace formula. */
 function polygonArea(points: readonly Point[]): number {
@@ -90,6 +274,8 @@ interface Normalised {
   parts: ShapePart[];
   /** The transform, for anything else drawn in the same source coordinates. */
   map(p: Point): Point;
+  /** Shape units to one source unit. */
+  unit: number;
 }
 
 /**
@@ -100,10 +286,7 @@ interface Normalised {
  * the body alone, because that is the mass the eye weighs. Parts get exactly
  * the body's transform, which is what keeps an ear on its head.
  */
-function normalise(
-  points: readonly Point[],
-  parts: readonly { tone: PartTone; outline: readonly Point[] }[],
-): Normalised {
+function normalise(points: readonly Point[], parts: readonly SourcePart[]): Normalised {
   let minX = Infinity;
   let minY = Infinity;
   let maxX = -Infinity;
@@ -140,8 +323,22 @@ function normalise(
 
   return {
     body: points.map(map),
-    parts: parts.map((part) => ({ tone: part.tone, outline: part.outline.map(map) })),
+    parts: parts.map(({ motion, ...part }): ShapePart => ({
+      ...part,
+      outline: part.outline.map(map),
+      ...(motion
+        ? {
+            motion: {
+              id: motion.id,
+              ...(motion.pivot ? { pivot: map(motion.pivot) } : null),
+              unit: (motion.unit ?? 1) * scale,
+              offset: map(motion.offset ?? [0, 0]),
+            },
+          }
+        : null),
+    })),
     map,
+    unit: scale,
   };
 }
 
@@ -268,8 +465,20 @@ function deriveTiltScale(spanAt: (y: number) => readonly [number, number], botto
   return clamp(1 - 1.9 * (ratio - 0.36), 0.15, 1);
 }
 
+/** A shape's source; throws `ThemeNotInstalledError` for a theme's shape while the theme is not installed. */
+function sourceOf(id: string): ShapeSource {
+  const source = SOURCES[id];
+  if (source) return source;
+  requireTheme('shape', id);
+  const adopted = SOURCES[id];
+  if (adopted) return adopted;
+  throw new Error(
+    `Unknown shape "${id}". Shapes are the roster's, a theme's once installed, or registered with defineShape.`,
+  );
+}
+
 function build(id: ShapeId): ShapeDef {
-  const source = SOURCES[id]!;
+  const source = sourceOf(id);
   const fitted = normalise(source.outline(), source.parts?.() ?? []);
   const points = fitted.body;
 
@@ -315,11 +524,13 @@ function build(id: ShapeId): ShapeDef {
     if (hi - lo > bodyHi - bodyLo + 1) beltRadius = Math.max(beltRadius, (hi - lo) / 2);
   }
 
-  let hint = source.faceHint;
-  if (source.face) {
-    const [fx, fy] = fitted.map(source.face);
-    hint = [fx - CENTER, fy - CENTER];
-  }
+  const inputs = faceInputs(source, fitted);
+  const stored = STORED.get(id);
+  const face =
+    pinnedFace(source, fitted) ??
+    (stored && stored.digest === faceInputsDigest(inputs)
+      ? { ...stored.box }
+      : fitFace(inputs.points, inputs.leftDX, inputs.hint, inputs.avoid));
 
   return {
     id,
@@ -332,13 +543,73 @@ function build(id: ShapeId): ShapeDef {
     bottom,
     spanAt,
     ring: toRing(points),
-    face: fitFace(
-      points,
-      source.leftDX ?? 0,
-      hint,
-      fitted.parts.filter((part) => part.tone === 'hair').map((part) => part.outline),
-    ),
+    face,
     parts: fitted.parts,
+    ...(source.hairDeep !== undefined ? { hairDeep: source.hairDeep } : null),
+    ...(source.motion
+      ? {
+          motion: {
+            ids: source.motion.ids,
+            ...(source.motion.pivot ? { pivot: fitted.map(source.motion.pivot) } : null),
+            unit: fitted.unit,
+            offset: fitted.map([0, 0]),
+          },
+        }
+      : null),
+  };
+}
+
+/**
+ * What a shape's face box is worked out from: the normalised body, the
+ * left-eye nudge, the face hint carried through the normalisation, and the
+ * hair the face must keep off.
+ */
+function faceInputs(source: ShapeSource, fitted: ReturnType<typeof normalise>): FaceInputs {
+  let hint = source.faceHint;
+  if (source.face) {
+    const [fx, fy] = fitted.map(source.face);
+    hint = [fx - CENTER, fy - CENTER];
+  }
+  return {
+    points: fitted.body,
+    leftDX: source.leftDX ?? 0,
+    hint,
+    avoid: fitted.parts
+      .filter(
+        (part) =>
+          part.tone === 'hair' ||
+          (part.prop === true && !part.underFace && covers(part.outline, fitted.body)),
+      )
+      .map((part) => part.outline),
+  };
+}
+
+/** Whether a prop lies over the body at all: a prop off to one side leaves the face its room. */
+function covers(prop: readonly Point[], body: readonly Point[]): boolean {
+  const inside = (polygon: readonly Point[], [x, y]: Point): boolean => {
+    let hit = false;
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+      const a = polygon[i]!;
+      const b = polygon[j]!;
+      if (a[1] > y !== b[1] > y && x < ((b[0] - a[0]) * (y - a[1])) / (b[1] - a[1]) + a[0]) hit = !hit;
+    }
+    return hit;
+  };
+  return prop.some((p) => inside(body, p)) || body.some((p) => inside(prop, p));
+}
+
+/**
+ * A shape's face box worked out now, with the digest it is stored under:
+ * for the script that writes `face-boxes.generated.ts` and the test that
+ * checks it. Ignores any stored box.
+ */
+export function computeFaceBox(id: ShapeId): StoredFaceBox {
+  const source = sourceOf(id);
+  const fitted = normalise(source.outline(), source.parts?.() ?? []);
+  const inputs = faceInputs(source, fitted);
+  return {
+    digest: faceInputsDigest(inputs),
+    box: pinnedFace(source, fitted) ?? fitFace(inputs.points, inputs.leftDX, inputs.hint, inputs.avoid),
   };
 }
 
@@ -358,7 +629,7 @@ export function getShape(id: ShapeId): ShapeDef {
   return def;
 }
 
-/** Every shape, derived. Only call this when you genuinely need all of them. */
+/** Every listed shape, derived. Only call this when you genuinely need all of them. */
 export function allShapes(): ShapeDef[] {
   return SHAPE_IDS.map(getShape);
 }
@@ -368,7 +639,9 @@ export function allShapes(): ShapeDef[] {
  *
  * `parts` are the rest of the figure — ears, leaves, an antenna — in the same
  * coordinates as `outline`. They are normalised with the body and ride its
- * pose, exactly like the built-in characters' parts.
+ * pose, exactly like the built-in characters' parts. `props` are drawn the
+ * same way, in front of the parts, and the face keeps off any that lie over
+ * the body.
  */
 export function defineShape(
   id: string,
@@ -376,16 +649,42 @@ export function defineShape(
   options: {
     leftDX?: number;
     faceHint?: Point;
-    parts?: readonly { tone: PartTone; outline: readonly Point[] }[];
+    parts?: readonly PropPart[];
+    props?: readonly PropPart[];
   } = {},
 ): ShapeDef {
-  const { parts } = options;
+  const { parts = [], props = [] } = options;
   SOURCES[id] = {
     outline,
-    parts: parts && (() => parts.map((part) => ({ tone: part.tone, outline: part.outline }))),
+    parts: () => [...parts.map((part) => ({ ...part })), ...props.map((part) => ({ ...part, prop: true }))],
     leftDX: options.leftDX,
     faceHint: options.faceHint,
   };
+  cache.delete(id);
+  return getShape(id as ShapeId);
+}
+
+/**
+ * Register a shape that is another one wearing props: a hat, a lantern, a
+ * nightcap. The `base` keeps its body, parts and face; it is scaled by
+ * `scale` about `at` in a 100 x 100 box, and the props are drawn in that box,
+ * in front of it. The face is fitted again, keeping off any prop that lies
+ * over the body, as it keeps off hair. `drop` leaves out base parts a prop
+ * takes the place of, and `tint` gives base parts a colour, both by index.
+ */
+export function defineShapeWithProps(
+  id: string,
+  options: {
+    base: ShapeId;
+    props: readonly PropPart[];
+    at?: Point;
+    scale?: number;
+    drop?: readonly number[];
+    tint?: Readonly<Record<number, PartColor>>;
+  },
+): ShapeDef {
+  const { base, props, at = [50, 50], scale = 0.7 } = options;
+  SOURCES[id] = propSource(base, () => props.map((part) => ({ ...part })), at, scale, options);
   cache.delete(id);
   return getShape(id as ShapeId);
 }

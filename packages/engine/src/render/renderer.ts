@@ -17,10 +17,21 @@ export interface LiveRenderer {
    * branches.
    */
   readonly element: SVGSVGElement;
-  /** Show this frame. Idempotent: drawing the same snapshot twice changes nothing. */
-  draw(frame: FrameSnapshot): void;
+  /**
+   * Show this frame. Idempotent: drawing the same snapshot twice changes
+   * nothing. A frame of the running loop (`ticking`) may be left undrawn
+   * while the character is off screen, until it comes back into view; any
+   * other is drawn at once.
+   */
+  draw(frame: FrameSnapshot, ticking?: boolean): void;
   /** Apply new style parameters. They affect drawing only, never the simulation. */
   configure(styleOptions: Record<string, unknown>): void;
+  /**
+   * Hold, or let go of, whatever the renderer animates on its own clock (a
+   * theme's decorations and part motions in CSS) while the character is
+   * paused or off screen.
+   */
+  hold?(held: boolean): void;
   /** Remove everything it mounted. */
   destroy(): void;
 }

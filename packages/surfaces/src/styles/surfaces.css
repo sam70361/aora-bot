@@ -445,13 +445,13 @@
 
   /* ---- loading mark ---------------------------------------------------- */
 
-  .aora-s-loading-mark {
+  .aora-s-loading-character {
     position: relative;
     display: inline-flex;
   }
 
-  .aora-s-loading-mark__skeleton,
-  .aora-s-loading-mark__live {
+  .aora-s-loading-character__skeleton,
+  .aora-s-loading-character__live {
     position: absolute;
     inset: 0;
     transition: opacity var(--aora-duration-base) var(--aora-ease-out);
@@ -464,7 +464,7 @@
    * generator the character does, so the skeleton and the face it becomes
    * occupy exactly the same pixels and the cross-fade has nothing to shift.
    */
-  .aora-s-loading-mark__skeleton {
+  .aora-s-loading-character__skeleton {
     background: linear-gradient(
       100deg,
       var(--aora-fill) 40%,
@@ -478,15 +478,15 @@
     animation: aora-s-mark-shimmer 1.5s linear infinite;
   }
 
-  .aora-s-loading-mark__live {
+  .aora-s-loading-character__live {
     opacity: 0;
   }
 
-  .aora-s-loading-mark[data-ready] .aora-s-loading-mark__skeleton {
+  .aora-s-loading-character[data-ready] .aora-s-loading-character__skeleton {
     opacity: 0;
   }
 
-  .aora-s-loading-mark[data-ready] .aora-s-loading-mark__live {
+  .aora-s-loading-character[data-ready] .aora-s-loading-character__live {
     opacity: 1;
   }
 
@@ -501,12 +501,12 @@
 
   /* ---- cast stage ------------------------------------------------------ */
 
-  .aora-s-cast-stage {
+  .aora-s-cast-lineup {
     position: relative;
     display: block;
   }
 
-  .aora-s-cast-stage__member {
+  .aora-s-cast-lineup__member {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -521,7 +521,7 @@
    * so a group of characters can be given different ones and never drift into
    * sync.
    */
-  .aora-s-cast-stage__bob {
+  .aora-s-cast-lineup__bob {
     display: inline-flex;
     animation: aora-s-cast-bob var(--aora-s-cast-bob-ms, 6400ms) ease-in-out infinite;
     animation-delay: var(--aora-s-cast-bob-delay, 0s);
@@ -777,13 +777,13 @@
    */
   @media (prefers-reduced-motion: reduce) {
     .aora-s-boot__scan,
-    .aora-s-loading-mark__skeleton,
+    .aora-s-loading-character__skeleton,
     .aora-s-jobs__bubble,
-    .aora-s-cast-stage__bob {
+    .aora-s-cast-lineup__bob {
       animation: none;
     }
 
-    .aora-s-cast-stage__member {
+    .aora-s-cast-lineup__member {
       transition-duration: 1ms;
     }
   }
@@ -809,7 +809,7 @@
     }
 
     .aora-s-boot__scan,
-    .aora-s-loading-mark__skeleton {
+    .aora-s-loading-character__skeleton {
       background: transparent;
       outline: 1px solid GrayText;
     }

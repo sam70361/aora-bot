@@ -1,14 +1,14 @@
 // @vitest-environment happy-dom
-import { castMember, renderStaticSvg, ticker } from '@aora-bot/engine';
+import { castMember, renderStaticSvg, ticker, VIEWBOX_STR } from '@aora-bot/engine';
 import { act, createRef, type ReactNode } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  ActivityTicker,
+  ActivityLine,
   AgentStateProvider,
   CharacterMark,
-  ConfettiLayer,
-  MarkStageProvider,
+  CelebrationLayer,
+  CharacterStageProvider,
   SpriteMark,
   StagedMark,
   useAgentState,
@@ -81,10 +81,10 @@ const appearances = [
 const roster = (el: HTMLElement) => [...el.querySelectorAll('.aora-roster > .aora-mark')];
 const sources = (el: HTMLElement) => [...el.querySelectorAll('.aora-stage > .aora-mark')];
 
-describe('MarkStageProvider', () => {
+describe('CharacterStageProvider', () => {
   it('hosts one engine per appearance and mirrors every claim under the cap', () => {
     const el = render(
-      <MarkStageProvider maxSources={4}>
+      <CharacterStageProvider maxSources={4}>
         <div className="aora-roster">
           {appearances.map((a, i) => (
             <StagedMark key={i} {...a} sizePx={32} />
@@ -93,7 +93,7 @@ describe('MarkStageProvider', () => {
             <StagedMark key={`dup-${i}`} {...a} sizePx={32} />
           ))}
         </div>
-      </MarkStageProvider>,
+      </CharacterStageProvider>,
     );
 
     // Claims are coalesced into the next frame; until then the box is held open.
@@ -122,13 +122,13 @@ describe('MarkStageProvider', () => {
 
   it('falls back to inline still images past maxSources instead of leaving blank cells', () => {
     const el = render(
-      <MarkStageProvider maxSources={2}>
+      <CharacterStageProvider maxSources={2}>
         <div className="aora-roster">
           {appearances.map((a, i) => (
             <StagedMark key={i} {...a} color="blue" sizePx={32} />
           ))}
         </div>
-      </MarkStageProvider>,
+      </CharacterStageProvider>,
     );
     advance(FRAME_MS);
 
@@ -142,7 +142,7 @@ describe('MarkStageProvider', () => {
       // --aora-bg from the page. (The markup itself is covered by the engine's
       // static-render tests; here we only care that it is inline.)
       expect(still.querySelector('img')).toBeNull();
-      expect(still.querySelector('svg')?.getAttribute('viewBox')).toBe('-24 -24 277 277');
+      expect(still.querySelector('svg')?.getAttribute('viewBox')).toBe(VIEWBOX_STR);
       expect(still.getAttribute('data-color')).toBe('blue');
     }
     expect(
@@ -155,11 +155,11 @@ describe('MarkStageProvider', () => {
 
   it('keeps first-come claims hosted when a later one would push them over the cap', () => {
     const el = render(
-      <MarkStageProvider maxSources={1}>
+      <CharacterStageProvider maxSources={1}>
         <div className="aora-roster">
           <StagedMark key="blob" shape="blob" state="idle" />
         </div>
-      </MarkStageProvider>,
+      </CharacterStageProvider>,
     );
     advance(FRAME_MS);
     expect(roster(el)[0]!.classList.contains('aora-mark--mirror')).toBe(true);
@@ -168,12 +168,12 @@ describe('MarkStageProvider', () => {
     // order, not tree order, decides who stays under the cap, so the mark
     // that has been running must keep its engine.
     rerender(
-      <MarkStageProvider maxSources={1}>
+      <CharacterStageProvider maxSources={1}>
         <div className="aora-roster">
           <StagedMark key="hex" shape="hex" state="idle" />
           <StagedMark key="blob" shape="blob" state="idle" />
         </div>
-      </MarkStageProvider>,
+      </CharacterStageProvider>,
     );
     advance(FRAME_MS);
     // A second frame: a stage that released and re-claimed on every commit
@@ -189,16 +189,16 @@ describe('MarkStageProvider', () => {
 
   it('releases sources when the last claim goes away', () => {
     const el = render(
-      <MarkStageProvider>
+      <CharacterStageProvider>
         <StagedMark shape="blob" state="idle" />
         <StagedMark shape="blob" state="idle" />
-      </MarkStageProvider>,
+      </CharacterStageProvider>,
     );
     advance(FRAME_MS);
     expect(sources(el)).toHaveLength(1);
     expect(ticker.size).toBe(1);
 
-    rerender(<MarkStageProvider>{null}</MarkStageProvider>);
+    rerender(<CharacterStageProvider>{null}</CharacterStageProvider>);
     advance(FRAME_MS);
     expect(sources(el)).toHaveLength(0);
     expect(ticker.size).toBe(0);
@@ -206,7 +206,7 @@ describe('MarkStageProvider', () => {
 
   it('treats face style and nose as part of the appearance, but ignores a nose on the default face', () => {
     const el = render(
-      <MarkStageProvider>
+      <CharacterStageProvider>
         <div className="aora-roster">
           <StagedMark shape="blob" state="idle" />
           <StagedMark shape="blob" state="idle" nose="hook" />
@@ -214,7 +214,7 @@ describe('MarkStageProvider', () => {
           <StagedMark shape="blob" state="idle" face="line" nose="bow" />
           <StagedMark shape="blob" state="idle" face="line" nose="bow" />
         </div>
-      </MarkStageProvider>,
+      </CharacterStageProvider>,
     );
     advance(FRAME_MS);
 
@@ -238,13 +238,13 @@ describe('MarkStageProvider', () => {
 
   it('splits sources by line weight, and tells each mirror the weight it is showing', () => {
     const el = render(
-      <MarkStageProvider>
+      <CharacterStageProvider>
         <div className="aora-roster">
           <StagedMark shape="blob" state="idle" face="line" nose="hook" />
           <StagedMark shape="blob" state="idle" face="line" nose="hook" lineWeight={1.2} />
           <StagedMark shape="blob" state="idle" face="line" nose="hook" lineWeight={1.2} />
         </div>
-      </MarkStageProvider>,
+      </CharacterStageProvider>,
     );
     advance(FRAME_MS);
 
@@ -265,13 +265,13 @@ describe('MarkStageProvider', () => {
 
   it('splits sources by emphasis and by pause, which are how the engine is driven', () => {
     const el = render(
-      <MarkStageProvider>
+      <CharacterStageProvider>
         <div className="aora-roster">
           <StagedMark shape="hex" state="idle" />
           <StagedMark shape="hex" state="idle" emphasis />
           <StagedMark shape="hex" state="idle" paused />
         </div>
-      </MarkStageProvider>,
+      </CharacterStageProvider>,
     );
     advance(FRAME_MS);
     expect(sources(el)).toHaveLength(3);
@@ -279,12 +279,12 @@ describe('MarkStageProvider', () => {
 
   it('leaves the stage entirely for a mark with a HUD, which no two marks can share', () => {
     const el = render(
-      <MarkStageProvider>
+      <CharacterStageProvider>
         <div className="aora-roster">
           <StagedMark shape="blob" state="working" />
           <StagedMark shape="blob" state="working" hud={{ kind: 'progress', value: 0.4 }} />
         </div>
-      </MarkStageProvider>,
+      </CharacterStageProvider>,
     );
     advance(FRAME_MS);
 
@@ -301,9 +301,9 @@ describe('MarkStageProvider', () => {
   it('cancels a pending commit on unmount', () => {
     const cancel = vi.spyOn(globalThis, 'cancelAnimationFrame');
     render(
-      <MarkStageProvider>
+      <CharacterStageProvider>
         <StagedMark shape="blob" state="idle" />
-      </MarkStageProvider>,
+      </CharacterStageProvider>,
     );
 
     // Unmount before the frame fires: the scheduled commit must be cancelled,
@@ -318,7 +318,7 @@ describe('MarkStageProvider', () => {
   });
 });
 
-describe('ActivityTicker', () => {
+describe('ActivityLine', () => {
   const lines = (el: HTMLElement) =>
     [...el.querySelectorAll('.aora-ticker__line')].map((n) => [
       n.className.includes('--out') ? 'out' : 'in',
@@ -326,10 +326,10 @@ describe('ActivityTicker', () => {
     ]);
 
   it('crossfades and retires the outgoing line after the duration', () => {
-    const el = render(<ActivityTicker text="Reading files" durationMs={200} />);
+    const el = render(<ActivityLine text="Reading files" durationMs={200} />);
     expect(lines(el)).toEqual([['in', 'Reading files']]);
 
-    rerender(<ActivityTicker text="Running tests" durationMs={200} />);
+    rerender(<ActivityLine text="Running tests" durationMs={200} />);
     expect(lines(el)).toEqual([
       ['out', 'Reading files'],
       ['in', 'Running tests'],
@@ -344,10 +344,10 @@ describe('ActivityTicker', () => {
   });
 
   it('does not leave an outgoing line behind when the text changes again mid-fade', () => {
-    const el = render(<ActivityTicker text="one" durationMs={200} />);
-    rerender(<ActivityTicker text="two" durationMs={200} />);
+    const el = render(<ActivityLine text="one" durationMs={200} />);
+    rerender(<ActivityLine text="two" durationMs={200} />);
     advance(100);
-    rerender(<ActivityTicker text="three" durationMs={200} />);
+    rerender(<ActivityLine text="three" durationMs={200} />);
 
     // The retiring line is always the one most recently shown.
     expect(lines(el)).toEqual([
@@ -360,21 +360,21 @@ describe('ActivityTicker', () => {
   });
 
   it('ignores re-renders that keep the same text', () => {
-    const el = render(<ActivityTicker text="steady" />);
-    rerender(<ActivityTicker text="steady" />);
-    rerender(<ActivityTicker text="steady" className="x" />);
+    const el = render(<ActivityLine text="steady" />);
+    rerender(<ActivityLine text="steady" />);
+    rerender(<ActivityLine text="steady" className="x" />);
     expect(lines(el)).toEqual([['in', 'steady']]);
     expect(vi.getTimerCount()).toBe(0);
   });
 });
 
-describe('ConfettiLayer', () => {
+describe('CelebrationLayer', () => {
   /** Dots, stars and strips: everything in the paper group, between the two ribbon groups. */
   const pieces = (el: Element) => el.querySelectorAll('g[aria-hidden="true"] > g:nth-child(2) > *');
 
   it('stays off the shared ticker while idle and leaves it once the burst settles', () => {
     const ref = createRef<ConfettiHandle>();
-    const el = render(<ConfettiLayer ref={ref} />);
+    const el = render(<CelebrationLayer ref={ref} />);
     expect(ticker.size).toBe(0);
 
     act(() => ref.current!.burst(12));
@@ -391,7 +391,7 @@ describe('ConfettiLayer', () => {
 
   it('clears in-flight pieces and unsubscribes on demand', () => {
     const ref = createRef<ConfettiHandle>();
-    const el = render(<ConfettiLayer ref={ref} />);
+    const el = render(<CelebrationLayer ref={ref} />);
 
     act(() => ref.current!.burst(6));
     advance(FRAME_MS);

@@ -3,10 +3,11 @@ import { VIEWBOX_STR } from '../../core/types.js';
 import { fnv1a32 } from '../../math/hash.js';
 import type { FrameSnapshot } from '../../sim/snapshot.js';
 import { createSvgElement, syncElement } from '../dom.js';
+import { partColorCss, partRimCss } from '../part-color.js';
 import type { LiveRenderer, LiveRendererContext } from '../renderer.js';
 import { emit } from './emit.js';
 import { pixelGrid, type PixelGrid } from './grid.js';
-import { EYE_TOKEN, FACE_TOKEN, INK_TOKEN, LED_EYE, readOptions, variantOf } from './options.js';
+import { EYE_TOKEN, FACE_TOKEN, FX_TOKEN, INK_TOKEN, LED_EYE, readOptions, variantOf } from './options.js';
 import { createPaintTable, type PaintDef, type Tint } from './paints.js';
 import { HAIR_MIX } from './parts.js';
 import { createScratch, rasterise, type RasterSettings, type Scratch } from './rasterise.js';
@@ -122,14 +123,21 @@ export function createPixelRenderer(host: Element, context: LiveRendererContext)
       if ('flat' in ink) return ink.flat;
       return blendCss(ink.from, ink.to, (band + 0.5) / bands);
     };
-    const colour = (def: PaintDef): { value: string } => ({
-      value:
-        def.tint.kind === 'css'
-          ? def.tint.value
-          : def.tint.kind === 'hair'
-            ? `color-mix(in oklab, ${base(def.tint.band)}, ${HAIR_SHADE_TOKEN} ${HAIR_MIX * 100}%)`
-            : shadeCss(base(def.tint.band), def.tint.tone),
-    });
+    const colour = (def: PaintDef): { value: string } => {
+      const tint = def.tint;
+      switch (tint.kind) {
+        case 'css':
+          return { value: tint.value };
+        case 'hair':
+          return { value: `color-mix(in oklab, ${base(tint.band)}, ${HAIR_SHADE_TOKEN} ${HAIR_MIX * 100}%)` };
+        case 'fx':
+          return { value: ink ? base(tint.band) : FX_TOKEN };
+        case 'part':
+          return { value: shadeCss(tint.rim ? partRimCss(tint.color) : partColorCss(tint.color), tint.tone) };
+        default:
+          return { value: shadeCss(base(tint.band), tint.tone) };
+      }
+    };
 
     const { scene } = emit(paint, table, {
       grid,

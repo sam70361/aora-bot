@@ -52,7 +52,7 @@ export default function Demo() {
 
 ### CSS mask — 两个组件必需
 
-`AvatarStack` 用前方圆盘从后方抠洞，`CharacterPicker` 用 `mask-image` 画选中环。两者都同时提供了 `-webkit-` 前缀属性。
+`AvatarGroup` 用前方圆盘从后方抠洞，`CharacterSelector` 用 `mask-image` 画选中环。两者都同时提供了 `-webkit-` 前缀属性。
 
 没有 mask 支持时堆叠仍然会渲染，只是圆盘重叠而没有可见缝隙。
 
@@ -62,11 +62,11 @@ export default function Demo() {
 
 ### 容器查询 — 优雅降级
 
-网格布局的 `CharacterPicker` 按自身宽度决定列数，`AvatarEditor` 和 `TemplateDialog` 变窄时会重新排布。没有容器查询时，选择器保持六列，另外两个保持默认排布。
+网格布局的 `CharacterSelector` 按自身宽度决定列数，`AvatarStudio` 和 `TemplateDialog` 变窄时会重新排布。没有容器查询时，选择器保持六列，另外两个保持默认排布。
 
 ### `:has()` — 优雅降级
 
-`AvatarEditor` 的拖放区在内部文件输入获得键盘焦点时画出焦点环。没有 `:has()` 时，拖放区不显示自己的焦点环。
+`AvatarStudio` 的拖放区在内部文件输入获得键盘焦点时画出焦点环。没有 `:has()` 时，拖放区不显示自己的焦点环。
 
 ## 没有使用什么
 

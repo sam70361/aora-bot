@@ -1,8 +1,15 @@
-import type { BeltKind, CharacterState, ColorId, EyeTopologyId, MouthId, ShapeId } from '@aora-bot/engine';
+import type {
+  BeltKind,
+  CharacterState,
+  CoreColorId,
+  CoreShapeId,
+  EyeTopologyId,
+  MouthId,
+} from '@aora-bot/engine';
 import type { enUS } from './en-US.js';
 import { family, hudLabels, shapeFamilyLabels, stateGroupLabels } from './families.js';
 
-const SHAPES: Record<ShapeId, string> = {
+const SHAPES: Record<CoreShapeId, string> = {
   mochi: '麻薯',
   circle: '圆形',
   blob: '果冻',
@@ -49,9 +56,31 @@ const SHAPES: Record<ShapeId, string> = {
   curly: '卷毛',
   twinbuns: '双丸子',
   boba: '奶茶',
+  pudding: '布丁',
+  avocado: '牛油果',
+  toast: '吐司',
+  icecream: '冰淇淋',
+  lion: '狮子',
+  melon: '西瓜',
+  eggplant: '茄子',
+  cupcake: '纸杯蛋糕',
+  fries: '薯条',
+  candy: '糖果',
+  burger: '汉堡',
+  hamster: '仓鼠',
+  hedgehog: '刺猬',
+  koala: '考拉',
+  bat: '蝙蝠',
+  seal: '海豹',
+  puffer: '河豚',
+  planet: '星球',
+  cottage: '小屋',
+  chat: '对话气泡',
+  gift: '礼物',
+  bulb: '灯泡',
 };
 
-const COLORS: Record<ColorId, string> = {
+const COLORS: Record<CoreColorId, string> = {
   black: '墨黑',
   brown: '棕褐',
   red: '朱红',
@@ -64,6 +93,15 @@ const COLORS: Record<ColorId, string> = {
   magenta: '洋红',
   pink: '粉',
   gray: '灰',
+  night: '夜黑',
+  cocoa: '可可',
+  sky: '天青',
+  blush: '樱粉',
+  lilac: '丁香',
+  cream: '奶油',
+  butter: '黄油',
+  ivory: '象牙白',
+  meadow: '青草',
 };
 
 const STATES: Record<CharacterState, string> = {
@@ -284,6 +322,19 @@ export const zhCN: Record<keyof typeof enUS, string> = {
   'face.cute': '萌脸',
   'face.eyes': '豆豆眼',
   'face.line': '线描脸',
+  'face.brow': '浓眉眼',
+  'face.glossy': '水汪眼',
+  'face.sparkle': '闪亮眼',
+  'face.button': '纽扣眼',
+  'face.shades': '墨镜脸',
+  'face.droopy': '半睁眼',
+  'face.bigmouth': '大嘴脸',
+  'face.pie': '派切眼',
+  'face.screen': '屏幕脸',
+  'face.symbol': '符号眼',
+  'face.capsule': '胶囊眼',
+  'face.teardrop': '水滴眼',
+  'face.specs': '眼镜脸',
 
   'nose.slant': '斜线',
   'nose.angular': '折角',
@@ -303,6 +354,14 @@ export const zhCN: Record<keyof typeof enUS, string> = {
   'variant.paper': '剪纸',
   'variant.soft': '软糖',
   'variant.riso': '孔版',
+  'variant.pencil': '铅笔',
+  'variant.marker': '涂鸦',
+  'variant.crayon': '蜡笔',
+  'variant.watercolor': '水彩',
+  'variant.neon': '霓虹',
+  'variant.chalk': '粉笔',
+  'variant.origami': '折纸',
+  'variant.relief': '浮雕',
   'variant.crisp': '清晰',
   'variant.dot': '点阵',
   'variant.block': '方块',
@@ -319,6 +378,10 @@ export const zhCN: Record<keyof typeof enUS, string> = {
   'param.vector.softGloss': '高光',
   'param.vector.risoOffset': '错版距离',
   'param.vector.risoHalftone': '网点',
+  'param.vector.wobble': '手抖',
+  'param.vector.grain': '纸纹',
+  'param.vector.hatching': '排线',
+  'param.vector.neonGlow': '辉光',
   'param.pixel.grid': '网格',
   'param.pixel.gap': '间隙',
   'param.pixel.shades': '明暗层数',

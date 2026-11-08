@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { SHAPE_IDS } from '../src/core/types.js';
+import { SHAPE_IDS, SHAPE_SPACE, VIEWBOX_STR } from '../src/core/types.js';
 import { fnv1a32 } from '../src/math/hash.js';
 import { CHARACTER_STATES } from '../src/motion/states.js';
 import { createCharacter } from '../src/render/character.js';
@@ -205,7 +205,7 @@ describe('pixel grid', () => {
     for (const n of [12, 15, 24, 33, 48]) {
       const grid = pixelGrid(n);
       expect(grid.size).toBe(n + 2 * grid.margin);
-      expect(grid.cell).toBeCloseTo(229 / n, 6);
+      expect(grid.cell).toBeCloseTo(SHAPE_SPACE / n, 6);
     }
   });
 });
@@ -242,7 +242,7 @@ describe('live pixel renderer', () => {
 
     expect(host.children).toHaveLength(1);
     expect(host.firstElementChild).toBe(character.element);
-    expect(character.element.getAttribute('viewBox')).toBe('-24 -24 277 277');
+    expect(character.element.getAttribute('viewBox')).toBe(VIEWBOX_STR);
     expect(character.element.querySelectorAll('path').length).toBeGreaterThan(0);
 
     character.destroy();

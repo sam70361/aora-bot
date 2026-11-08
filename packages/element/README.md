@@ -1,7 +1,7 @@
 # @aora-bot/element
 
 The [Aora Bot](https://aora-bot.vercel.app) character as a Web Component, for pages without React.
-A named cast of generated characters, animation states, three faces, and vector, pixel and
+A named cast of generated characters, animation states, thirteen faces, and vector, pixel and
 kaomoji styles, drawn entirely by code and animated from one shared frame loop. Pick one in the
 [console](https://aora-bot.vercel.app/en/) and set it with attributes.
 
@@ -43,7 +43,7 @@ the cast member's choice, and never throws.
 | `character`      | A cast id such as `mochi`, `byte` or `luna`                           | None                            |
 | `shape`          | One of the roster's shapes                                            | The cast member's, else `mochi` |
 | `color`          | One hue of the palette                                                | The cast member's, else `black` |
-| `face`           | `cute`, `eyes` or `line`                                              | The cast member's, else `cute`  |
+| `face`           | Any face in `FACE_STYLES`: `cute`, `eyes`, `line` or a drawn face     | The cast member's, else `cute`  |
 | `nose`           | A nose id, or `none`                                                  | Derived from `seed`             |
 | `state`          | One of the animation states                                           | `idle`                          |
 | `style-id`       | `vector`, `pixel` or `kaomoji`                                        | `vector`                        |

@@ -1,5 +1,6 @@
 import { defineConfig } from '@rslib/core';
 import { reactLib } from '../../scripts/build-shared.ts';
+import { THEME_MANIFEST } from '../engine/src/themes/manifest.ts';
 
 export default defineConfig({
   source: {
@@ -27,6 +28,8 @@ export default defineConfig({
       source: {
         entry: {
           static: './src/static.ts',
+          // Each theme's entry, re-exported from the engine (`@aora-bot/react/themes/<id>`).
+          ...Object.fromEntries(THEME_MANIFEST.map(({ id }) => [`themes/${id}`, `./src/themes/${id}.ts`])),
         },
       },
       // Deliberately no banner. This entry exists so a Server Component can

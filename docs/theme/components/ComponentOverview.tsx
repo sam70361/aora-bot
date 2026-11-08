@@ -9,21 +9,21 @@ import { useLocalePath } from '../../app/shared/locale-path.js';
 type DescriptionKey =
   | 'overview.characterMark'
   | 'overview.characterMarkMirror'
-  | 'overview.markStage'
+  | 'overview.characterStage'
   | 'overview.markCommands'
-  | 'overview.agentAvatar'
-  | 'overview.avatarStack'
+  | 'overview.agentPortrait'
+  | 'overview.avatarGroup'
   | 'overview.unreadBadge'
   | 'overview.workingBadge'
-  | 'overview.avatarEditor'
-  | 'overview.characterPicker'
-  | 'overview.agentCharacterPicker'
-  | 'overview.compactCharacterPicker'
+  | 'overview.avatarStudio'
+  | 'overview.characterSelector'
+  | 'overview.agentCharacterSelector'
+  | 'overview.compactCharacterSelector'
   | 'overview.templateDialog'
   | 'overview.usePublishMark'
-  | 'overview.activityMark'
-  | 'overview.activityTicker'
-  | 'overview.confettiLayer'
+  | 'overview.activityBadge'
+  | 'overview.activityLine'
+  | 'overview.celebrationLayer'
   | 'overview.occupancyList'
   | 'overview.localeProvider'
   | 'overview.agentState'
@@ -80,9 +80,9 @@ const GROUPS: Group[] = [
         preview: { shape: 'pebble', color: 'cyan', state: 'idle' },
       },
       {
-        title: 'MarkStageProvider',
-        link: '/components/mark-stage',
-        descriptionKey: 'overview.markStage',
+        title: 'CharacterStageProvider',
+        link: '/components/character-stage',
+        descriptionKey: 'overview.characterStage',
         preview: { shape: 'tofu', color: 'violet', state: 'orbit' },
       },
       {
@@ -97,20 +97,20 @@ const GROUPS: Group[] = [
     titleKey: 'overview.group.avatar',
     entries: [
       {
-        title: 'AgentAvatar',
-        link: '/components/agent-avatar',
-        descriptionKey: 'overview.agentAvatar',
+        title: 'AgentPortrait',
+        link: '/components/agent-portrait',
+        descriptionKey: 'overview.agentPortrait',
         preview: { shape: 'egg', color: 'green', state: 'idle' },
       },
       {
-        title: 'AvatarStack',
-        link: '/components/avatar-stack',
-        descriptionKey: 'overview.avatarStack',
+        title: 'AvatarGroup',
+        link: '/components/avatar-group',
+        descriptionKey: 'overview.avatarGroup',
         preview: { shape: 'hex', color: 'orange', state: 'idle' },
       },
       {
         title: 'UnreadBadge',
-        link: '/components/avatar-chrome',
+        link: '/components/avatar-frame',
         descriptionKey: 'overview.unreadBadge',
         preview: { shape: 'tofu', color: 'red', state: 'notifying' },
       },
@@ -121,9 +121,9 @@ const GROUPS: Group[] = [
         preview: { shape: 'bun', color: 'blue', state: 'working' },
       },
       {
-        title: 'AvatarEditor',
-        link: '/components/avatar-editor',
-        descriptionKey: 'overview.avatarEditor',
+        title: 'AvatarStudio',
+        link: '/components/avatar-studio',
+        descriptionKey: 'overview.avatarStudio',
         preview: { shape: 'blob', color: 'magenta', state: 'curious', face: 'line' },
       },
     ],
@@ -132,21 +132,21 @@ const GROUPS: Group[] = [
     titleKey: 'overview.group.activity',
     entries: [
       {
-        title: 'ActivityMark',
-        link: '/components/activity-mark',
-        descriptionKey: 'overview.activityMark',
+        title: 'ActivityBadge',
+        link: '/components/activity-badge',
+        descriptionKey: 'overview.activityBadge',
         preview: { shape: 'cloud', color: 'blue', state: 'thinking' },
       },
       {
-        title: 'ActivityTicker',
-        link: '/components/activity-ticker',
-        descriptionKey: 'overview.activityTicker',
+        title: 'ActivityLine',
+        link: '/components/activity-line',
+        descriptionKey: 'overview.activityLine',
         preview: { shape: 'pill', color: 'gray', state: 'dictating' },
       },
       {
-        title: 'ConfettiLayer',
-        link: '/components/confetti-layer',
-        descriptionKey: 'overview.confettiLayer',
+        title: 'CelebrationLayer',
+        link: '/components/celebration-layer',
+        descriptionKey: 'overview.celebrationLayer',
         preview: { shape: 'drop', color: 'yellow', state: 'celebrate' },
       },
       {
@@ -201,21 +201,21 @@ const GROUPS: Group[] = [
     titleKey: 'overview.group.editor',
     entries: [
       {
-        title: 'CharacterPicker',
-        link: '/components/character-picker',
-        descriptionKey: 'overview.characterPicker',
+        title: 'CharacterSelector',
+        link: '/components/character-selector',
+        descriptionKey: 'overview.characterSelector',
         preview: { shape: 'hex', color: 'magenta', state: 'idle' },
       },
       {
-        title: 'AgentCharacterPicker',
-        link: '/components/agent-character-picker',
-        descriptionKey: 'overview.agentCharacterPicker',
+        title: 'AgentCharacterSelector',
+        link: '/components/agent-character-selector',
+        descriptionKey: 'overview.agentCharacterSelector',
         preview: { shape: 'heart', color: 'violet', state: 'listening', face: 'line' },
       },
       {
-        title: 'CompactCharacterPicker',
-        link: '/components/compact-character-picker',
-        descriptionKey: 'overview.compactCharacterPicker',
+        title: 'CompactCharacterSelector',
+        link: '/components/compact-character-selector',
+        descriptionKey: 'overview.compactCharacterSelector',
         preview: { shape: 'hex', color: 'cyan', state: 'idle', face: 'line' },
       },
       {
@@ -248,8 +248,8 @@ const GROUPS: Group[] = [
         preview: { shape: 'pill', color: 'blue', state: 'loading' },
       },
       {
-        title: 'CastStage',
-        link: '/components/cast-stage',
+        title: 'CastLineup',
+        link: '/components/cast-lineup',
         descriptionKey: 'overview.castStage',
         preview: { shape: 'ghost', color: 'violet', state: 'playful' },
       },

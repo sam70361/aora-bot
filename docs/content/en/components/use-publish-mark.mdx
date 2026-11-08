@@ -6,7 +6,7 @@ Three states for the one moment a form is worth animating.
 
 ```tsx preview
 import { useRef } from 'react';
-import { CharacterMark, ConfettiLayer, type ConfettiHandle } from '@aora-bot/react';
+import { CharacterMark, CelebrationLayer, type ConfettiHandle } from '@aora-bot/react';
 import { usePublishMark } from '@aora-bot/surfaces';
 
 export default function Demo() {
@@ -24,7 +24,7 @@ export default function Demo() {
     <div className="site-demo site-demo--column">
       <div style={{ position: 'relative', display: 'inline-flex' }}>
         <CharacterMark shape="star" color="orange" state={publish.characterState} sizePx={80} />
-        <ConfettiLayer ref={confetti} />
+        <CelebrationLayer ref={confetti} />
       </div>
       <span className="site-demo__label">{publish.state}</span>
       <div className="site-controls">
@@ -60,7 +60,7 @@ Failure returns straight to rest rather than to a sad face. The form is about to
 
 Options:
 
-- `confetti` — a ref to a [`ConfettiLayer`](/components/confetti-layer). The hook fires `burst` (20 pieces by default) on success so the host never has to notice the moment itself. It is supplied by the caller rather than returned from the hook: the ref belongs to the element it is attached to, and a hook handing one out invites reading `.current` during render.
+- `confetti` — a ref to a [`CelebrationLayer`](/components/celebration-layer). The hook fires `burst` (20 pieces by default) on success so the host never has to notice the moment itself. It is supplied by the caller rather than returned from the hook: the ref belongs to the element it is attached to, and a hook handing one out invites reading `.current` during render.
 - `celebrateMs` — how long the celebration holds (1600 ms by default).
 - `onSettled` — called when the celebration has finished. A good place to close a dialog.
 
@@ -68,5 +68,5 @@ A celebration in flight when the component unmounts is cancelled, so nothing fir
 
 ## Next
 
-- [ConfettiLayer](/components/confetti-layer) — paper over anything
+- [CelebrationLayer](/components/celebration-layer) — paper over anything
 - [Celebration](/scenarios/celebration) — work, celebrate, put itself away

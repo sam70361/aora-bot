@@ -7,8 +7,10 @@
  * (hidden, not absent), so the DOM can be updated in place; a static scene is
  * the culled, flattened form that reads well as a string.
  */
-import { HAIR_SHADE_TOKEN } from '../../core/palette.js';
-import { CENTER, type Ring } from '../../core/types.js';
+import { FACE_INK, HAIR_SHADE_TOKEN, SOFT_FACE_INK } from '../../core/palette.js';
+import { CENTER, isCuteFamily, type PartColor, type Ring } from '../../core/types.js';
+import { livePartPaint, type PartColorPaint } from '../part-color.js';
+import { FACE_ACCENTS, type FaceAccent } from '../../face/drawn/index.js';
 import { eyePath, type EyeShape, type FeatureShape } from '../../face/placement.js';
 import type { FxFrame, FxItem } from '../../motion/fx.js';
 import { HUD_FONT } from '../../hud/dials.js';
@@ -18,7 +20,33 @@ import { PathBuilder, smoothClosedPath } from '../../math/path-builder.js';
 import { polylinePath, polylinesPath } from '../../math/polyline.js';
 import { tangentTransformString } from '../../math/pose.js';
 import type { FaceFrame, FrameSnapshot, HudSnapshot } from '../../sim/snapshot.js';
+import { withoutFineParts } from '../fine-parts.js';
 import { node, r2, type SceneNode } from '../scene.js';
+import {
+  isBuiltinMedium,
+  isLineVariant,
+  isMedium,
+  lineShift,
+  mediumBody,
+  mediumDefs,
+  mediumSize,
+  faceInkOf,
+  mediumTreatment,
+  monochromeEffects,
+  wearsDarkFace,
+  type Medium,
+  type MediumPaint,
+  type MediumRole,
+  type MediumSize,
+} from './media.js';
+import { getShape } from '../../shapes/registry.js';
+import {
+  themeExtras,
+  type ExtrasPaints,
+  type ExtrasScene,
+  type FigureWrap,
+} from '../../themes/extras-hook.js';
+import { drawnEyeNodes, drawnMouthNodes, drawnMouthPaint, lightCss, type DrawnPalette } from './drawn.js';
 import { paperNodes, trailNodes } from './particles.js';
 import {
   bodyPieces,
@@ -32,6 +60,9 @@ import {
 
 /** The theme's foreground token: the default body ink. */
 export const INK_TOKEN = 'var(--aora-fg, currentColor)';
+
+/** What state effects are drawn in: the ink, unless the host sets an ink of their own (`getInkVars`). */
+export const FX_TOKEN = `var(--aora-fx, ${INK_TOKEN})`;
 
 /**
  * The colour of the eye cut-outs. `--aora-bg` is what a host sets to re-theme
@@ -61,7 +92,6 @@ export const STICKER_FACE_TOKEN = `var(--aora-face-sticker, ${PAPER_TOKEN})`;
  * and still lets it read.
  */
 export const FACE_SHIFT_TOKEN = 'light-dark(#000, #fff)';
-const FACE_SHIFT = 22;
 
 /**
  * The cute face's own colour. A host that sets `--aora-face` (white, for every
@@ -70,8 +100,43 @@ const FACE_SHIFT = 22;
  */
 export const FACE_TOKEN = 'var(--aora-face, var(--aora-bg, var(--aora-bg-base, #fcfcfc)))';
 
-/** The soft variant's face: a dark brown, with a host override for a black body. */
+/**
+ * The dark face of the painted variants (`soft`, `crayon`, `watercolor`): a
+ * dark brown, with a host override for a black body.
+ */
 export const SOFT_FACE_TOKEN = 'var(--aora-face-soft, #2B2420)';
+
+/**
+ * A drawn face's pupils: dark on the white face, and on a black body light
+ * on a dark page, where the face is the page's own dark (`getInkVars`).
+ */
+export const PUPIL_TOKEN = `var(--aora-face-pupil, ${SOFT_FACE_INK})`;
+
+/** The light on an eye a drawn face paints straight onto the body: white, except where the feature colour is. */
+export const GLINT_TOKEN = `var(--aora-face-glint, ${FACE_INK})`;
+
+/** How a drawn face's iris deepens the body's ink. */
+const IRIS_DEPTH = { color: '#1A1226', share: 38 } as const;
+
+/**
+ * How much of the line a drawn face's accent takes on a body that is a line
+ * and throws its effects in one colour; the rest is the page. Dark glass and
+ * a star stay solid, a tear and a tongue go half-tone, a button's face is a
+ * plate of page.
+ */
+const HOLLOW_ACCENT_SHARE: Record<FaceAccent, number> = {
+  gold: 100,
+  tear: 50,
+  tongue: 50,
+  rose: 100,
+  flame: 100,
+  thread: 100,
+  bone: 0,
+  glass: 100,
+};
+
+/** A drawn plate's rim on a body that is a line, as a share of the body's stroke. */
+const PLATE_RIM = 0.32;
 
 /** The riso variant's second ink. `--aora-ink2` swaps it, as pink needs. */
 export const RISO_TOKEN = 'var(--aora-ink2, #FF78A6)';
@@ -85,8 +150,8 @@ const STICKER_SHADOW = { dy: 3.5, blur: 3, opacity: 0.2 };
 /** An outlined mouth is drawn a little finer than the filled mouth's own stroke (2.6 against 3). */
 const MOUTH_OUTLINE_SHARE = 0.87;
 
-/** The two variants whose body is a line, so the face and the effects take the ink instead of their own colours. */
-const isHollow = (variant: string): boolean => variant === 'outline' || variant === 'glass';
+/** The variants whose body is a line, so the face takes the ink instead of a face colour. */
+const isHollow = isLineVariant;
 
 /** How much of the ink fills an outlined body. */
 const OUTLINE_FILL = 0.08;
@@ -106,7 +171,7 @@ const BLUSH_HOLLOW_OPACITY = 0.16;
 /** The riso variant's misregistration, as a fixed direction (3.4 : 2.6) scaled by `risoOffset`. */
 const RISO_DIRECTION = [0.794, 0.608] as const;
 
-/** Halftone dots: spacing, radius and slant, in shape units (scaled to a 229 box). */
+/** Halftone dots: spacing, radius and slant, in shape units. */
 const HALFTONE = { pitch: 7.8, radius: 1.7, angle: 30, opacity: 0.42 };
 
 /** Width of the stroke that separates the badge from whatever is under it. */
@@ -134,6 +199,14 @@ export interface VectorParams {
   risoOffset: number;
   /** Whether the riso variant is screened with halftone dots. */
   risoHalftone: boolean;
+  /** How far a hand-drawn line strays from the outline, in shape units. */
+  wobble: number;
+  /** Strength of the paper grain, as a share of each medium's own. */
+  grain: number;
+  /** Whether pencil shades and chalk fills with hatching. */
+  hatching: boolean;
+  /** Radius of the neon glow, in shape units. */
+  neonGlow: number;
 }
 
 /**
@@ -152,6 +225,10 @@ export function readVectorParams(options: Record<string, unknown>): VectorParams
     softGloss: options.softGloss === true,
     risoOffset: Number(options.risoOffset),
     risoHalftone: options.risoHalftone === true,
+    wobble: Number(options.wobble),
+    grain: Number(options.grain),
+    hatching: options.hatching === true,
+    neonGlow: Number(options.neonGlow),
   };
 }
 
@@ -187,8 +264,16 @@ export interface VectorSceneContext {
   faceShift?: string;
   /** What hair is shaded towards on a filled body. Defaults to `HAIR_SHADE_TOKEN`. */
   hairShade?: string;
+  /** A drawn face's pupils on a filled body. Defaults to `PUPIL_TOKEN`. */
+  pupilFill?: string;
+  /** A drawn face's brows, lids and body-drawn eyes on a filled body. Defaults to the soft face colour. */
+  featureFill?: string;
+  /** The light on a body-drawn eye. Defaults to `GLINT_TOKEN`. */
+  glintFill?: string;
   /** The body's ink as a solid paint, for strokes too thin for a gradient. Defaults to `ink`. */
   solidInk?: string;
+  /** What state effects are drawn in. Defaults to `solidInk`, then to `FX_TOKEN`. */
+  fxFill?: string;
   /**
    * Ids for the defs the soft, glass and riso variants need: a light gradient
    * and a body clip (soft and glass, one at a time) and a halftone (riso).
@@ -197,13 +282,31 @@ export interface VectorSceneContext {
   softId?: string;
   halftoneId?: string;
   glossId?: string;
+  /**
+   * Prefix for the drawing media's defs (grain, glow, rim). Without it a
+   * medium draws its geometry and leaves the grain and the glow out.
+   */
+  mediaId?: string;
+  /**
+   * Width the character is shown at, in CSS pixels; 0 or absent when it is
+   * not known. A drawing medium leaves its fine detail out of a small
+   * character and keeps its lines at least a pixel wide (`mediumSize`).
+   */
+  readonly displaySizePx?: number;
   /** Paint of the leaf accessory. Defaults to the leaf token. */
   leaf?: string;
+  /** A part's own colour and its ring. Defaults to the swatch's ink through `light-dark()`. */
+  partColor?: (color: PartColor) => PartColorPaint;
   /**
    * Paint for the belt's dots, rings and glyphs. Defaults to a flat ink
    * override if there is one, else the foreground token.
    */
   beltPaint?: string;
+  /**
+   * A seed that sets where in their periods this character's decorations and
+   * signature motions start, so a page of one shape does not move in step.
+   */
+  phaseSeed?: string;
   /** Read on every build, so a live renderer can change them between frames. */
   readonly params: VectorParams;
 }
@@ -237,9 +340,64 @@ function bodyPath(outline: Ring): string {
   return d;
 }
 
+/**
+ * A live frame drawn as layers, each a root group in its own SVG, stacked in
+ * this order. The body's motion is not in them: the layers from `below` to
+ * `face` are drawn at rest and moved as one box, so a frame where only the
+ * body moves repaints none of them.
+ */
+export interface SceneLayers {
+  /** The clip and gradient defs, and what is drawn behind the body (trails, belt rings, a ground shadow). */
+  back: SceneNode;
+  /** Moving pieces drawn behind the body. */
+  below: SceneNode;
+  /** The body and its pieces that hold still: the skin, with its defs. */
+  skin: SceneNode;
+  /** Moving pieces drawn over the body. */
+  above: SceneNode;
+  /** The face, the effects that belong to it and the badge. */
+  face: SceneNode;
+  /** Glyphs the figure streams: they ride the body but not the figure's own motion. */
+  streams: SceneNode;
+  /** What is drawn in front of the body: belt dots, scene effects, the dial, trails, particles. */
+  front: SceneNode;
+  /** The theme's decorations. */
+  decor: SceneNode;
+  /** The boxes the figure's own motions move, outermost first. */
+  figure: readonly FigureWrap[];
+}
+
 export interface VectorScene {
   build(frame: FrameSnapshot): SceneNode;
+  /** A live frame as layers; see `drawsInLayers` for when a renderer asks for them. */
+  layers(frame: FrameSnapshot): SceneLayers;
+  /** The CSS rules the last frame's animations need, for the stylesheet a page's characters share. */
+  rules(): readonly string[];
 }
+
+/**
+ * Whether a live character is drawn in layers (`SceneLayers`): a theme's
+ * skin, whose textured body is costly to paint again, or a shape or skin
+ * that brings a theme's motions or decorations. Never for a character other
+ * marks mirror (`sourceId`), which `<use>` has to find in one tree, nor for
+ * the paper variant, whose shadow turns with the body, nor for the core's
+ * own media, whose grain treats the face and the body as one group. Only
+ * once a theme has brought its extras, which keep the layers in the DOM.
+ */
+export function drawsInLayers(frame: FrameSnapshot, sourceId: string | undefined): boolean {
+  if (sourceId) return false;
+  const variant = frame.variant;
+  if (variant === 'paper') return false;
+  // The theme's extras keep the layers in the DOM; a theme without them draws in one tree.
+  const extras = themeExtras();
+  if (!extras) return false;
+  if (isMedium(variant)) return !isBuiltinMedium(variant);
+  if (extras.decorates(variant)) return true;
+  const shape = getShape(frame.shape);
+  return shape.motion !== undefined || shape.parts.some((part) => part.motion !== undefined);
+}
+
+const NO_LAYER_RULES: readonly string[] = [];
 
 export function createVectorScene(ctx: VectorSceneContext): VectorScene {
   const live = ctx.mode === 'live';
@@ -250,6 +408,40 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
    * default-face character never gets them at all.
    */
   let featureNodes = false;
+  /** How a drawing medium draws at the size the frame is shown: set at the start of every build. */
+  let sized: MediumSize = { params: ctx.params, minLine: 0 };
+  /** The theme extras' share of this scene (decorations, motions), once a theme has brought them. */
+  let extras: ExtrasScene | null = null;
+  /** The same, as the parts and the figure read it while a frame is built. */
+  let motion: ExtrasScene | undefined;
+  /** Where the body's layers go while `layers` builds a frame; `null` while `build` draws one tree. */
+  let split: BodySplit | null = null;
+  /** The layers `layers` last handed over that stay the same while their nodes do. */
+  const steadyLayers: ({
+    scale: number;
+    core: number | null;
+    treated: boolean;
+    nodes: SceneNode[];
+    node: SceneNode;
+  } | null)[] = [];
+  /** The skin a live scene last drew, and what it was drawn from (`skinNodes`). */
+  let kept: { deps: unknown[]; nodes: SceneNode[]; below: SceneNode[]; above: SceneNode[] } | null = null;
+  /** The defs a live scene last drew, and what they were drawn from (`defNodes`). */
+  let keptDefs: { deps: unknown[]; nodes: SceneNode[] } | null = null;
+  /** The frame being built and its body paint, for the colours decorations and emitted glyphs take. */
+  let buildingFrame: FrameSnapshot | null = null;
+  let buildingInk = INK_TOKEN;
+  const paintsNow = (): ExtrasPaints => {
+    const frame = buildingFrame!;
+    const own = frame.ink;
+    return {
+      ink: ctx.solidInk ?? (own && 'from' in own ? own.from : buildingInk),
+      fx: ctx.fxFill ?? ctx.solidInk ?? ctx.beltPaint ?? flatInk(frame) ?? FX_TOKEN,
+      page: ctx.eyeFill ?? EYE_TOKEN,
+      contrast: ctx.faceShift ?? FACE_SHIFT_TOKEN,
+      partColor: ctx.partColor ?? livePartPaint,
+    };
+  };
 
   /** Static markup leaves out what is at its default; the live DOM is always explicit. */
   const opacity = (v: number): number | undefined => (!live && v >= 1 ? undefined : r2(v));
@@ -260,42 +452,107 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
    * `currentColor` ink is a single-colour line drawing that has to stay in
    * the text colour, so both are used as they are.
    */
-  const hollowFace = (solid: string): string =>
+  const hollowFace = (solid: string, variant: string): string =>
     solid.startsWith('url(') || solid === 'currentColor'
       ? solid
-      : `color-mix(in oklab, ${solid}, ${ctx.faceShift ?? FACE_SHIFT_TOKEN} ${FACE_SHIFT}%)`;
+      : `color-mix(in oklab, ${solid}, ${ctx.faceShift ?? FACE_SHIFT_TOKEN} ${lineShift(variant)}%)`;
+  /**
+   * What uncoloured hair is shaded towards: the deep tone of the ink its shape
+   * asks for (`DrawnArt.hairDeep`), else the face rule's hair shade.
+   */
+  const hairShadeOf = (frame: FrameSnapshot, solid: string): string => {
+    const deep = getShape(frame.shape).hairDeep;
+    return deep !== undefined && !solid.startsWith('url(')
+      ? `oklch(from ${solid} calc(l * ${deep}) calc(c * 0.9 + 0.03) h)`
+      : (ctx.hairShade ?? HAIR_SHADE_TOKEN);
+  };
+  /**
+   * What a drawing medium paints with. A gradient ink has no single colour to
+   * mix or flood a glow with, so its first stop stands in for it.
+   */
+  const mediumPaint = (frame: FrameSnapshot, ink: string): MediumPaint => {
+    const own = frame.ink;
+    const solid = ctx.solidInk ?? (own && 'from' in own ? own.from : ink);
+    return {
+      ink,
+      solid,
+      line: hollowFace(solid, frame.variant),
+      leaf: ctx.leaf ?? LEAF_TOKEN,
+      hairShade: hairShadeOf(frame, solid),
+      partColor: ctx.partColor ?? livePartPaint,
+      lineOf: (color) => hollowFace(color, frame.variant),
+    };
+  };
+  /**
+   * A group wearing the medium's treatment for `role`. A static scene drops
+   * the group when it has nothing to treat; a live one keeps it and only
+   * takes the treatment off, so the DOM keeps its shape.
+   */
+  const treated = (frame: FrameSnapshot, role: MediumRole, children: SceneNode[]): SceneNode => {
+    const variant = frame.variant as Medium;
+    const filled = hasContent(children);
+    const attrs =
+      filled && ctx.mediaId ? mediumTreatment(variant, ctx.mediaId, sized.params, role) : undefined;
+    return node('g', attrs, children, { fragment: !live && !attrs });
+  };
+  /** What a line medium draws its dials, belt and monochrome effects with: its line. `null` for every other variant. */
+  const mediumLine = (frame: FrameSnapshot, ink: string): string | null =>
+    isMedium(frame.variant) && isHollow(frame.variant) ? mediumPaint(frame, ink).line : null;
+  /** The one colour a variant throws its effects in, or `null` when they keep their own. */
+  const effectPaint = (frame: FrameSnapshot, ink: string): string | null =>
+    monochromeEffects(frame.variant)
+      ? (mediumLine(frame, ink) ?? ctx.solidInk ?? ctx.beltPaint ?? flatInk(frame) ?? INK_TOKEN)
+      : null;
   const stickerFace = ctx.stickerFaceFill ?? STICKER_FACE_TOKEN;
 
-  function build(frame: FrameSnapshot): SceneNode {
+  function build(snapshot: FrameSnapshot): SceneNode {
+    const frame = withoutFineParts(snapshot, ctx.displaySizePx ?? 0);
     const ink = resolveInk(frame, ctx);
     const variant = frame.variant;
-    const hollow = variant === 'outline' || variant === 'glass';
+    const hollow = isHollow(variant);
+    const medium = isMedium(variant);
+    sized = mediumSize(ctx.params, ctx.displaySizePx ?? 0, frame.shapeScale);
+    const line = mediumLine(frame, ink);
+    buildingFrame = frame;
+    buildingInk = ink;
+    if (!extras) extras = themeExtras()?.scene(live, ctx.phaseSeed) ?? null;
+    extras?.begin(frame, getShape(frame.shape), paintsNow, ctx.displaySizePx ?? 0);
+    motion = extras ?? undefined;
     // Outlined bodies are not a filled mass, so cut-out eyes would vanish: the
     // eyes and features switch to the ink instead. A sticker's eyes are its
     // paper, whatever the page behind it is.
     const eyeFill = hollow
-      ? hollowFace(ctx.solidInk ?? ink)
+      ? hollowFace(ctx.solidInk ?? ink, variant)
       : variant === 'sticker'
         ? stickerFace
         : (ctx.eyeFill ?? EYE_TOKEN);
-    const belt = ctx.beltPaint ?? flatInk(frame) ?? INK_TOKEN;
+    const belt = line ?? ctx.beltPaint ?? flatInk(frame) ?? INK_TOKEN;
+    const effects = effectPaint(frame, ink);
     const d = bodyPath(frame.body.outline);
-    const parts = partLayers(frame, {
-      ink,
-      leaf: ctx.leaf ?? LEAF_TOKEN,
-      hairShade: ctx.hairShade ?? HAIR_SHADE_TOKEN,
-      strokeWidth: ctx.params.strokeWidth,
-      live,
-    });
+    const parts = medium
+      ? NO_PARTS
+      : partLayers(frame, {
+          ink,
+          leaf: ctx.leaf ?? LEAF_TOKEN,
+          hairShade: hairShadeOf(
+            frame,
+            ctx.solidInk ?? (frame.ink && 'from' in frame.ink ? frame.ink.from : ink),
+          ),
+          strokeWidth: ctx.params.strokeWidth,
+          live,
+          partColor: ctx.partColor ?? livePartPaint,
+          line: (color) => hollowFace(color, variant),
+          motion,
+        });
 
     const body = node('path', bodyAttrs(frame, ink, parts.silhouette ?? d));
-    const children: SceneNode[] = [];
-    if (live && ctx.clipId) children.push(defs(frame, d));
+    const children: SceneNode[] = defNodes(frame, d, ink);
 
-    children.push(
+    const back = [
       node('g', undefined, trailNodes(frame.trails, 'back'), { fragment: true }),
       node('g', undefined, beltRings(frame, belt), { fragment: true }),
-    );
+    ];
+    children.push(...(medium ? [treated(frame, 'over', back)] : back));
     if (variant === 'soft' && ctx.params.softShadow) children.push(groundShadow(frame));
     if (variant === 'paper') {
       // The shadow turns with the body, so both sit in one tilted group.
@@ -308,30 +565,142 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
           { fragment: tilt === 0 },
         ),
       );
+    } else if (split) {
+      bodySplit(frame, body, eyeFill, d, ink, parts, split);
     } else {
       children.push(bodyGroup(frame, body, eyeFill, d, ink, parts));
     }
-    children.push(
+    const front = [
       node('g', undefined, beltDots(frame, belt), { fragment: true }),
       node('g', undefined, beltGlyphs(frame, belt), { fragment: true }),
-    );
-    if (live || frame.fx?.space === 'scene') children.push(fxLayer(frame, 'scene', hollow));
-    if (keep(frame.hud.primitives !== null)) children.push(hudLayer(frame.hud, ink));
-    children.push(
+    ];
+    // A theme's decorations that stand in for the scene's effects leave them out while they show.
+    const quiet = extras?.quiet === true;
+    if (live || (frame.fx?.space === 'scene' && !quiet)) front.push(fxLayer(frame, 'scene', effects, quiet));
+    if (keep(frame.hud.primitives !== null)) front.push(hudLayer(frame.hud, line ?? ink));
+    const decor = extras?.decor();
+    if (decor) {
+      if (split) split.decor = decor;
+      else front.push(decor);
+    }
+    front.push(
       node('g', undefined, trailNodes(frame.trails, 'front'), { fragment: true }),
       node('g', undefined, paperNodes(frame.particles), { fragment: true }),
     );
+    if (split) {
+      split.front = [medium ? treated(frame, 'over', front) : node('g', undefined, front)];
+      split.back = children;
+      return EMPTY_GROUP;
+    }
+    children.push(...(medium ? [treated(frame, 'over', front)] : front));
 
+    // Last, so a live scene that gains it later keeps every earlier node where it was. A
+    // live character no other mark mirrors shares one stylesheet with the page's others.
+    const style = !live || ctx.sourceId ? extras?.style() : null;
+    if (style) children.push(style);
+
+    return rootGroup(frame, children, ctx.sourceId || undefined);
+  }
+
+  /** The group every tree of a frame is drawn in: the shape's scale about the centre. */
+  function rootGroup(frame: FrameSnapshot, children: SceneNode[], id?: string): SceneNode {
     const scale = frame.shapeScale;
     return node(
       'g',
       {
-        id: ctx.sourceId || undefined,
+        id,
         transform: `translate(${CENTER} ${CENTER}) scale(${scale}) translate(${-CENTER} ${-CENTER})`,
       },
       children,
       { layout: 'hang' },
     );
+  }
+
+  function buildLayers(snapshot: FrameSnapshot): SceneLayers {
+    const into: BodySplit = {
+      back: [],
+      skin: [],
+      face: [],
+      below: [],
+      above: [],
+      front: [],
+      decor: null,
+      treat: null,
+    };
+    split = into;
+    try {
+      build(snapshot);
+    } finally {
+      split = null;
+    }
+    const frame = buildingFrame!;
+    // A medium's grain treats the whole body group in one tree; in layers, each layer of it.
+    const treat = into.treat;
+    const body = (nodes: SceneNode[]): SceneNode[] => (treat ? [treat(nodes)] : nodes);
+    const box = motion && getShape(frame.shape).motion ? motion.figureBox() : null;
+    // The moving pieces fade with the rest of the body as a belt takes it over.
+    const core = frame.body.coreOpacity;
+    const faded = (nodes: SceneNode[]): SceneNode[] =>
+      body([node('g', { opacity: core === null ? undefined : r2(core) }, nodes)]);
+    /*
+     * A layer whose nodes are the ones it had last frame is the same node, so
+     * the renderer passes over it without a look; the skin and the moving
+     * pieces are kept nodes (`skinNodes`), and so are the decorations.
+     */
+    const scale = frame.shapeScale;
+    const steady = (slot: number, nodes: readonly SceneNode[], make: () => SceneNode): SceneNode => {
+      const was = steadyLayers[slot];
+      if (
+        was &&
+        was.scale === scale &&
+        was.core === core &&
+        was.treated === (treat !== null) &&
+        was.nodes.length === nodes.length &&
+        was.nodes.every((n, i) => n === nodes[i])
+      )
+        return was.node;
+      const made = make();
+      steadyLayers[slot] = { scale, core, treated: treat !== null, nodes: [...nodes], node: made };
+      return made;
+    };
+    const streams = box?.streams ?? [];
+    return {
+      back: rootGroup(frame, into.back),
+      below: steady(0, into.below, () => rootGroup(frame, faded(into.below))),
+      skin: steady(1, into.skin, () => rootGroup(frame, body(into.skin))),
+      above: steady(2, into.above, () => rootGroup(frame, faded(into.above))),
+      face: rootGroup(frame, body(into.face)),
+      streams: steady(3, streams, () => rootGroup(frame, streams)),
+      front: rootGroup(frame, into.front),
+      decor: steady(4, into.decor ? [into.decor] : [], () =>
+        rootGroup(frame, into.decor ? [into.decor] : []),
+      ),
+      figure: box?.wraps ?? [],
+    };
+  }
+
+  /**
+   * The clip, the ink gradient and the medium's patterns and filters. A live
+   * scene keeps them while the body's outline and what the skin is drawn
+   * from stay the same, so a frame neither builds nor walks them again.
+   */
+  function defNodes(frame: FrameSnapshot, d: string, ink: string): SceneNode[] {
+    const make = (): SceneNode[] => {
+      const out: SceneNode[] = [];
+      if (live && ctx.clipId) out.push(defs(frame, d));
+      if (isMedium(frame.variant) && ctx.mediaId) {
+        out.push(
+          mediumDefs(frame.variant, ctx.mediaId, mediumPaint(frame, ink), sized.params, frame.body.parts),
+        );
+      }
+      return out;
+    };
+    if (!live || ctx.sourceId) return make();
+    const deps = [d, ...skinDeps(frame, ink, split !== null)];
+    if (keptDefs && sameDeps(keptDefs.deps, deps)) return [...keptDefs.nodes];
+    const nodes = make();
+    keptDefs = { deps, nodes };
+    return [...nodes];
   }
 
   function defs(frame: FrameSnapshot, d: string): SceneNode {
@@ -407,17 +776,129 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
     ink: string,
     parts: PartLayers,
   ): SceneNode {
-    const sticker = frame.variant === 'sticker';
+    const children = [...skinNodes(frame, body, d, ink, parts), ...faceNodes(frame, eyeFill, ink)];
+    const { transform, atRest } = bodyMotion(frame.body);
+    // Inside the motion, so a medium's grain and glow ride the body rather than slide over it.
+    const content = isMedium(frame.variant) ? [treated(frame, 'body', children)] : children;
+    return node('g', atRest ? undefined : { transform }, figureMoved(frame, content), { fragment: atRest });
+  }
+
+  /** The body group's nodes as `layers` stacks them, drawn at rest. */
+  function bodySplit(
+    frame: FrameSnapshot,
+    body: SceneNode,
+    eyeFill: string,
+    d: string,
+    ink: string,
+    parts: PartLayers,
+    into: BodySplit,
+  ): void {
+    into.skin = skinNodes(frame, body, d, ink, parts, into);
+    into.face = faceNodes(frame, eyeFill, ink);
+    into.treat = isMedium(frame.variant) ? (nodes) => treated(frame, 'body', nodes) : null;
+  }
+
+  /**
+   * The body and its pieces; in layers, its moving pieces go to `into`
+   * instead. A live scene keeps the nodes while nothing they are drawn from
+   * changes, which is most frames: the body's motion is outside them, so a
+   * frame that only moves it builds and writes none of them again.
+   */
+  function skinNodes(
+    frame: FrameSnapshot,
+    body: SceneNode,
+    d: string,
+    ink: string,
+    parts: PartLayers,
+    into?: BodySplit,
+  ): SceneNode[] {
+    // A mirrored scene writes its own keyframes each frame, from the motions it draws.
+    if (!live || ctx.sourceId) return drawSkin(frame, body, d, ink, parts, into);
+    const deps = skinDeps(frame, ink, into !== undefined);
+    if (kept && sameDeps(kept.deps, deps)) {
+      if (into) {
+        into.below.push(...kept.below);
+        into.above.push(...kept.above);
+      }
+      return kept.nodes;
+    }
+    const moving = into ? { below: [] as SceneNode[], above: [] as SceneNode[] } : undefined;
+    const nodes = drawSkin(frame, body, d, ink, parts, moving);
+    kept = { deps, nodes, below: moving?.below ?? [], above: moving?.above ?? [] };
+    if (into && moving) {
+      into.below.push(...moving.below);
+      into.above.push(...moving.above);
+    }
+    return nodes;
+  }
+
+  /** What the skin is drawn from, besides the scene's own settings, in an order `sameDeps` compares. */
+  function skinDeps(frame: FrameSnapshot, ink: string, layered: boolean): unknown[] {
+    const b = frame.body;
+    const badge = frame.variant === 'sticker' ? frame.badge : null;
+    const deps: unknown[] = [
+      layered,
+      frame.shape,
+      frame.variant,
+      frame.shapeScale,
+      ink,
+      frame.ink,
+      frame.state,
+      frame.settled,
+      frame.belt === null,
+      b.coreOpacity,
+      b.outline,
+      ctx.params,
+      sized.params,
+      sized.minLine,
+      badge?.x,
+      badge?.y,
+      badge?.r,
+      badge?.color,
+      b.parts.length,
+    ];
+    for (const part of b.parts) deps.push(part.outline, part.opacity, part.color);
+    return deps;
+  }
+
+  function drawSkin(
+    frame: FrameSnapshot,
+    body: SceneNode,
+    d: string,
+    ink: string,
+    parts: PartLayers,
+    into?: Pick<BodySplit, 'below' | 'above'>,
+  ): SceneNode[] {
     const children: SceneNode[] = [];
     // First, so the border and the shadow ride the same squash and rotation as
     // the body they wrap.
-    if (sticker) children.push(stickerLayer(frame, d));
-    children.push(...bodyLayers(frame, body, d, parts));
+    if (frame.variant === 'sticker') children.push(stickerLayer(frame, d));
+    children.push(
+      ...(isMedium(frame.variant)
+        ? mediumBody(
+            frame,
+            frame.variant as Medium,
+            mediumPaint(frame, ink),
+            sized,
+            ctx.mediaId,
+            live,
+            motion,
+            into,
+          )
+        : bodyLayers(frame, body, d, parts)),
+    );
+    return children;
+  }
 
+  /** The face, the effects that belong to it and the badge. */
+  function faceNodes(frame: FrameSnapshot, eyeFill: string, ink: string): SceneNode[] {
+    const sticker = frame.variant === 'sticker';
+    const medium = isMedium(frame.variant);
+    const children: SceneNode[] = [];
     const faceGroup = face(frame.face, eyeFill, frame.variant, ink);
-    if (faceGroup) children.push(faceGroup);
+    if (faceGroup) children.push(medium ? treated(frame, 'face', [faceGroup]) : faceGroup);
     // Effects that belong to the face (a tear) ride the body's own motion.
-    if (live || frame.fx?.space === 'face') children.push(fxLayer(frame, 'face', isHollow(frame.variant)));
+    if (live || frame.fx?.space === 'face') children.push(fxLayer(frame, 'face', effectPaint(frame, ink)));
 
     const ring = sticker ? PAPER_TOKEN : EYE_TOKEN;
     const badge = frame.badge;
@@ -436,9 +917,12 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
     } else if (live) {
       children.push(node('circle', { r: 18, stroke: ring, 'stroke-width': BADGE_RING, opacity: 0 }));
     }
+    return children;
+  }
 
-    const { transform, atRest } = bodyMotion(frame.body);
-    return node('g', atRest ? undefined : { transform }, children, { fragment: atRest });
+  /** What the body group draws, inside its own transform, as the figure's signature motions move it. */
+  function figureMoved(frame: FrameSnapshot, content: SceneNode[]): SceneNode[] {
+    return motion && getShape(frame.shape).motion ? motion.figure(content) : content;
   }
 
   /**
@@ -492,7 +976,7 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
         'stroke-linejoin': 'round',
         opacity: core === null ? undefined : r2(core),
       }),
-      node('g', undefined, partsPaper(frame, PAPER_TOKEN, edge, live), { fragment: true }),
+      node('g', undefined, partsPaper(frame, PAPER_TOKEN, edge, live, motion), { fragment: true }),
     );
 
     const badge = frame.badge;
@@ -531,10 +1015,12 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
     const layers = [
       node('path', { d, fill: ink, 'fill-opacity': core === null ? undefined : r2(core) }),
       node('path', { d, fill: '#000', 'fill-opacity': r2(PAPER_SHADOW_DARKNESS * (core ?? 1)) }),
-      node('g', undefined, partsShadow(frame, ink, PAPER_SHADOW_DARKNESS, live), { fragment: true }),
+      node('g', undefined, partsShadow(frame, ink, PAPER_SHADOW_DARKNESS, live, motion), { fragment: true }),
     ];
     const { transform, atRest } = bodyMotion(frame.body);
-    const moved = node('g', atRest ? undefined : { transform }, layers, { fragment: atRest });
+    const moved = node('g', atRest ? undefined : { transform }, figureMoved(frame, layers), {
+      fragment: atRest,
+    });
     const shift = `translate(${r2(Math.cos(angle) * paperOffset)} ${r2(Math.sin(angle) * paperOffset)})`;
     return node('g', { transform: shift }, [moved]);
   }
@@ -559,17 +1045,21 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
   function cuteFace(f: FaceFrame, variant: string, ink: string): SceneNode[] {
     const g = f.geometry;
     const hollow = isHollow(variant);
-    const soft = variant === 'soft';
+    const soft = wearsDarkFace(variant);
     const solid = ctx.solidInk ?? ink;
     // A sticker's face is cut from the same paper as its border, whatever colour
     // the page asks for, unless the body itself turns paper-white.
     const paint = hollow
-      ? hollowFace(solid)
-      : soft
-        ? (ctx.softFaceFill ?? SOFT_FACE_TOKEN)
-        : variant === 'sticker'
-          ? stickerFace
-          : (ctx.faceFill ?? FACE_TOKEN);
+      ? hollowFace(solid, variant)
+      : faceInkOf(
+          variant,
+          soft
+            ? (ctx.softFaceFill ?? SOFT_FACE_TOKEN)
+            : variant === 'sticker'
+              ? stickerFace
+              : (ctx.faceFill ?? FACE_TOKEN),
+          solid,
+        );
     const blush = hollow ? { color: solid, opacity: BLUSH_HOLLOW_OPACITY } : soft ? BLUSH_SOFT : BLUSH;
 
     const children: SceneNode[] = [];
@@ -577,8 +1067,14 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
 
     add(cuteShape(g?.blush?.left, true, { fill: blush.color }, blush.opacity * f.blush));
     add(cuteShape(g?.blush?.right, true, { fill: blush.color }, blush.opacity * f.blush));
-    add(cuteShape(g?.left, true, { fill: paint }, 1));
-    add(cuteShape(g?.right, true, { fill: paint }, 1));
+    add(cuteShape(g?.left, true, { fill: paint }, g?.eyeOpacity ?? 1));
+    add(cuteShape(g?.right, true, { fill: paint }, g?.eyeOpacity ?? 1));
+
+    // A drawn face lays its own eyes over the plain ones and paints its mouth in its own role.
+    const drawn = g?.drawn;
+    const palette = drawn ? drawnPalette(variant, solid) : null;
+    if (drawn && palette) children.push(...drawnEyeNodes(drawn, 1, palette));
+    const mouthPaint = drawn && palette ? drawnMouthPaint(drawn, g?.eyeOpacity ?? 1, paint, palette) : paint;
 
     const mouth = g?.mouth;
     // An outlined body draws its mouth as an outline even when it is open; a filled one fills it.
@@ -588,8 +1084,8 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
         mouth,
         true,
         {
-          fill: hollow ? 'none' : paint,
-          stroke: paint,
+          fill: hollow ? 'none' : mouthPaint,
+          stroke: mouthPaint,
           'stroke-width': r2(weight),
           'stroke-linecap': 'round',
           'stroke-linejoin': 'round',
@@ -597,7 +1093,59 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
         (mouth?.opacity ?? 1) * f.cute,
       ),
     );
+    if (drawn && palette)
+      children.push(...drawnMouthNodes(drawn, mouth, (mouth?.opacity ?? 1) * f.cute, palette));
     return children;
+  }
+
+  /**
+   * What a drawn face's paint roles are in this variant. Whites take the
+   * cute face's colour, and the features the colour that reads on the body;
+   * on a body that is a line every role is the line or the page, and the
+   * plates get a rim, as the cute face becomes the line there too. Accents
+   * keep their colour unless the variant throws its effects in one colour.
+   */
+  function drawnPalette(variant: string, solid: string): DrawnPalette {
+    const hollow = isHollow(variant);
+    const line = hollowFace(solid, variant);
+    const page = ctx.eyeFill ?? EYE_TOKEN;
+    const mono = hollow && monochromeEffects(variant);
+    const faceInk = hollow
+      ? page
+      : faceInkOf(variant, variant === 'sticker' ? stickerFace : (ctx.faceFill ?? FACE_TOKEN), solid);
+    const pupil = hollow ? line : (ctx.pupilFill ?? PUPIL_TOKEN);
+    const featureInk = hollow ? line : (ctx.featureFill ?? ctx.softFaceFill ?? SOFT_FACE_TOKEN);
+    const glint = hollow ? page : (ctx.glintFill ?? GLINT_TOKEN);
+    const base = hollow ? line : solid;
+    const iris = base.startsWith('url(')
+      ? base
+      : `color-mix(in oklab, ${base}, ${IRIS_DEPTH.color} ${IRIS_DEPTH.share}%)`;
+    const accent = (role: FaceAccent): string => {
+      if (!mono) return FACE_ACCENTS[role];
+      const share = HOLLOW_ACCENT_SHARE[role];
+      return share >= 100 ? line : share <= 0 ? page : `color-mix(in oklab, ${line} ${share}%, ${page})`;
+    };
+    return {
+      paint(role, light) {
+        switch (role) {
+          case 'face':
+            return faceInk;
+          case 'pupil':
+            return pupil;
+          case 'feature':
+            return featureInk;
+          case 'glint':
+            return glint;
+          case 'iris':
+            return iris;
+          case 'light':
+            return mono || !light ? page : lightCss(light);
+          default:
+            return accent(role);
+        }
+      },
+      rim: hollow ? { paint: line, width: ctx.params.strokeWidth * PLATE_RIM } : null,
+    };
   }
 
   function face(f: FaceFrame, eyeFill: string, variant: string, ink: string): SceneNode | null {
@@ -609,7 +1157,7 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
       'clip-path': live && ctx.clipId ? `url(#${ctx.clipId})` : undefined,
       opacity: opacity(f.opacity),
     };
-    if (f.cute > 0.005 || f.style === 'cute') {
+    if (f.cute > 0.005 || isCuteFamily(f.style)) {
       return node('g', attrs, cuteFace(f, variant, ink), { layout: 'block' });
     }
 
@@ -907,12 +1455,20 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
    * The mood effect's pieces. The layer is always there in a live scene, so
    * the DOM keeps its place when an effect comes and goes.
    */
-  function fxLayer(frame: FrameSnapshot, space: FxFrame['space'], hollow: boolean): SceneNode {
+  /**
+   * `effects` is what the variant throws its effects in, or `null` for their own colour (see `effectPaint`).
+   * `quiet` leaves the pieces out, for a skin's decorations that stand in for them.
+   */
+  function fxLayer(
+    frame: FrameSnapshot,
+    space: FxFrame['space'],
+    effects: string | null,
+    quiet = false,
+  ): SceneNode {
     const fx = frame.fx;
-    const items = fx && fx.space === space ? fx.items : [];
-    // An outlined character throws its effects in the ink as well; the rest keep their own colour.
+    const items = fx && fx.space === space && !quiet ? fx.items : [];
     const paint =
-      hollow || fx?.color == null ? (ctx.solidInk ?? ctx.beltPaint ?? flatInk(frame) ?? INK_TOKEN) : fx.color;
+      effects ?? fx?.color ?? ctx.fxFill ?? ctx.solidInk ?? ctx.beltPaint ?? flatInk(frame) ?? FX_TOKEN;
     const nodes = items.filter((item) => keep(item.opacity > 0.01)).map((item) => fxItem(item, paint));
     return node('g', { 'data-aora-fx': '', style: live ? 'pointer-events:none' : undefined }, nodes, {
       fragment: !live && nodes.length === 0,
@@ -1145,7 +1701,11 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
     );
   }
 
-  return { build };
+  return {
+    build,
+    layers: buildLayers,
+    rules: () => extras?.rules() ?? NO_LAYER_RULES,
+  };
 }
 
 /** A body's bounding box, remembered by the identity of its outline like the smooth path is. */
@@ -1188,6 +1748,36 @@ const heartPath = (x: number, y: number, s: number): string =>
 const dropPath = (x: number, y: number, s: number): string =>
   `M${r2(x)} ${r2(y - s)}C${r2(x + s * 0.85)} ${r2(y + s * 0.2)} ${r2(x + s * 0.85)} ${r2(y + s)} ${r2(x)} ${r2(y + s)}` +
   `C${r2(x - s * 0.85)} ${r2(y + s)} ${r2(x - s * 0.85)} ${r2(y + s * 0.2)} ${r2(x)} ${r2(y - s)}Z`;
+
+/** What a drawing medium hands `bodyGroup` in place of the flat layers: it draws the pieces itself. */
+const NO_PARTS: PartLayers = { behind: [], front: [], silhouette: null };
+
+/** Where `layers` collects a frame's nodes while `build` draws it. */
+export interface BodySplit {
+  back: SceneNode[];
+  skin: SceneNode[];
+  face: SceneNode[];
+  /** Moving pieces behind the body and over it (`mediumBody`). */
+  below: SceneNode[];
+  above: SceneNode[];
+  front: SceneNode[];
+  decor: SceneNode | null;
+  /** A medium's treatment of the body group, for each body layer; `null` without one. */
+  treat: ((nodes: SceneNode[]) => SceneNode) | null;
+}
+
+const EMPTY_GROUP: SceneNode = node('g', undefined, []);
+
+function sameDeps(a: readonly unknown[], b: readonly unknown[]): boolean {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+  return true;
+}
+
+/** Whether any of the nodes draws something, once empty fragments are spliced away. */
+function hasContent(nodes: readonly SceneNode[]): boolean {
+  return nodes.some((n) => !n.fragment || hasContent(n.children ?? []));
+}
 
 /** A flat ink override, which the belt follows; a gradient is not worth putting on a dot. */
 function flatInk(frame: FrameSnapshot): string | undefined {

@@ -6,12 +6,12 @@ Two waits: a record that is about to arrive, and a start-up with no known durati
 
 ## See it
 
-Left: three avatar slots that load and arrive. `LoadingMark` holds the silhouette until `ready`; the live mark underneath is mounted the whole time, paused, so the swap is a cross-fade and not a first frame against nothing. Right: a boot that has been going on long enough to say so.
+Left: three avatar slots that load and arrive. `LoadingCharacter` holds the silhouette until `ready`; the live mark underneath is mounted the whole time, paused, so the swap is a cross-fade and not a first frame against nothing. Right: a boot that has been going on long enough to say so.
 
 ```tsx preview
 import { useEffect, useState } from 'react';
-import { MarkStageProvider } from '@aora-bot/react';
-import { BootLoop, LoadingMark } from '@aora-bot/surfaces';
+import { CharacterStageProvider } from '@aora-bot/react';
+import { BootLoop, LoadingCharacter } from '@aora-bot/surfaces';
 
 function Slot({
   shape,
@@ -31,7 +31,7 @@ function Slot({
 
   return (
     <span className="site-demo__cell">
-      <LoadingMark ready={ready} shape={shape} color={color} state="spawning" sizePx={48} />
+      <LoadingCharacter ready={ready} shape={shape} color={color} state="spawning" sizePx={48} />
       <span className="site-demo__label">{ready ? 'ready' : 'loading'}</span>
     </span>
   );
@@ -41,7 +41,7 @@ export default function Demo() {
   const [cycles, setCycles] = useState(0);
 
   return (
-    <MarkStageProvider>
+    <CharacterStageProvider>
       <div className="site-demo">
         <div className="site-demo__row">
           <Slot shape="pebble" color="cyan" delay={900} />
@@ -56,12 +56,12 @@ export default function Demo() {
           body={cycles < 3 ? undefined : 'This is taking longer than usual.'}
         />
       </div>
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 ```
 
-The slots are given `state="spawning"` and nothing else: the live mark is paused until `ready`, so its state clock starts at the cross-fade, the `gather` belt plays, and two seconds later the renderer moves to `idle` on its own. `LoadingMark` does not forward `onSettle`; a host that needs to know uses a `CharacterMark` directly once the record is in hand. `BootLoop` reports the cycle count from an effect rather than the interval, so a host that re-renders on the callback cannot restart the timer mid-cycle.
+The slots are given `state="spawning"` and nothing else: the live mark is paused until `ready`, so its state clock starts at the cross-fade, the `gather` belt plays, and two seconds later the renderer moves to `idle` on its own. `LoadingCharacter` does not forward `onSettle`; a host that needs to know uses a `CharacterMark` directly once the record is in hand. `BootLoop` reports the cycle count from an effect rather than the interval, so a host that re-renders on the callback cannot restart the timer mid-cycle.
 
 ## When to use it
 
@@ -69,10 +69,10 @@ Two different waits. The first is the agent's own record arriving — a few hund
 
 ## Components
 
-- [`LoadingMark`](/components/boot-loop) — the character's own silhouette as a shimmering mask, cross-fading to the live mark on `ready`.
+- [`LoadingCharacter`](/components/boot-loop) — the character's own silhouette as a shimmering mask, cross-fading to the live mark on `ready`.
 - [`BootLoop`](/components/boot-loop) — an indeterminate wait inside a device bezel; `onCycle` lets the host escalate.
 - [`CharacterMark`](/components/character-mark) — `loading`, `spawning`, `onSettle`.
-- [`MarkStageProvider`](/components/mark-stage) — a page of placeholders that all flip at once should share one engine when they do.
+- [`CharacterStageProvider`](/components/character-stage) — a page of placeholders that all flip at once should share one engine when they do.
 - [`HudPlate`](/components/hud-plate) — the `sync` dial is the one for a boot: a lifecycle rather than a fraction. `idle` until the connection is attempted, `syncing` while it is, `done` or `error` when it lands. Use `progress` only if the host has a real fraction; a ring that fills at a made-up rate is a progress bar that lies with extra steps.
 
 ## How the states move

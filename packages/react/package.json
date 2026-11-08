@@ -42,6 +42,10 @@
       "types": "./dist/static.d.ts",
       "import": "./dist/static.js"
     },
+    "./themes/*": {
+      "types": "./dist/themes/*.d.ts",
+      "import": "./dist/themes/*.js"
+    },
     "./styles.css": "./dist/styles.css",
     "./package.json": "./package.json"
   },

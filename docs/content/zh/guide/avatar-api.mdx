@@ -24,21 +24,27 @@ id 可以是任意不超过 128 个字符的 URL 安全字符串：用户名、�
 
 所有参数都是可选的，写在查询字符串里。
 
-| 参数      | 取值                                                           | 默认       | 作用                                           |
-| --------- | -------------------------------------------------------------- | ---------- | ---------------------------------------------- |
-| `style`   | `vector`、`pixel`、`kaomoji`                                   | `vector`   | 角色使用的[画风系列](/design/styles/vector)    |
-| `variant` | 所选画风的变体，见下方列表                                     | 画风自带   | 画风内的上色变体                               |
-| `state`   | 任意[状态](/design/states)，如 `happy`、`thinking`、`sleeping` | 静息表情   | 角色的表情与姿态                               |
-| `shape`   | 任意[形状](/design/shapes) id，如 `mochi`、`hex`               | 由 id 决定 | 替换角色的身体                                 |
-| `color`   | [配色](/design/palette)里的任意色相，如 `blue`、`pink`         | 由 id 决定 | 替换角色的颜色                                 |
-| `face`    | `cute`、`eyes` 或 `line`，见[五官](/design/face)               | `cute`     | 脸的样式                                       |
-| `size`    | `16` 到 `1024` 的整数                                          | `128`      | SVG 的宽高，单位像素；超出范围会被限制在区间内 |
+| 参数      | 取值                                                            | 默认       | 作用                                             |
+| --------- | --------------------------------------------------------------- | ---------- | ------------------------------------------------ |
+| `style`   | `vector`、`pixel`、`kaomoji`                                    | `vector`   | 角色使用的[画风系列](/design/styles/vector)      |
+| `variant` | 所选画风的变体，见下方列表                                      | 画风自带   | 画风内的上色变体                                 |
+| `state`   | 任意[状态](/design/states)，如 `happy`、`thinking`、`sleeping`  | 静息表情   | 角色的表情与姿态                                 |
+| `shape`   | 任意[形状](/design/shapes) id，如 `mochi`、`hex`                | 由 id 决定 | 替换角色的身体                                   |
+| `color`   | [配色](/design/palette)里的任意颜色，如 `blue`、`pink`、`night` | 由 id 决定 | 替换角色的颜色                                   |
+| `face`    | `FACE_STYLES` 里的一种脸，见[五官](/design/face)                | `cute`     | 脸的样式                                         |
+| `size`    | `16` 到 `1024` 的整数                                           | `128`      | SVG 的宽高，单位像素；超出范围会被限制在区间内   |
+| `pool`    | `46` 到阵容人数之间的整数                                       | 全部阵容   | 其他 id 可落到的成员数，按加入阵容的先后计       |
+| `theme`   | 主题 id，见下方列表                                             | 无         | 从主题的阵容里挑角色，未指定的参数取主题的默认值 |
+
+主题：`halloween`、`christmas`、`spring-festival`、`mid-autumn`、`easter`、`summer`、`valentine`。
 
 各画风的变体：
 
-- `vector`：`solid`（默认）、`outline`、`glass`、`sticker`、`paper`、`soft`、`riso`
+- `vector`：`solid`（默认）、`outline`、`glass`、`sticker`、`paper`、`soft`、`riso`、`pencil`、`marker`、`crayon`、`watercolor`、`neon`、`chalk`、`origami`、`relief`
 - `pixel`：`crisp`（默认）、`dot`、`block`
 - `kaomoji`：`plain`（默认）、`bubble`
+
+主题带来自己的皮肤，接口按名字接受：万圣节主题为 `vector` 加了 `doodle` 和 `grainy`。配色里的 `night`（在深色页面上也不反转的近黑色）和 `cream`（奶油色）同样按名字接受，只是控制台不列出它们。
 
 所选画风的每个参数也都可以作为查询参数，例如 `vector` 的 `strokeWidth` 或 `paperOffset`，`pixel` 的 `grid` 或 `outline`，`kaomoji` 的 `weight` 或 `tail`。数字直接写数字，布尔值写 `true` 或 `false`（也接受 `1` 和 `0`）。取值范围见各画风页面：[vector](/design/styles/vector)、[pixel](/design/styles/pixel)、[kaomoji](/design/styles/kaomoji)。
 
@@ -55,7 +61,16 @@ https://aora-bot.vercel.app/avatar/alice.svg?variant=paper&paperOffset=12
 
 ## 你会得到哪个角色
 
-如果 id 恰好是[阵容](/design/cast)里的角色 id，就得到那个角色：`/avatar/luna.svg` 就是露娜。其他 id 会被哈希到 46 位阵容成员中的一位，结果稳定，分布也均匀。`shape`、`color` 和 `face` 会替换由 id 选出的内容，所以三者都写上时，id 只是一个文件名。阵容只有 46 位，所以不同的 id 可能落到同一个角色上；请把它当作一个友好的默认头像，而不是唯一的身份标识。
+如果 id 恰好是[阵容](/design/cast)里的角色 id，就得到那个角色：`/avatar/luna.svg` 就是露娜。其他 id 会被哈希到阵容成员中的一位，结果稳定，分布也均匀。这一哈希是一致性哈希：阵容从 n 位增加到 m 位时，只有约 (m − n) / m 的 id 会换角色，而且只会换成新加入的成员，已经在用的头像很少变化。如果希望头像完全不受日后新增角色的影响，可以用 `pool` 固定成员数，例如 `pool=46` 只在最早的 46 位成员中选。`shape`、`color` 和 `face` 会替换由 id 选出的内容，所以三者都写上时，id 只是一个文件名。阵容人数有限，所以不同的 id 可能落到同一个角色上；请把它当作一个友好的默认头像，而不是唯一的身份标识。
+
+## 主题
+
+`theme=halloween` 改从主题的阵容里挑角色，哈希方式不变，并且请求没写的参数都取自主题：第一套皮肤（`doodle`）、第一种脸、第一个状态（`happy`；每个主题都开放引擎的全部状态），颜色先用主题给这个成员的，再用成员自己的（主题提供这个颜色时），都没有就按 id 从主题的颜色里挑一个。主题固定的维度取固定值。你写明的参数总是优先：`theme=halloween&variant=solid&state=angry` 保留主题挑出的角色，但不用它的皮肤和状态。换成主题以外的 `style` 也会去掉主题的皮肤。`pool` 只作用于默认候选池，与 `theme` 同时出现会被拒绝。
+
+```text
+https://aora-bot.vercel.app/avatar/alice.svg?theme=halloween
+https://aora-bot.vercel.app/avatar/alice.svg?theme=halloween&variant=grainy&color=cream
+```
 
 对同一个引擎版本，结果是固定的。如果某次发布重画了角色或调整了阵容，同一个 id 的样子可能随之改变。
 
@@ -74,6 +89,25 @@ import { castMember, renderStaticSvg } from '@aora-bot/engine/static';
 
 const luna = castMember('luna')!;
 const svg = renderStaticSvg({ shape: luna.shape, color: luna.color, state: 'happy', sizePx: 64 });
+```
+
+主题的角色、皮肤和颜色放在主题自己的入口里。渲染它们之前先加载主题，否则渲染会抛出 `ThemeNotInstalledError`：
+
+```ts
+import { loadTheme, renderStaticSvg } from '@aora-bot/engine/static';
+
+await loadTheme('halloween');
+const svg = renderStaticSvg({ shape: 'pumpkin', color: 'orange', variant: 'doodle', sizePx: 64 });
+```
+
+想和这个接口画得一模一样，就用 `themeLook` 取主题成员的外观，接口用的也是这条规则：
+
+```ts
+import { loadTheme, renderStaticSvg, themeLook } from '@aora-bot/engine/static';
+
+await loadTheme('halloween');
+const look = themeLook('halloween', 'floaty')!;
+const svg = renderStaticSvg({ ...look, sizePx: 64 });
 ```
 
 `renderAvatarDataUrl(key)` 能用一行代码为任意 key 做同样的事。它从引擎自己的候选池里挑选，所以同一个 id 得到的角色与这个接口挑出的并不相同。更多细节见[服务端渲染](/guide/server-rendering)。

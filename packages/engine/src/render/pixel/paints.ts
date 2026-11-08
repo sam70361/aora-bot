@@ -7,6 +7,7 @@
  * emitter can turn one table into CSS (live) or into hex plus a dark-mode
  * override (static) without the rasteriser knowing which.
  */
+import type { PartColor } from '../../core/types.js';
 import { clamp01 } from '../../math/easing.js';
 
 /** A colour described, not resolved. */
@@ -15,8 +16,12 @@ export type Tint =
   | { kind: 'ink'; band: number; tone: number }
   /** Hair: the ink at `band`, mixed towards the hair shade, which the renderer resolves per colour and scheme. */
   | { kind: 'hair'; band: number }
+  /** A state effect: the ink at `band`, or what the renderer draws effects in where the ink is lost on the page. */
+  | { kind: 'fx'; band: number }
   /** A literal CSS colour: confetti, the eye cut-out, the badge. */
-  | { kind: 'css'; value: string };
+  | { kind: 'css'; value: string }
+  /** A part's own colour, or its ring (`rim`), a `tone` step lighter or darker (see `shade.ts`). */
+  | { kind: 'part'; color: PartColor; tone: number; rim: boolean };
 
 export interface PaintDef {
   tint: Tint;
@@ -37,7 +42,7 @@ export function createPaintTable(): PaintTable {
   return {
     defs,
     id(tint, alpha) {
-      const key = `${tint.kind === 'ink' ? `i${tint.band}:${tint.tone}` : tint.kind === 'hair' ? `h${tint.band}` : `c${tint.value}`}@${alpha}`;
+      const key = `${tintKey(tint)}@${alpha}`;
       let id = ids.get(key);
       if (id === undefined) {
         defs.push({ tint, alpha });
@@ -51,6 +56,21 @@ export function createPaintTable(): PaintTable {
       ids.clear();
     },
   };
+}
+
+function tintKey(tint: Tint): string {
+  switch (tint.kind) {
+    case 'ink':
+      return `i${tint.band}:${tint.tone}`;
+    case 'hair':
+      return `h${tint.band}`;
+    case 'fx':
+      return `f${tint.band}`;
+    case 'css':
+      return `c${tint.value}`;
+    case 'part':
+      return `p${tint.rim ? 'r' : ''}${tint.tone}:${tint.color}`;
+  }
 }
 
 /** Opacity to the nearest quarter; 0 means too faint to draw at all. */

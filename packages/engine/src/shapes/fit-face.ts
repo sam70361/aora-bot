@@ -133,9 +133,12 @@ export function fitFace(
   // width at eye height (see `placement.ts`), so this only has to say "a
   // little smaller in here", not carry the whole size. A low floor here would
   // penalise narrow bodies twice.
-  const min = Math.min(best.sx, best.sy);
-  const max = Math.max(best.sx, best.sy);
-  const eye = clamp((min * 0.7 + max * 0.3) * 0.0126, EYE_FACTOR_FLOOR, 1);
+  return { x: best.x, y: best.y, sx: best.sx, sy: best.sy, eye: eyeFactor(best.sx, best.sy), leftDX };
+}
 
-  return { x: best.x, y: best.y, sx: best.sx, sy: best.sy, eye, leftDX };
+/** The eye size a face box of these half-extents has room for. */
+export function eyeFactor(sx: number, sy: number): number {
+  const min = Math.min(sx, sy);
+  const max = Math.max(sx, sy);
+  return clamp((min * 0.7 + max * 0.3) * 0.0126, EYE_FACTOR_FLOOR, 1);
 }

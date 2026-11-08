@@ -1,0 +1,121 @@
+import { API } from '@theme';
+
+# AvatarGroup
+
+交叠的群组成员簇。
+
+```tsx preview
+import { AvatarGroup } from '@aora-bot/react';
+
+const members = [{ id: 'a' }, { id: 'b' }, { id: 'c' }, { id: 'd' }, { id: 'e' }, { id: 'f' }];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {[2, 3, 4, 6].map((n) => (
+        <div className="site-demo__cell" key={n}>
+          <AvatarGroup members={members.slice(0, n)} sizePx={34} />
+          <span className="site-demo__label">{n} 位成员</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## 缝隙跟着形状走，不是圆
+
+每个圆盘用邻居**自己的剪影**作为蒙版从后方抠洞，而不是一个圆。
+
+圆形挖孔只有当前方形状也是圆时才看起来对。对着六边形它会咬进一边、在另一边留下楔形，绕着边缘看缝隙宽度还会变。用真实轮廓能让每一种形状的间隔都均匀。
+
+```tsx preview
+import { AvatarGroup } from '@aora-bot/react';
+
+const shaped = [
+  { id: 'a', shape: 'hex' as const },
+  { id: 'b', shape: 'onigiri' as const },
+  { id: 'c', shape: 'drop' as const },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      <AvatarGroup members={shaped} sizePx={48} />
+      <AvatarGroup members={shaped} sizePx={48} overlap={0.5} />
+    </div>
+  );
+}
+```
+
+## 溢出
+
+超过 `maxVisible` 的成员收成 `+N` 芯片。
+
+```tsx preview
+import { AvatarGroup } from '@aora-bot/react';
+
+const many = Array.from({ length: 12 }, (_, i) => ({ id: `m-${i}` }));
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      <AvatarGroup members={many} sizePx={32} />
+      <AvatarGroup members={many} sizePx={32} maxVisible={5} />
+      <AvatarGroup members={many} sizePx={32} showOverflow={false} />
+    </div>
+  );
+}
+```
+
+## 不用组件，只要算术
+
+三个辅助函数把头像组的数字带到那些并不在渲染它的地方：必须对齐第三张脸的弹出层、布局前就需要宽度的一行、不想碰 DOM 只想验算的测试。
+
+- `layoutAvatarGroup(count, sizePx, { overlap, withOverflow })` 返回每个圆盘按绘制顺序的左侧 `offsets`、实际使用的 `overlap`，以及总 `width`（预留时包含溢出芯片的位置）。最后一个圆盘贡献整个宽度，前面每个只贡献没被邻居遮住的那部分。
+- `groupMetrics(size)` 给出每个头像尺寸合理的比例——`sizePx`、`overlap`、`maxVisible`。小的组重叠更狠、露的脸更少：在 `xs` 下，三个圆盘按常规重叠是一团糊，两个更紧地叠在一起仍然读得出「一群人」，这已经是这个尺寸能承载的全部。
+- `participantsFromMembers(members, max)` 把成员列表拆成要画的 `visible` 脸和给芯片用的 `hidden` 数量。`max` 默认是 `GROUP_MAX_VISIBLE`（3）；默认重叠是 `STACK_OVERLAP`（0.36）。
+
+```tsx preview
+import { AvatarGroup, layoutAvatarGroup, participantsFromMembers, groupMetrics } from '@aora-bot/react';
+
+const members = Array.from({ length: 7 }, (_, i) => ({ id: `p-${i}` }));
+
+export default function Demo() {
+  const metrics = groupMetrics('lg');
+  const { visible, hidden } = participantsFromMembers(members, metrics.maxVisible);
+  const layout = layoutAvatarGroup(visible.length, metrics.sizePx, {
+    overlap: metrics.overlap,
+    withOverflow: hidden > 0,
+  });
+  return (
+    <div className="site-demo site-demo--column">
+      <AvatarGroup
+        members={members}
+        sizePx={metrics.sizePx}
+        overlap={metrics.overlap}
+        maxVisible={metrics.maxVisible}
+      />
+      <span className="site-demo__label">
+        lg → {metrics.sizePx}px，重叠 {metrics.overlap}，显示 {visible.length} 个 + 隐藏 {hidden} 个，宽度{' '}
+        {Math.round(layout.width)}px，偏移 {layout.offsets.map((o) => Math.round(o)).join(' / ')}
+      </span>
+    </div>
+  );
+}
+```
+
+## API
+
+<API component="AvatarGroup" />
+
+### GroupAvatar
+
+方便包装，从群组记录上读取 `members`。
+
+<API component="GroupAvatar" />
+
+## 接下来
+
+- [徽标与状态](/components/avatar-frame)——未读数与状态点
+- [智能体名册](/scenarios/agent-roster)——侧边栏里的二十张脸

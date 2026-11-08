@@ -56,7 +56,7 @@ export const agentNose = (agent: AgentLike): NoseId | null => {
 export const hasPicture = (agent: AgentLike): boolean => Boolean(agent.pictureUrl);
 export const isGroup = (agent: AgentLike): boolean => (agent.members?.length ?? 0) > 0;
 
-export const AVATAR_SIZES = { xs: 16, sm: 22, md: 28, lg: 36, xl: 72 } as const;
+export const AVATAR_SIZES = { xs: 16, sm: 24, md: 32, lg: 40, xl: 80 } as const;
 export type AvatarSize = keyof typeof AVATAR_SIZES;
 
 /** Runtime facts an application already tracks, mapped to a character state. */

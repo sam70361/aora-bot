@@ -3,9 +3,12 @@ import {
   CHARACTER_STATES,
   COLOR_IDS,
   EYE_TOPOLOGY_IDS,
+  FACE_STYLES,
+  getStyle,
   HUD_KINDS,
   MOUTH_IDS,
   SHAPE_IDS,
+  STYLE_IDS,
 } from '@aora-bot/engine';
 import { renderToString } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
@@ -39,11 +42,27 @@ describe('locale', () => {
     ['mouth', MOUTH_IDS],
     ['hud', HUD_KINDS],
     ['expression', EYE_TOPOLOGY_IDS],
+    ['face', FACE_STYLES],
   ])('covers every %s the engine defines', (family, ids) => {
     for (const id of ids) {
       const key = `${family}.${id}` as LocaleKey;
       expect(enUS[key], key).toBeTruthy();
       expect(zhCN[key], key).toBeTruthy();
+    }
+  });
+
+  it('names every variant and every parameter of the built-in series', () => {
+    // Series are an open registry, so these keys are not checked by the compiler.
+    for (const id of STYLE_IDS) {
+      const style = getStyle(id);
+      const wanted = [
+        ...style.variants.map((variant) => `variant.${variant}`),
+        ...Object.keys(style.params).map((param) => `param.${id}.${param}`),
+      ];
+      for (const key of wanted) {
+        expect(enUS[key as LocaleKey], key).toBeTruthy();
+        expect(zhCN[key as LocaleKey], key).toBeTruthy();
+      }
     }
   });
 

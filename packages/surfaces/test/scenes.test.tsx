@@ -6,7 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { LocaleProvider } from '@aora-bot/react';
 import { BootLoop } from '../src/scenes/BootLoop.js';
 import { DeviceBezel } from '../src/scenes/DeviceBezel.js';
-import { LoadingMark } from '../src/scenes/LoadingMark.js';
+import { LoadingCharacter } from '../src/scenes/LoadingCharacter.js';
 import { RestrictedScene } from '../src/scenes/RestrictedScene.js';
 
 let root: Root | null = null;
@@ -121,21 +121,21 @@ describe('BootLoop', () => {
   });
 });
 
-describe('LoadingMark', () => {
+describe('LoadingCharacter', () => {
   it('holds the silhouette until it is ready, then cross-fades', () => {
-    const el = render(<LoadingMark shape="hex" sizePx={40} />);
+    const el = render(<LoadingCharacter shape="hex" sizePx={40} />);
     const wrapper = el.firstElementChild as HTMLElement;
     expect(wrapper.dataset.ready).toBeUndefined();
     expect(el.querySelector('[role="status"]')).not.toBeNull();
 
-    act(() => root!.render(<LoadingMark shape="hex" sizePx={40} ready />));
+    act(() => root!.render(<LoadingCharacter shape="hex" sizePx={40} ready />));
     expect((el.firstElementChild as HTMLElement).dataset.ready).toBe('true');
     // The announcement goes once the real character is there.
     expect(el.querySelector('[role="status"]')).toBeNull();
   });
 
   it('masks with the shape it is standing in for', () => {
-    const html = renderToString(<LoadingMark shape="star" />);
+    const html = renderToString(<LoadingCharacter shape="star" />);
     expect(html).toContain('--aora-mask');
     expect(html).toContain('data:image/svg+xml');
   });
@@ -147,8 +147,8 @@ describe('scene surfaces', () => {
     ['DeviceBezel alert', <DeviceBezel light="alert" widthPx={120} />],
     ['RestrictedScene', <RestrictedScene lineWeight={1.1} face="line" nose="hook" />],
     ['BootLoop', <BootLoop inFront lineWeight={0.9} />],
-    ['LoadingMark', <LoadingMark />],
-    ['LoadingMark ready', <LoadingMark ready shape="blob" />],
+    ['LoadingCharacter', <LoadingCharacter />],
+    ['LoadingCharacter ready', <LoadingCharacter ready shape="blob" />],
   ])('%s renders without a DOM', (_name, element) => {
     const html = renderToString(element);
     expect(html).toBeTruthy();

@@ -10,6 +10,8 @@ import {
 } from '../math/pose.js';
 import {
   DEFAULT_FACE_TUNE,
+  DEFAULT_POSE,
+  DEFAULT_POSE_HOME,
   type FaceStyle,
   type FaceTune,
   type MouthSpec,
@@ -29,7 +31,17 @@ import {
   NOSE_GAZE,
   nosePolyline,
 } from './features.js';
+import {
+  blendLayout,
+  placeDrawn,
+  placeInMouth,
+  scaleMouth,
+  type DrawnFaceGeometry,
+  type DrawnInput,
+  type DrawnRest,
+} from './drawn/place.js';
 import { eyeExtras, eyeOutline } from './morph.js';
+import { stretchAt } from './stretch.js';
 import type { EyePair } from './topologies.js';
 
 /** One eye as points: an outline in shape space and the projection that carries it onto the sphere. */
@@ -71,6 +83,14 @@ export interface FaceGeometry {
   /** The same mouth's full line weight, for a variant that outlines it instead of filling it. */
   mouthWeight?: number;
   eyeRadius: number;
+  /**
+   * The drawn faces showing: one, or two while one gives way to another.
+   * Their layers replace the plain eyes, which are kept for the share of the
+   * face no drawn design has (`eyeOpacity`).
+   */
+  drawn?: DrawnFaceGeometry[];
+  /** Opacity of `left` and `right` while drawn eyes stand in for them. Absent means 1. */
+  eyeOpacity?: number;
 }
 
 export interface PlacedEye {
@@ -126,6 +146,13 @@ const CUTE_BLUSH = { x: 4.35, y: 1.52, rx: 0.95, ry: 0.5 } as const;
 /** Mouth stroke in dot radii (3 over 4.6), and how open a mouth is before it stops being stroked. */
 const CUTE_MOUTH_WEIGHT = 0.65;
 const CUTE_MOUTH_FILLED = 0.6;
+/** The cute face's layout in the terms a drawn face's is written in, which drawn layouts are blended from. */
+const CUTE_LAYOUT = {
+  mouthDrop: CUTE_MOUTH_DROP,
+  mouthScale: 1,
+  mouthWeight: 1,
+  blush: { x: CUTE_BLUSH.x, y: CUTE_BLUSH.y },
+} as const;
 /** Share of the eyes' gaze the mouth and cheeks follow. */
 const CUTE_GAZE = 0.5;
 
@@ -137,7 +164,9 @@ interface CuteFaceMetrics {
 }
 
 /** Size and place the cute face on this body. */
-function measureCuteFace(options: PlacementOptions): CuteFaceMetrics {
+function measureCuteFace(
+  options: Pick<PlacementOptions, 'shape' | 'faceTune' | 'eyeScale'>,
+): CuteFaceMetrics {
   const { shape, faceTune, eyeScale = 1 } = options;
   const { face: box } = shape;
   const centreY = box.y - box.sy * CUTE_LIFT * faceTune.height;
@@ -146,7 +175,7 @@ function measureCuteFace(options: PlacementOptions): CuteFaceMetrics {
   const bodyHeight = Math.max(shape.bottom - shape.top, 1);
   const radius =
     Math.max(Math.min(rowWidth * CUTE_BODY, bodyHeight * CUTE_TALL), bodyHeight * CUTE_FLOOR) *
-    (faceTune.size / DEFAULT_FACE_TUNE.size) *
+    faceTune.size *
     box.eye *
     eyeScale;
   return { radius, centreY, separation: radius * CUTE_SEPARATION };
@@ -158,6 +187,23 @@ function ellipse(cx: number, cy: number, rx: number, ry: number, n = 20): Point[
     const a = (i / n) * Math.PI * 2;
     return [cx + Math.cos(a) * rx, cy + Math.sin(a) * ry] as Point;
   });
+}
+
+/**
+ * The cute plate of a body at rest — default tuning, no emphasis or eye
+ * scale, the rest pose — which a drawn face is fitted against, so that its
+ * fit belongs to the body and the face and not to the moment. Exported for
+ * the script that stores the roster's fits.
+ */
+export function drawnRest(shape: ShapeDef): DrawnRest {
+  const { radius, centreY } = measureCuteFace({ shape, faceTune: DEFAULT_FACE_TUNE, eyeScale: 1 });
+  const matrix = poseMatrix(DEFAULT_POSE, DEFAULT_POSE_HOME);
+  return {
+    r: radius,
+    centreY,
+    midX: shape.face.x + shape.face.leftDX / 2,
+    project: (x, y) => ({ transform: tangentTransform(projectOnSphere(x, y, matrix), x, y) }),
+  };
 }
 
 /** Add the cute face's mouth and cheeks to a placement that already has its eyes. */
@@ -184,25 +230,56 @@ function addCuteFeatures(
     return clamp(x, lo + half, hi - half);
   };
 
-  const by = Math.min(centreY + r * CUTE_BLUSH.y + gazeY * CUTE_GAZE, chin);
+  // Drawn faces first: how each had to be fitted to this body moves the mouth and cheeks with it.
+  const entries = options.drawn?.entries ?? [];
+  const built =
+    options.drawn && entries.length > 0
+      ? placeDrawn(options.drawn, {
+          r,
+          centreY,
+          midX: box.x + box.leftDX / 2,
+          gazeX,
+          gazeY,
+          shape,
+          rest: drawnRest(shape),
+          project: (x, y) => {
+            const projected = projectOnSphere(x, y, matrix);
+            return { transform: tangentTransform(projected, x, y), visible: projected.visible };
+          },
+          blink: options.blink ?? 1,
+        })
+      : [];
+  if (built.length > 0) {
+    placement.drawn = built;
+    placement.eyeOpacity = clamp(1 - entries.reduce((sum, e) => sum + e.weight, 0), 0, 1);
+  }
+  const layout = blendLayout(
+    CUTE_LAYOUT,
+    entries,
+    built.map((d) => d.fit),
+  );
+
+  const by = Math.min(centreY + r * layout.blush.y + gazeY * CUTE_GAZE, chin);
   const cheek = (side: -1 | 1): EyeShape => {
-    const bx = inside(midX + side * r * CUTE_BLUSH.x, by, r * CUTE_BLUSH.rx);
+    const bx = inside(midX + side * r * layout.blush.x, by, r * CUTE_BLUSH.rx);
     return shapeAt(ellipse(bx, by, r * CUTE_BLUSH.rx, r * CUTE_BLUSH.ry), bx, by);
   };
   placement.blush = { left: cheek(-1), right: cheek(1) };
 
   if (!mouth) return;
-  const my = Math.min(centreY + r * CUTE_MOUTH_DROP + gazeY * CUTE_GAZE, chin - r * mouth.open);
-  const mx = inside(midX, my, r * mouth.width);
-  const outline = mouthOutline(mouth, r).map(([x, y]) => [mx + x, my + y] as Point);
+  const drawnMouth = scaleMouth(mouth, layout.mouthScale);
+  const my = Math.min(centreY + r * layout.mouthDrop + gazeY * CUTE_GAZE, chin - r * drawnMouth.open);
+  const mx = inside(midX, my, r * drawnMouth.width);
+  const outline = mouthOutline(drawnMouth, r).map(([x, y]) => [mx + x, my + y] as Point);
   placement.mouth = {
     ...shapeAt(outline, mx, my),
     closed: true,
     opacity: (mouth.show ?? 1) * cute,
   };
   // A mouth that has opened up is a filled shape; stroking it as well would fatten it by the line weight.
-  placement.mouthWeight = r * CUTE_MOUTH_WEIGHT;
-  placement.mouthStroke = placement.mouthWeight * clamp(1 - mouth.open / CUTE_MOUTH_FILLED, 0, 1);
+  placement.mouthWeight = r * CUTE_MOUTH_WEIGHT * layout.mouthWeight;
+  placement.mouthStroke = placement.mouthWeight * clamp(1 - drawnMouth.open / CUTE_MOUTH_FILLED, 0, 1);
+  if (placement.drawn) placeInMouth(placement.drawn, entries, drawnMouth, placement.mouthStroke, r, mx, my);
 }
 /**
  * Eye radius as a fraction of the body's width at eye height.
@@ -212,25 +289,27 @@ function addCuteFeatures(
  * a crescent, and sizing from it left a narrow body with eyes half the size
  * of a circle's. A face drawn on a ball is drawn against the ball.
  */
-const EYE_BODY = 0.165;
+const EYE_BODY = 0.142;
 /**
  * Cap on the eye radius as a fraction of the body's height, so a flat body (a
  * tofu, a cloud) gets eyes that fit between its top and its chin.
  */
-const EYE_TALL = 0.16;
+const EYE_TALL = 0.138;
 /**
  * Floor on the eye radius as a fraction of the body's height, so a body that
  * is thin where the face sits (a crescent's horn) still gets legible eyes.
  */
-const EYE_FLOOR = 0.085;
+const EYE_FLOOR = 0.073;
 /** Distance from face centre to each eye, as a fraction of the body's width at eye height. */
-const EYE_SEPARATION = 0.125;
+const EYE_SEPARATION = 0.148;
 /**
  * Horizontal stretch applied to every eye outline. The topologies are drawn
  * as tall strokes; widened by this much the open eye reads as an oval rather
  * than a slit, and the closed and smiling strokes span a matching width.
  */
-const EYE_WIDEN = 1.5;
+const EYE_WIDEN = 1.44;
+/** Vertical scale on every eye outline, a little under the radius so the open oval sits lower than it is wide. */
+const EYE_RISE = 0.93;
 
 export interface PlacementOptions {
   shape: ShapeDef;
@@ -269,6 +348,8 @@ export interface PlacementOptions {
    * character a heavier or lighter pen.
    */
   lineWeight?: number;
+  /** Drawn faces to lay over the cute plate, with their weights. Read only on the cute face. */
+  drawn?: DrawnInput;
 }
 
 /**
@@ -326,6 +407,10 @@ export function computeFacePlacement(options: PlacementOptions): FacePlacement {
  * drift apart.
  */
 export function computeFaceGeometry(options: PlacementOptions): FaceGeometry {
+  return keepOnBody(layFace(options), options.shape);
+}
+
+function layFace(options: PlacementOptions): FaceGeometry {
   const {
     shape,
     eyes,
@@ -378,7 +463,7 @@ export function computeFaceGeometry(options: PlacementOptions): FaceGeometry {
   // The cute face's eyes are round and sized from their own radius.
   const cuteRadius = cuteFace?.radius ?? 0;
   const sizeXOpen = lerp(radius * faceTune.eyeWidth * shrinkX * EYE_WIDEN, cuteRadius, cute);
-  const sizeYOpen = lerp(radius * faceTune.eyeHeight * shrinkY, cuteRadius, cute);
+  const sizeYOpen = lerp(radius * faceTune.eyeHeight * shrinkY * EYE_RISE, cuteRadius, cute);
   // Half-thickness floor in unit-eye space: the ribbon is built at radius 1
   // and then scaled by `sizeY`, so divide the target half-width back out.
   const minWidth = lineBlend > 0 ? (lineWidth / 2 / sizeYOpen) * lineBlend : 0.012;
@@ -473,6 +558,109 @@ export function computeFaceGeometry(options: PlacementOptions): FaceGeometry {
   return placement;
 }
 
+/** How far a feature may move sideways and stay on the body: the least and the most. */
+type Room = readonly [number, number];
+
+const ANYWHERE: Room = [-Infinity, Infinity];
+const meet = (a: Room, b: Room): Room => [Math.max(a[0], b[0]), Math.min(a[1], b[1])];
+/** The move nearest to none that the room allows, or the middle of it where it allows none. */
+const settle = (room: Room, from = 0): number =>
+  room[0] > room[1] ? (room[0] + room[1]) / 2 : clamp(from, room[0], room[1]);
+
+/**
+ * The face slid sideways as one plate, so that what the pose's projection
+ * carried past the body's edge comes back inside it.
+ *
+ * Each feature is kept inside the body before it is projected, but the
+ * projection turns the face on a sphere about the middle of the shape box,
+ * not about the body: the rest pose's three-quarter turn alone carries a face
+ * a tenth of the box sideways, off a narrow or off-centre body at the side it
+ * turns to. Every feature moves by the same amount, so the face keeps its
+ * spacing; where no amount fits them all, the face is centred on the room
+ * there is. The cheeks are the one give: on a body too small for them as
+ * well, each is brought onto the body by itself. Loose layers (a falling
+ * tear) do not count, as they may leave the face.
+ */
+function keepOnBody(geometry: FaceGeometry, shape: ShapeDef): FaceGeometry {
+  const margin = geometry.lineWidth / 2;
+  const midline = (geometry.left.transform.x + geometry.right.transform.x) / 2;
+
+  /** The room of a feature's outermost points: across, up and down, and on the diagonals. */
+  const roomOf = (t: TangentTransform, rings: readonly (readonly Point[])[]): Room => {
+    const [a, b, c, d] = t.matrix;
+    const best = Array.from({ length: 8 }, () => ({ score: -Infinity, x: 0, y: 0 }));
+    for (const ring of rings) {
+      for (const [px, py] of ring) {
+        const x = t.x + a * (px - t.pivotX) + c * (py - t.pivotY);
+        const y = t.y + b * (px - t.pivotX) + d * (py - t.pivotY);
+        const scores = [x, -x, y, -y, x + y, x - y, -x + y, -x - y];
+        scores.forEach((score, i) => {
+          if (score > best[i]!.score) best[i] = { score, x, y };
+        });
+      }
+    }
+    let room = ANYWHERE;
+    for (const { score, x, y } of best) {
+      if (score === -Infinity) continue;
+      const [lo, hi] = stretchAt(shape, y, midline);
+      room = meet(room, [lo + margin - x, hi - margin - x]);
+    }
+    return room;
+  };
+  const shown = (s: EyeShape): boolean => s.visible && s.points.length > 0;
+
+  let face = ANYWHERE;
+  if ((geometry.eyeOpacity ?? 1) > 0) {
+    for (const eye of [geometry.left, geometry.right]) {
+      if (shown(eye)) face = meet(face, roomOf(eye.transform, [eye.points, ...(eye.extras ?? [])]));
+    }
+  }
+  for (const feature of [geometry.nose, geometry.mouth]) {
+    if (feature && shown(feature)) face = meet(face, roomOf(feature.transform, [feature.points]));
+  }
+  for (const design of geometry.drawn ?? []) {
+    if (design.opacity <= 0) continue;
+    for (const part of [design.left, design.right, design.plate]) {
+      if (!part?.visible) continue;
+      const rings = part.layers.filter((layer) => !layer.loose).flatMap((layer) => layer.rings);
+      face = meet(face, roomOf(part.transform, rings));
+    }
+  }
+  const cheekRoom = (cheek: EyeShape | undefined): Room =>
+    cheek && shown(cheek) ? roomOf(cheek.transform, [cheek.points]) : ANYWHERE;
+  const cheeks = [cheekRoom(geometry.blush?.left), cheekRoom(geometry.blush?.right)] as const;
+
+  const whole = meet(face, meet(cheeks[0], cheeks[1]));
+  const together = whole[0] <= whole[1];
+  const dx = settle(together ? whole : face);
+  const [leftDx, rightDx] = together ? [dx, dx] : cheeks.map((room) => settle(room, dx));
+  if (dx === 0 && leftDx === 0 && rightDx === 0) return geometry;
+
+  const slide = <T extends { transform: TangentTransform }>(feature: T, by = dx): T => ({
+    ...feature,
+    transform: { ...feature.transform, x: feature.transform.x + by },
+  });
+  return {
+    ...geometry,
+    left: slide(geometry.left),
+    right: slide(geometry.right),
+    ...(geometry.nose ? { nose: slide(geometry.nose) } : null),
+    ...(geometry.mouth ? { mouth: slide(geometry.mouth) } : null),
+    ...(geometry.blush
+      ? { blush: { left: slide(geometry.blush.left, leftDx), right: slide(geometry.blush.right, rightDx) } }
+      : null),
+    ...(geometry.drawn
+      ? {
+          drawn: geometry.drawn.map((design) => ({
+            ...design,
+            left: slide(design.left),
+            right: slide(design.right),
+            ...(design.plate ? { plate: slide(design.plate) } : null),
+          })),
+        }
+      : null),
+  };
+}
 /**
  * The face turned `yaw` radians about the body's vertical axis, as the body spins.
  *
@@ -482,7 +670,7 @@ export function computeFaceGeometry(options: PlacementOptions): FaceGeometry {
  * round the back. At a whole number of turns the face is unchanged.
  */
 export function turnFace(geometry: FaceGeometry, shape: ShapeDef, yaw: number): FaceGeometry {
-  const turn = <T extends EyeShape>(feature: T): T => {
+  const turn = <T extends Pick<EyeShape, 'transform' | 'visible'>>(feature: T): T => {
     const { x, y, matrix } = feature.transform;
     const [lo, hi] = shape.spanAt(clamp(y, shape.top + 1, shape.bottom - 1));
     const middle = (lo + hi) / 2;
@@ -508,5 +696,15 @@ export function turnFace(geometry: FaceGeometry, shape: ShapeDef, yaw: number): 
     nose: geometry.nose && turn(geometry.nose),
     mouth: geometry.mouth && turn(geometry.mouth),
     blush: geometry.blush && { left: turn(geometry.blush.left), right: turn(geometry.blush.right) },
+    ...(geometry.drawn
+      ? {
+          drawn: geometry.drawn.map((d) => ({
+            ...d,
+            left: turn(d.left),
+            right: turn(d.right),
+            ...(d.plate ? { plate: turn(d.plate) } : null),
+          })),
+        }
+      : null),
   };
 }

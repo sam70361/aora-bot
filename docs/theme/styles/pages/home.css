@@ -85,7 +85,8 @@
     isolation: isolate;
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
-    grid-template-rows: minmax(0, 1fr) auto;
+    /* The strip's row is its height, not `auto`: the strip comes last in the page, and a row that waited for it would move the centre when it arrived. */
+    grid-template-rows: minmax(0, 1fr) var(--site-dock-h);
     grid-template-areas:
       'style centre color'
       'bottom bottom bottom';
@@ -94,6 +95,16 @@
     height: max(38rem, 100dvh);
     padding: calc(var(--site-nav-offset) + var(--site-capsule-gap))
       max(var(--site-capsule-gap), (100% - var(--site-shell-max)) / 2) var(--site-capsule-gap);
+  }
+
+  /*
+   * Not drawn until the strip, its last part, has been parsed. A first paint
+   * that lands while the page is still arriving would show some of the parts,
+   * and the ones that follow would move them, most of all in the narrow column
+   * where the order on screen is not the order in the page.
+   */
+  .site-home__hero:not(:has(> .site-home__strip)) {
+    visibility: hidden;
   }
 
   /* ---- wall ------------------------------------------------------------------ */
@@ -203,6 +214,16 @@
     );
   }
 
+  /* The image keeps a quarter of the mark's size spare on each side (`BLEED` in `wall-art.ts`), so it is drawn half as large again and centred. */
+  .site-home__tile img {
+    position: absolute;
+    inset-block-start: -25%;
+    inset-inline-start: -25%;
+    width: 150%;
+    max-width: none;
+    height: 150%;
+  }
+
   /* ---- side capsules --------------------------------------------------------- */
 
   /*
@@ -279,14 +300,9 @@
     margin-top: var(--aora-space-2);
   }
 
-  /* Three faces: few enough never to scroll, so they sit under the colours at their own size. */
+  /* The faces share the capsule with the colours, and like them scroll in a box of their own. */
   .site-home__faces {
-    display: flex;
-    flex: none;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--aora-space-1);
-    padding: var(--aora-space-1) var(--aora-space-1) 0;
+    padding-inline: var(--aora-space-1);
   }
 
   .site-home__opt--face {
@@ -1134,12 +1150,6 @@
       row-gap: var(--aora-space-1);
       height: auto;
       padding-block: var(--aora-space-2);
-    }
-
-    .site-home__faces {
-      flex-direction: row;
-      justify-content: center;
-      padding: 0;
     }
 
     .site-home__scroll {

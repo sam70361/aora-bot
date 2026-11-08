@@ -16,33 +16,41 @@
  * - `face` is where the middle of the face goes, which is where the face
  *   fitter starts looking.
  *
+ * A character can also be another one wearing props (`PropArt`): its base's
+ * body and face, with props drawn in front of them.
+ *
  * A new character goes in its family's file; a new family gets a file and a
- * line below. `FamilyArt` and the `Record<ShapeId, …>` type make the compiler
- * reject a character that is listed in `SHAPE_FAMILIES` but not drawn.
+ * line below. `FamilyArt` and the `Record<CoreShapeId, …>` type make the
+ * compiler reject a character that is listed in `ALL_SHAPE_FAMILIES` but not
+ * drawn. A theme's characters are drawn in its own entry (`themes/<id>/`).
  */
-import type { ShapeId } from '../../core/types.js';
+import type { CoreShapeId } from '../../core/types.js';
 import type { CharacterArt } from './art.js';
 import { CRITTER } from './critter.js';
 import { FIGURE } from './figure.js';
 import { FRUIT } from './fruit.js';
 import { GARDEN } from './garden.js';
+import { OBJECT } from './object.js';
 import { PEOPLE } from './people.js';
 import { PETAL } from './petal.js';
 import { POLYGON } from './polygon.js';
 import { RECT } from './rect.js';
 import { ROUND } from './round.js';
 import { SEA } from './sea.js';
+import { TREAT } from './treat.js';
 
-export type { CharacterArt } from './art.js';
+export type { ArtPart, CharacterArt, DrawnArt, PropArt } from './art.js';
 
-export const CHARACTERS: Record<ShapeId, CharacterArt> = {
+export const CHARACTERS: Record<CoreShapeId, CharacterArt> = {
   ...ROUND,
   ...RECT,
   ...POLYGON,
   ...PETAL,
   ...GARDEN,
   ...FRUIT,
+  ...TREAT,
   ...FIGURE,
+  ...OBJECT,
   ...SEA,
   ...CRITTER,
   ...PEOPLE,

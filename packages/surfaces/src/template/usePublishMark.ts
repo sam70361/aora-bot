@@ -16,7 +16,7 @@ export interface PublishMark {
 
 export interface UsePublishMarkOptions {
   /**
-   * A `ConfettiLayer` over the mark. The burst is fired on success, so the
+   * A `CelebrationLayer` over the mark. The burst is fired on success, so the
    * host never has to notice the moment itself.
    *
    * Supplied by the caller rather than returned from here: the ref belongs to

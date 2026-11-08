@@ -1,7 +1,7 @@
 import {
   CAST,
   EMOTION_IDS,
-  MarkStageProvider,
+  CharacterStageProvider,
   StagedMark,
   stateForEmotion,
   useLabel,
@@ -26,13 +26,13 @@ const TOUR_STEP_MS = 1400;
 export function CastGrid() {
   return (
     // A touring card holds its own id, so at most one appearance per member.
-    <MarkStageProvider maxSources={CAST.length}>
+    <CharacterStageProvider maxSources={CAST.length}>
       <div className="site-cast">
         {CAST.map((member) => (
           <CastCard key={member.id} member={member} />
         ))}
       </div>
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 

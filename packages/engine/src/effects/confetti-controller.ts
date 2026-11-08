@@ -10,7 +10,7 @@
  * No React, no per-instance loop: it draws into an SVG the caller already
  * has and rides the same shared ticker as everything else.
  */
-import { createParticleSystem } from '../particles.js';
+import { createParticleSystem, SPIN_REST } from '../particles.js';
 import { createSvgElement, syncChildren } from '../render/dom.js';
 import { paperNodes, trailNodes } from '../render/vector/particles.js';
 import type { ParticleFrame } from '../sim/snapshot.js';
@@ -40,14 +40,8 @@ export interface ConfettiController {
 }
 
 /** How fast a `spin()` starts, and how quickly it runs down, in rad/s. */
-const SPIN_VELOCITY = 12;
-const SPIN_DECAY = 2.6;
-
-/**
- * Below this the particle system stops spawning trail points, so the sweep
- * ends by itself rather than needing a timer to tell it to.
- */
-const SPIN_FLOOR = 0.9;
+const SPIN_VELOCITY = 11;
+const SPIN_DECAY = 2.2;
 
 export function createConfettiController(
   svg: SVGSVGElement,
@@ -86,7 +80,8 @@ export function createConfettiController(
     // gesture instead of an animation that was switched off.
     if (spinVelocity > 0) {
       spinVelocity *= Math.exp(-SPIN_DECAY * dt);
-      if (spinVelocity < SPIN_FLOOR) spinVelocity = 0;
+      // Below this the ribbons treat the body as still, so the sweep ends by itself.
+      if (spinVelocity < SPIN_REST) spinVelocity = 0;
     }
 
     particles.update(dt, {

@@ -233,6 +233,12 @@ const EYE_TO_CUTE: Record<EyeTopologyId, CuteEyeId> = {
   wink: 'wink',
 };
 
+/** The cute expression a name means: itself when it is one, its nearest cute eye when it is a line-face name, else the resting dot. */
+export function cuteNameFor(id: string): CuteEyeId {
+  if (id in CUTE_EYE_TOPOLOGIES) return id as CuteEyeId;
+  return EYE_TO_CUTE[id as EyeTopologyId] ?? 'dot';
+}
+
 /**
  * The eye pair a name means on a given face. The cute face reads cute names
  * and translates line-face ones; the other faces read only their own, and fall

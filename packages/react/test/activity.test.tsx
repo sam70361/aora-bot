@@ -2,14 +2,14 @@
 import { act, type ReactNode } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ActivityMark, GroupActivityMark, POKE_HOP_MS } from '../src/activity/ActivityMark.js';
+import { ActivityBadge, GroupActivityBadge, POKE_HOP_MS } from '../src/activity/ActivityBadge.js';
 import { ACTIVITY_EXIT_MS, resetSpawnEntrances } from '../src/activity/presence.js';
 import {
   createMarkCommandRegistry,
   MarkCommandContext,
   type MarkCommandRegistry,
 } from '../src/stage/commands.js';
-import { MarkStageProvider } from '../src/stage/MarkStage.js';
+import { CharacterStageProvider } from '../src/stage/CharacterStage.js';
 
 let root: Root | null = null;
 let host: HTMLElement | null = null;
@@ -60,9 +60,9 @@ const markBox = (el: HTMLElement) => el.querySelector('.aora-activity__mark') as
 const label = (el: HTMLElement) => el.querySelector('.aora-ticker__line--in')?.textContent ?? null;
 const poked = (el: HTMLElement) => markBox(el).classList.contains('aora-activity__mark--poked');
 
-describe('ActivityMark labels', () => {
+describe('ActivityBadge labels', () => {
   it('shows the label by default and keeps the tool and the face in step', () => {
-    const el = render(<ActivityMark agent={freshAgent()} tool="search" />);
+    const el = render(<ActivityBadge agent={freshAgent()} tool="search" />);
     expect(label(el)).toBe('Searching');
     expect(el.querySelector('.aora-mark')!.getAttribute('data-state')).toBe('spawning');
 
@@ -72,25 +72,25 @@ describe('ActivityMark labels', () => {
   });
 
   it('keeps a hover-only label in the DOM, so it is still readable aloud', () => {
-    const el = render(<ActivityMark agent={freshAgent()} tool="search" showLabel="hover" />);
+    const el = render(<ActivityBadge agent={freshAgent()} tool="search" showLabel="hover" />);
     const line = el.querySelector('.aora-ticker')!;
     expect(line.classList.contains('aora-activity__label--hover')).toBe(true);
     expect(label(el)).toBe('Searching');
   });
 
   it('hides the label visually rather than dropping it', () => {
-    const el = render(<ActivityMark agent={freshAgent()} tool="search" showLabel="never" />);
+    const el = render(<ActivityBadge agent={freshAgent()} tool="search" showLabel="never" />);
     expect(el.querySelector('.aora-ticker')).toBeNull();
     expect(el.querySelector('.aora-visually-hidden')!.textContent).toBe('Searching');
   });
 
   it('takes an explicit text override', () => {
-    const el = render(<ActivityMark agent={freshAgent()} tool="search" text="Reading the manual" />);
+    const el = render(<ActivityBadge agent={freshAgent()} tool="search" text="Reading the manual" />);
     expect(label(el)).toBe('Reading the manual');
   });
 });
 
-describe('ActivityMark interaction', () => {
+describe('ActivityBadge interaction', () => {
   let registry: MarkCommandRegistry;
 
   beforeEach(() => {
@@ -101,7 +101,7 @@ describe('ActivityMark interaction', () => {
 
   it('emphasises the agent on hover and clears it on unmount', () => {
     const agent = freshAgent();
-    const el = render(<ActivityMark agent={agent} tool="search" />);
+    const el = render(<ActivityBadge agent={agent} tool="search" />);
 
     // React synthesises enter/leave from the delegated over/out pair.
     act(() => markBox(el).dispatchEvent(new MouseEvent('pointerover', { bubbles: true })));
@@ -114,7 +114,7 @@ describe('ActivityMark interaction', () => {
   it('becomes a real control when the host wants the click, and reports it', () => {
     const agent = freshAgent();
     const onPoke = vi.fn();
-    const el = render(<ActivityMark agent={agent} tool="search" onPoke={onPoke} />);
+    const el = render(<ActivityBadge agent={agent} tool="search" onPoke={onPoke} />);
 
     const button = el.querySelector('button')!;
     expect(button.getAttribute('aria-label')).toBe('Poke');
@@ -124,9 +124,9 @@ describe('ActivityMark interaction', () => {
 
   it('hops the wrapper when the mark is a mirror that cannot animate alone', () => {
     const el = render(
-      <MarkStageProvider>
-        <ActivityMark agent={freshAgent()} tool="search" />
-      </MarkStageProvider>,
+      <CharacterStageProvider>
+        <ActivityBadge agent={freshAgent()} tool="search" />
+      </CharacterStageProvider>,
     );
     advance(16);
 
@@ -145,11 +145,11 @@ describe('ActivityMark interaction', () => {
   it('answers a poke from elsewhere in the application the same way as a click', () => {
     const agent = freshAgent();
     const el = render(
-      <MarkStageProvider>
+      <CharacterStageProvider>
         <MarkCommandContext.Provider value={registry}>
-          <ActivityMark agent={agent} tool="search" />
+          <ActivityBadge agent={agent} tool="search" />
         </MarkCommandContext.Provider>
-      </MarkStageProvider>,
+      </CharacterStageProvider>,
     );
     advance(16);
     expect(poked(el)).toBe(false);
@@ -167,11 +167,11 @@ describe('ActivityMark interaction', () => {
 
   it('leaves the mark of a different agent alone', () => {
     const el = render(
-      <MarkStageProvider>
+      <CharacterStageProvider>
         <MarkCommandContext.Provider value={registry}>
-          <ActivityMark agent={freshAgent()} tool="search" />
+          <ActivityBadge agent={freshAgent()} tool="search" />
         </MarkCommandContext.Provider>
-      </MarkStageProvider>,
+      </CharacterStageProvider>,
     );
     advance(16);
 
@@ -180,10 +180,10 @@ describe('ActivityMark interaction', () => {
   });
 });
 
-describe('ActivityMark appearance', () => {
+describe('ActivityBadge appearance', () => {
   it('passes the face, nose and pen through to the character', () => {
     const el = render(
-      <ActivityMark agent={freshAgent()} tool="search" face="line" nose="hook" lineWeight={1.4} />,
+      <ActivityBadge agent={freshAgent()} tool="search" face="line" nose="hook" lineWeight={1.4} />,
     );
     const mark = el.querySelector('.aora-mark')!;
     expect(mark.getAttribute('data-face')).toBe('line');
@@ -191,33 +191,33 @@ describe('ActivityMark appearance', () => {
   });
 
   it('applies a style to the row rather than to the character', () => {
-    const el = render(<ActivityMark agent={freshAgent()} tool="search" style={{ marginTop: '4px' }} />);
+    const el = render(<ActivityBadge agent={freshAgent()} tool="search" style={{ marginTop: '4px' }} />);
     expect(row(el)!.style.marginTop).toBe('4px');
     expect((el.querySelector('.aora-mark') as HTMLElement).style.marginTop).toBe('');
   });
 
   it('carries the same three through a group, for whichever member is showing', () => {
     const el = render(
-      <GroupActivityMark members={[{ id: 'ada' }]} tool="run" face="line" nose="bow" lineWeight={1.4} />,
+      <GroupActivityBadge members={[{ id: 'ada' }]} tool="run" face="line" nose="bow" lineWeight={1.4} />,
     );
     expect(el.querySelector('.aora-mark')!.getAttribute('data-face')).toBe('line');
   });
 
   it('takes a style on the group without losing the ink crossfade', () => {
-    const el = render(<GroupActivityMark members={[{ id: 'ada' }]} style={{ gap: '2px' }} />);
+    const el = render(<GroupActivityBadge members={[{ id: 'ada' }]} style={{ gap: '2px' }} />);
     const group = el.querySelector('.aora-activity-group') as HTMLElement;
     expect(group.style.gap).toBe('2px');
     expect(group.getAttribute('style')).toContain('--aora-activity-ink');
   });
 });
 
-describe('ActivityMark presence', () => {
+describe('ActivityBadge presence', () => {
   it('plays the exit animation before unmounting', () => {
     const agent = freshAgent();
-    const el = render(<ActivityMark agent={agent} tool="search" />);
+    const el = render(<ActivityBadge agent={agent} tool="search" />);
     expect(row(el)).not.toBeNull();
 
-    rerender(<ActivityMark agent={agent} tool="search" visible={false} />);
+    rerender(<ActivityBadge agent={agent} tool="search" visible={false} />);
     expect(row(el)!.classList.contains('aora-activity--leaving')).toBe(true);
 
     advance(ACTIVITY_EXIT_MS - 1);
@@ -228,54 +228,54 @@ describe('ActivityMark presence', () => {
 
   it('plays the arrival once per agent, not once per mount', () => {
     const agent = freshAgent();
-    const first = render(<ActivityMark agent={agent} tool="search" />);
+    const first = render(<ActivityBadge agent={agent} tool="search" />);
     expect(first.querySelector('.aora-activity--entering')).not.toBeNull();
 
     act(() => root!.unmount());
     root = null;
     host?.remove();
 
-    const second = render(<ActivityMark agent={agent} tool="search" />);
+    const second = render(<ActivityBadge agent={agent} tool="search" />);
     expect(second.querySelector('.aora-activity--entering')).toBeNull();
     expect(second.querySelector('.aora-mark')!.getAttribute('data-state')).toBe('searching');
   });
 });
 
-describe('ActivityMark facts mode', () => {
+describe('ActivityBadge facts mode', () => {
   it('derives the state and the words from published facts', () => {
     const agent = freshAgent();
     const el = render(
-      <ActivityMark agent={agent} activityMode="facts" facts={{ running: true, activity: 'reading' }} />,
+      <ActivityBadge agent={agent} activityMode="facts" facts={{ running: true, activity: 'reading' }} />,
     );
     advance(2000);
 
     expect(el.querySelector('.aora-mark')!.getAttribute('data-state')).toBe('reading');
     expect(label(el)).toBe('Reading');
 
-    rerender(<ActivityMark agent={agent} activityMode="facts" facts={{ composing: true }} />);
+    rerender(<ActivityBadge agent={agent} activityMode="facts" facts={{ composing: true }} />);
     expect(el.querySelector('.aora-mark')!.getAttribute('data-state')).toBe('composing');
     expect(label(el)).toBe('Typing');
   });
 
   it('does not churn when the caller hands it a new object of the same facts', () => {
     const agent = freshAgent();
-    const el = render(<ActivityMark agent={agent} activityMode="facts" facts={{ running: true }} />);
+    const el = render(<ActivityBadge agent={agent} activityMode="facts" facts={{ running: true }} />);
     advance(2000);
     const before = el.querySelector('.aora-mark')!.getAttribute('data-state');
 
-    rerender(<ActivityMark agent={agent} activityMode="facts" facts={{ running: true }} />);
+    rerender(<ActivityBadge agent={agent} activityMode="facts" facts={{ running: true }} />);
     expect(el.querySelector('.aora-mark')!.getAttribute('data-state')).toBe(before);
   });
 });
 
-describe('GroupActivityMark', () => {
+describe('GroupActivityBadge', () => {
   const members = [
     { id: 'ada', color: 'red' as const },
     { id: 'grace', color: 'blue' as const },
   ];
 
   it('rotates through members and carries the ink on a transitionable property', () => {
-    const el = render(<GroupActivityMark members={members} tool="run" cycleMs={2000} />);
+    const el = render(<GroupActivityBadge members={members} tool="run" cycleMs={2000} />);
     const group = el.querySelector('.aora-activity-group')!;
     const ink = () => group.getAttribute('style') ?? '';
 
@@ -286,13 +286,13 @@ describe('GroupActivityMark', () => {
   });
 
   it('draws a member picture instead of a character, keyed so the swap animates', () => {
-    const el = render(<GroupActivityMark members={[{ id: 'pic', pictureUrl: '/a.png' }]} tool="run" />);
+    const el = render(<GroupActivityBadge members={[{ id: 'pic', pictureUrl: '/a.png' }]} tool="run" />);
     expect(el.querySelector('.aora-activity-group__picture')!.getAttribute('src')).toBe('/a.png');
     expect(el.querySelector('.aora-mark')).toBeNull();
   });
 
   it('renders nothing for an empty group rather than an empty box', () => {
-    const el = render(<GroupActivityMark members={[]} />);
+    const el = render(<GroupActivityBadge members={[]} />);
     expect(el.querySelector('.aora-activity-group')).toBeNull();
   });
 });

@@ -44,6 +44,14 @@
       "types": "./dist/agent.d.ts",
       "import": "./dist/agent.js"
     },
+    "./labels": {
+      "types": "./dist/labels.d.ts",
+      "import": "./dist/labels.js"
+    },
+    "./themes/*": {
+      "types": "./dist/themes/*/index.d.ts",
+      "import": "./dist/themes/*.js"
+    },
     "./package.json": "./package.json"
   },
   "files": [
@@ -55,7 +63,8 @@
     "dev": "rslib build --watch",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "generate:faces": "vitest run --config scripts/vitest.config.ts"
   },
   "devDependencies": {
     "@rslib/core": "^0.18.0",

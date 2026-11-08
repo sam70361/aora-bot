@@ -1,7 +1,7 @@
 import { DEFAULT_TOOL_STATE, TOOL_STATES } from '@aora-bot/engine';
 import { describe, expect, it } from 'vitest';
 import {
-  activityFromTool,
+  activityForTool,
   activityLabelForState,
   characterStateForActivity,
   DEFAULT_ACTIVITY,
@@ -36,18 +36,18 @@ describe('TOOL_ACTIVITIES', () => {
   });
 });
 
-describe('activityFromTool', () => {
+describe('activityForTool', () => {
   it('names the verb and the state together', () => {
-    expect(activityFromTool('web_search')).toEqual({ labelKey: 'activity.searching', state: 'searching' });
-    expect(activityFromTool('think')).toEqual({ labelKey: 'activity.thinking', state: 'thinking' });
+    expect(activityForTool('web_search')).toEqual({ labelKey: 'activity.searching', state: 'searching' });
+    expect(activityForTool('think')).toEqual({ labelKey: 'activity.thinking', state: 'thinking' });
   });
 
   it('answers for an unknown tool, no tool, and a prototype key', () => {
-    expect(activityFromTool('teleport')).toBe(DEFAULT_ACTIVITY);
-    expect(activityFromTool(null)).toBe(DEFAULT_ACTIVITY);
-    expect(activityFromTool(undefined)).toBe(DEFAULT_ACTIVITY);
-    expect(activityFromTool('')).toBe(DEFAULT_ACTIVITY);
-    expect(activityFromTool('constructor')).toBe(DEFAULT_ACTIVITY);
+    expect(activityForTool('teleport')).toBe(DEFAULT_ACTIVITY);
+    expect(activityForTool(null)).toBe(DEFAULT_ACTIVITY);
+    expect(activityForTool(undefined)).toBe(DEFAULT_ACTIVITY);
+    expect(activityForTool('')).toBe(DEFAULT_ACTIVITY);
+    expect(activityForTool('constructor')).toBe(DEFAULT_ACTIVITY);
   });
 });
 

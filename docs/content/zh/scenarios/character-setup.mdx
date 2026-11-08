@@ -10,7 +10,7 @@ import { StateMatrix } from '@theme';
 
 ```tsx preview
 import { useState } from 'react';
-import { AgentAvatar, AgentCharacterPicker, AvatarTrigger, type CharacterChoice } from '@aora-bot/react';
+import { AgentPortrait, AgentCharacterSelector, AvatarButton, type CharacterChoice } from '@aora-bot/react';
 
 export default function Demo() {
   const [choice, setChoice] = useState<CharacterChoice>({
@@ -24,8 +24,8 @@ export default function Demo() {
   return (
     <div className="site-demo site-demo--column">
       <div className="site-demo__row">
-        <AvatarTrigger value={choice} onCommit={setChoice} lineWeight={lineWeight} sizePx={64} />
-        <AgentAvatar agent={{ id: 'me', ...choice }} sizePx={28} />
+        <AvatarButton value={choice} onCommit={setChoice} lineWeight={lineWeight} sizePx={64} />
+        <AgentPortrait agent={{ id: 'me', ...choice }} sizePx={28} />
         <label className="site-field">
           线条粗细 {lineWeight.toFixed(2)}
           <input
@@ -38,7 +38,7 @@ export default function Demo() {
           />
         </label>
       </div>
-      <AgentCharacterPicker value={choice} onCommit={setChoice} lineWeight={lineWeight} layout="row" />
+      <AgentCharacterSelector value={choice} onCommit={setChoice} lineWeight={lineWeight} layout="row" />
     </div>
   );
 }
@@ -52,10 +52,10 @@ export default function Demo() {
 
 ## 用到的组件
 
-- [`CharacterPicker`](/components/character-picker)——受控的网格。传入 `face` 会出现 `eyes | line` 切换，线条模式下再多一排鼻子。
-- [`AgentCharacterPicker`](/components/agent-character-picker)——同一个网格，但把修改先暂存到确认为止，给需要"取消"有意义的对话框。
-- [`CompactCharacterPicker`](/components/compact-character-picker)——一小撮形状和墨色，放在注册表单旁边。
-- [`AvatarEditor`](/components/avatar-editor)、`AvatarTrigger` 与 `EditableAvatar`——带角色、生成、上传三个标签页的对话框，以及两种打开它的按钮。
+- [`CharacterSelector`](/components/character-selector)——受控的网格。传入 `face` 会出现 `eyes | line` 切换，线条模式下再多一排鼻子。
+- [`AgentCharacterSelector`](/components/agent-character-selector)——同一个网格，但把修改先暂存到确认为止，给需要"取消"有意义的对话框。
+- [`CompactCharacterSelector`](/components/compact-character-selector)——一小撮形状和墨色，放在注册表单旁边。
+- [`AvatarStudio`](/components/avatar-studio)、`AvatarButton` 与 `AvatarField`——带角色、生成、上传三个标签页的对话框，以及两种打开它的按钮。
 - [`TemplateDialog`](/components/template-dialog)——名称、说明、可见性，角色站在表单旁边。
 
 ## 状态怎么走
@@ -63,7 +63,7 @@ export default function Demo() {
 | 从          | 到          | 时机                               |
 | ----------- | ----------- | ---------------------------------- |
 | —           | `idle`      | 选择器里的预览，用 `paused` 定住   |
-| `idle`      | `curious`   | 指针悬停在 `AvatarTrigger` 上      |
+| `idle`      | `curious`   | 指针悬停在 `AvatarButton` 上       |
 | —           | `happy`     | 编辑器自己的预览                   |
 | `idle`      | `working`   | 模板保存请求在途                   |
 | `working`   | `celebrate` | 保存成功——撒一次花，然后休息       |
@@ -80,6 +80,6 @@ export default function Demo() {
 
 ## 接下来
 
-- [CharacterPicker](/components/character-picker)——受控的选择网格
-- [AvatarEditor](/components/avatar-editor)——角色、生成、上传三个标签页
+- [CharacterSelector](/components/character-selector)——受控的选择网格
+- [AvatarStudio](/components/avatar-studio)——角色、生成、上传三个标签页
 - [TemplateDialog](/components/template-dialog)——名称、说明与可见性

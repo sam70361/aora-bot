@@ -1,9 +1,9 @@
 import {
-  COLOR_IDS,
+  ALL_COLOR_IDS,
   DEFAULT_STYLE_ID,
-  FACE_STYLES,
   IDLE_STATE,
-  SHAPE_IDS,
+  ALL_SHAPE_IDS,
+  acceptsVariant,
   autoNoseForKey,
   castMember,
   createCharacter,
@@ -12,7 +12,10 @@ import {
   getStyle,
   hasStyle,
   isCharacterState,
+  isFaceStyle,
   isNoseId,
+  loadThemes,
+  themesNeeded,
   type CastId,
   type CharacterController,
   type CharacterOptions,
@@ -46,7 +49,7 @@ export interface AoraBotAttributes {
   /** A JSON object of the series' parameters, such as `{"paperOffset":12}`. */
   'style-options'?: string;
   seed?: string;
-  /** A CSS length, or a bare number of pixels. Defaults to 28px. */
+  /** A CSS length, or a bare number of pixels. Defaults to 32px. */
   size?: string | number;
   /** Colour of the eye cut-outs. */
   'eye-color'?: string;
@@ -88,7 +91,7 @@ const ATTRIBUTES = [
 const FIXED = new Set<string>(['seed', 'reduced-motion', 'auto-pause']);
 
 const BASE_STYLES = `
-:host { display: inline-block; width: 28px; height: 28px; }
+:host { display: inline-block; width: 32px; height: 32px; }
 :host([hidden]) { display: none; }
 .mark {
   display: flex;
@@ -156,9 +159,10 @@ function cssLength(value: string | null): string | null {
 function resolve(el: Element): Resolved {
   const get = (name: keyof AoraBotAttributes) => el.getAttribute(name);
   const member = castMember(get('character'));
-  const shape = pick(get('shape'), SHAPE_IDS) ?? member?.shape ?? 'mochi';
-  const color = pick(get('color'), COLOR_IDS) ?? member?.color ?? 'black';
-  const face = pick(get('face'), FACE_STYLES) ?? member?.face ?? 'cute';
+  const shape = pick(get('shape'), ALL_SHAPE_IDS) ?? member?.shape ?? 'mochi';
+  const color = pick(get('color'), ALL_COLOR_IDS) ?? member?.color ?? 'black';
+  const faceAttr = get('face') ?? undefined;
+  const face = (isFaceStyle(faceAttr) ? faceAttr : undefined) ?? member?.face ?? 'cute';
   const seed = get('seed') || `${shape}:${color}`;
 
   const noseAttr = get('nose');
@@ -177,7 +181,7 @@ function resolve(el: Element): Resolved {
   const series = getStyle(style);
   const variantAttr = get('variant');
   const variant =
-    variantAttr !== null && series.variants.includes(variantAttr) ? variantAttr : series.defaultVariant;
+    variantAttr !== null && acceptsVariant(series, variantAttr) ? variantAttr : series.defaultVariant;
 
   const eyeScale = finite(get('eye-scale'));
 
@@ -297,6 +301,25 @@ export class AoraBotElement extends Base {
   }
 
   #apply(rebuild: boolean): void {
+    // A theme's ids draw once the theme is loaded: hold the box, load it, and apply again.
+    const needed = themesNeeded({
+      shape: this.getAttribute('shape'),
+      preset: this.getAttribute('character'),
+      variant: this.getAttribute('variant'),
+      style: this.getAttribute('style-id'),
+      color: this.getAttribute('color'),
+    });
+    if (needed.length > 0) {
+      const size = cssLength(this.getAttribute('size'));
+      this.#style.textContent = size
+        ? `${BASE_STYLES}:host { width: ${size}; height: ${size}; }`
+        : BASE_STYLES;
+      void loadThemes(needed).then(
+        () => this.isConnected && this.#apply(true),
+        (error: unknown) => console.error(error),
+      );
+      return;
+    }
     const { live, fixed, color, member, eyeColor, size } = resolve(this);
 
     this.#style.textContent = size ? `${BASE_STYLES}:host { width: ${size}; height: ${size}; }` : BASE_STYLES;

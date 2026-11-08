@@ -41,4 +41,17 @@ export const GARDEN: FamilyArt<'garden'> = {
     ],
     face: [50, 54],
   },
+  // A narrow top (r 14) flaring through long fillets into two lobes (r 21), like a pear, under a `leaf` cap that
+  // hangs down in three soft points and a thick slanted stalk.
+  eggplant: {
+    body: 'M38.1 31.4A14 14 0 1 1 65.8 32.3A18 18 0 0 0 74.5 50.8A21 21 0 0 1 63.2 90L37.2 89A21 21 0 0 1 28.4 49.3A18 18 0 0 0 38.1 31.4Z',
+    parts: [
+      {
+        tone: 'leaf',
+        d: 'M32.5 46.4A18 18 0 0 0 38.1 31.4A14 14 0 1 1 65.8 32.3A18 18 0 0 0 70.4 47.5A3.5 3.5 0 0 1 67 46.3L64 42.5A2.5 2.5 0 0 0 60.1 42.5L54.9 49.2A3.5 3.5 0 0 1 49.3 49.1L44.8 42.6A2.5 2.5 0 0 0 40.9 42.3L37.4 46.2A3.5 3.5 0 0 1 32.5 46.4Z',
+      },
+      { tone: 'leaf', d: 'M56.1 24.7L59.1 10.7A3.2 3.2 0 0 0 52.9 9.3L49.9 23.3A3.2 3.2 0 0 0 56.1 24.7Z' },
+    ],
+    face: [51, 68],
+  },
 };

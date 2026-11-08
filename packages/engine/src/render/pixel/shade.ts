@@ -127,6 +127,12 @@ function fromOklab([L, a, b]: Lab): Rgb {
 const hex = ([r, g, b]: Rgb): string =>
   `#${[r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('')}`.toUpperCase();
 
+/** A hex colour's OKLCH chroma. */
+export function chromaHex(color: string): number {
+  const [, a, b] = toOklab(parseHex(color));
+  return Math.hypot(a, b);
+}
+
 /** `a` mixed with `b` by `t` in OKLab: what `color-mix(in oklab, a, b t)` computes. */
 export function mixHex(a: string, b: string, t: number): string {
   const x = toOklab(parseHex(a));

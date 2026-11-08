@@ -8,7 +8,7 @@ import { API } from '@theme';
 
 ```tsx preview
 import { useState } from 'react';
-import { MarkStageProvider } from '@aora-bot/react';
+import { CharacterStageProvider } from '@aora-bot/react';
 import { OccupancyList, type OccupancyRow } from '@aora-bot/surfaces';
 
 const rows: OccupancyRow[] = [
@@ -38,12 +38,12 @@ const rows: OccupancyRow[] = [
 export default function Demo() {
   const [picked, setPicked] = useState<string | null>(null);
   return (
-    <MarkStageProvider>
+    <CharacterStageProvider>
       <div className="site-demo site-demo--column">
         <OccupancyList rows={rows} onSelect={(agent, row) => setPicked(`${agent.name} 在 ${row.label}`)} />
         <span className="site-demo__label">{picked ?? '点一张脸'}</span>
       </div>
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 ```
@@ -56,7 +56,7 @@ export default function Demo() {
 
 ## 四十行共用一个引擎
 
-每个 `OccupancyMark` 都是 [`StagedMark`](/components/mark-stage)，所以列表上方需要一个 `MarkStageProvider`。资源列表恰恰是那种放着四十个角色、其中大多数同时处于同一状态的页面，而这正是舞台能压缩成一份动画的场合。`lineWeight` 是唯一会让角色退出共享的 prop：线条粗细烙在源几何里，镜像无法各自不同。
+每个 `OccupancyMark` 都是 [`StagedMark`](/components/character-stage)，所以列表上方需要一个 `CharacterStageProvider`。资源列表恰恰是那种放着四十个角色、其中大多数同时处于同一状态的页面，而这正是舞台能压缩成一份动画的场合。`lineWeight` 是唯一会让角色退出共享的 prop：线条粗细烙在源几何里，镜像无法各自不同。
 
 ## 每一行的状态
 

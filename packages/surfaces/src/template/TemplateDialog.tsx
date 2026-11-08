@@ -1,11 +1,11 @@
 import type { FaceStyle, NoseId } from '@aora-bot/engine';
 import { useMemo, useRef, useState, type CSSProperties } from 'react';
 import {
-  ConfettiLayer,
+  CelebrationLayer,
   type ConfettiHandle,
-  AvatarTrigger,
+  AvatarButton,
   type AvatarDraft,
-  type AvatarEditorProps,
+  type AvatarStudioProps,
   CharacterMark,
   cx,
 } from '@aora-bot/react';
@@ -31,8 +31,8 @@ export interface TemplateDialogProps {
    */
   onSave?: (draft: TemplateDraft) => void | Promise<void>;
   onCancel?: () => void;
-  /** Passed to the avatar editor. Without it the Generate tab is hidden. */
-  generateImage?: AvatarEditorProps['generateImage'];
+  /** Passed to the avatar studio. Without it the Generate tab is hidden. */
+  generateImage?: AvatarStudioProps['generateImage'];
   /** Show a share card under the form once the template has somewhere to live. */
   shareUrl?: string;
   face?: FaceStyle;
@@ -54,7 +54,7 @@ export const TEMPLATE_MARK_PX = 64;
  * — because the appearance is not a field anybody has to fill in. An
  * unconfigured template already has a shape and a colour derived from its
  * key, so the character beside the name is never a placeholder, and opening
- * the avatar editor is an optional flourish rather than a step.
+ * the avatar studio is an optional flourish rather than a step.
  */
 export function TemplateDialog({
   value,
@@ -127,10 +127,10 @@ export function TemplateDialog({
             sizePx={sizePx}
             seed={seed ?? draft.name}
           />
-          <ConfettiLayer ref={confetti} className="aora-s-template__confetti" />
+          <CelebrationLayer ref={confetti} className="aora-s-template__confetti" />
         </span>
 
-        <AvatarTrigger
+        <AvatarButton
           value={avatar}
           onCommit={(next) =>
             patch({

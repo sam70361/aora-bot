@@ -1,8 +1,8 @@
 /**
  * The pixel grid and the transforms that feed it.
  *
- * The grid is a fixed lattice over shape space, `n` cells across the 229-unit
- * square the shapes are built in. It is anchored at the centre of shape space
+ * The grid is a fixed lattice over shape space, `n` cells across the
+ * `SHAPE_SPACE` square the shapes are built in. It is anchored at the centre of shape space
  * rather than its corner: a symmetric body then rasterises to a symmetric set
  * of cells whatever `n` is, odd or even. Cells are addressed in "buffer
  * coordinates", where one unit is one cell and the lattice starts at 0 in the

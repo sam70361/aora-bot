@@ -10,7 +10,7 @@ Push to talk. Holding the button opens the channel; the occupancy list shows who
 
 ```tsx preview
 import { useEffect, useState } from 'react';
-import { CharacterMark, MarkStageProvider, type CharacterState } from '@aora-bot/react';
+import { CharacterMark, CharacterStageProvider, type CharacterState } from '@aora-bot/react';
 import { Composer, OccupancyList } from '@aora-bot/surfaces';
 
 const me = { id: 'you', name: 'You', shape: 'pebble', color: 'cyan' } as const;
@@ -46,7 +46,7 @@ export default function Demo() {
         : null;
 
   return (
-    <MarkStageProvider>
+    <CharacterStageProvider>
       <div className="site-demo site-demo--column">
         <div className="site-demo__row">
           <CharacterMark shape={agent.shape} color={agent.color} state={state} hud={hud} sizePx={72} />
@@ -76,7 +76,7 @@ export default function Demo() {
         />
         <Composer shape={agent.shape} color={agent.color} placeholder="…or type to Echo" />
       </div>
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 ```

@@ -3,7 +3,7 @@ import { act, useEffect, type ReactNode, type RefObject } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { renderToString } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ConfettiLayer, type ConfettiHandle } from '@aora-bot/react';
+import { CelebrationLayer, type ConfettiHandle } from '@aora-bot/react';
 import { ShareCard } from '../src/template/ShareCard.js';
 import { TemplateDialog } from '../src/template/TemplateDialog.js';
 import { VisibilityControls } from '../src/template/VisibilityControls.js';
@@ -123,7 +123,7 @@ describe('usePublishMark', () => {
     });
     return (
       <span data-phase={publish.state} data-state={publish.characterState}>
-        <ConfettiLayer />
+        <CelebrationLayer />
       </span>
     );
   }

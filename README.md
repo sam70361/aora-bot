@@ -2,7 +2,7 @@
 
 # Aora Bot
 
-**面向 Web 的程序化角色引擎 —— 一整套生成式角色、动画状态、三种脸、三种画风、SVG HUD，以及建立在其上的 UI 组件。**
+**面向 Web 的程序化角色引擎 —— 一整套生成式角色、动画状态、十三种脸、三种画风、SVG HUD，以及建立在其上的 UI 组件。**
 
 [控制台](https://aora-bot.vercel.app) | [文档](https://aora-bot.vercel.app/guide/getting-started) | [场景](https://aora-bot.vercel.app/scenarios/chat-stream) | [表情馆](https://sam70361.github.io/aora-bot/) | [English](./README.en.md)
 
@@ -20,10 +20,10 @@
 （有的带耳朵、叶子或天线这样的独立部件），每个表情都是几个数字描述的一段曲线笔画、由弹簧插值，
 每一帧动画都由一个 `requestAnimationFrame` 循环直接写进 SVG 属性。
 
-角色一共 46 个，从圆滚滚的团子、年糕，到水果、小动物和人物。下面是全体成员，都用默认的 `cute` 脸，正开心着：
+角色一共 68 个，从圆滚滚的团子、年糕，到水果、美食、小动物、物件和人物。下面是全体成员，都用默认的 `cute` 脸，正开心着：
 
 <p align="center">
-  <img src=".github/media/cast.png" width="760" alt="全部 46 个角色排成网格，个个笑着，下方标注形状 id">
+  <img src=".github/media/cast.png" width="760" alt="全部 68 个角色排成网格，个个笑着，下方标注形状 id">
 </p>
 
 一个角色由几项互相独立的选择组成，都可以在[控制台](https://aora-bot.vercel.app)里直接试：角色本身、画风（`vector`、`pixel` 或 `kaomoji`）及其变体、墨色、脸和动画状态。
@@ -88,7 +88,7 @@ import '@aora-bot/surfaces/styles.css'; // 放在 react 样式之后
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `@aora-bot/engine`   | 引擎。形状与画风系列、面部拟合、姿态投影、弹簧积分器、状态机、腰带、HUD 表盘、粒子、情绪协议与仲裁器。不依赖 React；`/static` 与 `/agent` 不依赖 DOM。 |
 | `@aora-bot/element`  | 不依赖 React 的 `<aora-bot>` Web Component，自带引擎的单文件 CDN 版本，一行 script 即可引入。                                                          |
-| `@aora-bot/react`    | React 组件。`CharacterMark`、`MarkStageProvider`、头像与堆叠、选择器、头像编辑器、活动标记、HUD 底盘、智能体状态、精灵图、彩带、语言提供者。           |
+| `@aora-bot/react`    | React 组件。`CharacterMark`、`CharacterStageProvider`、头像与堆叠、选择器、头像编辑器、活动标记、HUD 底盘、智能体状态、精灵图、彩带、语言提供者。      |
 | `@aora-bot/surfaces` | 建立在 `@aora-bot/react` 之上的产品与演示面。引导页组件、场景、模板对话框与发布、占用列表、演员舞台。以 peer 依赖引擎与 React 包。                     |
 
 每个包都有自己的 README：[`packages/engine`](./packages/engine/README.md)、

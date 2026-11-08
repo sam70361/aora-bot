@@ -7,12 +7,12 @@ import { API } from '@theme';
 > 属于 `@aora-bot/surfaces`，不在 `@aora-bot/react` 里：`pnpm add @aora-bot/surfaces @aora-bot/react`，并在 React 样式之后引入 `@aora-bot/surfaces/styles.css`。
 
 ```tsx preview
-import { MarkStageProvider } from '@aora-bot/react';
+import { CharacterStageProvider } from '@aora-bot/react';
 import { Composer, DemoDesktop, JobBubbles } from '@aora-bot/surfaces';
 
 export default function Demo() {
   return (
-    <MarkStageProvider>
+    <CharacterStageProvider>
       <div className="site-demo site-demo--center">
         <DemoDesktop
           title="工作区"
@@ -30,7 +30,7 @@ export default function Demo() {
           </div>
         </DemoDesktop>
       </div>
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 ```
@@ -93,12 +93,12 @@ export default function Demo() {
 ## HandOff
 
 ```tsx preview
-import { MarkStageProvider } from '@aora-bot/react';
+import { CharacterStageProvider } from '@aora-bot/react';
 import { HandOff } from '@aora-bot/surfaces';
 
 export default function Demo() {
   return (
-    <MarkStageProvider>
+    <CharacterStageProvider>
       <div className="site-demo site-demo--center">
         <HandOff
           from={{ id: 'ada', name: 'Ada' }}
@@ -107,7 +107,7 @@ export default function Demo() {
           loop
         />
       </div>
-    </MarkStageProvider>
+    </CharacterStageProvider>
   );
 }
 ```
@@ -147,4 +147,4 @@ export default function Demo() {
 ## 接下来
 
 - [新手引导](/scenarios/onboarding)——有剧本的第一次运行
-- [CastStage](/components/cast-stage)——多个角色依次入场
+- [CastLineup](/components/cast-lineup)——多个角色依次入场

@@ -19,8 +19,8 @@ export { DeviceBezel } from './scenes/DeviceBezel.js';
 export type { DeviceBezelProps, BezelLight } from './scenes/DeviceBezel.js';
 export { BootLoop } from './scenes/BootLoop.js';
 export type { BootLoopProps } from './scenes/BootLoop.js';
-export { LoadingMark } from './scenes/LoadingMark.js';
-export type { LoadingMarkProps } from './scenes/LoadingMark.js';
+export { LoadingCharacter } from './scenes/LoadingCharacter.js';
+export type { LoadingCharacterProps } from './scenes/LoadingCharacter.js';
 
 // Templates
 export { TemplateDialog, TEMPLATE_MARK_PX } from './template/TemplateDialog.js';
@@ -51,12 +51,12 @@ export { OccupancyMark } from './occupancy/OccupancyMark.js';
 export type { OccupancyMarkProps } from './occupancy/OccupancyMark.js';
 
 // Cast
-export { CastStage } from './cast/CastStage.js';
-export type { CastStageProps } from './cast/CastStage.js';
-export { CastMember } from './cast/CastMember.js';
-export type { CastMemberProps, CastMemberSpec } from './cast/CastMember.js';
-export { AvatarSlot } from './cast/AvatarSlot.js';
-export type { AvatarSlotProps } from './cast/AvatarSlot.js';
+export { CastLineup } from './cast/CastLineup.js';
+export type { CastStageProps } from './cast/CastLineup.js';
+export { CastFigure } from './cast/CastFigure.js';
+export type { CastMemberProps, CastMemberSpec } from './cast/CastFigure.js';
+export { PortraitSlot } from './cast/PortraitSlot.js';
+export type { AvatarSlotProps } from './cast/PortraitSlot.js';
 export { useCastScene } from './cast/useCastScene.js';
 export type { CastScene, CastStep, CastPosition, UseCastSceneOptions } from './cast/useCastScene.js';
 

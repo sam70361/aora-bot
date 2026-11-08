@@ -1,15 +1,24 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { CAST, castMember } from '../src/core/cast.js';
+import { CAST, CORE_CAST_IDS, castMember } from '../src/core/cast.js';
 import { getLeafColor } from '../src/core/leaf.js';
-import { SHAPE_FAMILIES, SHAPE_IDS, type ShapeId } from '../src/core/types.js';
+import {
+  ALL_SHAPE_IDS,
+  CORE_SHAPE_IDS,
+  SHAPE_FAMILIES,
+  SHAPE_IDS,
+  SHAPE_SPACE,
+  isListedShape,
+  type ShapeId,
+} from '../src/core/types.js';
 import { createCharacter } from '../src/render/character.js';
 import { renderStaticSvg } from '../src/render/static-svg.js';
 import { unionOutline } from '../src/render/vector/parts.js';
 import { CHARACTERS } from '../src/shapes/characters/index.js';
 import { defineShape, getShape } from '../src/shapes/registry.js';
 import { autoShapeForKey } from '../src/math/hash.js';
-import { STYLE_IDS, getStyle } from '../src/styles/index.js';
+import { STYLE_IDS, allVariants, getStyle } from '../src/styles/index.js';
+import { THEME_MANIFEST } from '../src/themes/manifest.js';
 
 /*
  * The character roster: every body builds, and a shape's parts (ears, leaves,
@@ -52,10 +61,10 @@ afterEach(() => {
 });
 
 describe('roster', () => {
-  it('keeps a roster of forty-six, led by mochi', () => {
-    expect(SHAPE_IDS).toHaveLength(46);
+  it('keeps a roster of sixty-eight, led by the round ball', () => {
+    expect(SHAPE_IDS).toHaveLength(68);
     expect(new Set(SHAPE_IDS).size).toBe(SHAPE_IDS.length);
-    expect(SHAPE_IDS[0]).toBe('mochi');
+    expect(SHAPE_IDS[0]).toBe('circle');
   });
 
   it('files every character in exactly one family, in catalogue order', () => {
@@ -75,10 +84,21 @@ describe('roster', () => {
     }
   });
 
-  it('has exactly one drawing per shape', () => {
-    expect(Object.keys(CHARACTERS).sort()).toEqual([...SHAPE_IDS].sort());
+  it('has exactly one drawing per core shape, listed or not', () => {
+    expect(Object.keys(CHARACTERS).sort()).toEqual([...CORE_SHAPE_IDS].sort());
   });
 
+  it('keeps theme characters out of the core and of the listed roster, and knows their ids', () => {
+    const theme = THEME_MANIFEST.flatMap((entry) => [...entry.shapes]);
+    expect(theme.length).toBeGreaterThan(0);
+    for (const id of theme) {
+      expect(SHAPE_IDS, id).not.toContain(id);
+      expect(CORE_SHAPE_IDS, id).not.toContain(id);
+      expect(isListedShape(id), id).toBe(false);
+    }
+    expect(ALL_SHAPE_IDS).toEqual([...CORE_SHAPE_IDS, ...theme]);
+    expect(CORE_CAST_IDS).toHaveLength(CORE_SHAPE_IDS.length);
+  });
   it('makes mochi the default shape', () => {
     expect(renderStaticSvg({ color: 'blue' })).toBe(renderStaticSvg({ shape: 'mochi', color: 'blue' }));
     const host = mount({}).element;
@@ -94,7 +114,7 @@ describe('roster', () => {
     for (let i = 0; i < 64; i++) expect(SHAPE_IDS).toContain(autoShapeForKey(`agent-${i}`));
   });
 
-  it.each(SHAPE_IDS)('builds %s, statically and live, in every variant of every style', (id) => {
+  it.each(CORE_SHAPE_IDS)('builds %s, statically and live, in every variant of every style', (id) => {
     const shape = getShape(id);
     expect(shape.path).not.toContain('NaN');
     for (const part of shape.parts) {
@@ -103,7 +123,7 @@ describe('roster', () => {
     }
 
     for (const styleId of STYLE_IDS) {
-      for (const variant of getStyle(styleId).variants) {
+      for (const variant of allVariants(getStyle(styleId))) {
         const options = { shape: id, style: styleId, variant, state: 'happy' } as const;
         const svg = renderStaticSvg(options);
         expect(svg.startsWith('<svg')).toBe(true);
@@ -155,9 +175,9 @@ describe('parts', () => {
     for (const id of PARTED) {
       const shape = getShape(id);
       const ys = shape.parts.flatMap((p) => p.outline.map(([, y]) => y));
-      // Normalisation sizes the union of body and parts, so nothing may stick out of the 228-unit box.
+      // Normalisation sizes the union of body and parts, so nothing may stick out of shape space.
       expect(Math.min(...ys)).toBeGreaterThanOrEqual(0);
-      expect(Math.max(...ys)).toBeLessThanOrEqual(229);
+      expect(Math.max(...ys)).toBeLessThanOrEqual(SHAPE_SPACE);
     }
   });
 

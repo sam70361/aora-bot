@@ -2,7 +2,7 @@ import { StyleParamsDemo } from '@theme';
 
 # Vector styles
 
-The `vector` series draws a character as smooth SVG paths. It has seven variants that differ in paint only: the geometry, the animation and the face are the same in all of them, so a new state or a new shape arrives in every variant at once.
+The `vector` series draws a character as smooth SVG paths. It has thirteen variants that differ in paint only: the geometry, the animation and the face are the same in all of them, so a new state or a new shape arrives in every variant at once. The last six are drawing media, the same character drawn by hand.
 
 ```tsx preview
 import { getStyle } from '@aora-bot/engine';
@@ -24,17 +24,25 @@ export default function Demo() {
 }
 ```
 
-| Variant   | Body                                                        | Colour of the `cute` face       | Parameters                               |
-| --------- | ----------------------------------------------------------- | ------------------------------- | ---------------------------------------- |
-| `solid`   | Flat fill of the ink                                        | White (`--aora-face`)           | —                                        |
-| `outline` | Stroked, with an 8% ink fill                                | The ink                         | `strokeWidth`                            |
-| `glass`   | A tinted body with a fine rim, lit at the top and the rim   | The ink                         | `strokeWidth`                            |
-| `sticker` | Filled, inside a white border and a shadow                  | The paper (`--aora-paper`)      | `stickerWidth`, `stickerShadow`          |
-| `paper`   | Filled, over a darker copy of itself                        | White                           | `paperOffset`, `paperAngle`, `paperTilt` |
-| `soft`    | Radial wash, a shadow on the ground, an optional gloss      | Dark brown (`--aora-face-soft`) | `softShadow`, `softGloss`                |
-| `riso`    | Two inks printed out of register, multiplied, with halftone | White                           | `risoOffset`, `risoHalftone`             |
+| Variant      | Body                                                                     | Colour of the `cute` face       | Parameters                                   |
+| ------------ | ------------------------------------------------------------------------ | ------------------------------- | -------------------------------------------- |
+| `solid`      | Flat fill of the ink                                                     | White (`--aora-face`)           | —                                            |
+| `outline`    | Stroked, with an 8% ink fill                                             | The ink                         | `strokeWidth`                                |
+| `glass`      | A tinted body with a fine rim, lit at the top and the rim                | The ink                         | `strokeWidth`                                |
+| `sticker`    | Filled, inside a white border and a shadow                               | The paper (`--aora-paper`)      | `stickerWidth`, `stickerShadow`              |
+| `paper`      | Filled, over a darker copy of itself                                     | White                           | `paperOffset`, `paperAngle`, `paperTilt`     |
+| `soft`       | Radial wash, a shadow on the ground, an optional gloss                   | Dark brown (`--aora-face-soft`) | `softShadow`, `softGloss`                    |
+| `riso`       | Two inks printed out of register, multiplied, with halftone              | White                           | `risoOffset`, `risoHalftone`                 |
+| `pencil`     | A double graphite line, hatching on the shadow side, paper grain         | Graphite: the ink, greyed       | `strokeWidth`, `wobble`, `grain`, `hatching` |
+| `marker`     | A scribbled fill over a pale offset pass, a dark double outline          | White, outlined in dark marker  | `strokeWidth`, `wobble`                      |
+| `crayon`     | A waxy fill with the paper's tooth showing, a ragged edge, a heavier rim | Dark brown (`--aora-face-soft`) | `wobble`, `grain`                            |
+| `watercolor` | A light wash, pooled pigment, a bloom, granulation, a dried edge         | Dark brown (`--aora-face-soft`) | `wobble`, `grain`                            |
+| `neon`       | A glowing tube with a core, a faint glow inside                          | The tube's core                 | `strokeWidth`, `neonGlow`                    |
+| `chalk`      | A crumbling chalk line, diagonal strokes, dust along the line            | Chalk: the ink, paler or deeper | `strokeWidth`, `wobble`, `grain`, `hatching` |
+| `origami`    | Crumpled sheets pressed flat, many soft facets, each on its own shadow   | As `solid`                      | —                                            |
+| `relief`     | A thick card pressed up from behind: a lit rim and a shaded rim          | As `solid`                      | —                                            |
 
-`solid`, `outline` and `glass` are described with the [`CharacterMark`](/components/character-mark) props. This page covers the other variants, and the one-colour line look that `outline` gives.
+`solid`, `outline` and `glass` are described with the [`CharacterMark`](/components/character-mark) props. This page covers the other variants, the drawing media, and the one-colour line look that `outline` gives.
 
 ## Sticker
 
@@ -234,6 +242,352 @@ export default function Demo() {
 }
 ```
 
+## Drawing media
+
+`pencil`, `marker`, `crayon`, `watercolor`, `neon` and `chalk` draw the same snapshot by hand. The body and its pieces — ears, leaves, hair — are redrawn from their outlines: a wobbling double line, hatching, a scribble, a ragged waxy edge, a dried edge, a glowing tube. The face, in any face style, and the effects, the HUD dials, the belt and the confetti are only known as groups, so they take the medium as a group: pencil and chalk grain them, neon glows them, marker outlines the face. Pencil's effects are graphite; the other media keep the effects' own colours, as coloured tubes or coloured chalk. `origami` and `relief` are made of paper rather than drawn: the body and each of its pieces is a sheet of its own, crumpled or pressed up, and the face and the effects sit on it as usual.
+
+None of them paints a background. They read on the page they are put on, light or dark, through the same ink tokens as the other variants:
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+const media = ['pencil', 'marker', 'crayon', 'watercolor', 'neon', 'chalk', 'origami', 'relief'];
+const surfaces = [
+  { bg: '#fcfcfc', scheme: 'light' },
+  { bg: '#16161a', scheme: 'dark' },
+];
+
+export default function Demo() {
+  return (
+    <div style={{ display: 'grid', gap: 12 }}>
+      {surfaces.map(({ bg, scheme }) => (
+        <div
+          key={bg}
+          className="site-demo"
+          style={{ padding: 12, borderRadius: 16, background: bg, colorScheme: scheme }}
+        >
+          {media.map((variant) => (
+            <div className="site-demo__cell" key={variant}>
+              <CharacterMark shape="cat" color="orange" state="happy" sizePx={96} variant={variant} />
+              <span className="site-demo__label">{variant}</span>
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+- **Lines follow the page.** `pencil`, `neon` and `chalk` are line drawings, so, like `outline`, their face and lines take the ink shifted towards the page's contrast: graphite darkens on a light page and turns silver on a dark one, chalk deepens on a light page and goes pale on a dark one, and a neon tube's core is white-hot on a dark page and deep on a light one.
+- **Painted media wear a dark face.** `crayon` and `watercolor` paint the face in a darker pigment, the dark brown of `soft` (`--aora-face-soft`), which `getInkVars('black')` turns white while a black body is dark. `marker` keeps the white face and outlines it in its dark marker.
+- **Pieces keep their colours.** A leaf is green and the inside of an ear lighter in the filled media; the line media draw every piece in the line, and leave the inside of an ear out, as `outline` does.
+
+Every texture is seeded, so a static render is the same every time, and every stroke is worked out once per outline and kept. The grain is carried by the paint — a small image of specks in a pattern, or a mask per group — rather than recalculated each frame, and the glow is a single blur, so a page of twenty animated characters in any medium stays near 60 fps.
+
+A medium also knows how large it is shown. Between 80 and 40 pixels wide the grain and the hatching fade out — on a small character a speck is a fraction of a pixel and only thins the face — and a medium's line never gets thinner than about a pixel, so at 24 px pencil and chalk read as clearly as `outline`. A live character measures itself; a static render goes by `sizePx`, and without one draws full detail.
+
+### Pencil
+
+A faint tint of the ink, hatching on the side away from the light, and the outline drawn twice: once closed, once a looser pass that overshoots its start. `wobble` is how far the hand strays, `grain` how much of the paper's tooth the graphite misses, and `hatching` switches the shading.
+
+```tsx preview
+import { renderStaticSvgDataUrl } from '@aora-bot/react';
+
+const cases = [
+  { label: 'default', styleOptions: {} },
+  { label: 'wobble 0', styleOptions: { wobble: 0 } },
+  { label: 'wobble 8', styleOptions: { wobble: 8 } },
+  { label: 'grain 0', styleOptions: { grain: 0 } },
+  { label: 'hatching false', styleOptions: { hatching: false } },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {cases.map(({ label, styleOptions }) => (
+        <div className="site-demo__cell" key={label}>
+          <img
+            alt=""
+            width={96}
+            height={96}
+            src={renderStaticSvgDataUrl({
+              shape: 'blob',
+              color: 'blue',
+              state: 'happy',
+              variant: 'pencil',
+              styleOptions,
+            })}
+          />
+          <span className="site-demo__label">{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### Marker
+
+A pale pass printed slightly off, a scribble that fills the shape without lifting, and a dark double outline. The gaps in the scribble show the pale pass. The face and the effects are outlined in the same dark marker. `strokeWidth` sets the marker's width, and with it the scribble's.
+
+```tsx preview
+import { renderStaticSvgDataUrl } from '@aora-bot/react';
+
+const cases = [
+  { label: 'default', styleOptions: {} },
+  { label: 'strokeWidth 6', styleOptions: { strokeWidth: 6 } },
+  { label: 'strokeWidth 16', styleOptions: { strokeWidth: 16 } },
+  { label: 'wobble 0', styleOptions: { wobble: 0 } },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {cases.map(({ label, styleOptions }) => (
+        <div className="site-demo__cell" key={label}>
+          <img
+            alt=""
+            width={96}
+            height={96}
+            src={renderStaticSvgDataUrl({
+              shape: 'strawberry',
+              color: 'red',
+              state: 'happy',
+              variant: 'marker',
+              styleOptions,
+            })}
+          />
+          <span className="site-demo__label">{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### Crayon
+
+A waxy fill with the paper's tooth showing through, a ragged edge, and a heavier rim where the crayon was pressed along the outline. `grain` is how much of the paper shows; `wobble` how ragged the edge is.
+
+```tsx preview
+import { renderStaticSvgDataUrl } from '@aora-bot/react';
+
+const cases = [
+  { label: 'default', styleOptions: {} },
+  { label: 'grain 0.5', styleOptions: { grain: 0.5 } },
+  { label: 'grain 2', styleOptions: { grain: 2 } },
+  { label: 'wobble 8', styleOptions: { wobble: 8 } },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {cases.map(({ label, styleOptions }) => (
+        <div className="site-demo__cell" key={label}>
+          <img
+            alt=""
+            width={96}
+            height={96}
+            src={renderStaticSvgDataUrl({
+              shape: 'bunny',
+              color: 'pink',
+              state: 'happy',
+              variant: 'crayon',
+              styleOptions,
+            })}
+          />
+          <span className="site-demo__label">{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### Watercolor
+
+A wash a little lighter than the ink, pigment pooled in one blot and pushed out of another into a bloom with a ragged edge, granulation in the paper's hollows, and the darker edge a wash leaves where it dried. A blot is drawn only where it stays inside the wash, so a notched shape simply has fewer.
+
+```tsx preview
+import { renderStaticSvgDataUrl } from '@aora-bot/react';
+
+const cases = [
+  { label: 'default', styleOptions: {} },
+  { label: 'grain 0', styleOptions: { grain: 0 } },
+  { label: 'wobble 0', styleOptions: { wobble: 0 } },
+  { label: 'wobble 8', styleOptions: { wobble: 8 } },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {cases.map(({ label, styleOptions }) => (
+        <div className="site-demo__cell" key={label}>
+          <img
+            alt=""
+            width={96}
+            height={96}
+            src={renderStaticSvgDataUrl({
+              shape: 'cloud',
+              color: 'cyan',
+              state: 'happy',
+              variant: 'watercolor',
+              styleOptions,
+            })}
+          />
+          <span className="site-demo__label">{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### Neon
+
+A tube of the ink with a core, and everything on and around the body — the face, the effects, the dials, the belt — glowing in its own colour, so a pink heart glows pink. `neonGlow` is the glow's radius in shape-space units; `0` leaves the bare tube, which costs nothing to draw.
+
+```tsx preview
+import { renderStaticSvgDataUrl } from '@aora-bot/react';
+
+const cases = [
+  { label: 'neonGlow 0', styleOptions: { neonGlow: 0 } },
+  { label: 'default', styleOptions: {} },
+  { label: 'neonGlow 16', styleOptions: { neonGlow: 16 } },
+  { label: 'strokeWidth 18', styleOptions: { strokeWidth: 18 } },
+];
+
+export default function Demo() {
+  return (
+    <div
+      className="site-demo"
+      style={{ padding: 12, borderRadius: 16, background: '#16161a', colorScheme: 'dark' }}
+    >
+      {cases.map(({ label, styleOptions }) => (
+        <div className="site-demo__cell" key={label}>
+          <img
+            alt=""
+            width={96}
+            height={96}
+            src={renderStaticSvgDataUrl({
+              shape: 'star',
+              color: 'violet',
+              state: 'happy',
+              variant: 'neon',
+              colorScheme: 'page',
+              styleOptions,
+            })}
+          />
+          <span className="site-demo__label">{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### Chalk
+
+A dusty haze along the line, diagonal strokes for the fill, the line itself and a fainter retrace beside it, all crumbling on the grain. `hatching` switches the diagonal fill; `grain` is how much of the chalk the surface takes.
+
+```tsx preview
+import { renderStaticSvgDataUrl } from '@aora-bot/react';
+
+const cases = [
+  { label: 'default', styleOptions: {} },
+  { label: 'grain 0.4', styleOptions: { grain: 0.4 } },
+  { label: 'hatching false', styleOptions: { hatching: false } },
+  { label: 'strokeWidth 18', styleOptions: { strokeWidth: 18 } },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {cases.map(({ label, styleOptions }) => (
+        <div className="site-demo__cell" key={label}>
+          <img
+            alt=""
+            width={96}
+            height={96}
+            src={renderStaticSvgDataUrl({
+              shape: 'tofu',
+              color: 'green',
+              state: 'happy',
+              variant: 'chalk',
+              styleOptions,
+            })}
+          />
+          <span className="site-demo__label">{label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### Origami
+
+Each piece is a sheet crumpled and pressed flat again. The outline is kept as it is, so the silhouette stays round; inside it, a jittered grid of points and a share of the outline's own points are triangulated, and every triangle is one facet, tipped a little and lit by how far it then faces the light at the top left. A body is crumpled finer than an ear or a leaf. The light is laid over the colour in white and black, so a token or a gradient folds as well, and faint creases trace the facets. Each sheet lies on a small shadow of its own, so the sheets of a figure read as fitted together. A concave outline such as the crescent or the speech bubble is still cut cleanly and never spills past its own edge.
+
+Origami reads no parameters. The crumple is seeded by the outline, worked out once per outline and cached, so a static render comes out the same every time.
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+const cast = [
+  { shape: 'circle', color: 'cream', face: 'capsule' },
+  { shape: 'cat', color: 'orange' },
+  { shape: 'star', color: 'yellow', face: 'specs' },
+  { shape: 'crescent', color: 'violet' },
+  { shape: 'bunny', color: 'pink' },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {cast.map((props) => (
+        <div className="site-demo__cell" key={props.shape}>
+          <CharacterMark {...props} state="happy" sizePx={96} variant="origami" />
+          <span className="site-demo__label">{props.shape}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+### Relief
+
+Each piece is one thick card pressed up from behind. A white rim lights its upper left edge and a darker one shades its lower right, both drawn inside the piece, and the card stands off the page on a soft shadow. A small piece such as an ear takes a share of the rims, so they never fill it. The rims are laid over the colour in white and black, so a token or a gradient embosses as well.
+
+Relief reads no parameters and has no texture, so it costs about what `paper` does to redraw.
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+const cast = [
+  { shape: 'circle', color: 'cream', face: 'capsule' },
+  { shape: 'cat', color: 'orange' },
+  { shape: 'star', color: 'yellow', face: 'specs' },
+  { shape: 'crescent', color: 'violet' },
+  { shape: 'bunny', color: 'pink' },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {cast.map((props) => (
+        <div className="site-demo__cell" key={props.shape}>
+          <CharacterMark {...props} state="happy" sizePx={96} variant="relief" />
+          <span className="site-demo__label">{props.shape}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
 ## A single line
 
 The `outline` variant already is the single-line look. What decides whether it is one colour is its ink. With no `ink` the stroke, the eyes and the features use `--aora-fg`, and `CharacterMark` sets that to the palette colour — so the outline is blue, violet, whatever `color` says. To draw in the text colour instead, give it `currentColor`:
@@ -290,18 +644,22 @@ Inline that markup in the page. Loaded through an `<img>`, an SVG has no surroun
 
 Parameters belong to the series and every variant reads only its own. Out-of-range numbers are clamped and snapped to the step; a value of the wrong type falls back to the default; unknown keys are dropped.
 
-| Parameter       | Variant           | Default | Range       | Meaning                                        |
-| --------------- | ----------------- | ------- | ----------- | ---------------------------------------------- |
-| `strokeWidth`   | outline and glass | 10      | 4–28, by 1  | Line width, in shape-space units               |
-| `stickerWidth`  | sticker           | 12      | 4–20, by 1  | How far the border reaches beyond the body     |
-| `stickerShadow` | sticker           | `true`  | —           | Whether the sticker casts its soft shadow      |
-| `paperOffset`   | paper             | 9       | 0–20, by 1  | Distance of the hard shadow                    |
-| `paperAngle`    | paper             | 55      | 0–360, by 5 | Direction of the hard shadow, clockwise from → |
-| `paperTilt`     | paper             | −3      | −8–8, by 1  | Tilt of the whole cut-out, in degrees          |
-| `softShadow`    | soft              | `true`  | —           | Whether a shadow lies on the ground            |
-| `softGloss`     | soft              | `false` | —           | Whether a small gloss is drawn                 |
-| `risoOffset`    | riso              | 10      | 0–20, by 1  | Misregistration between the two passes         |
-| `risoHalftone`  | riso              | `true`  | —           | Whether the halftone screen is laid on         |
+| Parameter       | Variant                                     | Default | Range       | Meaning                                                                  |
+| --------------- | ------------------------------------------- | ------- | ----------- | ------------------------------------------------------------------------ |
+| `strokeWidth`   | outline, glass, pencil, marker, neon, chalk | 10      | 4–28, by 1  | Line width, in shape-space units; glass and the media draw a share of it |
+| `stickerWidth`  | sticker                                     | 12      | 4–20, by 1  | How far the border reaches beyond the body                               |
+| `stickerShadow` | sticker                                     | `true`  | —           | Whether the sticker casts its soft shadow                                |
+| `paperOffset`   | paper                                       | 9       | 0–20, by 1  | Distance of the hard shadow                                              |
+| `paperAngle`    | paper                                       | 55      | 0–360, by 5 | Direction of the hard shadow, clockwise from →                           |
+| `paperTilt`     | paper                                       | −3      | −8–8, by 1  | Tilt of the whole cut-out, in degrees                                    |
+| `softShadow`    | soft                                        | `true`  | —           | Whether a shadow lies on the ground                                      |
+| `softGloss`     | soft                                        | `false` | —           | Whether a small gloss is drawn                                           |
+| `risoOffset`    | riso                                        | 10      | 0–20, by 1  | Misregistration between the two passes                                   |
+| `risoHalftone`  | riso                                        | `true`  | —           | Whether the halftone screen is laid on                                   |
+| `wobble`        | pencil, marker, crayon, watercolor, chalk   | 4       | 0–8, by 1   | How far a hand-drawn line strays from the outline, in shape-space units  |
+| `grain`         | pencil, crayon, watercolor, chalk           | 1       | 0–2, by 0.1 | Strength of the paper grain, as a share of the medium's own; 0 is clean  |
+| `hatching`      | pencil and chalk                            | `true`  | —           | Whether pencil shades, and chalk fills, with hatching                    |
+| `neonGlow`      | neon                                        | 8       | 0–20, by 1  | Radius of the glow, in shape-space units; 0 is the bare tube             |
 
 Pick a variant and the panel lists only the parameters that variant reads. It is built from the registry, so it stays in step with the table above.
 
@@ -322,5 +680,5 @@ character.update({ variant: 'paper', styleOptions: { paperOffset: 12, paperAngle
 
 - [CharacterMark](/components/character-mark) — the component, and the first three variants
 - [Kaomoji style](/design/styles/kaomoji) — the character written as one line of text
-- [Faces](/design/face) — the three faces that every variant can wear
+- [Faces](/design/face) — the faces every variant can wear
 - [Theming](/guide/theming) — the variables that paint a character

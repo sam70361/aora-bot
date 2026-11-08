@@ -1,0 +1,54 @@
+---
+title: What's New
+description: The changes in each Aora Bot release, newest first.
+sidebar: false
+---
+
+# What's New
+
+The changes in each release, newest first. Every package, export and parameter change is listed in full in the [changelog](https://github.com/sam70361/aora-bot/blob/main/CHANGELOG.md).
+
+## Next release
+
+Not yet published to npm. The packages in this repository already include these changes.
+
+### Characters and faces
+
+- 22 new characters, each with a cast member, including a `treat` family and an `object` family; `ghost` is redrawn rounder.
+- 13 new drawn faces. `capsule` now comes first in the face list and pickers, and `teardrop` and `specs` have been redrawn. Each drawn face covers all 44 states and works in every vector variant, in pixel and in kaomoji. `defineFace` registers a face of your own.
+- Dot (`dot`, 球球) is a cream-white ball wearing `capsule` and now comes first in the cast.
+
+### Styles
+
+- Six drawing media: `pencil`, `marker`, `crayon`, `watercolor`, `neon` and `chalk`.
+- Two paper media: `origami`, a sheet crumpled and pressed flat into soft facets, and `relief`, a thick card pressed up from behind. See [Vector styles](/design/styles/vector).
+- `defineVectorMedium` registers a vector variant of your own.
+- A shape part can carry its own colour, and `defineShapeWithProps` dresses a character in props.
+
+### Themes
+
+- Themes are separate entries (`@aora-bot/engine/themes/<id>`) that are loaded only when needed, each with its own characters, cast, skins and labels. The [Themes](/themes/) page shows every theme.
+
+### Breaking changes
+
+- Shape space is now 240 units (`SHAPE_SPACE`), with a `-24 -24 288 288` view box. Custom outlines are normalised automatically.
+- `FaceTune` fields are ratios of the fitted face: 1 means as fitted.
+- React and surfaces components have new names: for example, `CharacterPicker` is now `CharacterSelector`, `AvatarStack` is `AvatarGroup`, `AgentAvatar` is `AgentPortrait` and `CastStage` is `CastLineup`. The changelog lists every rename.
+- Characters default to 32 px in React and in `<aora-bot>`.
+- Confetti and ribbons are redesigned, with a new palette.
+
+## 0.1.3
+
+- All four packages are released under the Aora Bot License 1.1. Once a product that uses Aora Bot is publicly released, free users credit it once. The code is unchanged.
+- A new [Copyright](/guide/copyright) page, and a copyright notice at the end of every page.
+
+## 0.1.2
+
+- `<aora-bot>` accepts `style-options`, a JSON object of style parameters.
+- The avatar endpoint accepts `shape`, `color`, `face` and each style parameter by name.
+- The console can copy a character as React code, an `<aora-bot>` tag or an avatar link.
+
+## 0.1.1
+
+- First release: the engine, React components, the `<aora-bot>` Web Component, product surfaces, the avatar endpoint and this documentation site.
+- 46 characters, three faces, 44 animation states, and three style series: vector, pixel and kaomoji.

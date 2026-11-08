@@ -261,7 +261,7 @@
    * width inside a shrink-to-fit parent would contain down to nothing. A host
    * that wants the picker to fill its parent sets `--aora-picker-width: 100%`.
    *
-   * A default cell is a `PICKER_MARK_PX` mark and its padding, 2.75rem, with a
+   * A default cell is a `SELECTOR_MARK_PX` mark and its padding, 2.75rem, with a
    * 0.25rem gap between cells, so n columns need 3n − 0.25rem. Each breakpoint
    * is where the next count fits.
    */
@@ -486,7 +486,7 @@
   .aora-activity-group {
     display: inline-flex;
     align-items: center;
-    transition: --aora-activity-ink var(--aora-activity-ink-ms, 700ms) var(--aora-ease-in-out);
+    transition: --aora-activity-ink var(--aora-activity-ink-ms, 600ms) var(--aora-ease-in-out);
   }
 
   .aora-activity-group__picture {
