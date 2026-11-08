@@ -11,13 +11,13 @@ import { TokenTable } from '@theme';
 | 变量                  | 作用                                                            |
 | --------------------- | --------------------------------------------------------------- |
 | `--aora-fg`           | 墨色。由 `color` prop 按实例写入。                              |
-| `--aora-face`         | `cute` 脸的颜色，白色。`black` 不写，回落成挖空。               |
-| `--aora-face-soft`    | `soft`、`crayon`、`watercolor` 变体的深色脸，只为 `black` 写。  |
-| `--aora-face-sticker` | `sticker` 变体的脸，只为 `black` 写：暗色下随白色身体换成黑色。 |
-| `--aora-hair-shade`   | 实心身体上头发叠加的阴影色，默认 `#000000`。只为 `black` 写。   |
-| `--aora-ink2`         | `riso` 变体的第二种墨，为 `pink` 和浅色墨写。                   |
+| `--aora-face`         | `cute` 脸的颜色，按脸的配色规则。`black` 不写，回落成挖空。     |
+| `--aora-face-soft`    | `soft`、`crayon`、`watercolor` 的深色脸和眉毛，中间色相以外写。 |
+| `--aora-face-sticker` | `sticker` 变体的脸：白脸在身体上读不清时换成深色。              |
+| `--aora-hair-shade`   | 实心身体上头发叠加的阴影色，默认 `#000000`，近黑身体上为白色。  |
+| `--aora-ink2`         | `riso` 变体的第二种墨，为浅色墨和与默认第二墨同色相的颜色写。   |
 | `--aora-ink-line`     | 用墨色画的线，只在墨色在某一页面上太淡时写。                    |
-| `--aora-eye`          | 会吞掉页面底色的身体上的眼睛挖孔，回落到 `--aora-bg`。          |
+| `--aora-eye`          | 页面在身体上读不清时的眼睛挖孔，回落到 `--aora-bg`。            |
 | `--aora-rim`          | 实心身体在几乎同色的页面上的细边，其余情况为 `transparent`。    |
 | `--aora-bg`           | 眼睛挖孔（`eyes`、`line` 脸）。默认等于 `--aora-bg-base`。      |
 

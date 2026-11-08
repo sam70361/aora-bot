@@ -74,6 +74,8 @@ A static SVG is its own document as far as CSS goes, so it cannot read your appl
 
 `system` follows the operating system, which is what an isolated image can see. Inlined into a page whose theme the reader can switch, it would follow the OS instead of the page: a dark OS with a light site turns black ink near-white on a light card. `page` follows the same `color-scheme` the rest of your UI does. The default output is unchanged. The two modes use different class names, so both can appear in one document.
 
+Identical options give identical markup, ids included. A pattern, gradient or mask an SVG refers to by id is drawn where it is defined, so one `page` character inlined twice, once under `color-scheme: light` and once under `dark`, paints its textures in the scheme of whichever copy comes first. A side-by-side light and dark preview should use `<img>` data URLs, or two documents.
+
 ```tsx
 renderStaticSvg({ shape: 'hex', color: 'black', colorScheme: 'page' });
 ```

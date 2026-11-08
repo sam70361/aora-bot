@@ -418,7 +418,7 @@
       --aora-bg-base: var(--_tint);
       background: var(--_tint);
       color: var(--aora-text);
-      box-shadow: 0 0 0 2px var(--site-swatch, var(--aora-accent));
+      box-shadow: 0 0 0 2px var(--site-swatch-line, var(--aora-accent));
     }
   }
 
@@ -469,8 +469,9 @@
 
     &[aria-checked='true'] .site-home__swatch {
       box-shadow:
+        inset 0 0 0 1px var(--site-swatch-edge),
         0 0 0 2px var(--site-paper),
-        0 0 0 4px var(--site-dot);
+        0 0 0 4px var(--site-swatch-line);
     }
 
     &:hover .site-home__swatch {
@@ -482,8 +483,10 @@
     width: 1.5rem;
     height: 1.5rem;
     border-radius: var(--aora-radius-pill);
-    background: var(--site-dot);
-    box-shadow: inset 0 0 0 1px var(--aora-line);
+    background: var(--site-swatch);
+    box-shadow:
+      inset 0 0 0 1px var(--site-swatch-edge),
+      inset 0 0 0 1px var(--aora-line);
     transition:
       box-shadow var(--aora-duration-fast) var(--aora-ease-standard),
       transform var(--aora-duration-base) var(--aora-ease-out);
@@ -589,13 +592,15 @@
     line-height: 1.05;
   }
 
+  /* The ink as text runs into a pink, both at the lightness text reads at on this page. */
   .site-home__title em {
+    --_pink: light-dark(oklch(0.55 0.2 350), oklch(0.8 0.15 350));
     margin-inline-start: 0.25em;
     font-style: normal;
     background: linear-gradient(
       100deg,
-      var(--site-swatch),
-      color-mix(in oklab, var(--site-swatch) 45%, oklch(0.72 0.18 350))
+      var(--site-swatch-text),
+      color-mix(in oklab, var(--site-swatch-text) 45%, var(--_pink))
     );
     background-clip: text;
     -webkit-background-clip: text;
@@ -910,8 +915,8 @@
 
     /* Parameters moved off their defaults: the button wears the ink. */
     &[data-active] {
-      box-shadow: 0 0 0 2px var(--site-swatch, var(--aora-accent));
-      color: var(--site-swatch, var(--aora-accent));
+      box-shadow: 0 0 0 2px var(--site-swatch-line, var(--aora-accent));
+      color: var(--site-swatch-text, var(--aora-accent));
     }
 
     /* Nothing to tune: present, so the row does not shift, but inert. */
@@ -1008,7 +1013,7 @@
     & input[type='range'] {
       width: 100%;
       margin: 0;
-      accent-color: var(--site-swatch, var(--aora-accent));
+      accent-color: var(--site-swatch-line, var(--aora-accent));
     }
 
     & output {
@@ -1072,7 +1077,7 @@
     }
 
     &:checked {
-      background: var(--site-swatch, var(--aora-accent));
+      background: var(--site-swatch-line, var(--aora-accent));
     }
 
     &:checked::after {

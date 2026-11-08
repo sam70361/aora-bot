@@ -41,6 +41,17 @@ const VISIBLE = 0.01;
 /** Width of the ring round a part with its own colour, in shape units; half of it shows outside the part. */
 export const PART_RIM_WIDTH = 4;
 
+/** A filled body's edge is a hairline in screen pixels at any size, and only half there: a hint of the edge, not a line. */
+const BODY_RIM = { px: 1, opacity: 0.6 } as const;
+
+/** The stroke of a filled body's edge on a page it all but matches (`rimInks`), in `paint`, faded with the body's `core`. */
+export const bodyRim = (paint: string, core?: number | null): Record<string, string | number> => ({
+  stroke: paint,
+  'stroke-width': BODY_RIM.px,
+  'stroke-opacity': r2(BODY_RIM.opacity * (core ?? 1)),
+  'vector-effect': 'non-scaling-stroke',
+});
+
 export interface PartPaint {
   /** The body's paint, as resolved by the scene. */
   ink: string;

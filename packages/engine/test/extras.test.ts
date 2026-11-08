@@ -578,14 +578,16 @@ describe('a skin’s own face ink and a shape’s own hair shade', () => {
     renderStaticSvg({ shape, color, variant, state: 'happy', face: 'cute' });
 
   it('leaves the face rule as it is where a skin does not opt in', () => {
+    // The look is in the uid, so each skin's document has a class of its own.
+    const unnamed = (doc: string) => doc.replaceAll(/class="([^"]+)"/.exec(doc)![1]!, 'uid');
     for (const color of ['night', 'cream', 'red'] as const) {
-      const bare = draw('facebare', color);
+      const bare = unnamed(draw('facebare', color));
       expect(bare).not.toContain('calc(l + (');
       // The opted-in skins differ from it in paints alone, and every paint that differs is the face ink.
       const fills = (doc: string) => [...doc.matchAll(/(?:fill|stroke)="([^"]*)"/g)].map((m) => m[1]!);
       const strip = (doc: string) => doc.replace(/(fill|stroke)="[^"]*"/g, '$1=""');
       for (const variant of ['facegold', 'facesplit']) {
-        const own = draw(variant, color).replaceAll(variant, 'facebare');
+        const own = unnamed(draw(variant, color)).replaceAll(variant, 'facebare');
         expect(strip(own)).toBe(strip(bare));
         const changed = fills(own).filter((fill, i) => fill !== fills(bare)[i]);
         for (const fill of changed) expect(fill).toMatch(/^oklch\(from .*1000, 1\)\)\)$/);

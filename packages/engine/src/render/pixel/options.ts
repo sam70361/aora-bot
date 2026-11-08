@@ -1,4 +1,4 @@
-import { FACE_INK, SOFT_FACE_INK } from '../../core/palette.js';
+import { FACE_INK, PAGE_TOKEN, SOFT_FACE_INK } from '../../core/palette.js';
 import type { PixelVariant } from './rasterise.js';
 
 /** The pixel style's parameters, as `resolveStyleOptions` hands them over. */
@@ -50,10 +50,10 @@ export function variantOf(variant: string): PixelVariant {
 }
 
 /** The eye cut-out colour, matching `render/vector/build.ts`'s `EYE_TOKEN`. */
-export const EYE_TOKEN = 'var(--aora-bg, var(--aora-bg-base, #fcfcfc))';
+export const EYE_TOKEN = PAGE_TOKEN;
 
 /** The cute face's colour, matching `render/vector/build.ts`'s `FACE_TOKEN`. */
-export const FACE_TOKEN = 'var(--aora-face, var(--aora-bg, var(--aora-bg-base, #fcfcfc)))';
+export const FACE_TOKEN = `var(--aora-face, ${PAGE_TOKEN})`;
 
 /** A drawn face's pupils, brows and body-drawn light, matching the tokens of the same names in `render/vector/build.ts`. */
 export const PUPIL_TOKEN = `var(--aora-face-pupil, ${SOFT_FACE_INK})`;

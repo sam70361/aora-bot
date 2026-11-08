@@ -7,7 +7,7 @@
  * (hidden, not absent), so the DOM can be updated in place; a static scene is
  * the culled, flattened form that reads well as a string.
  */
-import { FACE_INK, HAIR_SHADE_TOKEN, SOFT_FACE_INK } from '../../core/palette.js';
+import { FACE_INK, HAIR_SHADE_TOKEN, PAGE_TOKEN, SOFT_FACE_INK } from '../../core/palette.js';
 import { CENTER, isCuteFamily, type PartColor, type Ring } from '../../core/types.js';
 import { livePartPaint, type PartColorPaint } from '../part-color.js';
 import { FACE_ACCENTS, type FaceAccent } from '../../face/drawn/index.js';
@@ -50,6 +50,7 @@ import { drawnEyeNodes, drawnMouthNodes, drawnMouthPaint, lightCss, type DrawnPa
 import { paperNodes, trailNodes } from './particles.js';
 import {
   bodyPieces,
+  bodyRim,
   LEAF_TOKEN,
   partLayers,
   partsPaper,
@@ -67,26 +68,18 @@ export const FX_TOKEN = `var(--aora-fx, ${INK_TOKEN})`;
 /** What the ink is drawn in as a line on the page: the ink, unless it is too faint there (`getInkVars`). */
 export const LINE_TOKEN = `var(--aora-ink-line, ${INK_TOKEN})`;
 
-/**
- * The colour of the eye cut-outs. `--aora-bg` is what a host sets to re-theme
- * the holes; it defaults to `--aora-bg-base` in the stylesheet, and the
- * fallback here is that token's own default, so an unstyled page agrees with
- * a styled one.
- */
-export const EYE_TOKEN = 'var(--aora-bg, var(--aora-bg-base, #fcfcfc))';
+/** The colour of the eye cut-outs: the page (`PAGE_TOKEN`). */
+export const EYE_TOKEN = PAGE_TOKEN;
 
 /**
  * The eyes of a face cut out of a filled body (`eyes`, `line`): the page,
- * unless the host names a colour for a body that would swallow it
+ * unless the host names a colour for a body the page does not read on
  * (`--aora-eye`, `getInkVars`).
  */
 export const CUT_TOKEN = `var(--aora-eye, ${EYE_TOKEN})`;
 
 /** The edge of a filled body on a page it all but matches: none, unless the host sets one (`getInkVars`). */
 export const RIM_TOKEN = 'var(--aora-rim, transparent)';
-
-/** The rim is a hairline in screen pixels at any size, and only half there: a hint of the edge, not a line. */
-const RIM = { px: 1, opacity: 0.6 } as const;
 
 /**
  * The sticker's paper: its border, its eyes and the ring round its badge.
@@ -114,7 +107,7 @@ export const FACE_SHIFT_TOKEN = 'light-dark(#000, #fff)';
  * hue but black) gets the white face; without it the face is a cut-out in
  * the page colour, which reads on any body.
  */
-export const FACE_TOKEN = 'var(--aora-face, var(--aora-bg, var(--aora-bg-base, #fcfcfc)))';
+export const FACE_TOKEN = `var(--aora-face, ${PAGE_TOKEN})`;
 
 /**
  * The dark face of the painted variants (`soft`, `crayon`, `watercolor`): a
@@ -499,6 +492,8 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
    * What a drawing medium paints with. A gradient ink has no single colour to
    * mix or flood a glow with, so its first stop stands in for it.
    */
+  /** The edge of a filled body (`rimInks`), or `null` for none. */
+  const rimPaint = (): string | null => (ctx.rimInk === undefined ? RIM_TOKEN : ctx.rimInk);
   const mediumPaint = (frame: FrameSnapshot, ink: string): MediumPaint => {
     const own = frame.ink;
     const solid = ctx.solidInk ?? (own && 'from' in own ? own.from : ink);
@@ -506,6 +501,7 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
       ink,
       solid,
       line: hollowFace(solid, frame.variant),
+      rim: rimPaint(),
       leaf: ctx.leaf ?? LEAF_TOKEN,
       hairShade: hairShadeOf(frame, solid),
       partColor: ctx.partColor ?? livePartPaint,
@@ -777,17 +773,12 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
         };
       default: {
         const core = frame.body.coreOpacity;
-        const rim = isMedium(frame.variant) ? null : ctx.rimInk === undefined ? RIM_TOKEN : ctx.rimInk;
+        const rim = isMedium(frame.variant) ? null : rimPaint();
         return {
           d,
           fill: ink,
           'fill-opacity': core === null ? undefined : r2(core),
-          ...(rim && {
-            stroke: rim,
-            'stroke-width': RIM.px,
-            'stroke-opacity': r2(RIM.opacity * (core ?? 1)),
-            'vector-effect': 'non-scaling-stroke',
-          }),
+          ...(rim && bodyRim(rim, core)),
         };
       }
     }

@@ -151,7 +151,6 @@ export type { CharacterPreset, CastId, CoreCastId, ThemeCastMember } from './cor
 export {
   COLOR_SWATCHES,
   getSwatch,
-  getSwatchCss,
   getSwatchHex,
   getInkColor,
   getInkColorCss,

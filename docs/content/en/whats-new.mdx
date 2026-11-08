@@ -31,14 +31,16 @@ This release has breaking changes; read "Breaking changes" below before upgradin
 - Cream (`cream`) is listed and comes first in the colour list: it is Dot's colour. Ivory (`ivory`), the palette's white, follows it. Both take a one-pixel edge on a light page, so they never melt into it.
 - Four muted colours: `sage`, `clay`, `navy` and `mauve`, each tuned for a light and a dark page.
 - Avatars keep the colour they had: an id is hashed onto a fixed list of colours (`ASSIGNABLE_COLOR_IDS`), so new colours never move an existing avatar.
-- Light and very dark colours read on either page: outlines, kaomoji and the line face are deepened on a light page, keeping their hue, and lifted on a dark one; cream's cut-out eyes turn dark and night's white; in riso cream is no longer covered by pink; on the LED panel black lights white. Picker chips show the colour on the current page, so black is white in dark mode, and a faint chip gets a ring.
+- The face is coloured by one contrast rule: every paint of it is measured against the body, on each page, and changes only where the other colour reads better. Light bodies (cream, yellow) wear the dark face; dark ones (navy, cocoa) keep the white face and turn brows and eyes white too, in every style and face.
+- Light and very dark colours read on either page: outlines, kaomoji and the line face are deepened on a light page, keeping their hue, and lifted on a dark one; cut-out eyes take the face's colour where the page would not show on the body, dark on cream on a light page and white on navy and night on a dark one; in riso cream is no longer covered by pink, and red, pink and magenta print over gold; on the LED panel black lights white. Picker chips show the colour on the current page, so black is white in dark mode, and a chip that all but matches the page gets a hairline edge.
 
 ### Website
 
 - The home page has two views. The console is where you build a character. The exhibit steps through the cast and every state, with autoplay and an attribute panel for shape, colour, face, style and parameters. The view is remembered, and `?view=exhibit` links to it.
 - The wall of characters behind the home page is drawn as line art by default; a switch turns it back to colour.
 - The site opens in dark mode on a first visit. The switch is still there, and your choice is remembered.
-- The home page's characters wear a soft light: the body rolls into shade at the lower right and catches a thin rim of light at the upper left, while the faces and effects stay flat. The console's thumbnail strips now use the same face colours as the big character.
+- The home page's characters wear a soft light: the body rolls into shade at the lower right and turns into the light, with a thin rim, at the upper left, so a dark body shows its volume by the light and a light one by the shade, while the faces and effects stay flat. The console's thumbnail strips use the same face colours as the big character, and the docs' still figures follow the site's light or dark switch.
+- The home page title and the console's rings, toggles and sliders use the character's colour as a line, so light and very dark colours read on either page.
 
 ### Themes
 

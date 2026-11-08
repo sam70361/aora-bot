@@ -13,7 +13,6 @@ import {
   STATE_GROUPS,
   STATE_MOUTH,
   StagedMark,
-  renderStaticSvgDataUrl,
   useLabel,
   type CharacterState,
   type ColorId,
@@ -27,14 +26,15 @@ import { useI18n, useLocalized } from '../../app/shared/i18n.js';
 import { TABLE_SOURCES } from '../../app/shared/constants.js';
 import { Cell } from './Cell.js';
 import { Menu } from '../../app/shared/Menu.js';
+import { StillMark } from '../../app/shared/StillMark.js';
 
 /*
  * Demos for the faces: the cute mouths, the line face's nose and mouths, the drawn faces across states,
  * series and colours, and the switch between styles.
  *
- * The static grids use `renderStaticSvgDataUrl` so the geometry can be
- * compared at rest; the live demos mount real characters so the morph between
- * mouths and the ease between face styles can be seen.
+ * The static grids are stills (`StillMark`) so the geometry can be compared at
+ * rest, in the site's own scheme; the live demos mount real characters so the
+ * morph between mouths and the ease between face styles can be seen.
  */
 
 type NameKind = 'mouth' | 'nose' | 'expression' | 'state' | 'face' | 'shape' | 'group';
@@ -122,7 +122,7 @@ export function FaceStyleRow({
       {FACE_STYLES.map((face) => (
         <div className="site-swatch" key={face}>
           <Cell id={face} name={label('face', face)}>
-            <img src={renderStaticSvgDataUrl({ shape, color, state, face })} width={96} height={96} alt="" />
+            <StillMark shape={shape} color={color} state={state} face={face} sizePx={96} />
           </Cell>
         </div>
       ))}
@@ -171,12 +171,7 @@ export function DrawnFaceGrid({
               </td>
               {states.map((state) => (
                 <td key={state}>
-                  <img
-                    src={renderStaticSvgDataUrl({ shape, color, state, face })}
-                    width={64}
-                    height={64}
-                    alt=""
-                  />
+                  <StillMark shape={shape} color={color} state={state} face={face} sizePx={64} />
                 </td>
               ))}
             </tr>
@@ -218,11 +213,14 @@ export function DrawnFaceSeries({
               </td>
               {series.map(({ style, variant }) => (
                 <td key={`${style}:${variant}`}>
-                  <img
-                    src={renderStaticSvgDataUrl({ shape, color, state, face, style, variant })}
-                    width={56}
-                    height={56}
-                    alt=""
+                  <StillMark
+                    shape={shape}
+                    color={color}
+                    state={state}
+                    face={face}
+                    style={style}
+                    variant={variant}
+                    sizePx={56}
                   />
                 </td>
               ))}
@@ -241,12 +239,7 @@ export function DrawnFacePalette({ face = 'brow' as FaceStyle, state = 'happy' a
       {COLOR_IDS.map((color) => (
         <div className="site-swatch" key={color}>
           <Cell id={color}>
-            <img
-              src={renderStaticSvgDataUrl({ shape: 'mochi', color, state, face })}
-              width={64}
-              height={64}
-              alt=""
-            />
+            <StillMark shape="mochi" color={color} state={state} face={face} sizePx={64} />
           </Cell>
         </div>
       ))}
@@ -261,7 +254,7 @@ export function CuteMouthGrid({ shape = 'mochi' as ShapeId, color = 'blue' as Co
       {CUTE_MOUTH_IDS.map((mouth) => (
         <div className="site-swatch" key={mouth}>
           <Cell id={mouth}>
-            <img src={renderStaticSvgDataUrl({ shape, color, mouth })} width={72} height={72} alt="" />
+            <StillMark shape={shape} color={color} mouth={mouth} sizePx={72} />
           </Cell>
         </div>
       ))}
@@ -277,18 +270,14 @@ export function MouthGrid({ shape = 'blob' as ShapeId, color = 'violet' as Color
       {MOUTH_IDS.map((mouth) => (
         <div className="site-swatch" key={mouth}>
           <Cell id={mouth} name={label('mouth', mouth)}>
-            <img
-              src={renderStaticSvgDataUrl({
-                shape,
-                color,
-                face: 'line',
-                nose: null,
-                mouth,
-                expression: 'neutral',
-              })}
-              width={72}
-              height={72}
-              alt=""
+            <StillMark
+              shape={shape}
+              color={color}
+              face="line"
+              nose={null}
+              mouth={mouth}
+              expression="neutral"
+              sizePx={72}
             />
           </Cell>
         </div>
@@ -345,18 +334,14 @@ export function NoseGrid({ shape = 'blob' as ShapeId, color = 'green' as ColorId
       {NOSE_IDS.map((nose) => (
         <div className="site-swatch" key={nose}>
           <Cell id={nose} name={label('nose', nose)}>
-            <img
-              src={renderStaticSvgDataUrl({
-                shape,
-                color,
-                face: 'line',
-                nose,
-                mouth: 'soft',
-                expression: 'neutral',
-              })}
-              width={72}
-              height={72}
-              alt=""
+            <StillMark
+              shape={shape}
+              color={color}
+              face="line"
+              nose={nose}
+              mouth="soft"
+              expression="neutral"
+              sizePx={72}
             />
           </Cell>
         </div>
@@ -373,18 +358,14 @@ export function LineExpressionGrid({ shape = 'blob' as ShapeId, color = 'orange'
       {EYE_TOPOLOGY_IDS.map((expression) => (
         <div className="site-swatch" key={expression}>
           <Cell id={expression} name={label('expression', expression)}>
-            <img
-              src={renderStaticSvgDataUrl({
-                shape,
-                color,
-                face: 'line',
-                nose: 'slant',
-                mouth: 'flat',
-                expression,
-              })}
-              width={64}
-              height={64}
-              alt=""
+            <StillMark
+              shape={shape}
+              color={color}
+              face="line"
+              nose="slant"
+              mouth="flat"
+              expression={expression}
+              sizePx={64}
             />
           </Cell>
         </div>
@@ -445,18 +426,7 @@ export function LineShapeRow({ shapes = SHAPE_IDS as readonly ShapeId[], color =
       {shapes.map((shape) => (
         <div className="site-swatch" key={shape}>
           <Cell id={shape} name={label('shape', shape)}>
-            <img
-              src={renderStaticSvgDataUrl({
-                shape,
-                color,
-                face: 'line',
-                mouth: 'smile',
-                expression: 'happy',
-              })}
-              width={64}
-              height={64}
-              alt=""
-            />
+            <StillMark shape={shape} color={color} face="line" mouth="smile" expression="happy" sizePx={64} />
           </Cell>
         </div>
       ))}

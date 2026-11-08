@@ -13,15 +13,15 @@ import {
   risoSecondInk,
   type FaceInks,
 } from '../../core/palette.js';
-import { isDrawnFace, VIEWBOX_STR, type PartColor } from '../../core/types.js';
+import { isCuteFamily, isDrawnFace, VIEWBOX_STR, type PartColor } from '../../core/types.js';
 import { fnv1a32 } from '../../math/hash.js';
 import { livePartPaint, partColorPair, partRimPair, type PartColorPaint } from '../part-color.js';
 import type { StaticRenderer } from '../renderer.js';
 import { paletteInk, schemeStyle } from '../scheme.js';
 import { serializeNode } from '../scene.js';
-import { createVectorScene, inkGradientVector, readVectorParams } from './build.js';
+import { createVectorScene, EYE_TOKEN, inkGradientVector, readVectorParams } from './build.js';
 import { themeExtras } from '../../themes/extras-hook.js';
-import { isLineVariant, isMedium, mediumReaches, wearsDarkFace } from './media.js';
+import { isLineVariant, mediumReaches, wearsDarkFace } from './media.js';
 
 /** The palette's own gradient, with the dark-mode stops switched by `schemeStyle`. */
 function paletteGradient(
@@ -77,7 +77,7 @@ export const renderVectorStatic: StaticRenderer = (frame, context) => {
   // light ink sets every face paint, and one that changes tone with the page (black) switches them with it.
   const rule = faceInks(color);
   const special = !rule.plain;
-  const turns = rule.cutOut;
+  const turns = rule.turns;
   const hollow = isLineVariant(frame.variant);
   const ruleSoft = special && wearsDarkFace(frame.variant);
   const ruleSticker = special && frame.variant === 'sticker';
@@ -112,10 +112,16 @@ export const renderVectorStatic: StaticRenderer = (frame, context) => {
   const linePair =
     lines && (lines.light || lines.dark) ? { light: lines.light ?? light, dark: lines.dark ?? dark } : null;
   // A filled body on a page it all but matches takes a hairline edge there (`rimInks`).
-  const rims = hollow || isMedium(frame.variant) ? null : rimInks(color);
+  const rims = hollow ? null : rimInks(color);
   const rimPair =
     rims && (rims.light || rims.dark)
       ? { light: rims.light ?? 'transparent', dark: rims.dark ?? 'transparent' }
+      : null;
+  // A cut-out face's eyes take the face where the page does not read on the body (`cutFaceInk`).
+  const cuts = hollow || isCuteFamily(frame.face.style) ? null : cutFaceInk(color);
+  const cutPair =
+    cuts && (cuts.light || cuts.dark)
+      ? { light: cuts.light ?? EYE_TOKEN, dark: cuts.dark ?? EYE_TOKEN }
       : null;
   const seconds = frame.variant === 'riso' ? risoSecondInk(color) : null;
   const secondPair =
@@ -128,6 +134,7 @@ export const renderVectorStatic: StaticRenderer = (frame, context) => {
   let fxFill: string | undefined;
   let lineInk: string | undefined;
   let rimInk: string | null = null;
+  let cutFill = cuts?.light ?? undefined;
   let defs = '';
   let root = '';
   if (own && 'flat' in own) {
@@ -146,6 +153,7 @@ export const renderVectorStatic: StaticRenderer = (frame, context) => {
     fxFill = fxPair ? `var(--${uid}-fx, ${fxPair.light})` : undefined;
     lineInk = linePair ? `var(--${uid}-line, ${linePair.light})` : undefined;
     rimInk = rimPair ? `var(--${uid}-rim, ${rimPair.light})` : null;
+    cutFill = cutPair && cutPair.light !== cutPair.dark ? `var(--${uid}-eye, ${cutPair.light})` : cutFill;
     defs = paletteInk(scheme, uid, light, dark, turns && (ruleSoft || ruleFeatures) ? pairOf('soft') : null, [
       ...(hollow ? [{ prop: `--${uid}-shift`, light: '#000', dark: '#fff' }] : []),
       ...(turns && ruleSticker ? [{ prop: `--${uid}-sticker`, ...pairOf('sticker') }] : []),
@@ -163,6 +171,7 @@ export const renderVectorStatic: StaticRenderer = (frame, context) => {
       ...(fxPair ? [{ prop: `--${uid}-fx`, ...fxPair }] : []),
       ...(linePair ? [{ prop: `--${uid}-line`, ...linePair }] : []),
       ...(rimPair ? [{ prop: `--${uid}-rim`, ...rimPair }] : []),
+      ...(cutPair && cutPair.light !== cutPair.dark ? [{ prop: `--${uid}-eye`, ...cutPair }] : []),
       ...(secondPair ? [{ prop: '--aora-ink2', ...secondPair }] : []),
     ]);
     root = ` class="${uid}"`;
@@ -181,7 +190,7 @@ export const renderVectorStatic: StaticRenderer = (frame, context) => {
     turns && root ? `var(--${uid}-${key}, ${fallback})` : rule.light[key];
 
   // A cut-out face needs no colour of its own: it is the page.
-  const faceFill = context.eyeColor ?? (turns ? undefined : rule.light.face);
+  const faceFill = context.eyeColor ?? (rule.cutOut ? undefined : rule.light.face);
   const softFaceFill = ruleSoft ? paint('soft') : undefined;
 
   const partColor = (part: PartColor): PartColorPaint => {
@@ -206,7 +215,7 @@ export const renderVectorStatic: StaticRenderer = (frame, context) => {
     rimInk,
     partColor,
     eyeFill: context.eyeColor,
-    cutFill: cutFaceInk(color) ?? undefined,
+    cutFill,
     faceFill,
     softFaceFill,
     stickerFaceFill: ruleSticker && (!turns || root) ? paint('sticker') : undefined,

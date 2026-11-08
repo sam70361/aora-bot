@@ -74,6 +74,8 @@ export default function Demo() {
 
 `system` 跟随操作系统，这正是隔离的图像能看到的东西。把它内联进读者可以切换主题的页面时，它会跟着系统而不是页面：系统是深色、站点是浅色，黑色墨水就会在浅色卡片上变成近白色。`page` 与你其余的 UI 一样跟随 `color-scheme`。默认输出不变。两种模式使用不同的类名，可以出现在同一个文档里。
 
+相同的参数生成相同的标记，id 也相同。SVG 按 id 引用的图案、渐变和遮罩在定义它的地方绘制，所以同一个 `page` 角色内联两次、一次在 `color-scheme: light` 下、一次在 `dark` 下时，纹理会按排在前面那一份的明暗来画。并排的明暗预览请用 `<img>` 数据 URL，或放进两个文档。
+
 ```tsx
 renderStaticSvg({ shape: 'hex', color: 'black', colorScheme: 'page' });
 ```

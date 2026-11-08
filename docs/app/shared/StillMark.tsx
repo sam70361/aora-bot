@@ -2,10 +2,7 @@ import {
   getInkColorCss,
   renderStaticSvg,
   useThemesReady,
-  type CharacterState,
   type ColorId,
-  type FaceStyle,
-  type NoseId,
   type ShapeId,
   type StaticOptions,
 } from '@aora-bot/react';
@@ -44,14 +41,10 @@ function draw(options: StaticOptions): string {
   return svg;
 }
 
-export interface StillMarkProps {
+/** What to draw, as `renderStaticSvg` takes it; the scheme is always the page's. */
+export interface StillMarkProps extends Omit<StaticOptions, 'colorScheme' | 'sizePx'> {
   shape: ShapeId;
   color: ColorId;
-  state?: CharacterState;
-  style: string;
-  variant: string;
-  face?: FaceStyle;
-  nose?: NoseId;
   /** Series parameters. Pass the same object while they are unchanged: a new one redraws. */
   styleOptions?: Readonly<Record<string, unknown>>;
   /** The size it is drawn at, and its box unless `sizeCss` is given. */
@@ -70,18 +63,9 @@ export interface StillMarkProps {
  * own theme switch recolours it. Static output has no engine and no timer
  * behind it, which is what lets a screen of them cost nothing per frame.
  */
-export const StillMark = memo(function StillMark({
-  shape,
-  color,
-  state = 'idle',
-  style,
-  variant,
-  face,
-  nose,
-  styleOptions,
-  sizePx,
-  sizeCss,
-}: StillMarkProps) {
+export const StillMark = memo(function StillMark({ sizeCss, ...options }: StillMarkProps) {
+  const { shape, color, style, variant, sizePx } = options;
+  const state = options.state ?? 'idle';
   const size = sizeCss ?? sizePx;
   // A theme's character or skin draws once its theme is loaded; the box is held until then.
   const ready = useThemesReady({ shape, variant, style, color });
@@ -96,18 +80,7 @@ export const StillMark = memo(function StillMark({
       data-state={state}
       style={{ '--aora-fg': getInkColorCss(color), width: size, height: size } as CSSProperties}
       dangerouslySetInnerHTML={{
-        __html: draw({
-          shape,
-          color,
-          state,
-          style,
-          variant,
-          face,
-          nose,
-          styleOptions,
-          sizePx,
-          colorScheme: 'page',
-        }),
+        __html: draw({ ...options, state, colorScheme: 'page' }),
       }}
     />
   );

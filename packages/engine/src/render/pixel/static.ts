@@ -6,7 +6,7 @@ import {
   getInkColor,
   getInkGradientFor,
   hairShade,
-  inkTone,
+  isLightInk,
   lineInks,
   type FaceInks,
 } from '../../core/palette.js';
@@ -18,6 +18,7 @@ import { schemeStyle } from '../scheme.js';
 import { emit, PLATE_COLOUR } from './emit.js';
 import { pixelGrid } from './grid.js';
 import {
+  CUT_TOKEN,
   EYE_TOKEN,
   FEATURE_TOKEN,
   GLINT_TOKEN,
@@ -57,8 +58,8 @@ export const renderPixelStatic: StaticRenderer = (frame, context) => {
   // The LED panel is dark on either page, so it is lit in the dark page's ink, and its eyes are lit unless
   // that ink is light, where they are left unlit.
   const panel = variant === 'dot';
-  const ledEye = inkTone(getInkColor(color, 'dark')) === 'light' ? PLATE_COLOUR : LED_EYE;
-  const eyeColour = context.eyeColor ?? (panel ? ledEye : (cutFaceInk(color) ?? EYE_TOKEN));
+  const ledEye = isLightInk(getInkColor(color, 'dark')) ? PLATE_COLOUR : LED_EYE;
+  const eyeColour = context.eyeColor ?? (panel ? ledEye : CUT_TOKEN);
   // The face rule (`faceInks`); a colour that turns with the page has its face cut out of it.
   const rule = faceInks(color);
   const faceColour = context.eyeColor ?? (panel ? ledEye : rule.cutOut ? EYE_TOKEN : rule.light.face);
@@ -91,8 +92,13 @@ export const renderPixelStatic: StaticRenderer = (frame, context) => {
   const effects = effectInks(color);
   // A drawn face's tokens resolved by the face rule, switched with the page where the colour turns.
   const ruled = (key: keyof FaceInks): { value: string; dark?: string } =>
-    rule.cutOut ? { value: rule.light[key], dark: rule.dark[key] } : { value: rule.light[key] };
+    rule.turns ? { value: rule.light[key], dark: rule.dark[key] } : { value: rule.light[key] };
+  // A cut-out face's eyes: the page, or the face where the page does not read on the body.
+  const cuts = cutFaceInk(color);
+  const cutLight = cuts.light ?? EYE_TOKEN;
+  const cutDark = cuts.dark ?? EYE_TOKEN;
   const drawnColours: Record<string, { value: string; dark?: string }> = {
+    [CUT_TOKEN]: cutLight === cutDark ? { value: cutLight } : { value: cutLight, dark: cutDark },
     [PUPIL_TOKEN]: ruled('pupil'),
     [FEATURE_TOKEN]: ruled('soft'),
     [GLINT_TOKEN]: ruled('glint'),

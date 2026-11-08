@@ -70,7 +70,7 @@ Expressions blend field by field, so on a state change a part grows or fades in 
 
 ### Paint roles
 
-Layers carry a paint role, not a colour. `face` is the cute face's colour (the whites), `pupil` what reads on it, `feature` what reads on the body (brows, lashes, eyes drawn straight onto the body — the soft variant's face colour), `glint` the light that reads on `feature`, `iris` the body's ink deepened, and the rest fixed accents (a gold star, a tear, a tongue, a heart, an anger mark, a button's thread and face, dark glass) and a display's light. A black body turns with the page, so `getInkVars('black')` also writes `--aora-face-pupil` and `--aora-face-glint`, and static output switches them with its colour scheme.
+Layers carry a paint role, not a colour. `face` is the cute face's colour (the whites), `pupil` what reads on it, `feature` what reads on the body (brows, lashes, eyes drawn straight onto the body — the soft variant's face colour), `glint` the light that reads on `feature`, `iris` the body's ink deepened, and the rest fixed accents (a gold star, a tear, a tongue, a heart, an anger mark, a button's thread and face, dark glass) and a display's light. Off the middle of the range `getInkVars` also writes `--aora-face-pupil` and `--aora-face-glint` by the face rule, and static output switches them with its colour scheme where they turn with the page, as on black.
 
 <DrawnFacePalette />
 
@@ -88,7 +88,7 @@ A design is drawn at its own size. Before it goes onto a body, the outline of ev
 
 ## cute: the default face
 
-The `cute` face is painted on the body in `--aora-face` (white on every hue; see [Palette](/design/palette#variables-beyond-the-ink)). Every state has its own eyes, mouth and blush, and the eyes cycle on an interval. The tables and demos are on [Expressions](/design/expressions); the mood and activity effects of each state are on [States](/design/states).
+The `cute` face is painted on the body in `--aora-face` (white, or dark on a light ink; see [Palette](/design/palette#the-face-rule)). Every state has its own eyes, mouth and blush, and the eyes cycle on an interval. The tables and demos are on [Expressions](/design/expressions); the mood and activity effects of each state are on [States](/design/states).
 
 On the `cute` face the belt states do not shrink the body to a bead: the whole character, face included, stays, and what the belt says on the other faces is said by an effect beside it.
 

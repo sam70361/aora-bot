@@ -8,13 +8,13 @@ import {
   STATE_GROUPS,
   StagedMark,
   CharacterMark,
-  renderStaticSvgDataUrl,
   useLabel,
   type ColorId,
   type ShapeId,
 } from '@aora-bot/react';
 import { useState } from 'react';
 import { useLocalized } from '../../app/shared/i18n.js';
+import { StillMark } from '../../app/shared/StillMark.js';
 import { Cell } from './Cell.js';
 
 /** Every character, family by family, clickable to enlarge. */
@@ -40,7 +40,7 @@ export function ShapeGrid({ color = 'blue' as ColorId }) {
                 aria-pressed={shape === active}
               >
                 <Cell id={shape} name={label.shape(shape)} active={shape === active}>
-                  <img src={renderStaticSvgDataUrl({ shape, color })} width={52} height={52} alt="" />
+                  <StillMark shape={shape} color={color} sizePx={52} />
                 </Cell>
               </button>
             ))}
@@ -110,7 +110,7 @@ export function ExpressionGrid({ shape = 'mochi' as ShapeId, color = 'violet' as
       {CUTE_EYE_IDS.map((expression) => (
         <div className="site-swatch" key={expression}>
           <Cell id={expression}>
-            <img src={renderStaticSvgDataUrl({ shape, color, expression })} width={60} height={60} alt="" />
+            <StillMark shape={shape} color={color} expression={expression} sizePx={60} />
           </Cell>
         </div>
       ))}
@@ -126,12 +126,7 @@ export function EyeTopologyGrid({ shape = 'mochi' as ShapeId, color = 'violet' a
       {EYE_TOPOLOGY_IDS.map((expression) => (
         <div className="site-swatch" key={expression}>
           <Cell id={expression} name={label.expression(expression)}>
-            <img
-              src={renderStaticSvgDataUrl({ shape, color, face: 'eyes', expression })}
-              width={60}
-              height={60}
-              alt=""
-            />
+            <StillMark shape={shape} color={color} face="eyes" expression={expression} sizePx={60} />
           </Cell>
         </div>
       ))}
@@ -147,7 +142,7 @@ export function PaletteGrid({ shape = 'mochi' as ShapeId }) {
       {COLOR_SWATCHES.map((swatch) => (
         <div className="site-swatch" key={swatch.id}>
           <Cell id={swatch.id} name={label.color(swatch.id)}>
-            <img src={renderStaticSvgDataUrl({ shape, color: swatch.id })} width={60} height={60} alt="" />
+            <StillMark shape={shape} color={swatch.id} sizePx={60} />
           </Cell>
         </div>
       ))}

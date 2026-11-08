@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, expectTypeOf, it } from 'vitest';
 import { CAST, allCast, castMember, type CastId } from '../src/core/cast.js';
-import { getInkVars, getSwatchCss } from '../src/core/palette.js';
+import { getInkVars, PAGE_TOKEN } from '../src/core/palette.js';
 import {
   ALL_COLOR_IDS,
   COLOR_IDS,
@@ -440,12 +440,24 @@ describe('palette', () => {
     expect(renderStaticSvg({ color: 'cream', style: 'kaomoji', flat: true })).not.toContain('#F1E2C1');
   });
 
-  it('gives a cut-out face eyes that read on a body that would swallow the page', () => {
-    expect(getInkVars('cream')['--aora-eye']).toBe('#2B2420');
-    expect(getInkVars('night')['--aora-eye']).toBe('#FFFFFF');
-    for (const color of ['blue', 'black'] as const)
+  it('gives a cut-out face eyes that read on a body the page does not', () => {
+    expect(getInkVars('cream')['--aora-eye']).toBe(`light-dark(#2B2420, ${PAGE_TOKEN})`);
+    expect(getInkVars('night')['--aora-eye']).toBe(`light-dark(${PAGE_TOKEN}, #FFFFFF)`);
+    expect(getInkVars('navy')['--aora-eye']).toBe(`light-dark(${PAGE_TOKEN}, #FFFFFF)`);
+    for (const color of ['blue', 'black', 'violet', 'brown'] as const)
       expect(getInkVars(color)['--aora-eye'], color).toBeUndefined();
-    expect(renderStaticSvg({ color: 'cream', face: 'eyes' })).toContain('fill="#2B2420"');
+    expect(renderStaticSvg({ color: 'cream', face: 'eyes', flat: true })).toContain('fill="#2B2420"');
+    expect(renderStaticSvg({ color: 'navy', face: 'eyes' })).toContain('-eye: #FFFFFF');
+    expect(renderStaticSvg({ color: 'navy', face: 'cute' })).not.toContain('-eye');
+  });
+
+  it('keeps the white face on a dark ink and turns its features white too', () => {
+    for (const color of ['navy', 'cocoa', 'night'] as const) {
+      const vars = getInkVars(color);
+      expect(vars['--aora-face'], color).toBe('#FFFFFF');
+      expect(vars['--aora-face-soft'], color).toBe('#FFFFFF');
+      expect(vars['--aora-face-pupil'], color).toBe('#2B2420');
+    }
   });
 
   it('edges a filled body in a hairline on a page it all but matches', () => {
@@ -466,11 +478,6 @@ describe('palette', () => {
     expect(getInkVars('cream')['--aora-ink2']).toBe('light-dark(#F1E2C1, #EADBB9)');
     expect(getInkVars('pink')['--aora-ink2']).toBe('#F5B428');
     expect(getInkVars('blue')['--aora-ink2']).toBeUndefined();
-  });
-
-  it('shows black as the colour it is on the page in a picker chip', () => {
-    expect(getSwatchCss('black')).toBe('light-dark(#1F1F1F, #FFFFFF)');
-    expect(getSwatchCss('cream')).toBe('#E9D9B6');
   });
 });
 

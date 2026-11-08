@@ -85,11 +85,12 @@ export function renderStaticSvg(options: StaticOptions = {}): string {
       : isCuteFamily(face)
         ? (options.mouth ?? null)
         : null;
+  const variant = options.variant ?? style.defaultVariant;
 
   const sim = createSimulation({
     shape: shapeId,
     state: options.state,
-    variant: options.variant ?? style.defaultVariant,
+    variant,
     face,
     nose: noseId,
     faceTune: options.faceTune,
@@ -128,7 +129,12 @@ export function renderStaticSvg(options: StaticOptions = {}): string {
   const inkKey = options.ink ? JSON.stringify(options.ink) : '';
   // The inline `<style>` is document-global, so the two schemes must not share class names.
   const schemeKey = colorScheme === 'page' ? 'page' : '';
-  const uid = `a${hashString(`${shapeId}${colorId}${expressionId}${faceKey}${inkKey}${schemeKey}`)}`;
+  // So does the look: two variants of one character on a page write different rules for the same class.
+  const tuned = options.styleOptions && Object.keys(options.styleOptions).length > 0;
+  const lookKey = `${style.id === DEFAULT_STYLE_ID && variant === style.defaultVariant ? '' : `${style.id}/${variant}`}${
+    tuned ? JSON.stringify(options.styleOptions) : ''
+  }`;
+  const uid = `a${hashString(`${shapeId}${colorId}${expressionId}${faceKey}${inkKey}${schemeKey}${lookKey}`)}`;
 
   return style.renderStatic(frame, {
     color: colorId,

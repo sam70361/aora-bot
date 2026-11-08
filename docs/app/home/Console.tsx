@@ -3,7 +3,6 @@ import {
   CHARACTER_STATES,
   COLOR_IDS,
   SHAPE_IDS,
-  getInkColorCss,
   useLabel,
   type CharacterHandle,
   type CharacterState,
@@ -17,6 +16,7 @@ import { useI18n } from '../shared/i18n.js';
 import { ArrowIcon, DiceIcon } from '../shared/icons.js';
 import { useLocalePath } from '../shared/locale-path.js';
 import { DEFAULT_PRESET } from '../shared/share.js';
+import { swatchVars } from '../shared/swatch.js';
 import { copyFor, lineFor } from '../shared/snippet.js';
 import { StateDock } from './Dock.js';
 import { withStyle } from './Params.js';
@@ -73,11 +73,7 @@ export function Console({ registry, preset, patch, replace, backdrop, bar }: Vie
   };
 
   return (
-    <section
-      className="site-home__hero"
-      aria-labelledby="site-home-title"
-      style={{ '--site-swatch': getInkColorCss(preset.color) } as CSSProperties}
-    >
+    <section className="site-home__hero" aria-labelledby="site-home-title" style={swatchVars(preset.color)}>
       <Wall styles={styleChoices} face={DEFAULT_PRESET.face} lineArt={backdrop === 'lineart'} />
 
       <StyleRail groups={registry.styles} preset={look} onPick={pickStyle} />

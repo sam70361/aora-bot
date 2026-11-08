@@ -2,10 +2,13 @@
 export const DEPTH_FILTER_ID = 'site-depth';
 
 /**
- * A soft light on a body, for display: the lower right rolls away into shade
- * and the upper left catches a thin rim of light. In bounding-box units, so a
- * 24 px thumbnail and the stage are lit alike. The site's own look, not the
- * engine's: the faces, the effects and every drawing the docs document stay flat.
+ * A soft light on a body, for display: the lower right rolls away into shade,
+ * the upper left turns into the light, and its edge there catches a thin rim.
+ * Shade and light mirror each other, so a body of any tone shows its volume:
+ * a dark one by the light, a light one by the shade, a mid one by both. In
+ * bounding-box units, so a 24 px thumbnail and the stage are lit alike. The
+ * site's own look, not the engine's: the faces, the effects and every drawing
+ * the docs document stay flat.
  */
 export function DepthFilter() {
   return (
@@ -27,6 +30,10 @@ export function DepthFilter() {
         <feComposite in="shadeShift" in2="SourceAlpha" operator="in" result="shadeMask" />
         <feFlood floodColor="#000" floodOpacity="0.32" />
         <feComposite in2="shadeMask" operator="in" result="shade" />
+        <feOffset in="outBlur" dx="0.06" dy="0.08" result="lightShift" />
+        <feComposite in="lightShift" in2="SourceAlpha" operator="in" result="lightMask" />
+        <feFlood floodColor="#fff" floodOpacity="0.2" />
+        <feComposite in2="lightMask" operator="in" result="light" />
         <feGaussianBlur in="out" stdDeviation="0.035" result="rimBlur" />
         <feOffset in="rimBlur" dx="0.025" dy="0.03" result="rimShift" />
         <feComposite in="rimShift" in2="SourceAlpha" operator="in" result="rimMask" />
@@ -35,6 +42,7 @@ export function DepthFilter() {
         <feMerge>
           <feMergeNode in="SourceGraphic" />
           <feMergeNode in="shade" />
+          <feMergeNode in="light" />
           <feMergeNode in="rim" />
         </feMerge>
       </filter>

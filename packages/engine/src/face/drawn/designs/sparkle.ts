@@ -231,7 +231,7 @@ function eye(s: DrawnEye<Field>, ctx: EyeContext): FaceLayer[] {
     [ribbon(place(quad([-1.45, 0.7], [0, -1.7], [1.45, 0.7]), 0, 0, s.sc), 0.29 * w)],
     s.arc,
   );
-  out.add('glint', [place(sparkleRing(0.6), -1.3 * s.sc, -1.55 * s.sc)], s.arc);
+  out.add('face', [place(sparkleRing(0.6), -1.3 * s.sc, -1.55 * s.sc)], s.arc);
   out.add(
     'feature',
     [

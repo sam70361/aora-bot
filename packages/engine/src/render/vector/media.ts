@@ -34,7 +34,7 @@ import { MOOD_EASE_MS, MOOD_LEAN, STATE_MOODS, moodOf, type StateMood } from '..
 import { chromaHex } from '../pixel/shade.js';
 import type { PartColorPaint } from '../part-color.js';
 import { node, type SceneNode } from '../scene.js';
-import { HAIR_SHADE_OPACITY, INNER_WHITE, isBodyPiece, mergedSilhouette } from './parts.js';
+import { bodyRim, HAIR_SHADE_OPACITY, INNER_WHITE, isBodyPiece, mergedSilhouette } from './parts.js';
 import type { BodySplit, VectorParams } from './build.js';
 import { grainImage, type GrainShape } from './grain.js';
 import { GOTHIC_GRAIN, paintGothic } from './gothic.js';
@@ -179,6 +179,8 @@ export interface MediumPaint {
   solid: string;
   /** A line medium's line: the ink shifted towards the page's contrast, as its face is. */
   line: string;
+  /** A filled medium's body edge on a page it all but matches (`rimInks`), as the plain body draws it; `null` for none. */
+  rim: string | null;
   /** Paint of the leaf accessory. */
   leaf: string;
   /** What hair is shaded towards. */
@@ -1047,8 +1049,16 @@ export function mediumBody(
     face,
     pieces: all,
   });
+  // Over the body's own edge, so a medium that darkens it keeps its look and one that cannot be seen takes the hairline.
+  const rim =
+    !line && paint.rim
+      ? node('path', { d: ringsPath([body.ring]), fill: 'none', ...bodyRim(paint.rim) })
+      : null;
   const draw = (piece: Piece): SceneNode =>
-    node('g', { opacity: piece.opacity }, painterOf(variant)(piece, context(piece)));
+    node('g', { opacity: piece.opacity }, [
+      ...painterOf(variant)(piece, context(piece)),
+      ...(piece === body && rim ? [rim] : []),
+    ]);
   const parts = moving;
   /*
    * In layers, a moving piece is drawn in a layer of its own behind or over

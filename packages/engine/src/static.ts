@@ -40,7 +40,6 @@ export { autoColorForKey, autoShapeForKey, autoNoseForKey, fnv1a32, mulberry32 }
 export {
   COLOR_SWATCHES,
   getSwatch,
-  getSwatchCss,
   getSwatchHex,
   getInkColor,
   getInkColorCss,

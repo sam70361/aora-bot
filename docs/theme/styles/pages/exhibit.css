@@ -153,7 +153,7 @@
     font-family: var(--aora-font-mono);
     font-size: var(--aora-text-xs);
     font-variant-numeric: tabular-nums;
-    color: var(--site-swatch, var(--aora-accent));
+    color: var(--site-swatch-text, var(--aora-accent));
   }
 
   /* ---- stage ----------------------------------------------------------------- */
@@ -284,7 +284,9 @@
     height: 0.75rem;
     border-radius: var(--aora-radius-pill);
     background: var(--site-swatch);
-    box-shadow: inset 0 0 0 1px var(--aora-line);
+    box-shadow:
+      inset 0 0 0 1px var(--site-swatch-edge),
+      inset 0 0 0 1px var(--aora-line);
   }
 
   .site-exhibit__section {

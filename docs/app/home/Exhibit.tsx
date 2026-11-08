@@ -2,7 +2,6 @@ import {
   CharacterMark,
   COLOR_IDS,
   DEFAULT_FACE,
-  getInkColorCss,
   prefersReducedMotion,
   useLabel,
   type CharacterHandle,
@@ -24,6 +23,7 @@ import { useI18n, useLocalized } from '../shared/i18n.js';
 import { NextIcon, PauseIcon, PlayIcon, PrevIcon } from '../shared/icons.js';
 import { Radio, RadioGroup, ScrollRootProvider } from '../shared/Radio.js';
 import { DEFAULT_PRESET, type Preset } from '../shared/share.js';
+import { swatchVars } from '../shared/swatch.js';
 import { copyFor, lineFor } from '../shared/snippet.js';
 import type { StateGroup } from '../shared/state-groups.js';
 import { ParamFields, seriesParams, withStyle } from './Params.js';
@@ -122,11 +122,7 @@ export function Exhibit({ registry, preset, patch, backdrop, bar }: ViewProps) {
   const seriesName = label.style(series.id, series.label);
 
   return (
-    <section
-      className="site-exhibit"
-      aria-labelledby="site-exhibit-title"
-      style={{ '--site-swatch': getInkColorCss(preset.color) } as CSSProperties}
-    >
+    <section className="site-exhibit" aria-labelledby="site-exhibit-title" style={swatchVars(preset.color)}>
       <Wall styles={styleChoices} face={DEFAULT_PRESET.face} lineArt={backdrop === 'lineart'} />
 
       <h1 id="site-exhibit-title" className="site-home__sr">
@@ -328,10 +324,7 @@ export function Exhibit({ registry, preset, patch, backdrop, bar }: ViewProps) {
                 label={label.color(color) || color}
                 onSelect={() => patch({ color })}
               >
-                <span
-                  className="site-home__swatch"
-                  style={{ '--site-dot': getInkColorCss(color) } as CSSProperties}
-                />
+                <span className="site-home__swatch" style={swatchVars(color)} />
               </Radio>
             ))}
           </RadioGroup>

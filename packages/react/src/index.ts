@@ -327,10 +327,10 @@ export {
   shapeGenerators,
   // Palette
   getSwatch,
-  getSwatchCss,
   getSwatchHex,
   getInkColor,
   getInkColorCss,
+  getInkVars,
   getInkGradient,
   haloBackground,
   // Hashing

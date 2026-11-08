@@ -3,7 +3,8 @@
  * Static output is pinned: the hashes in `static-golden.json` were taken
  * from the engine before live characters were drawn in layers, and every
  * static document of the core's variants and shapes must still hash the
- * same, byte for byte.
+ * same, byte for byte. They were taken again once the uid came to name the
+ * look as well, the documents otherwise unchanged.
  */
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createCharacter, fnv1a32, installTheme, renderStaticSvg } from '../src/index.js';

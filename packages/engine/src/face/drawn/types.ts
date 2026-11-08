@@ -18,7 +18,8 @@ import type { CuteEyeId } from '../topologies.js';
  * them per variant and per palette colour, so a drawn face follows the body
  * the way the cute face does.
  *
- * - `face`: the cute face's own colour — eye whites, the light on a pupil.
+ * - `face`: the cute face's own colour — eye whites, the light on a pupil,
+ *   and a sparkle beside a smiling eye, which sits on the body as the face does.
  * - `pupil`: whatever reads on `face` (dark on the white face; on a black
  *   body it turns light with the page, as the face does).
  * - `feature`: whatever reads on the body — brows, lashes, lids, stitches,

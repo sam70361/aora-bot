@@ -1,6 +1,5 @@
 import {
   COLOR_IDS,
-  getInkColorCss,
   prefersReducedMotion,
   useLabel,
   type CharacterState,
@@ -15,6 +14,7 @@ import type { Preset } from '../shared/share.js';
 import { NextIcon, PrevIcon } from '../shared/icons.js';
 import { Radio, RadioGroup, ScrollRootProvider, useNearVisible } from '../shared/Radio.js';
 import { StillMark } from '../shared/StillMark.js';
+import { swatchVars } from '../shared/swatch.js';
 import type { StyleChoice, StyleGroup } from './registry.js';
 
 interface PreviewProps {
@@ -138,10 +138,7 @@ export const ColorRail = memo(function ColorRail({
             label={label.color(color) || color}
             onSelect={() => onColor(color)}
           >
-            <span
-              className="site-home__swatch"
-              style={{ '--site-dot': getInkColorCss(color) } as CSSProperties}
-            />
+            <span className="site-home__swatch" style={swatchVars(color)} />
           </Radio>
         ))}
       </RadioGroup>

@@ -196,16 +196,6 @@ export const getSwatch = (id: ColorId): Swatch => {
 
 export const getSwatchHex = (id: ColorId): string => getSwatch(id).value;
 
-/**
- * A picker chip's paint: the chip colour, or, for a colour whose ink turns
- * with the page, that ink as a `light-dark()` pair, so the chip is the colour
- * the character is on this page. Black's chip is white on a dark page.
- */
-export const getSwatchCss = (id: ColorId): string => {
-  const { ink, value } = getSwatch(id);
-  return inkTone(ink.light) === inkTone(ink.dark) ? value : getInkColorCss(id);
-};
-
 export const getInkColor = (id: ColorId, scheme: 'light' | 'dark' = 'light'): string =>
   getSwatch(id).ink[scheme];
 
@@ -222,11 +212,11 @@ export const getInkColorCss = (id: ColorId): string => {
   return `light-dark(${ink.light}, ${ink.dark})`;
 };
 
-/** The colour of the cute face on any palette body. Black is left out: see `getInkVars`. */
+/** The cute face's own colour: what the face rule prefers for it (`READS`). */
 export const FACE_INK = '#FFFFFF';
 /** The soft variant's face: dark brown. */
 export const SOFT_FACE_INK = '#2B2420';
-/** The riso variant's second ink on a pink body (`risoSecondInk`). */
+/** The riso variant's second ink on a body of the default second ink's hue (`risoSecondInk`). */
 export const RISO_INK_ON_PINK = '#F5B428';
 /** The riso variant's default second ink, matching the fallback in `RISO_TOKEN`. */
 export const RISO_INK = '#FF78A6';
@@ -235,33 +225,70 @@ export const HAIR_SHADE = '#000000';
 /** The hair shade in a live scene: a token, so the host can turn it white for a dark body (`getInkVars`). */
 export const HAIR_SHADE_TOKEN = `var(--aora-hair-shade, ${HAIR_SHADE})`;
 
-/**
- * How a body's ink sits against a face, per page: `dark` (black on a light
- * page, night), `light` (black on a dark page, yellow, cream) or `mid`, which
- * is every other hue. Measured from the ink's relative luminance, so a colour
- * added to the palette takes the rule its ink calls for.
- */
-export type InkTone = 'dark' | 'light' | 'mid';
-
-/** Relative luminance above which a white face no longer reads on the ink. */
-const LIGHT_INK = 0.4;
-/** Relative luminance below which black hair and dark features no longer read on the ink. */
-const DARK_INK = 0.04;
-
-function luminance(hex: string): number {
-  const channel = (i: number): number => {
+/** A `#rrggbb` colour's channels in linear light. */
+const channels = (hex: string): number[] =>
+  [1, 3, 5].map((i) => {
     const v = Number.parseInt(hex.slice(i, i + 2), 16) / 255;
     return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
-  };
-  return 0.2126 * channel(1) + 0.7152 * channel(3) + 0.0722 * channel(5);
+  });
+
+function luminance(hex: string): number {
+  const [r, g, b] = channels(hex) as [number, number, number];
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
-export const inkTone = (hex: string): InkTone => {
-  const l = luminance(hex);
-  return l > LIGHT_INK ? 'light' : l < DARK_INK ? 'dark' : 'mid';
+/** A `#rrggbb` colour's OKLCH chroma and hue, in degrees. */
+function chromaHue(hex: string): [number, number] {
+  const [r, g, b] = channels(hex) as [number, number, number];
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+  const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+  const a = 1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s;
+  const z = 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s;
+  const hue = (Math.atan2(z, a) * 180) / Math.PI;
+  return [Math.hypot(a, z), hue < 0 ? hue + 360 : hue];
+}
+
+const contrast = (a: number, b: number): number => (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+
+/** WCAG contrast between two colours. */
+const contrastOf = (a: string, b: string): number => contrast(luminance(a), luminance(b));
+
+/**
+ * The least contrast a face paint keeps against the body it is drawn on, by
+ * what it draws. Each paint has a colour it prefers and takes the other one
+ * only where that reads better, so the face follows the ink rather than a
+ * list of colours.
+ */
+const READS = {
+  /** A cute face, a drawn face's whites, a sticker's face: large shapes, white wherever white holds. */
+  face: 2.4,
+  /** The soft face, brows, lids and eyes drawn on the body: small and thin, so dark needs more to hold. */
+  feature: 3,
+  /** Hair shaded towards black: a shade only, lost on a body that is nearly black itself. */
+  shade: 1.8,
+  /**
+   * A cut-out eye, measured against the far end of its page (`PAGE`): a real
+   * page seldom is one, a dark one least of all, so the hole keeps a margin
+   * that still leaves about a feature's contrast on a common dark page.
+   */
+  hole: 4.5,
+} as const;
+
+/** `preferred` where it reads on `ground` at `min`, otherwise whichever of the two reads better there. */
+const readsOn = (ground: string, preferred: string, other: string, min: number): string => {
+  const own = contrastOf(ground, preferred);
+  return own >= min || own >= contrastOf(ground, other) ? preferred : other;
 };
 
-/** The face's paints on a body of one tone. */
+/** The other face paint: what reads on a paint of the face. */
+const across = (paint: string): string => (paint === FACE_INK ? SOFT_FACE_INK : FACE_INK);
+
+/** An ink a white face does not read on: cream, yellow, black on a dark page. */
+export const isLightInk = (hex: string): boolean =>
+  readsOn(hex, FACE_INK, SOFT_FACE_INK, READS.face) !== FACE_INK;
+
+/** The face's paints on one body ink. */
 export interface FaceInks {
   /** The cute face, and a drawn face's whites. */
   face: string;
@@ -277,52 +304,64 @@ export interface FaceInks {
   glint: string;
 }
 
-/**
- * The face rule. A dark body takes a white face, white features and white
- * hair shading; a light one takes the dark face throughout, with light
- * pupils on its dark whites, which is what black does on a dark page.
- */
-const FACE_RULE: Record<InkTone, FaceInks> = {
-  dark: {
-    face: FACE_INK,
-    soft: FACE_INK,
-    sticker: FACE_INK,
-    hair: '#FFFFFF',
-    pupil: SOFT_FACE_INK,
-    glint: SOFT_FACE_INK,
-  },
-  light: {
-    face: SOFT_FACE_INK,
-    soft: SOFT_FACE_INK,
-    sticker: '#1F1F1F',
-    hair: HAIR_SHADE,
-    pupil: FACE_INK,
-    glint: FACE_INK,
-  },
-  mid: {
-    face: FACE_INK,
-    soft: SOFT_FACE_INK,
-    sticker: FACE_INK,
-    hair: HAIR_SHADE,
-    pupil: SOFT_FACE_INK,
-    glint: FACE_INK,
-  },
-};
+/** A light body's sticker face: the dark of black's light-page ink, as the paper turns to it. */
+const STICKER_DARK = '#1F1F1F';
 
 /**
- * A colour's face paints on a light and on a dark page, and whether its face
- * is a cut-out: a colour whose ink changes tone with the page (black) has its
- * face cut out of the page, which reads on either.
+ * The face rule, measured per paint against the ink (`READS`). A mid hue
+ * keeps the white face and the dark features; a light ink (cream, yellow)
+ * takes the dark face with light pupils; a dark one (navy, cocoa) keeps the
+ * white face and turns its features white, and a nearly black one (night)
+ * its hair shading too.
  */
-export function faceInks(id: ColorId): { light: FaceInks; dark: FaceInks; cutOut: boolean; plain: boolean } {
-  const { ink } = getSwatch(id);
-  const light = inkTone(ink.light);
-  const dark = inkTone(ink.dark);
+function faceOn(ink: string): FaceInks {
+  const face = readsOn(ink, FACE_INK, SOFT_FACE_INK, READS.face);
+  const soft = readsOn(ink, SOFT_FACE_INK, FACE_INK, READS.feature);
   return {
-    light: FACE_RULE[light],
-    dark: FACE_RULE[dark],
-    cutOut: light !== dark,
-    plain: light === 'mid' && dark === 'mid',
+    face,
+    soft,
+    sticker: face === FACE_INK ? FACE_INK : STICKER_DARK,
+    hair: readsOn(ink, HAIR_SHADE, '#FFFFFF', READS.shade),
+    pupil: across(face),
+    glint: across(soft),
+  };
+}
+
+/** The face paints the tokens default to: what a mid hue wears, so a host needs to write none of them. */
+const PLAIN_FACE: FaceInks = {
+  face: FACE_INK,
+  soft: SOFT_FACE_INK,
+  sticker: FACE_INK,
+  hair: HAIR_SHADE,
+  pupil: SOFT_FACE_INK,
+  glint: FACE_INK,
+};
+
+const KEYS = Object.keys(PLAIN_FACE) as (keyof FaceInks)[];
+const sameFace = (a: FaceInks, b: FaceInks): boolean => KEYS.every((key) => a[key] === b[key]);
+
+/**
+ * A colour's face paints on a light and on a dark page. `turns` when any of
+ * them differs between the pages; `cutOut` when the face itself does, as on
+ * black, whose face is then cut out of the page, which reads on either;
+ * `plain` when both pages wear the tokens' defaults.
+ */
+export function faceInks(id: ColorId): {
+  light: FaceInks;
+  dark: FaceInks;
+  turns: boolean;
+  cutOut: boolean;
+  plain: boolean;
+} {
+  const { ink } = getSwatch(id);
+  const light = faceOn(ink.light);
+  const dark = faceOn(ink.dark);
+  return {
+    light,
+    dark,
+    turns: !sameFace(light, dark),
+    cutOut: light.face !== dark.face,
+    plain: sameFace(light, PLAIN_FACE) && sameFace(dark, PLAIN_FACE),
   };
 }
 
@@ -338,10 +377,42 @@ export const hairShade = (id: ColorId): { light: string; dark: string } => {
   return { light: light.hair, dark: dark.hair };
 };
 
-/** Contrast against the page below which a mark drawn in the ink is lost on it. */
-const EFFECT_CONTRAST = 1.6;
+type Page = 'light' | 'dark';
+type PerPage<T> = { light: T; dark: T };
 
-const contrast = (a: number, b: number): number => (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+/**
+ * The page itself, as a cut-out shows it. `--aora-bg` is what a host sets to
+ * re-theme the holes; it defaults to `--aora-bg-base` in the stylesheet, and
+ * the fallback here is that token's own default, so an unstyled page agrees
+ * with a styled one.
+ */
+export const PAGE_TOKEN = 'var(--aora-bg, var(--aora-bg-base, #fcfcfc))';
+
+/** The pages a colour is measured against: the far ends of any light and any dark page. */
+const PAGE: PerPage<string> = { light: '#FFFFFF', dark: '#000000' };
+
+/** The least contrast against the page, by what is drawn on it in the ink. */
+const ON_PAGE = {
+  /** A filled body, or a mark (zz, dots, rings), below which it is lost on the page. */
+  mass: 1.6,
+  /** A line, below which it is too faint to read. */
+  line: 2.2,
+} as const;
+
+/**
+ * Contrast against the page an ink too faint to read is taken to as a line.
+ * The same ratio looks weaker on a dark page, so a lifted line goes further.
+ */
+const LINE_CONTRAST: PerPage<number> = { light: 3, dark: 4.5 };
+
+/** `pick(ink, page)` for the colour's ink on each page. */
+const perPage = <T>(id: ColorId, pick: (ink: string, page: Page) => T): PerPage<T> => {
+  const { ink } = getSwatch(id);
+  return { light: pick(ink.light, 'light'), dark: pick(ink.dark, 'dark') };
+};
+
+/** Whether the ink falls below `min` against its page. */
+const lostOn = (ink: string, page: Page, min: number): boolean => contrastOf(ink, PAGE[page]) < min;
 
 /**
  * What a colour's state effects (zz, dots, rings, marks) are drawn in on a
@@ -349,28 +420,10 @@ const contrast = (a: number, b: number): number => (Math.max(a, b) + 0.05) / (Ma
  * face the face rule gives that ink, so the marks read and match the face.
  * `null` on a page where the ink itself reads.
  */
-export function effectInks(id: ColorId): { light: string | null; dark: string | null } {
-  const { ink } = getSwatch(id);
+export function effectInks(id: ColorId): PerPage<string | null> {
   const rule = faceInks(id);
-  return {
-    light: contrast(luminance(ink.light), 1) < EFFECT_CONTRAST ? rule.light.face : null,
-    dark: contrast(luminance(ink.dark), 0) < EFFECT_CONTRAST ? rule.dark.face : null,
-  };
+  return perPage(id, (ink, page) => (lostOn(ink, page, ON_PAGE.mass) ? rule[page].face : null));
 }
-
-/** Contrast against the page below which an ink drawn as a line on it is too faint to read. */
-const LINE_FAINT = 2.2;
-/**
- * Contrast against the page an ink too faint to read is taken to as a line.
- * The same ratio looks weaker on a dark page, so a lifted line goes further.
- */
-const LINE_CONTRAST = { light: 3, dark: 4.5 };
-
-const channels = (hex: string): number[] =>
-  [1, 3, 5].map((i) => {
-    const v = Number.parseInt(hex.slice(i, i + 2), 16) / 255;
-    return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
-  });
 
 const toHex = (linear: number[]): string =>
   `#${linear
@@ -402,6 +455,9 @@ function lifted(hex: string): string {
   return toHex(channels(hex).map((v) => v + (1 - v) * t));
 }
 
+/** The ink taken to `LINE_CONTRAST` on the page. */
+const asLine = (ink: string, page: Page): string => (page === 'light' ? deepened(ink) : lifted(ink));
+
 /**
  * What a colour is drawn in as a line on a light and on a dark page, where its
  * ink is too faint there: the outline and the glass rim, a line variant's face
@@ -409,12 +465,8 @@ function lifted(hex: string): string {
  * night on a dark one lifts to a grey; `null` on a page where the ink itself
  * reads.
  */
-export function lineInks(id: ColorId): { light: string | null; dark: string | null } {
-  const { ink } = getSwatch(id);
-  return {
-    light: contrast(luminance(ink.light), 1) < LINE_FAINT ? deepened(ink.light) : null,
-    dark: contrast(luminance(ink.dark), 0) < LINE_FAINT ? lifted(ink.dark) : null,
-  };
+export function lineInks(id: ColorId): PerPage<string | null> {
+  return perPage(id, (ink, page) => (lostOn(ink, page, ON_PAGE.line) ? asLine(ink, page) : null));
 }
 
 /**
@@ -423,37 +475,45 @@ export function lineInks(id: ColorId): { light: string | null; dark: string | nu
  * (`lineInks`), so cream and ivory keep their shape on a light page and night
  * on a dark one. `null` on a page where the body itself reads.
  */
-export function rimInks(id: ColorId): { light: string | null; dark: string | null } {
-  const { ink } = getSwatch(id);
-  const lines = lineInks(id);
-  return {
-    light: contrast(luminance(ink.light), 1) < EFFECT_CONTRAST ? (lines.light ?? deepened(ink.light)) : null,
-    dark: contrast(luminance(ink.dark), 0) < EFFECT_CONTRAST ? (lines.dark ?? lifted(ink.dark)) : null,
-  };
+export function rimInks(id: ColorId): PerPage<string | null> {
+  return perPage(id, (ink, page) => (lostOn(ink, page, ON_PAGE.mass) ? asLine(ink, page) : null));
 }
+
+/**
+ * When a body swallows the riso's second ink: an ink of at least this OKLCH
+ * chroma (a grey has no hue to clash) within this many degrees of its hue.
+ */
+const RISO_CLASH = { chroma: 0.05, hue: 25 } as const;
 
 /**
  * The riso variant's second ink for a colour on a light and on a dark page,
- * `null` where it is the default pink. A pale ink multiplied over pink prints
- * as pink, so a light ink is printed twice, over itself, which deepens it the
- * way a double hit does; pink would vanish into its own, so it takes gold.
+ * `null` where it is the default pink. A light ink multiplied over pink prints
+ * as pink, so it is printed twice, over itself, which deepens it the way a
+ * double hit does; a body of the second ink's own hue (red, pink, magenta)
+ * would swallow it, so it takes gold.
  */
-export function risoSecondInk(id: ColorId): { light: string | null; dark: string | null } {
-  if (id === 'pink') return { light: RISO_INK_ON_PINK, dark: RISO_INK_ON_PINK };
-  const { ink } = getSwatch(id);
-  const own = (hex: string): string | null => (inkTone(hex) === 'light' ? hex : null);
-  return { light: own(ink.light), dark: own(ink.dark) };
+export function risoSecondInk(id: ColorId): PerPage<string | null> {
+  const [, riso] = chromaHue(RISO_INK);
+  return perPage(id, (ink) => {
+    if (isLightInk(ink)) return ink;
+    const [chroma, hue] = chromaHue(ink);
+    const apart = Math.abs(((hue - riso + 540) % 360) - 180);
+    return chroma >= RISO_CLASH.chroma && apart < RISO_CLASH.hue ? RISO_INK_ON_PINK : null;
+  });
 }
 
 /**
- * The eyes of a face cut out of the body (`eyes`, `line`) on a body of one
- * tone on both pages, or `null` where the page shows through: a light body
- * would swallow a light page, and a dark one a dark page, so they take the
- * face rule's face, dark on cream and white on night.
+ * The eyes of a face cut out of the body (`eyes`, `line`) on a light and on a
+ * dark page: the page where it reads on the body at `READS.hole`, otherwise
+ * whichever of the page and the face rule's face reads better there. Cream on
+ * a light page and navy or night on a dark one take their face; `null` on a
+ * page that shows through.
  */
-export function cutFaceInk(id: ColorId): string | null {
-  const { light, cutOut, plain } = faceInks(id);
-  return plain || cutOut ? null : light.face;
+export function cutFaceInk(id: ColorId): PerPage<string | null> {
+  const rule = faceInks(id);
+  return perPage(id, (ink, page) =>
+    readsOn(ink, PAGE[page], rule[page].face, READS.hole) === PAGE[page] ? null : rule[page].face,
+  );
 }
 
 const pairCss = (light: string, dark: string): string =>
@@ -472,10 +532,10 @@ const pairCss = (light: string, dark: string): string =>
  * reads on the features). `--aora-fx` is what state effects are drawn in,
  * written only for an ink lost on one of the pages (`effectInks`), and
  * `--aora-ink-line` what lines on the page are drawn in, only for an ink too faint
- * on one of them (`lineInks`). `--aora-eye` is a cut-out face's eyes on a body
- * that would swallow the page (`cutFaceInk`), and `--aora-rim` the edge of a
+ * on one of them (`lineInks`). `--aora-eye` is a cut-out face's eyes where the
+ * page does not read on the body (`cutFaceInk`), and `--aora-rim` the edge of a
  * filled body on a page it all but matches (`rimInks`). `--aora-ink2` is the riso
- * variant's second ink, for pink and the light inks (`risoSecondInk`).
+ * variant's second ink, for the light inks and the second ink's own hues (`risoSecondInk`).
  */
 export const getInkVars = (id: ColorId): Record<string, string> => {
   const { light, dark, cutOut, plain } = faceInks(id);
@@ -504,7 +564,9 @@ export const getInkVars = (id: ColorId): Record<string, string> => {
     ...(lines.light || lines.dark
       ? { '--aora-ink-line': pairCss(lines.light ?? ink.light, lines.dark ?? ink.dark) }
       : null),
-    ...(eye ? { '--aora-eye': eye } : null),
+    ...(eye.light || eye.dark
+      ? { '--aora-eye': pairCss(eye.light ?? PAGE_TOKEN, eye.dark ?? PAGE_TOKEN) }
+      : null),
     ...(rim.light || rim.dark
       ? { '--aora-rim': pairCss(rim.light ?? 'transparent', rim.dark ?? 'transparent') }
       : null),
