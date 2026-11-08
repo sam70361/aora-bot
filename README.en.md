@@ -22,11 +22,11 @@ separate parts), every expression is a few numbers describing a curved stroke,
 interpolated by springs, and every animation frame is written directly to SVG attributes
 by a `requestAnimationFrame` loop.
 
-The roster has 70 characters, from round blobs and rice cakes to fruit, treats, critters, objects, people and coal.
+The roster has 71 characters, from round blobs and rice cakes to fruit, treats, critters, objects, people and coal.
 Here they all are, happy, each in its own face and colour, led by Dot, the cream-white ball:
 
 <p align="center">
-  <img src=".github/media/cast.png" width="760" alt="The whole cast of 70 members in a grid, each smiling, with its member id underneath, Dot first">
+  <img src=".github/media/cast.png" width="760" alt="The whole cast of 71 members in a grid, each smiling, with its member id underneath, Dot first">
 </p>
 
 Seven holiday and seasonal themes add 122 more characters: Halloween, Christmas, Spring Festival, Mid-Autumn, Easter, Summer and Valentine's Day. Each theme is its own entry (`@aora-bot/engine/themes/<id>`), loaded only when used, so it adds nothing to the main bundle. See every theme in the [Themes](https://aora-bot.vercel.app/en/themes/) gallery.
@@ -129,7 +129,7 @@ examples/            standalone samples, not part of the workspace build
 This repository used to hold Emotion Ball. Emotion Ball has now been upgraded to Aora Bot. The classic edition is kept in full in the [`emotion-ball` branch](https://github.com/sam70361/aora-bot/tree/emotion-ball) under its original license, is no longer updated, and can still be [tried online](https://sam70361.github.io/aora-bot/).
 
 - **A rewritten engine**: a handful of plain JavaScript scripts became four npm packages written in TypeScript, with full types, tests and server rendering.
-- **Original characters**: all 46 launch characters are original designs, Nimbo and Twinkle from Mood Mates joined the cast as originals too, and the cast has since grown to 70. Emotion Ball's signature little ball lives on as Dot (`dot`), who leads the cast.
+- **Original characters**: all 46 launch characters are original designs, Nimbo and Twinkle from Mood Mates joined the cast as originals too, and the cast has since grown to 71. Emotion Ball's signature little ball lives on as Dot (`dot`), who leads the cast.
 - **More to work with**: 32 expressions grew into 44 animation states, with three faces, three styles (vector, pixel and kaomoji), HUD dials and a full set of React components. The emotion protocol still accepts `{ emotionId }` messages, so the AI side connects the same way.
 - **License**: from free for non-commercial use with separate commercial licensing, to tiered licensing: individuals, education, non-profits, open-source projects and teams of up to 3 people use it free, commercially too, and larger companies buy a commercial license.
 
@@ -144,14 +144,14 @@ If Aora Bot gave your interface a little more expression, you are welcome to buy
 <table align="center">
   <tr>
     <td align="center">
-      <img src="docs/content/public/sponsor/wechat-pay.jpg" width="200" alt="WeChat Pay QR code">
+      <img src="docs/content/public/sponsor/wechat-pay.svg" width="20" height="20" alt=""> <b>WeChat Pay</b>
       <br>
-      <sub>WeChat Pay</sub>
+      <img src="docs/content/public/sponsor/wechat-pay-code.png" width="188" alt="WeChat Pay QR code">
     </td>
     <td align="center">
-      <img src="docs/content/public/sponsor/alipay.jpg" width="200" alt="Alipay QR code">
+      <img src="docs/content/public/sponsor/alipay.svg" width="20" height="20" alt=""> <b>Alipay</b>
       <br>
-      <sub>Alipay</sub>
+      <img src="docs/content/public/sponsor/alipay-code.png" width="188" alt="Alipay QR code">
     </td>
   </tr>
 </table>
@@ -198,7 +198,7 @@ Who reads it: React and front-end developers, AI agent builders, hardware makers
 - **Coding education and courses**: one line of code brings a character to life, which also draws developers just learning front end and AI.
 - **Design tools and asset platforms**: designers and indie developers come here for avatars, mascots and expressions.
 
-Add me on WeChat above and mention sponsorship.
+Add me on WeChat above with the note “Aora Bot sponsorship”.
 
 ## License
 

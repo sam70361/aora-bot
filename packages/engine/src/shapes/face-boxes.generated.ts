@@ -626,4 +626,15 @@ export const FACE_BOXES: Partial<Record<string, StoredFaceBox>> = {
       leftDX: 0,
     },
   },
+  fluff: {
+    digest: '1xddyur',
+    box: {
+      x: 120.80432253535251,
+      y: 119.5942433055862,
+      sx: 103.4555668281282,
+      sy: 71.34866677801945,
+      eye: 1,
+      leftDX: 0,
+    },
+  },
 };

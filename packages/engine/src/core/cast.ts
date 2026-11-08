@@ -112,6 +112,7 @@ export const CORE_CAST_IDS = [
   'lulu',
   'cinder',
   'sooty',
+  'ashy',
 ] as const;
 
 export type CoreCastId = (typeof CORE_CAST_IDS)[number];
@@ -898,6 +899,17 @@ const CORE_CAST: readonly CharacterPreset[] = [
       zh: '圆滚滚、边缘坑坑洼洼的小煤球，坐过的地方总会留下一点黑印。',
     },
     shape: 'lump',
+    color: 'night',
+    accent: ink('night'),
+  },
+  {
+    id: 'ashy',
+    name: { en: 'Ashy', zh: '灰灰' },
+    desc: {
+      en: 'A fluffy tuft of soot, bristling all the way round, that puffs up a little more when it is surprised.',
+      zh: '一团毛茸茸的煤灰，一圈短绒毛炸开着，一吃惊就炸得更蓬。',
+    },
+    shape: 'fluff',
     color: 'night',
     accent: ink('night'),
   },

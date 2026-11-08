@@ -316,6 +316,8 @@
     "en": "Aora Bot is a project I build and maintain on my own, in my spare time. There is no team and no funding behind it, only the love of making it: every character, every style and every page of the docs is polished by hand. I will keep creating, keep the source public, keep it free for individuals and small teams, and keep it updated, and every bit of support turns into more characters, more styles and better docs.",
     "zh": "Aora Bot 是我在业余时间独立维护的项目。没有团队，也没有融资，支撑它的是热爱：每一个角色、每一种画风、每一页文档，都是一点一点打磨出来的。我会继续坚持创作、公开源码，让个人和小团队一直免费使用，并长期更新；你的每一份打赏，都会变成更多的角色、更多的画风和更好的文档。"
   },
+  "sponsor.wechatName": { "en": "WeChat Pay", "zh": "微信支付" },
+  "sponsor.alipayName": { "en": "Alipay", "zh": "支付宝" },
   "sponsor.wechatAlt": { "en": "WeChat Pay QR code", "zh": "微信支付收款码" },
   "sponsor.alipayAlt": { "en": "Alipay QR code", "zh": "支付宝收款码" },
   "sponsor.contactTitle": { "en": "Add me on WeChat", "zh": "加我微信交流" },
@@ -381,7 +383,7 @@
   },
   "sponsor.partnerAction": { "en": "Talk about sponsoring", "zh": "洽谈赞助" },
   "sponsor.partnerCta": {
-    "en": "Add me on WeChat above and mention sponsorship.",
-    "zh": "添加上方微信，备注「赞助」即可。"
+    "en": "Add me on WeChat above with the note “Aora Bot sponsorship”.",
+    "zh": "添加上方微信，备注「Aora Bot 项目赞助」即可。"
   }
 }

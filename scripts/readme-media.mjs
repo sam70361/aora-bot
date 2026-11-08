@@ -86,6 +86,39 @@ const element = (attrs) =>
     .map(([key, value]) => `${key}="${value}"`)
     .join(' ')}></aora-bot>`;
 
+const CAST_PER_ROW = 8;
+/** A cast row: a 112 px cell and the 6 px gap below it. */
+const CAST_PITCH = 118;
+/**
+ * Rows of the cast recorded on one page. Chrome's virtual clock stalls on a
+ * page with the whole cast animating at once, so it is recorded in strips
+ * that stack, pixel for pixel, into the one image.
+ */
+const CAST_STRIP_ROWS = 5;
+
+/** Rows `from` to `to` of the cast image: the first strip carries the top margin, the last the bottom. */
+function castStrip(from, to, first) {
+  const members = CAST.slice(from * CAST_PER_ROW, to * CAST_PER_ROW);
+  const rows = Math.ceil(members.length / CAST_PER_ROW);
+  const last = to * CAST_PER_ROW >= CAST.length;
+  return {
+    width: 960,
+    height: rows * CAST_PITCH + (first ? 20 : 0) + (last ? 20 : 0),
+    frames: 1,
+    // Long enough for the entry flourish of `happy` to have played out.
+    delay: 1400,
+    css: `.grid { display: flex; flex-wrap: wrap; justify-content: center; padding: ${first ? 20 : 0}px 0 0; row-gap: 6px; }
+      .cell { display: grid; justify-items: center; gap: 4px; width: 120px; height: 112px; }`,
+    body: `<div class="grid">${members
+      .map((member, i) => {
+        const seed = `cast-${from * CAST_PER_ROW + i}`;
+        return `<div class="cell">${element({ character: member.id, size: 84, seed, state: 'happy' })}<span>${member.id}</span></div>`;
+      })
+      .join('')}</div>`,
+    script: `window.scene = () => {};`,
+  };
+}
+
 /**
  * Every scene: its page size, its body, and `scene(t)`, which the recorder
  * calls before each frame with the clip's time, so state changes land on
@@ -147,17 +180,8 @@ const SCENES = {
   cast: {
     file: 'cast.png',
     width: 960,
-    height: Math.ceil(CAST.length / 8) * 118 + 40,
-    frames: 1,
-    // Long enough for the entry flourish of `happy` to have played out.
-    delay: 1400,
-    css: `.grid { display: flex; flex-wrap: wrap; justify-content: center; padding: 20px 0; row-gap: 6px; }
-      .cell { display: grid; justify-items: center; gap: 4px; width: 120px; height: 112px; }`,
-    body: `<div class="grid">${CAST.map(
-      (member, i) =>
-        `<div class="cell">${element({ character: member.id, size: 84, seed: `cast-${i}`, state: 'happy' })}<span>${member.id}</span></div>`,
-    ).join('')}</div>`,
-    script: `window.scene = () => {};`,
+    height: Math.ceil(CAST.length / CAST_PER_ROW) * CAST_PITCH + 40,
+    strips: [castStrip(0, CAST_STRIP_ROWS, true), castStrip(CAST_STRIP_ROWS, Infinity, false)],
   },
 
   themes: {
@@ -176,13 +200,21 @@ const SCENES = {
         `<span class="theme">${theme.id}</span>${theme.cast
           .slice(0, THEME_PER_ROW)
           .map(
-            (id, i) => `<div class="cell">${themeMember(theme.id, id, `${theme.id}-${i}`)}<span>${id}</span></div>`,
+            (id, i) =>
+              `<div class="cell">${themeMember(theme.id, id, `${theme.id}-${i}`)}<span>${id}</span></div>`,
           )
           .join('')}`,
     ).join('')}</div>`,
     script: `window.scene = () => {};`,
   },
 };
+
+/** Every page the recorder loads, by name: a scene, or a scene's strips as `<scene><n>`. */
+const PAGES = Object.fromEntries(
+  Object.entries(SCENES).flatMap(([name, scene]) =>
+    scene.strips ? scene.strips.map((strip, i) => [`${name}${i}`, strip]) : [[name, scene]],
+  ),
+);
 
 const page = (scene) => `<!doctype html>
 <html><head><meta charset="utf-8">
@@ -204,9 +236,9 @@ function serve() {
   const server = createServer((req, res) => {
     const url = new URL(req.url ?? '/', 'http://localhost');
     const scene = url.pathname.match(/^\/scene\/(\w+)$/)?.[1];
-    if (scene && SCENES[scene]) {
+    if (scene && PAGES[scene]) {
       res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
-      res.end(page(SCENES[scene]));
+      res.end(page(PAGES[scene]));
       return;
     }
     const file = normalize(join(ELEMENT_DIST, url.pathname.replace(/^\/element\//, '')));
@@ -254,6 +286,7 @@ function launch(profile) {
       '--mute-audio',
       '--no-first-run',
       '--force-color-profile=srgb',
+      '--run-all-compositor-stages-before-draw',
       'about:blank',
     ],
     { stdio: ['ignore', 'ignore', 'pipe'] },
@@ -314,8 +347,13 @@ async function connect(endpoint) {
 /** Time the page runs before the first frame: the element loads its chunks and settles. */
 const WARMUP_MS = 800;
 
+/** Takes of one scene before giving up; a stalled take starts again in a fresh tab. */
+const TAKES = 4;
+
+class StalledError extends Error {}
+
 async function record(cdp, origin, name) {
-  const scene = SCENES[name];
+  const scene = PAGES[name];
   const { targetId } = await cdp.send('Target.createTarget', { url: 'about:blank' });
   const { sessionId } = await cdp.send('Target.attachToTarget', { targetId, flatten: true });
   const send = (method, params) => cdp.send(method, params, sessionId);
@@ -341,10 +379,32 @@ async function record(cdp, origin, name) {
     });
   }
 
+  const now = async () =>
+    (await send('Runtime.evaluate', { expression: 'performance.now()', returnByValue: true })).result.value;
+  /**
+   * Runs the page `ms` further on. On a crowded page Chrome sometimes spends
+   * the whole budget without saying so, or stops the clock partway and never
+   * starts it again, so the page's own clock is watched: reaching the end
+   * counts as done, and a clock that stands still for three seconds fails the
+   * take, which `main` then records again.
+   */
   const advance = async (ms) => {
-    const expired = cdp.next('Emulation.virtualTimeBudgetExpired', sessionId);
+    const end = (await now()) + ms - 1;
+    let done = false;
+    const expired = cdp.next('Emulation.virtualTimeBudgetExpired', sessionId).then(() => (done = true));
     await send('Emulation.setVirtualTimePolicy', { policy: 'advance', budget: ms });
-    await expired;
+    const poll = async (last, still) => {
+      await Promise.race([expired, new Promise((resolve) => setTimeout(resolve, 250))]);
+      if (done) return;
+      const t = await now();
+      if (t >= end) return;
+      if (t === last && still >= 11) {
+        await cdp.send('Target.closeTarget', { targetId });
+        throw new StalledError(`${name}: the page clock stopped at ${t.toFixed(0)} ms`);
+      }
+      await poll(t, t === last ? still + 1 : 0);
+    };
+    await poll(-1, 0);
   };
   await send('Emulation.setVirtualTimePolicy', { policy: 'pause' });
   await advance(WARMUP_MS);
@@ -396,6 +456,17 @@ function encodeGif(pngs, delay) {
   return gif.bytes();
 }
 
+/** PNG strips of one width, top to bottom, as one PNG. */
+function stack(pngs, width, height) {
+  const out = new PNG({ width, height });
+  let y = 0;
+  for (const png of pngs.map((bytes) => PNG.sync.read(bytes))) {
+    png.data.copy(out.data, y * width * 4);
+    y += png.height;
+  }
+  return PNG.sync.write(out);
+}
+
 async function main() {
   const asked = process.argv.slice(2);
   const names = asked.length > 0 ? asked : Object.keys(SCENES);
@@ -412,10 +483,31 @@ async function main() {
   try {
     const cdp = await connect(await endpoint);
     mkdirSync(OUT, { recursive: true });
+    const takes = async (name) => {
+      for (let take = 1; ; take++) {
+        try {
+          // oxlint-disable-next-line no-await-in-loop -- a take starts only once the one before it has stalled
+          return await record(cdp, origin, name);
+        } catch (error) {
+          if (!(error instanceof StalledError) || take === TAKES) throw error;
+          process.stderr.write(`${error.message}; take ${take + 1}\n`);
+        }
+      }
+    };
     for (const name of names) {
       const scene = SCENES[name];
-      // oxlint-disable-next-line no-await-in-loop -- scenes record one after another in the one browser
-      const frames = await record(cdp, origin, name);
+      const frames = [];
+      if (scene.strips) {
+        const strips = [];
+        for (let i = 0; i < scene.strips.length; i++) {
+          // oxlint-disable-next-line no-await-in-loop -- pages record one after another in the one browser
+          strips.push((await takes(`${name}${i}`))[0]);
+        }
+        frames.push(stack(strips, scene.width, scene.height));
+      } else {
+        // oxlint-disable-next-line no-await-in-loop -- scenes record one after another in the one browser
+        frames.push(...(await takes(name)));
+      }
       const bytes = scene.file.endsWith('.gif') ? encodeGif(frames, scene.delay) : frames[0];
       writeFileSync(join(OUT, scene.file), bytes);
       process.stdout.write(
@@ -429,7 +521,11 @@ async function main() {
     chrome.kill();
     await exited;
     server.close();
-    rmSync(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
+    try {
+      rmSync(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
+    } catch {
+      // Chrome's helpers can hold the profile a little longer; a temp folder left behind is harmless.
+    }
   }
 }
 

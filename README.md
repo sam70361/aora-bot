@@ -20,10 +20,10 @@
 （有的带耳朵、叶子或天线这样的独立部件），每个表情都是几个数字描述的一段曲线笔画、由弹簧插值，
 每一帧动画都由一个 `requestAnimationFrame` 循环直接写进 SVG 属性。
 
-角色一共 70 个，从圆滚滚的团子、年糕，到水果、美食、小动物、物件、人物和煤球。下面是全体成员，各自戴着自己的脸、穿着自己的颜色，正开心着，打头的是奶白色的小圆球球球：
+角色一共 71 个，从圆滚滚的团子、年糕，到水果、美食、小动物、物件、人物和煤球。下面是全体成员，各自戴着自己的脸、穿着自己的颜色，正开心着，打头的是奶白色的小圆球球球：
 
 <p align="center">
-  <img src=".github/media/cast.png" width="760" alt="全部 70 个阵容成员排成网格，个个笑着，下方标注成员 id，第一个是球球">
+  <img src=".github/media/cast.png" width="760" alt="全部 71 个阵容成员排成网格，个个笑着，下方标注成员 id，第一个是球球">
 </p>
 
 另外还有 7 个节日与季节主题，共 122 个主题角色：万圣节、圣诞节、春节、中秋节、复活节、夏日和情人节。每个主题是一个独立入口（`@aora-bot/engine/themes/<id>`），用到时才加载，不会增加主包体积。全部主题见[主题展](https://aora-bot.vercel.app/themes/)。
@@ -119,7 +119,7 @@ examples/            独立示例，不参与工作区构建
 本仓库原为 Emotion Ball 表情馆。表情馆现已正式升级为 Aora Bot；经典版完整保留在 [`emotion-ball` 分支](https://github.com/sam70361/aora-bot/tree/emotion-ball)，沿用原有授权，不再更新，可以[在线体验](https://sam70361.github.io/aora-bot/)。
 
 - **引擎重写**：从几份原生 JavaScript 脚本，重写为 TypeScript 编写的四个 npm 包，带完整类型、测试与服务端渲染。
-- **角色原创**：首发的 46 个角色全部为原创设计，Mood Mates 的云宝和亮亮也作为原创角色加入了阵容，此后阵容扩展到 70 个。表情馆标志性的小圆球以球球（`dot`）的形象延续下来，排在阵容第一位。
+- **角色原创**：首发的 46 个角色全部为原创设计，Mood Mates 的云宝和亮亮也作为原创角色加入了阵容，此后阵容扩展到 71 个。表情馆标志性的小圆球以球球（`dot`）的形象延续下来，排在阵容第一位。
 - **能力扩展**：32 种表情扩展为 44 种动画状态，新增三种脸，矢量、像素、颜文字三种画风，HUD 表盘和一整套 React 组件。情绪协议仍然接受 `{ emotionId }` 消息，AI 侧的接入方式不变。
 - **许可**：从「非商用免费、商业另行授权」改为分级授权：个人、教育、非营利、开源项目和 3 人以内的团队可以免费商用，规模更大的公司购买商业授权。
 
@@ -134,14 +134,14 @@ examples/            独立示例，不参与工作区构建
 <table align="center">
   <tr>
     <td align="center">
-      <img src="docs/content/public/sponsor/wechat-pay.jpg" width="200" alt="微信支付收款码">
+      <img src="docs/content/public/sponsor/wechat-pay.svg" width="20" height="20" alt=""> <b>微信支付</b>
       <br>
-      <sub>微信支付</sub>
+      <img src="docs/content/public/sponsor/wechat-pay-code.png" width="188" alt="微信支付收款码">
     </td>
     <td align="center">
-      <img src="docs/content/public/sponsor/alipay.jpg" width="200" alt="支付宝收款码">
+      <img src="docs/content/public/sponsor/alipay.svg" width="20" height="20" alt=""> <b>支付宝</b>
       <br>
-      <sub>支付宝</sub>
+      <img src="docs/content/public/sponsor/alipay-code.png" width="188" alt="支付宝收款码">
     </td>
   </tr>
 </table>
@@ -188,7 +188,7 @@ Aora Bot 面向前端、AI 与硬件开发者，也被设计师用来制作头�
 - **编程教育与课程**：一行代码就能让角色动起来，也吸引着正在学习前端与 AI 的新人开发者。
 - **设计工具与素材平台**：设计师和独立开发者来这里挑选头像、吉祥物与表情。
 
-添加上方微信，备注「赞助」即可洽谈。
+添加上方微信，备注「Aora Bot 项目赞助」即可洽谈。
 
 ## 许可证
 

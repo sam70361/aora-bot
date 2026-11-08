@@ -136,11 +136,6 @@
     margin-top: var(--aora-space-3);
   }
 
-  /*
-   * The cards are shown whole: one dimension is set and the size attributes
-   * reserve the ratio. Side by side it is the height, so two cards of
-   * different ratios still line up top and bottom.
-   */
   .site-sponsor__qr {
     display: block;
     max-width: 100%;
@@ -150,9 +145,45 @@
     box-shadow: var(--aora-shadow-md);
   }
 
-  .site-sponsor__codes .site-sponsor__qr {
-    width: auto;
-    height: 18.5rem;
+  /*
+   * A code on a neutral card under its brand's mark and name: the brand
+   * colour is the mark alone, so the pair reads as payment without two
+   * blocks of green and blue competing with the page.
+   */
+  .site-sponsor__pay {
+    display: grid;
+    gap: var(--aora-space-3);
+    justify-items: center;
+    width: 14rem;
+    margin: 0;
+    padding: var(--aora-space-4) var(--aora-space-4) var(--aora-space-3);
+    border-radius: var(--aora-radius-lg);
+    background: var(--aora-surface);
+    box-shadow: var(--aora-shadow-line), var(--aora-shadow-md);
+  }
+
+  .site-sponsor__pay-name {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--aora-space-2);
+    font-size: var(--aora-text-md);
+    font-weight: var(--aora-weight-semibold);
+    color: var(--aora-text);
+  }
+
+  .site-sponsor__brand {
+    flex: none;
+    width: 1.5em;
+    height: 1.5em;
+  }
+
+  /* The code stays on white on either page, or a scanner may not find it. */
+  .site-sponsor__pay-code {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--aora-radius-md);
+    background: #fff;
   }
 
   .site-sponsor__thanks {
@@ -540,9 +571,9 @@
       align-items: center;
     }
 
-    .site-sponsor__codes .site-sponsor__qr {
+    .site-sponsor__pay {
       width: min(100%, 15rem);
-      height: auto;
+      box-sizing: border-box;
     }
 
     .site-sponsor__partner {

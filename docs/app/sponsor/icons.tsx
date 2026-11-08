@@ -141,6 +141,41 @@ export const PenIcon = () =>
     </>,
   );
 
+/** The payment brands' own marks, filled in their own colours rather than outlined in `currentColor`. */
+const brand = (children: ReactNode) => (
+  <svg className="site-sponsor__brand" viewBox="0 0 24 24" aria-hidden="true">
+    {children}
+  </svg>
+);
+
+/** A green speech bubble with a white tick. */
+export const WeChatPayIcon = () =>
+  brand(
+    <>
+      <path
+        d="M12 2C6.2 2 1.5 5.9 1.5 10.7c0 2.7 1.5 5.1 3.8 6.7L4.6 21.6l4.3-2.6c1 .3 2 .4 3.1.4 5.8 0 10.5-3.9 10.5-8.7S17.8 2 12 2z"
+        fill="#07C160"
+      />
+      <path d="M5.8 9.6l1.5-.7 2.9 2.6 9.6-5.4.5.7-10 7.6z" fill="#fff" />
+    </>,
+  );
+
+/** A blue rounded square with the white 支 of its name. */
+export const AlipayIcon = () =>
+  brand(
+    <>
+      <rect x="1.5" y="1.5" width="21" height="21" rx="5" fill="#1677FF" />
+      <path
+        d="M12 4.6V9M6.8 7.2h10.4M7.6 10.4h8Q13.8 15.6 9.6 17.3Q6.6 18.4 6.3 16.4Q6.1 14.4 9.3 14.2Q13 14 21 17.6"
+        fill="none"
+        stroke="#fff"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </>,
+  );
+
 /** A hub: one node in the middle, four around it. */
 export const HubIcon = () =>
   icon(

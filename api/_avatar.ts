@@ -142,6 +142,7 @@ export const AVATAR_POOL: readonly CastId[] = [
   'lumi',
   'cinder',
   'sooty',
+  'ashy',
 ];
 
 /** Size of the pool before consistent growth, picked by a single uniform draw. */

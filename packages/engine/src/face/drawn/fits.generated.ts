@@ -1267,4 +1267,22 @@ export const DRAWN_FITS: Partial<Record<string, StoredFits>> = {
       specs: [1, 0, 1],
     },
   },
+  fluff: {
+    digest: '5gjgip',
+    fits: {
+      capsule: [1, 0, 1],
+      brow: [1, 2.2, 1],
+      glossy: [1, 0.2, 1],
+      sparkle: [1, 0.6, 1],
+      button: [1, 0, 1],
+      shades: [1, 1.4, 1],
+      droopy: [1, 0, 1],
+      bigmouth: [1, 0, 1],
+      pie: [1, 0, 1],
+      screen: [1, 0, 1],
+      symbol: [1, 0.8, 0.9391],
+      teardrop: [1, 0, 1],
+      specs: [1, 0, 1],
+    },
+  },
 };

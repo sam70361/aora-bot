@@ -3,6 +3,7 @@ import { CharacterMark, COLOR_IDS, SHAPE_IDS } from '@aora-bot/react';
 import { useI18n } from '../shared/i18n.js';
 import {
   AgentIcon,
+  AlipayIcon,
   ArrowIcon,
   BoardIcon,
   CapIcon,
@@ -16,17 +17,33 @@ import {
   PenIcon,
   PlusIcon,
   TerminalIcon,
+  WeChatPayIcon,
 } from './icons.js';
 
 /**
- * The supplied cards, uncropped: the payment brand frame is what makes a code
- * recognisable. `width`/`height` are the files' own pixel sizes and only reserve
- * the aspect ratio; replacing a file with a different size means updating them.
- * The files live in `docs/content/public/sponsor/`.
+ * The codes cut out of the payment cards, on white with the payee's name under
+ * them; the brand is the small mark over each, so neither card floods the page
+ * with its colour. `width`/`height` are the files' own pixel sizes and only
+ * reserve the aspect ratio; replacing a file with a different size means
+ * updating them. The files live in `docs/content/public/sponsor/`.
  */
 const CODES = [
-  { file: 'wechat-pay.jpg', altKey: 'sponsor.wechatAlt', width: 754, height: 1024 },
-  { file: 'alipay.jpg', altKey: 'sponsor.alipayAlt', width: 683, height: 1024 },
+  {
+    file: 'wechat-pay-code.png',
+    name: 'sponsor.wechatName',
+    altKey: 'sponsor.wechatAlt',
+    width: 376,
+    height: 420,
+    Icon: WeChatPayIcon,
+  },
+  {
+    file: 'alipay-code.png',
+    name: 'sponsor.alipayName',
+    altKey: 'sponsor.alipayAlt',
+    width: 376,
+    height: 420,
+    Icon: AlipayIcon,
+  },
 ] as const;
 
 const CONTACTS = [
@@ -121,17 +138,22 @@ export function Sponsor() {
       </div>
 
       <div className="site-sponsor__codes">
-        {CODES.map((code) => (
-          <img
-            key={code.file}
-            className="site-sponsor__qr"
-            src={withBase(`/sponsor/${code.file}`)}
-            alt={t(code.altKey)}
-            width={code.width}
-            height={code.height}
-            loading="lazy"
-            decoding="async"
-          />
+        {CODES.map(({ file, name, altKey, width, height, Icon }) => (
+          <figure key={file} className="site-sponsor__pay">
+            <figcaption className="site-sponsor__pay-name">
+              <Icon />
+              {t(name)}
+            </figcaption>
+            <img
+              className="site-sponsor__pay-code"
+              src={withBase(`/sponsor/${file}`)}
+              alt={t(altKey)}
+              width={width}
+              height={height}
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
         ))}
       </div>
 

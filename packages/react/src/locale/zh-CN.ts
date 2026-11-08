@@ -57,6 +57,7 @@ const SHAPES: Record<CoreShapeId, string> = {
   twinbuns: '双丸子',
   chunk: '煤块',
   lump: '煤球',
+  fluff: '煤灰团',
   boba: '奶茶',
   pudding: '布丁',
   avocado: '牛油果',

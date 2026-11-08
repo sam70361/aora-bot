@@ -66,6 +66,7 @@ const SHAPES: Record<CoreShapeId, string> = {
   twinbuns: 'Twin buns',
   chunk: 'Coal chunk',
   lump: 'Coal lump',
+  fluff: 'Soot tuft',
   boba: 'Boba tea',
   pudding: 'Pudding',
   avocado: 'Avocado',
