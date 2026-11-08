@@ -4,6 +4,7 @@ import {
   SHAPE_IDS,
   STATE_GROUPS,
   getInkColorCss,
+  type ColorId,
   type FaceStyle,
 } from '@aora-bot/react';
 import { mulberry32 } from '@aora-bot/engine';
@@ -39,6 +40,14 @@ const SPEED_PX_MAX = 22;
 /** The stills that read well held still: a held face is what a tile shows, so it should be an expression. */
 const STILL_STATE_GROUP = 'feeling';
 const STILL_STATE_EXTRA: readonly string[] = ['idle'];
+
+/**
+ * The line-art wall: every tile drawn as one line, in the ink that turns with
+ * the page (dark on light paper, light on dark), so the field reads as a
+ * sketchbook page behind the character rather than as colour.
+ */
+const LINE_ART: readonly StyleChoice[] = [{ style: 'vector', variant: 'outline' }];
+const LINE_INK: ColorId = 'black';
 
 /** The wall waits for the page to go idle before drawing, but no longer than this, in ms. */
 const IDLE_TIMEOUT_MS = 1500;
@@ -126,11 +135,15 @@ function measure(width: number, height: number, narrow: boolean): Metrics {
   return { fieldW, fieldH: rows * pitch - gap, rows, perHalf: Math.ceil(fieldW / pitch), tile, gap };
 }
 
-function buildRows(styles: readonly StyleChoice[], { rows, perHalf, tile, gap }: Metrics): RowSpec[] {
+function buildRows(
+  styles: readonly StyleChoice[],
+  ink: ColorId | undefined,
+  { rows, perHalf, tile, gap }: Metrics,
+): RowSpec[] {
   const series = interleave(styles);
   if (series.length === 0) return [];
   const shapeAt = lapped(SHAPE_IDS, 11);
-  const colorAt = lapped(COLOR_IDS, 23);
+  const colorAt = ink ? () => ink : lapped(COLOR_IDS, 23);
   const stateAt = lapped(stillStates(), 37);
   const random = mulberry32(5);
   const halfPx = perHalf * (tile + gap);
@@ -268,6 +281,8 @@ interface Field {
 interface WallProps {
   styles: StyleChoice[];
   face: FaceStyle;
+  /** Draw every tile as line art in one ink, instead of each row in its own style and colour. */
+  lineArt?: boolean;
 }
 
 /**
@@ -286,7 +301,7 @@ interface WallProps {
  * server-rendered field of characters would be a great deal of markup nobody
  * asked for.
  */
-export const Wall = memo(function Wall({ styles, face }: WallProps) {
+export const Wall = memo(function Wall({ styles, face, lineArt = false }: WallProps) {
   const host = useRef<HTMLDivElement>(null);
   const probe = useRef<HTMLSpanElement>(null);
   const shop = useRef<Shop | null>(null);
@@ -334,7 +349,10 @@ export const Wall = memo(function Wall({ styles, face }: WallProps) {
     [],
   );
 
-  const rows = useMemo(() => (metrics ? buildRows(styles, metrics) : []), [styles, metrics]);
+  const rows = useMemo(
+    () => (metrics ? buildRows(lineArt ? LINE_ART : styles, lineArt ? LINE_INK : undefined, metrics) : []),
+    [styles, lineArt, metrics],
+  );
 
   // Draw this layout's tiles, then swap the field in whole. A theme whose values
   // are not `light-dark()` pairs changes what the images carry, so they are
@@ -414,6 +432,7 @@ export const Wall = memo(function Wall({ styles, face }: WallProps) {
       className="site-home__wall"
       aria-hidden="true"
       data-ready={field !== null || undefined}
+      data-lineart={lineArt || undefined}
       style={
         {
           '--site-tile': `${shown?.tile ?? TILE_PX}px`,

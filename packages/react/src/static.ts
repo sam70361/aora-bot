@@ -26,6 +26,8 @@ export {
   getLeafColor,
   COLOR_IDS,
   FACE_STYLES,
+  DEFAULT_FACE,
+  DEFAULT_SHAPE,
   NOSE_IDS,
   CAST,
   CAST_IDS,

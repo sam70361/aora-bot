@@ -172,8 +172,11 @@ export const isListedShape = (id: string): boolean => (SHAPE_IDS as readonly str
  * everywhere and offered by themes; taking an id out of that list lists it.
  * A colour only one theme paints with is that theme's own
  * (`ThemeManifestEntry.colors`), drawn once it is installed and never listed.
+ *
+ * The order is the pickers' order. Cream leads it: it is the lead's colour.
  */
 export const CORE_COLOR_IDS = [
+  'cream',
   'black',
   'brown',
   'red',
@@ -186,12 +189,15 @@ export const CORE_COLOR_IDS = [
   'magenta',
   'pink',
   'gray',
+  'sage',
+  'clay',
+  'navy',
+  'mauve',
   'night',
   'cocoa',
   'sky',
   'blush',
   'lilac',
-  'cream',
   'butter',
   'ivory',
   'meadow',
@@ -204,7 +210,6 @@ export const UNLISTED_COLOR_IDS: readonly CoreColorId[] = [
   'sky',
   'blush',
   'lilac',
-  'cream',
   'butter',
   'ivory',
   'meadow',
@@ -221,8 +226,25 @@ export const ALL_COLOR_IDS: readonly ColorId[] = [
   ...CORE_COLOR_IDS,
   ...THEME_MANIFEST.flatMap((theme): readonly ColorId[] => theme.colors),
 ];
-/** Colours that deterministic assignment may pick. `black` is reserved for defaults. */
-export const ASSIGNABLE_COLOR_IDS = COLOR_IDS.filter((c) => c !== 'black') as Exclude<ColorId, 'black'>[];
+/**
+ * Colours that deterministic assignment may pick (`colorForKey`). `black` is
+ * reserved for defaults. A fixed list rather than the listed palette: a key
+ * keeps its colour when the palette grows, so an avatar never changes colour
+ * because a colour was added.
+ */
+export const ASSIGNABLE_COLOR_IDS: Exclude<CoreColorId, 'black'>[] = [
+  'brown',
+  'red',
+  'orange',
+  'yellow',
+  'green',
+  'cyan',
+  'blue',
+  'violet',
+  'magenta',
+  'pink',
+  'gray',
+];
 
 /** Shapes that deterministic assignment may pick — the eight that read well at 16px. */
 export const AUTO_SHAPE_POOL: ShapeId[] = [
@@ -275,6 +297,11 @@ export type DrawnFaceStyle = (typeof DRAWN_FACE_STYLES)[number];
 const [LEAD_FACE, ...LATER_FACES] = DRAWN_FACE_STYLES;
 export const FACE_STYLES = [LEAD_FACE, 'cute', 'eyes', 'line', ...LATER_FACES] as const;
 export type FaceStyle = (typeof FACE_STYLES)[number];
+
+/** The face a character wears when neither the options nor its cast member name one. */
+export const DEFAULT_FACE: FaceStyle = 'cute';
+/** The body a character has when neither the options nor its cast member name one. */
+export const DEFAULT_SHAPE: ShapeId = 'mochi';
 
 /** Drawn faces a host or a theme defined (`defineFace`), by id. */
 const DEFINED_FACES = new Set<string>();

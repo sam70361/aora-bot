@@ -18,6 +18,8 @@ export {
   ASSIGNABLE_COLOR_IDS,
   AUTO_SHAPE_POOL,
   DEFAULT_FACE_TUNE,
+  DEFAULT_FACE,
+  DEFAULT_SHAPE,
   DEFAULT_POSE,
   DEFAULT_POSE_HOME,
   FACE_STYLES,
@@ -404,6 +406,7 @@ export * from './agent.js';
 
 // Runtime
 export { createCharacter, mapPointerToGaze } from './render/character.js';
+export { VECTOR_VARIANTS } from './core/options.js';
 export type {
   CharacterController,
   CharacterOptions,

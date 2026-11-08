@@ -1,3 +1,4 @@
+import { VECTOR_VARIANTS } from '../core/options.js';
 import { createVectorRenderer } from '../render/vector/live.js';
 import { defineMedium, type MediumDefinition } from '../render/vector/media.js';
 import { renderVectorStatic } from '../render/vector/static.js';
@@ -38,23 +39,7 @@ export function defineVectorMedium(
 export const vectorStyle = defineStyle({
   id: 'vector',
   label: 'Vector',
-  variants: [
-    'solid',
-    'outline',
-    'glass',
-    'sticker',
-    'paper',
-    'soft',
-    'riso',
-    'pencil',
-    'marker',
-    'crayon',
-    'watercolor',
-    'neon',
-    'chalk',
-    'origami',
-    'relief',
-  ],
+  variants: VECTOR_VARIANTS,
   defaultVariant: 'solid',
   defaults: {
     /**

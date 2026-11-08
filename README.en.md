@@ -2,14 +2,14 @@
 
 # Aora Bot
 
-**A procedural character engine for the web — a roster of generated characters, animated states, thirteen faces, three drawing styles, an SVG HUD, and the UI surfaces built on top of them.**
+**A procedural character engine for the web — a roster of generated characters, animated states, sixteen faces, three drawing styles, an SVG HUD, and the UI surfaces built on top of them.**
 
 [Console](https://aora-bot.vercel.app/en/) | [Documentation](https://aora-bot.vercel.app/en/guide/getting-started) | [Scenarios](https://aora-bot.vercel.app/en/scenarios/chat-stream) | [Emotion Ball](https://sam70361.github.io/aora-bot/) | [中文](./README.md)
 
 </div>
 
 <p align="center">
-  <img src=".github/media/hero.gif" width="860" alt="Six Aora Bot characters, a mochi, a strawberry, a cat, a star, a robot and an octopus, moving through happy, excited, shy, surprised, curious, thinking, asleep, angry and celebrating">
+  <img src=".github/media/hero.gif" width="860" alt="Six Aora Bot characters, Dot the cream ball, a strawberry, a cat, a star, a robot and a cloud, moving through happy, excited, shy, surprised, curious, thinking, asleep, angry, celebrating and laughing">
 </p>
 
 ---
@@ -23,10 +23,16 @@ interpolated by springs, and every animation frame is written directly to SVG at
 by a `requestAnimationFrame` loop.
 
 The roster has 68 characters, from round blobs and rice cakes to fruit, treats, critters, objects and people.
-Here they all are, happy, in the default `cute` face:
+Here they all are, happy, each in its own face and colour, led by Dot, the cream-white ball:
 
 <p align="center">
-  <img src=".github/media/cast.png" width="760" alt="The whole roster of 68 characters in a grid, each smiling, with its shape id underneath">
+  <img src=".github/media/cast.png" width="760" alt="The whole cast of 68 members in a grid, each smiling, with its member id underneath, Dot first">
+</p>
+
+Seven holiday and seasonal themes add 122 more characters: Halloween, Christmas, Spring Festival, Mid-Autumn, Easter, Summer and Valentine's Day. Each theme is its own entry (`@aora-bot/engine/themes/<id>`), loaded only when used, so it adds nothing to the main bundle. See every theme in the [Themes](https://aora-bot.vercel.app/en/themes/) gallery.
+
+<p align="center">
+  <img src=".github/media/themes.png" width="760" alt="Seven themes, a row each, with six of each theme's characters smiling and their ids underneath">
 </p>
 
 Every character combines independent choices, all of which you can try in the
@@ -34,9 +40,9 @@ Every character combines independent choices, all of which you can try in the
 or `kaomoji`) and its variant, the ink colour, the face and the animation state.
 
 <p align="center">
-  <img src=".github/media/styles.gif" width="860" alt="One cat drawn in every style: the seven vector variants, the three pixel variants and both kaomoji variants, all moving together">
+  <img src=".github/media/styles.gif" width="860" alt="Dot drawn in every style: the fifteen vector variants, the three pixel variants and both kaomoji variants, all moving together">
   <br>
-  <sub>One cat in every style: <code>vector</code> (<code>solid</code>, <code>outline</code>, <code>glass</code>, <code>sticker</code>, <code>paper</code>, <code>soft</code>, <code>riso</code>), <code>pixel</code> (<code>crisp</code>, <code>dot</code>, <code>block</code>) and <code>kaomoji</code> (<code>plain</code>, <code>bubble</code>).</sub>
+  <sub>Dot in every style: <code>vector</code> (<code>solid</code>, <code>outline</code>, <code>glass</code>, <code>sticker</code>, <code>paper</code>, <code>soft</code>, <code>riso</code>, <code>pencil</code>, <code>marker</code>, <code>crayon</code>, <code>watercolor</code>, <code>neon</code>, <code>chalk</code>, <code>origami</code>, <code>relief</code>), <code>pixel</code> (<code>crisp</code>, <code>dot</code>, <code>block</code>) and <code>kaomoji</code> (<code>plain</code>, <code>bubble</code>).</sub>
 </p>
 
 On top of the engine sits a set of React components for the things products actually need
@@ -123,7 +129,7 @@ examples/            standalone samples, not part of the workspace build
 This repository used to hold Emotion Ball. Emotion Ball has now been upgraded to Aora Bot. The classic edition is kept in full in the [`emotion-ball` branch](https://github.com/sam70361/aora-bot/tree/emotion-ball) under its original license, is no longer updated, and can still be [tried online](https://sam70361.github.io/aora-bot/).
 
 - **A rewritten engine**: a handful of plain JavaScript scripts became four npm packages written in TypeScript, with full types, tests and server rendering.
-- **Original characters**: the old ball-shaped characters are retired. All 46 characters are newly designed originals, and Nimbo and Twinkle from Mood Mates have joined the cast as originals too.
+- **Original characters**: all 46 launch characters are original designs, Nimbo and Twinkle from Mood Mates joined the cast as originals too, and the cast has since grown to 68. Emotion Ball's signature little ball lives on as Dot (`dot`), who leads the cast.
 - **More to work with**: 32 expressions grew into 44 animation states, with three faces, three styles (vector, pixel and kaomoji), HUD dials and a full set of React components. The emotion protocol still accepts `{ emotionId }` messages, so the AI side connects the same way.
 - **License**: from free for non-commercial use with separate commercial licensing, to tiered licensing: individuals, education, non-profits, open-source projects and teams of up to 3 people use it free, commercially too, and larger companies buy a commercial license.
 

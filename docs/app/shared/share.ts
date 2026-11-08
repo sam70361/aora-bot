@@ -1,5 +1,7 @@
 import {
+  CAST,
   CHARACTER_STATES,
+  DEFAULT_FACE,
   ALL_COLOR_IDS,
   DEFAULT_STYLE_ID,
   FACE_STYLES,
@@ -39,15 +41,16 @@ export interface Preset {
 
 const NO_PARAMS: Preset['params'] = Object.freeze({});
 
-export const DEFAULT_FACE: FaceStyle = 'cute';
+const [LEAD] = CAST;
 
+/** The console opens on the cast's lead, in the face it was designed with. */
 export const DEFAULT_PRESET: Preset = {
-  shape: 'mochi',
-  color: 'blue',
+  shape: LEAD.shape,
+  color: LEAD.color,
   style: DEFAULT_STYLE_ID,
   variant: getStyle(DEFAULT_STYLE_ID).defaultVariant,
   state: 'happy',
-  face: DEFAULT_FACE,
+  face: LEAD.face ?? DEFAULT_FACE,
   params: NO_PARAMS,
 };
 

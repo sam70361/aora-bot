@@ -1,4 +1,6 @@
 import {
+  DEFAULT_FACE,
+  DEFAULT_SHAPE,
   ALL_COLOR_IDS,
   DEFAULT_STYLE_ID,
   IDLE_STATE,
@@ -159,10 +161,10 @@ function cssLength(value: string | null): string | null {
 function resolve(el: Element): Resolved {
   const get = (name: keyof AoraBotAttributes) => el.getAttribute(name);
   const member = castMember(get('character'));
-  const shape = pick(get('shape'), ALL_SHAPE_IDS) ?? member?.shape ?? 'mochi';
+  const shape = pick(get('shape'), ALL_SHAPE_IDS) ?? member?.shape ?? DEFAULT_SHAPE;
   const color = pick(get('color'), ALL_COLOR_IDS) ?? member?.color ?? 'black';
   const faceAttr = get('face') ?? undefined;
-  const face = (isFaceStyle(faceAttr) ? faceAttr : undefined) ?? member?.face ?? 'cute';
+  const face = (isFaceStyle(faceAttr) ? faceAttr : undefined) ?? member?.face ?? DEFAULT_FACE;
   const seed = get('seed') || `${shape}:${color}`;
 
   const noseAttr = get('nose');

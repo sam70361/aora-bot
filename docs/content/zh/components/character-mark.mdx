@@ -58,7 +58,7 @@ export default function Demo() {
 
 ## 脸
 
-`face` 在三种脸里选：默认的 `cute`，以及 `eyes` 和[线条脸](/design/face) `line`，后者用同一线宽的笔画加上鼻子和嘴。`nose` 只对 `line` 有效，从六种里挑一种；省略则由 `seed` 推导，传 `null` 则不画。
+`face` 在 `FACE_STYLES` 的十六种脸里选：默认的 `cute`、`eyes`、[线条脸](/design/face) `line`（用同一线宽的笔画加上鼻子和嘴），以及 `capsule` 等十三种手绘脸。`nose` 只对 `line` 有效，从六种里挑一种；省略则由 `seed` 推导，传 `null` 则不画。
 
 ```tsx preview
 import { CharacterMark, NOSE_IDS } from '@aora-bot/react';

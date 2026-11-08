@@ -55,6 +55,10 @@ The browser re-resolves it when `color-scheme` changes. That is the whole theme-
 
 `black` is the only hue whose dark-mode ink is not a darker version of its light-mode ink — it becomes white. The neutral character is meant to be the one with the most contrast against the page, and on a dark page that means going the other way.
 
+## Cream and the muted colours
+
+`cream` is a warm off-white. It leads `COLOR_IDS` and is Dot's colour; being so light, it wears the dark face, as `yellow` does. `sage`, `clay`, `navy` and `mauve` are four muted colours after the bright hues; `navy` is lifted a step on a dark page so that it does not sink into it. `night` is a near-black that stays dark on a dark page; it is accepted by id but left out of the default lists (`UNLISTED_COLOR_IDS`).
+
 ## Variables beyond the ink
 
 The body ink is `--aora-fg`, but the face and a couple of variants need colours of their own. When you style a character yourself, write them all with `getInkVars(color)` rather than `--aora-fg` alone; `CharacterMark` and `StagedMark` do exactly that.
@@ -120,7 +124,7 @@ export default function Demo() {
 }
 ```
 
-Assignment uses FNV-1a followed by an avalanche step, so keys that differ by one character land far apart in the pool rather than adjacent to each other. `black` is excluded from assignment — it is reserved as the explicit default, so an assigned character is always visibly "chosen".
+Assignment uses FNV-1a followed by an avalanche step, so keys that differ by one character land far apart in the pool rather than adjacent to each other. `black` is excluded from assignment — it is reserved as the explicit default, so an assigned character is always visibly "chosen". The assignable colours are a fixed list (`ASSIGNABLE_COLOR_IDS`) that does not grow with the palette, so a new colour never moves an existing key onto another one.
 
 ## Halo
 

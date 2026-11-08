@@ -1,5 +1,5 @@
-import { DEFAULT_STYLE_ID, getStyle } from '@aora-bot/engine';
-import { DEFAULT_FACE, type Preset } from './share.js';
+import { DEFAULT_FACE, DEFAULT_STYLE_ID, getStyle } from '@aora-bot/engine';
+import type { Preset } from './share.js';
 
 /** The size every copied React and HTML snippet renders at. */
 export const SNIPPET_SIZE_PX = 96;

@@ -18,6 +18,7 @@ import './styles/shell.css';
 import './styles/controls.css';
 import './styles/doc-components.css';
 import './styles/pages/home.css';
+import './styles/pages/exhibit.css';
 import './styles/pages/sponsor.css';
 import './styles/pages/themes.css';
 

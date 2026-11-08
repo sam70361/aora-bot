@@ -1,4 +1,6 @@
 import {
+  DEFAULT_FACE,
+  DEFAULT_SHAPE,
   DEFAULT_STYLE_ID,
   castMember,
   getInkVars,
@@ -490,9 +492,9 @@ export function StagedMark({
     color: colorProp,
   });
   const member = ready ? castMember(preset) : null;
-  const shape = shapeProp ?? member?.shape ?? 'mochi';
+  const shape = shapeProp ?? member?.shape ?? DEFAULT_SHAPE;
   const color = colorProp ?? member?.color ?? 'black';
-  const face = faceProp ?? member?.face ?? ambient.face ?? 'cute';
+  const face = faceProp ?? member?.face ?? ambient.face ?? DEFAULT_FACE;
   const nose = noseProp !== undefined ? noseProp : (member?.nose ?? ambient.nose ?? null);
   const lineWeight = lineWeightProp ?? ambient.lineWeight;
   const styleId = styleIdProp ?? ambient.styleId ?? DEFAULT_STYLE_ID;

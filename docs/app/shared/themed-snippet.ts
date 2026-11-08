@@ -1,4 +1,5 @@
 import {
+  DEFAULT_FACE,
   DEFAULT_STYLE_ID,
   castMember,
   getStyle,
@@ -6,7 +7,7 @@ import {
   themeDefault,
   type CastId,
 } from '@aora-bot/engine';
-import { DEFAULT_FACE, type Preset } from './share.js';
+import type { Preset } from './share.js';
 import { AVATAR_ORIGIN, ELEMENT_SCRIPT, SNIPPET_SIZE_PX, type SnippetFormat } from './snippet.js';
 
 /*

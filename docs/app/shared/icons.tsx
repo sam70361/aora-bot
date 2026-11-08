@@ -17,6 +17,8 @@ export const CopyIcon = () =>
       <path d="M16 8V6.5A2.5 2.5 0 0 0 13.5 4h-7A2.5 2.5 0 0 0 4 6.5v7A2.5 2.5 0 0 0 6.5 16H8" />
     </>,
   );
+export const PlayIcon = () => icon(<path d="M8 5.5v13l10.5-6.5z" />);
+export const PauseIcon = () => icon(<path d="M8.5 5.5v13M15.5 5.5v13" />);
 export const CheckIcon = () => icon(<path d="M5 12.5l4.5 4.5L19 7.5" />);
 export const CloseIcon = () => icon(<path d="M6 6l12 12M18 6L6 18" />);
 export const LinkIcon = () =>

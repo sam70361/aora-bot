@@ -23,6 +23,12 @@ export interface Swatch {
  */
 export const COLOR_SWATCHES: readonly Swatch[] = [
   {
+    id: 'cream',
+    value: '#E9D9B6',
+    ink: { light: '#F1E2C1', dark: '#EADBB9' },
+    gradient: { lightFrom: '#FAF0DA', lightTo: '#E2CDA1', darkFrom: '#F3E6CA', darkTo: '#D8C397' },
+  },
+  {
     id: 'black',
     value: '#1A1A1A',
     // Inverts on dark backgrounds: the neutral character is always the one
@@ -97,6 +103,31 @@ export const COLOR_SWATCHES: readonly Swatch[] = [
     gradient: { lightFrom: '#9AA0B0', lightTo: '#585C6A', darkFrom: '#797D8E', darkTo: '#5E626F' },
   },
   {
+    id: 'sage',
+    value: '#87A383',
+    ink: { light: '#8FAC8B', dark: '#88A584' },
+    gradient: { lightFrom: '#B2CAAE', lightTo: '#6E8C6B', darkFrom: '#A4BFA0', darkTo: '#67835F' },
+  },
+  {
+    id: 'clay',
+    value: '#B9633F',
+    ink: { light: '#C66C47', dark: '#BB6641' },
+    gradient: { lightFrom: '#DB8C69', lightTo: '#9C4D2E', darkFrom: '#C7744F', darkTo: '#8F4A2D' },
+  },
+  {
+    id: 'navy',
+    value: '#2A4373',
+    // Lifted on a dark page, where the deep blue would sink into it.
+    ink: { light: '#2E4C80', dark: '#3E5E98' },
+    gradient: { lightFrom: '#46669F', lightTo: '#1E355C', darkFrom: '#5373AE', darkTo: '#2D4877' },
+  },
+  {
+    id: 'mauve',
+    value: '#9C7898',
+    ink: { light: '#A7839F', dark: '#9E7B97' },
+    gradient: { lightFrom: '#C4A3BC', lightTo: '#86627F', darkFrom: '#B897B0', darkTo: '#7C5A76' },
+  },
+  {
     id: 'night',
     value: '#2A2433',
     // Near-black on either page: unlike black it does not turn white on a dark one.
@@ -126,12 +157,6 @@ export const COLOR_SWATCHES: readonly Swatch[] = [
     value: '#C2ABEA',
     ink: { light: '#CBB5F0', dark: '#BFA8E8' },
     gradient: { lightFrom: '#DDCDF6', lightTo: '#AA92DD', darkFrom: '#D3C1F2', darkTo: '#A189D4' },
-  },
-  {
-    id: 'cream',
-    value: '#E9D9B6',
-    ink: { light: '#F1E2C1', dark: '#EADBB9' },
-    gradient: { lightFrom: '#FAF0DA', lightTo: '#E2CDA1', darkFrom: '#F3E6CA', darkTo: '#D8C397' },
   },
   {
     id: 'butter',

@@ -23,26 +23,30 @@ import type {
  * means a new state or a new shape arrives in every style at once. Eight are
  * media: the same snapshot drawn by hand in pencil, marker, crayon,
  * watercolour, neon tubes or chalk, or made of paper, crumpled as origami or
- * pressed up as relief. Theme
- * skins are drawn by the same
- * machinery under ids of their own, which `StyleVariant` accepts.
+ * pressed up as relief. Theme skins are drawn by the same machinery under ids
+ * of their own, which `StyleVariant` accepts.
+ *
+ * The order is the order the series lists them in, and the one list a new
+ * built-in variant is added to.
  */
-export type CharacterVariant =
-  | 'solid'
-  | 'outline'
-  | 'glass'
-  | 'sticker'
-  | 'paper'
-  | 'soft'
-  | 'riso'
-  | 'pencil'
-  | 'marker'
-  | 'crayon'
-  | 'watercolor'
-  | 'neon'
-  | 'chalk'
-  | 'origami'
-  | 'relief';
+export const VECTOR_VARIANTS = [
+  'solid',
+  'outline',
+  'glass',
+  'sticker',
+  'paper',
+  'soft',
+  'riso',
+  'pencil',
+  'marker',
+  'crayon',
+  'watercolor',
+  'neon',
+  'chalk',
+  'origami',
+  'relief',
+] as const;
+export type CharacterVariant = (typeof VECTOR_VARIANTS)[number];
 
 /**
  * A variant id as the options accept it. The ones above belong to `vector`;

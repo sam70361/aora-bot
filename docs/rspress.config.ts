@@ -103,6 +103,8 @@ export default defineConfig({
       { lang: 'en', label: 'English', nav: navFor('en'), sidebar: sidebarFor('en') },
     ],
     socialLinks: [{ icon: 'github', mode: 'link', content: 'https://github.com/sam70361/aora-bot' }],
+    // A first visit opens dark, where the characters' colours carry best; the switch stays, and a choice is remembered.
+    darkMode: 'dark',
     enableContentAnimation: false,
     enableScrollToTop: true,
     editLink: {

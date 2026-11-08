@@ -263,6 +263,21 @@
   "home.tune.none": { "en": "This style has nothing to tune.", "zh": "这个画风没有可调的参数。" },
   "home.prevShape": { "en": "Previous shape", "zh": "上一个形状" },
   "home.nextShape": { "en": "Next shape", "zh": "下一个形状" },
+  "home.view": { "en": "View", "zh": "视图" },
+  "home.view.console": { "en": "Console", "zh": "控制台" },
+  "home.view.exhibit": { "en": "Exhibit", "zh": "展览" },
+  "home.lineart": { "en": "Line art", "zh": "线稿" },
+  "home.lineart.hint": {
+    "en": "Draw the wall behind the character as line art",
+    "zh": "背景墙改用线稿绘制"
+  },
+  "home.exhibit.title": { "en": "Character exhibit", "zh": "角色展览" },
+  "home.exhibit.cast": { "en": "Cast", "zh": "角色" },
+  "home.exhibit.group": { "en": "Group", "zh": "分组" },
+  "home.exhibit.interval": { "en": "Interval", "zh": "间隔" },
+  "home.exhibit.play": { "en": "Autoplay", "zh": "自动播放" },
+  "home.exhibit.prev": { "en": "Previous expression", "zh": "上一个表情" },
+  "home.exhibit.next": { "en": "Next expression", "zh": "下一个表情" },
   "themes.eyebrow": { "en": "Aora Bot themes", "zh": "Aora Bot 主题展" },
   "themes.shelf.title": { "en": "Theme albums", "zh": "主题卡册" },
   "themes.shelf.lede": {

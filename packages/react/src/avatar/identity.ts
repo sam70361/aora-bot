@@ -1,4 +1,5 @@
 import {
+  DEFAULT_FACE,
   autoColorForKey,
   autoNoseForKey,
   autoShapeForKey,
@@ -46,7 +47,7 @@ export const agentShape = (agent: AgentLike): ShapeId =>
 export const agentColor = (agent: AgentLike): ColorId =>
   agent.color ?? castMember(agent.preset)?.color ?? autoColorForKey(agent.id);
 export const agentFace = (agent: AgentLike): FaceStyle =>
-  agent.face ?? castMember(agent.preset)?.face ?? 'cute';
+  agent.face ?? castMember(agent.preset)?.face ?? DEFAULT_FACE;
 /** The agent's nose, or `null` unless its face is the line face. */
 export const agentNose = (agent: AgentLike): NoseId | null => {
   if (agentFace(agent) !== 'line') return null;

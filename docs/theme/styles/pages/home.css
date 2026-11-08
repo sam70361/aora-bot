@@ -166,6 +166,15 @@
     }
   }
 
+  /* Line art: no pools of ink under the tiles, and the lines held quieter than colour, so they stay behind. */
+  .site-home__wall[data-lineart] {
+    --_full: light-dark(rgb(0 0 0 / 0.5), rgb(0 0 0 / 0.45));
+
+    & .site-home__tile {
+      background: none;
+    }
+  }
+
   .site-home__field {
     position: absolute;
     inset-block-start: 50%;
@@ -222,6 +231,30 @@
     width: 150%;
     max-width: none;
     height: 150%;
+  }
+
+  /* ---- view switch ----------------------------------------------------------- */
+
+  /* The view tabs and the line-art switch; each view places the pill among its own controls. */
+  .site-home__viewbar {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--aora-space-3);
+  }
+
+  .site-home__lineart {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--aora-space-2);
+    color: var(--aora-text-muted);
+    font-size: var(--aora-text-sm);
+    white-space: nowrap;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--aora-text);
+    }
   }
 
   /* ---- side capsules --------------------------------------------------------- */

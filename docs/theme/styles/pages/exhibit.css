@@ -1,0 +1,384 @@
+/*
+ * Home, exhibit view — / with the view switch on "Exhibit".
+ *
+ * An album page on one screen: a bar along the top (the view switch, the
+ * state groups, the autoplay interval and play), the cast as a row of cards,
+ * the character large between previous and next, the chosen group's states
+ * numbered underneath, and the properties panel down the right. The capsule
+ * surface, the options, the tabs, the swatches and the parameter rows are the
+ * console's (home.css); this file only places them.
+ *
+ * As on the console, every list scrolls inside a box of fixed size, so a
+ * cast or a state set that grows changes what can be reached and nothing
+ * about the layout.
+ */
+
+@layer site.pages {
+  .site-exhibit {
+    --site-exhibit-mark: clamp(9rem, 34dvh, 20rem);
+    --site-panel-w: 22rem;
+    --site-cast-h: 7.5rem;
+    --site-states-h: 7rem;
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--site-panel-w);
+    grid-template-rows: auto var(--site-cast-h) minmax(0, 1fr) var(--site-states-h);
+    grid-template-areas:
+      'bar bar'
+      'cast panel'
+      'stage panel'
+      'states panel';
+    gap: var(--site-capsule-gap);
+    box-sizing: border-box;
+    height: max(42rem, 100dvh);
+    padding: calc(var(--site-nav-offset) + var(--site-capsule-gap))
+      max(var(--site-capsule-gap), (100% - var(--site-shell-max)) / 2) var(--site-capsule-gap);
+  }
+
+  /*
+   * The console's wall, its clear pool moved onto the stage. Whatever the
+   * side padding, the left column is centred half a panel and a gap left of
+   * the middle; the stage sits lower by half of what is above it (navbar,
+   * bar, cast) less what is below (the states). 2.5rem is the bar's height.
+   */
+  .site-exhibit .site-home__wall {
+    --_pool-x: min(40vw, 34rem);
+    --_pool-y: 44%;
+    --_pool-at: calc(50% - (var(--site-panel-w) + var(--site-capsule-gap)) / 2)
+      calc(50% + (var(--site-nav-offset) + 2.5rem + var(--site-cast-h) - var(--site-states-h)) / 2);
+  }
+
+  /* ---- bar ------------------------------------------------------------------- */
+
+  .site-exhibit__bar {
+    grid-area: bar;
+    display: flex;
+    align-items: center;
+    gap: var(--aora-space-4);
+    min-width: 0;
+    padding: var(--aora-space-1) var(--aora-space-2);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .site-exhibit__bar > .site-home__tabs {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+
+  .site-exhibit__play {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--aora-space-2);
+    margin-inline-start: auto;
+
+    & .site-home__tool {
+      width: var(--aora-control-h);
+      height: var(--aora-control-h);
+    }
+  }
+
+  /* ---- cast and states: horizontal tracks ------------------------------------ */
+
+  .site-exhibit__castBox,
+  .site-exhibit__statesBox {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    padding-inline: var(--aora-space-4);
+  }
+
+  .site-exhibit__castBox {
+    grid-area: cast;
+  }
+
+  .site-exhibit__statesBox {
+    grid-area: states;
+  }
+
+  .site-exhibit__cast,
+  .site-exhibit__states {
+    --_fade: var(--aora-space-6);
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: var(--aora-space-1);
+    min-width: 0;
+    height: 100%;
+    padding-inline: var(--_fade);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 var(--_fade),
+      #000 calc(100% - var(--_fade)),
+      transparent
+    );
+  }
+
+  .site-exhibit__card {
+    width: 5.5rem;
+    padding: var(--aora-space-2) 0 var(--aora-space-1);
+
+    &:hover {
+      transform: translateY(-3px);
+    }
+  }
+
+  .site-exhibit__gloss {
+    max-width: 100%;
+    overflow: hidden;
+    font-size: var(--aora-text-xs);
+    line-height: 1.2;
+    color: var(--aora-text-faint);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .site-exhibit__state {
+    width: 4.75rem;
+    padding: var(--aora-space-1) 0;
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+
+  /* The state's place in the whole set, as an album numbers its plates. */
+  .site-exhibit__no {
+    font-family: var(--aora-font-mono);
+    font-size: var(--aora-text-xs);
+    font-variant-numeric: tabular-nums;
+    color: var(--site-swatch, var(--aora-accent));
+  }
+
+  /* ---- stage ----------------------------------------------------------------- */
+
+  .site-exhibit__stage {
+    grid-area: stage;
+    position: relative;
+    display: grid;
+    grid-template-columns: auto var(--site-exhibit-mark) auto;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    gap: var(--aora-space-3) var(--aora-space-8);
+    min-height: 0;
+  }
+
+  .site-exhibit__figure {
+    width: var(--site-exhibit-mark);
+    height: var(--site-exhibit-mark);
+  }
+
+  .site-exhibit__caption {
+    display: flex;
+    grid-column: 1 / -1;
+    align-items: baseline;
+    justify-self: center;
+    gap: var(--aora-space-2);
+    margin: 0;
+    font-size: var(--aora-text-lg);
+    font-weight: var(--aora-weight-semibold);
+
+    & .site-exhibit__no {
+      font-size: var(--aora-text-sm);
+    }
+
+    & code {
+      font-family: var(--aora-font-mono);
+      font-size: var(--aora-text-xs);
+      font-weight: var(--aora-weight-regular);
+      color: var(--aora-text-faint);
+    }
+  }
+
+  /* ---- properties panel ------------------------------------------------------ */
+
+  .site-exhibit__panel {
+    grid-area: panel;
+    display: flex;
+    flex-direction: column;
+    gap: var(--aora-space-5);
+    min-height: 0;
+    padding: var(--aora-space-5);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-radius: calc(var(--aora-radius-lg) * 1.5);
+    scrollbar-width: thin;
+  }
+
+  .site-exhibit__who {
+    & h2 {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: var(--aora-space-2);
+      margin: 0;
+      font-size: var(--aora-text-2xl);
+      font-weight: var(--aora-weight-bold);
+      letter-spacing: -0.02em;
+    }
+
+    & small {
+      font-size: var(--aora-text-sm);
+      font-weight: var(--aora-weight-regular);
+      letter-spacing: 0;
+      color: var(--aora-text-faint);
+    }
+
+    & p {
+      margin: var(--aora-space-2) 0 0;
+      font-size: var(--aora-text-sm);
+      line-height: var(--aora-leading-snug);
+      color: var(--aora-text-muted);
+    }
+  }
+
+  .site-exhibit__props {
+    display: grid;
+    gap: var(--aora-space-1);
+    margin: 0;
+    padding: var(--aora-space-3);
+    border-radius: var(--aora-radius-md);
+    background: var(--aora-fill);
+    font-size: var(--aora-text-sm);
+  }
+
+  .site-exhibit__prop {
+    display: grid;
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+    align-items: baseline;
+    gap: var(--aora-space-2);
+
+    & dt {
+      color: var(--aora-text-faint);
+    }
+
+    & dd {
+      display: flex;
+      align-items: center;
+      gap: var(--aora-space-2);
+      min-width: 0;
+      margin: 0;
+    }
+
+    & code {
+      margin-inline-start: auto;
+      overflow: hidden;
+      font-family: var(--aora-font-mono);
+      font-size: var(--aora-text-xs);
+      color: var(--aora-text-faint);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  .site-exhibit__ink {
+    flex: none;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: var(--aora-radius-pill);
+    background: var(--site-swatch);
+    box-shadow: inset 0 0 0 1px var(--aora-line);
+  }
+
+  .site-exhibit__section {
+    display: grid;
+    gap: var(--aora-space-2);
+  }
+
+  .site-exhibit__sectionHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--aora-space-2);
+
+    & h3 {
+      margin: 0;
+      font-size: var(--aora-text-sm);
+      font-weight: var(--aora-weight-semibold);
+      letter-spacing: 0.1em;
+      color: var(--aora-text-faint);
+    }
+  }
+
+  .site-exhibit__grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--aora-space-1);
+  }
+
+  .site-exhibit__params {
+    display: grid;
+    gap: var(--aora-space-2);
+  }
+
+  .site-exhibit__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--aora-space-2);
+    margin-top: auto;
+
+    & .site-home__chip {
+      flex: 1 1 0;
+    }
+  }
+
+  /* ---- narrow: one column ---------------------------------------------------- */
+
+  /*
+   * No room for the panel beside the stage: the page becomes one column, the
+   * character and its states first, then the cast, then the panel at its full
+   * height. The bar wraps rather than scrolls.
+   */
+  @media (width < 900px) {
+    .site-exhibit {
+      --site-exhibit-mark: clamp(7rem, 26dvh, 13rem);
+      display: flex;
+      flex-direction: column;
+      gap: var(--aora-space-3);
+      height: auto;
+      min-height: 100dvh;
+    }
+
+    .site-exhibit__bar {
+      flex-wrap: wrap;
+      justify-content: center;
+      border-radius: calc(var(--aora-radius-lg) * 1.5);
+    }
+
+    .site-exhibit__play {
+      margin-inline-start: 0;
+    }
+
+    .site-exhibit__stage {
+      order: 1;
+      gap: var(--aora-space-3);
+      padding-block: var(--aora-space-4);
+    }
+
+    .site-exhibit__statesBox {
+      order: 2;
+      height: var(--site-states-h);
+    }
+
+    .site-exhibit__castBox {
+      order: 3;
+      height: var(--site-cast-h);
+    }
+
+    .site-exhibit__panel {
+      order: 4;
+      overflow: visible;
+    }
+
+    .site-exhibit__actions {
+      flex-wrap: wrap;
+    }
+  }
+}

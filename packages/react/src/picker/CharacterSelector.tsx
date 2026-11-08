@@ -1,4 +1,5 @@
 import {
+  DEFAULT_FACE,
   COLOR_SWATCHES,
   FACE_STYLES,
   getSwatchHex,
@@ -96,7 +97,7 @@ export function CharacterSelector({
   );
 
   const showFace = face !== undefined;
-  const activeFace: FaceStyle = face ?? 'cute';
+  const activeFace: FaceStyle = face ?? DEFAULT_FACE;
   const activeNose: NoseId = nose ?? NOSE_IDS[0]!;
   // Previews wear the chosen face so the shape row reflects the whole choice.
   const previewNose = activeFace === 'line' ? activeNose : null;

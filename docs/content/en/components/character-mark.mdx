@@ -58,7 +58,7 @@ The stroke is a constant width in shape space rather than in pixels, so it scale
 
 ## Faces
 
-`face` chooses among three faces: the default `cute`, and `eyes` and the [line face](/design/face) `line`, which adds a nose and a mouth as strokes at one shared weight. `nose` only applies to `line` and picks one of six; omit it for one derived from `seed`, or pass `null` for none.
+`face` chooses among the sixteen faces in `FACE_STYLES`: the default `cute`, `eyes`, the [line face](/design/face) `line`, which adds a nose and a mouth as strokes at one shared weight, and thirteen drawn faces such as `capsule`. `nose` only applies to `line` and picks one of six; omit it for one derived from `seed`, or pass `null` for none.
 
 ```tsx preview
 import { CharacterMark, NOSE_IDS } from '@aora-bot/react';

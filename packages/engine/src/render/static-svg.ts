@@ -14,6 +14,8 @@ import { requireTheme } from '../themes/state.js';
 import { DEFAULT_STYLE_ID, getStyle, resolveStyleOptions } from '../styles/index.js';
 import { getFaceDesign } from '../face/drawn/index.js';
 import {
+  DEFAULT_FACE,
+  DEFAULT_SHAPE,
   CENTER,
   isCuteFamily,
   isDrawnFace,
@@ -62,14 +64,14 @@ const BELT_SAMPLE_TIME = 0.62;
  * `ThemeNotInstalledError`. `themesNeeded` says which themes a set of ids needs.
  */
 export function renderStaticSvg(options: StaticOptions = {}): string {
-  const shapeId = options.shape ?? 'mochi';
+  const shapeId = options.shape ?? DEFAULT_SHAPE;
   const colorId = options.color ?? 'black';
   const style = getStyle(options.style ?? DEFAULT_STYLE_ID);
   requireTheme('color', colorId);
   if (options.variant !== undefined) requireTheme('variant', options.variant, style.id);
   const colorScheme = options.colorScheme ?? 'system';
 
-  const face: FaceStyle = options.face ?? 'cute';
+  const face: FaceStyle = options.face ?? DEFAULT_FACE;
   const expressionId = resolveExpression(options, face);
   const noseId: NoseId | null =
     face !== 'line'
@@ -167,7 +169,7 @@ export function renderAvatarDataUrl(
 export function shapeMaskImage(
   options: { shape?: ShapeId; sizePx?: number; inflatePx?: number } = {},
 ): string {
-  const shapeId = options.shape ?? 'mochi';
+  const shapeId = options.shape ?? DEFAULT_SHAPE;
   const shape = getShape(shapeId);
   const scale = getShapeScale(shapeId) * (1 + (options.inflatePx ?? 0) / 100);
   const size = options.sizePx ?? 64;
@@ -179,7 +181,7 @@ export function shapeMaskImage(
 export function shapeRingMaskImage(
   options: { shape?: ShapeId; sizePx?: number; inflatePx?: number; gapPx?: number } = {},
 ): string {
-  const shapeId = options.shape ?? 'mochi';
+  const shapeId = options.shape ?? DEFAULT_SHAPE;
   const shape = getShape(shapeId);
   const size = options.sizePx ?? 64;
   const base = getShapeScale(shapeId);

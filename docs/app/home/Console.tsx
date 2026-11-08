@@ -16,39 +16,30 @@ import { CodeChip, ShareButton } from '../shared/CopyControls.js';
 import { useI18n } from '../shared/i18n.js';
 import { ArrowIcon, DiceIcon } from '../shared/icons.js';
 import { useLocalePath } from '../shared/locale-path.js';
-import { DEFAULT_FACE, type Preset } from '../shared/share.js';
+import { DEFAULT_PRESET } from '../shared/share.js';
 import { copyFor, lineFor } from '../shared/snippet.js';
 import { StateDock } from './Dock.js';
+import { withStyle } from './Params.js';
 import { ColorRail, ShapeStrip, StyleRail } from './Rails.js';
-import type { Registry, StyleChoice } from './registry.js';
+import type { StyleChoice } from './registry.js';
 import { TuneButton } from './Tune.js';
+import type { ViewProps } from './views.js';
 import { Wall } from './Wall.js';
 
-export interface ConsoleProps {
-  registry: Registry;
-  preset: Preset;
-  patch: (changes: Partial<Preset> | ((preset: Preset) => Partial<Preset>)) => void;
-  replace: (preset: Preset) => void;
-}
-
 const pick = <T,>(list: readonly T[]): T => list[Math.floor(Math.random() * list.length)]!;
-
-/** A series' parameters stay with it: another series starts from its own defaults. */
-const withStyle = (preset: Preset, choice: StyleChoice): Partial<Preset> =>
-  choice.style === preset.style ? choice : { ...choice, params: {} };
 
 /**
  * The whole home page: one large character, with each thing you can change
  * about it in a floating capsule on its own edge — style on the left, colour
  * and face on the right, shape along the bottom, and the navbar on top —
  * expression and the series' parameters right under it, over a wall of
- * smaller ones.
+ * smaller ones, in colour or as line art.
  *
  * Every box in here has a fixed size and every list scrolls inside it, so a
  * registry that grows from forty shapes to a hundred changes what can be
  * scrolled to and nothing about the layout.
  */
-export function Console({ registry, preset, patch, replace }: ConsoleProps) {
+export function Console({ registry, preset, patch, replace, backdrop, bar }: ViewProps) {
   const t = useI18n();
   const path = useLocalePath();
   const label = useLabel();
@@ -87,12 +78,13 @@ export function Console({ registry, preset, patch, replace }: ConsoleProps) {
       aria-labelledby="site-home-title"
       style={{ '--site-swatch': getInkColorCss(preset.color) } as CSSProperties}
     >
-      <Wall styles={styleChoices} face={DEFAULT_FACE} />
+      <Wall styles={styleChoices} face={DEFAULT_PRESET.face} lineArt={backdrop === 'lineart'} />
 
       <StyleRail groups={registry.styles} preset={look} onPick={pickStyle} />
 
       <div className="site-home__centre">
         <div className="site-home__head">
+          {bar}
           <h1 id="site-home-title" className="site-home__title">
             {t('home.title.lead')}
             <em>{t('home.title.em')}</em>

@@ -1,9 +1,16 @@
 import { DEFAULT_STYLE_ID, listStyles } from '@aora-bot/engine';
-import { FACE_STYLES, SHAPE_FAMILIES, type FaceStyle, type ShapeFamily } from '@aora-bot/react';
+import {
+  CAST,
+  FACE_STYLES,
+  SHAPE_FAMILIES,
+  type CharacterPreset,
+  type FaceStyle,
+  type ShapeFamily,
+} from '@aora-bot/react';
 import { buildStateGroups, type StateGroup } from '../shared/state-groups.js';
 
 /*
- * What the console offers, read from the engine's registries and nowhere else.
+ * What the home page offers, read from the engine's registries and nowhere else.
  *
  * Nothing in this file names a shape, a colour, a state or a series: the rails
  * are drawn from these lists, so a roster, a palette or a style registered by
@@ -40,6 +47,8 @@ export interface Registry {
   families: readonly ShapeFamily[];
   faces: readonly FaceStyle[];
   stateGroups: StateGroup[];
+  /** The listed cast, lead first: the exhibit's cards. */
+  cast: readonly CharacterPreset[];
 }
 
 export const buildRegistry = (): Registry => ({
@@ -47,4 +56,5 @@ export const buildRegistry = (): Registry => ({
   families: SHAPE_FAMILIES,
   faces: FACE_STYLES,
   stateGroups: buildStateGroups(),
+  cast: CAST,
 });

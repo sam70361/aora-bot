@@ -64,6 +64,8 @@ export {
   AUTO_SHAPE_POOL,
   FACE_STYLES,
   DRAWN_FACE_STYLES,
+  DEFAULT_FACE,
+  DEFAULT_SHAPE,
   isDrawnFace,
   isCuteFamily,
   NOSE_IDS,

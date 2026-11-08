@@ -1,4 +1,6 @@
 import {
+  DEFAULT_FACE,
+  DEFAULT_SHAPE,
   DEFAULT_STYLE_ID,
   castMember,
   createCharacter,
@@ -200,9 +202,9 @@ export function CharacterMark({
     color: colorProp,
   });
   const member = ready ? castMember(preset) : null;
-  const shape = shapeProp ?? member?.shape ?? 'mochi';
+  const shape = shapeProp ?? member?.shape ?? DEFAULT_SHAPE;
   const color = colorProp ?? member?.color ?? 'black';
-  const face = faceProp ?? member?.face ?? ambient.face ?? 'cute';
+  const face = faceProp ?? member?.face ?? ambient.face ?? DEFAULT_FACE;
   const nose = noseProp !== undefined ? noseProp : member?.nose !== undefined ? member.nose : ambient.nose;
   const lineWeight = lineWeightProp ?? ambient.lineWeight;
   const variant = resolveVariant(styleId, variantProp ?? ambient.variant);

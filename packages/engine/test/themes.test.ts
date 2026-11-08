@@ -368,9 +368,9 @@ describe('palette', () => {
       for (const color of entry.colors) expect(CORE_COLOR_IDS, `${entry.id} ${color}`).not.toContain(color);
   });
 
-  it('lists night and cream nowhere by default and accepts them everywhere', () => {
+  it('lists night nowhere by default, lists cream, and accepts both everywhere', () => {
     expect(COLOR_IDS).not.toContain('night');
-    expect(COLOR_IDS).not.toContain('cream');
+    expect(COLOR_IDS).toContain('cream');
     expect(ALL_COLOR_IDS).toEqual([
       ...COLOR_IDS,
       ...UNLISTED_COLOR_IDS,

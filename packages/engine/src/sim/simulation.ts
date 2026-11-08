@@ -1,5 +1,7 @@
 import type { CharacterOptions } from '../core/options.js';
 import {
+  DEFAULT_FACE,
+  DEFAULT_SHAPE,
   CENTER,
   DEFAULT_FACE_TUNE,
   DEFAULT_POSE,
@@ -283,10 +285,10 @@ export function createSimulation(options: SimulationOptions = {}): Simulation {
     onSettle: options.onSettle,
     reducedMotion: options.reducedMotion,
     nose: options.nose,
-    shape: options.shape ?? 'mochi',
+    shape: options.shape ?? DEFAULT_SHAPE,
     state: options.state ?? IDLE_STATE,
     variant: options.variant ?? 'solid',
-    face: options.face ?? 'cute',
+    face: options.face ?? DEFAULT_FACE,
     emphasis: options.emphasis ?? false,
     badgeColor: options.badgeColor ?? null,
     seed: options.seed ?? 'aora',
