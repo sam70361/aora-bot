@@ -298,11 +298,7 @@ export function ComponentOverview() {
                     // Inline so the eye cut-outs resolve to the card colour in
                     // both themes; an <img> cannot see the page's variables.
                     dangerouslySetInnerHTML={{
-                      __html: renderStaticSvg({
-                        ...entry.preview,
-                        eyeColor: 'var(--aora-bg)',
-                        colorScheme: 'page',
-                      }),
+                      __html: renderStaticSvg({ ...entry.preview, colorScheme: 'page' }),
                     }}
                   />
                   <span className="site-overview__title">

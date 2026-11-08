@@ -28,7 +28,7 @@ This release has breaking changes; read "Breaking changes" below before upgradin
 
 ### Colours
 
-- Cream (`cream`) is listed and comes first in the colour list: it is Dot's colour.
+- Cream (`cream`) is listed and comes first in the colour list: it is Dot's colour. Ivory (`ivory`), the palette's white, follows it. Both take a one-pixel edge on a light page, so they never melt into it.
 - Four muted colours: `sage`, `clay`, `navy` and `mauve`, each tuned for a light and a dark page.
 - Avatars keep the colour they had: an id is hashed onto a fixed list of colours (`ASSIGNABLE_COLOR_IDS`), so new colours never move an existing avatar.
 - Light and very dark colours read on either page: outlines, kaomoji and the line face are deepened on a light page, keeping their hue, and lifted on a dark one; cream's cut-out eyes turn dark and night's white; in riso cream is no longer covered by pink; on the LED panel black lights white. Picker chips show the colour on the current page, so black is white in dark mode, and a faint chip gets a ring.
@@ -38,6 +38,7 @@ This release has breaking changes; read "Breaking changes" below before upgradin
 - The home page has two views. The console is where you build a character. The exhibit steps through the cast and every state, with autoplay and an attribute panel for shape, colour, face, style and parameters. The view is remembered, and `?view=exhibit` links to it.
 - The wall of characters behind the home page is drawn as line art by default; a switch turns it back to colour.
 - The site opens in dark mode on a first visit. The switch is still there, and your choice is remembered.
+- The home page's characters wear a soft light: the body rolls into shade at the lower right and catches a thin rim of light at the upper left, while the faces and effects stay flat. The console's thumbnail strips now use the same face colours as the big character.
 
 ### Themes
 

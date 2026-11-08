@@ -146,9 +146,9 @@ describe('cute face', () => {
 });
 
 describe('palette', () => {
-  it('has seventeen colours, cream first', () => {
-    expect(COLOR_IDS).toHaveLength(17);
-    expect(COLOR_IDS[0]).toBe('cream');
+  it('has eighteen colours, cream and ivory first', () => {
+    expect(COLOR_IDS).toHaveLength(18);
+    expect(COLOR_IDS.slice(0, 2)).toEqual(['cream', 'ivory']);
     expect(COLOR_IDS).toContain('pink');
   });
 

@@ -3,6 +3,7 @@ import { useLocationSearch } from '../shared/location.js';
 import { usePreference } from '../shared/preference.js';
 import { DEFAULT_PRESET, decodeShare, type Preset } from '../shared/share.js';
 import { Console } from './Console.js';
+import { DepthFilter } from './Depth.js';
 import { Exhibit } from './Exhibit.js';
 import { buildRegistry } from './registry.js';
 import { ViewBar } from './ViewBar.js';
@@ -70,6 +71,7 @@ export function Home() {
   const View = VIEWS[view];
   return (
     <div className="site-home" data-view={view}>
+      <DepthFilter />
       <View
         registry={registry}
         preset={preset}

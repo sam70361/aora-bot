@@ -30,7 +30,6 @@ export function stillOf(card: ThemeCard, state: CharacterState, sizePx: number):
       ...markOf(card.preset, card.nose),
       state,
       sizePx,
-      eyeColor: 'var(--aora-bg-base)',
       colorScheme: 'page',
     });
     stills.set(key, still);

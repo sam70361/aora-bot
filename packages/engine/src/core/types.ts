@@ -178,6 +178,7 @@ export const isListedShape = (id: string): boolean => (SHAPE_IDS as readonly str
  */
 export const CORE_COLOR_IDS = [
   'cream',
+  'ivory',
   'black',
   'brown',
   'red',
@@ -200,7 +201,6 @@ export const CORE_COLOR_IDS = [
   'blush',
   'lilac',
   'butter',
-  'ivory',
   'meadow',
 ] as const;
 
@@ -212,7 +212,6 @@ export const UNLISTED_COLOR_IDS: readonly CoreColorId[] = [
   'blush',
   'lilac',
   'butter',
-  'ivory',
   'meadow',
 ];
 

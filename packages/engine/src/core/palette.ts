@@ -29,6 +29,12 @@ export const COLOR_SWATCHES: readonly Swatch[] = [
     gradient: { lightFrom: '#FAF0DA', lightTo: '#E2CDA1', darkFrom: '#F3E6CA', darkTo: '#D8C397' },
   },
   {
+    id: 'ivory',
+    value: '#F7EFDF',
+    ink: { light: '#FFF8EA', dark: '#F7EFDF' },
+    gradient: { lightFrom: '#FFFCF5', lightTo: '#F0E4CC', darkFrom: '#FBF6EC', darkTo: '#E6DAC2' },
+  },
+  {
     id: 'black',
     value: '#1A1A1A',
     // Inverts on dark backgrounds: the neutral character is always the one
@@ -163,12 +169,6 @@ export const COLOR_SWATCHES: readonly Swatch[] = [
     value: '#F7D883',
     ink: { light: '#FFE38F', dark: '#F5D886' },
     gradient: { lightFrom: '#FFEDB5', lightTo: '#EBC766', darkFrom: '#FBE6A4', darkTo: '#DFBC5C' },
-  },
-  {
-    id: 'ivory',
-    value: '#F7EFDF',
-    ink: { light: '#FFF8EA', dark: '#F7EFDF' },
-    gradient: { lightFrom: '#FFFCF5', lightTo: '#F0E4CC', darkFrom: '#FBF6EC', darkTo: '#E6DAC2' },
   },
   {
     id: 'meadow',
@@ -418,6 +418,21 @@ export function lineInks(id: ColorId): { light: string | null; dark: string | nu
 }
 
 /**
+ * The edge a filled body takes on a page it all but matches, where its ink is
+ * lost on that page (as for `effectInks`): the ink as a line there
+ * (`lineInks`), so cream and ivory keep their shape on a light page and night
+ * on a dark one. `null` on a page where the body itself reads.
+ */
+export function rimInks(id: ColorId): { light: string | null; dark: string | null } {
+  const { ink } = getSwatch(id);
+  const lines = lineInks(id);
+  return {
+    light: contrast(luminance(ink.light), 1) < EFFECT_CONTRAST ? (lines.light ?? deepened(ink.light)) : null,
+    dark: contrast(luminance(ink.dark), 0) < EFFECT_CONTRAST ? (lines.dark ?? lifted(ink.dark)) : null,
+  };
+}
+
+/**
  * The riso variant's second ink for a colour on a light and on a dark page,
  * `null` where it is the default pink. A pale ink multiplied over pink prints
  * as pink, so a light ink is printed twice, over itself, which deepens it the
@@ -458,7 +473,8 @@ const pairCss = (light: string, dark: string): string =>
  * written only for an ink lost on one of the pages (`effectInks`), and
  * `--aora-ink-line` what lines on the page are drawn in, only for an ink too faint
  * on one of them (`lineInks`). `--aora-eye` is a cut-out face's eyes on a body
- * that would swallow the page (`cutFaceInk`). `--aora-ink2` is the riso
+ * that would swallow the page (`cutFaceInk`), and `--aora-rim` the edge of a
+ * filled body on a page it all but matches (`rimInks`). `--aora-ink2` is the riso
  * variant's second ink, for pink and the light inks (`risoSecondInk`).
  */
 export const getInkVars = (id: ColorId): Record<string, string> => {
@@ -467,6 +483,7 @@ export const getInkVars = (id: ColorId): Record<string, string> => {
   const effects = effectInks(id);
   const lines = lineInks(id);
   const eye = cutFaceInk(id);
+  const rim = rimInks(id);
   const second = risoSecondInk(id);
   const { ink } = getSwatch(id);
   return {
@@ -488,6 +505,9 @@ export const getInkVars = (id: ColorId): Record<string, string> => {
       ? { '--aora-ink-line': pairCss(lines.light ?? ink.light, lines.dark ?? ink.dark) }
       : null),
     ...(eye ? { '--aora-eye': eye } : null),
+    ...(rim.light || rim.dark
+      ? { '--aora-rim': pairCss(rim.light ?? 'transparent', rim.dark ?? 'transparent') }
+      : null),
     ...(second.light || second.dark
       ? { '--aora-ink2': pairCss(second.light ?? RISO_INK, second.dark ?? RISO_INK) }
       : null),

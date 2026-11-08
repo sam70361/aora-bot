@@ -106,7 +106,6 @@ export const StillMark = memo(function StillMark({
           nose,
           styleOptions,
           sizePx,
-          eyeColor: 'var(--aora-bg-base)',
           colorScheme: 'page',
         }),
       }}

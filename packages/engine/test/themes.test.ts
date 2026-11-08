@@ -448,6 +448,20 @@ describe('palette', () => {
     expect(renderStaticSvg({ color: 'cream', face: 'eyes' })).toContain('fill="#2B2420"');
   });
 
+  it('edges a filled body in a hairline on a page it all but matches', () => {
+    expect(getInkVars('cream')['--aora-rim']).toMatch(/^light-dark\(#[0-9A-F]{6}, transparent\)$/);
+    expect(getInkVars('ivory')['--aora-rim']).toMatch(/^light-dark\(#[0-9A-F]{6}, transparent\)$/);
+    expect(getInkVars('night')['--aora-rim']).toMatch(/^light-dark\(transparent, #[0-9A-F]{6}\)$/);
+    for (const color of ['blue', 'black', 'yellow', 'pink', 'blush'] as const)
+      expect(getInkVars(color)['--aora-rim'], color).toBeUndefined();
+    const solid = renderStaticSvg({ color: 'ivory', flat: true });
+    expect(solid).toContain('vector-effect="non-scaling-stroke"');
+    // A line variant is its own edge, and a drawing medium draws its own.
+    expect(renderStaticSvg({ color: 'ivory', variant: 'outline' })).not.toContain('-rim');
+    expect(renderStaticSvg({ color: 'ivory', variant: 'pencil' })).not.toContain('-rim');
+    expect(renderStaticSvg({ color: 'blue' })).not.toContain('non-scaling-stroke');
+  });
+
   it('prints a light ink over itself in riso, and pink over gold', () => {
     expect(getInkVars('cream')['--aora-ink2']).toBe('light-dark(#F1E2C1, #EADBB9)');
     expect(getInkVars('pink')['--aora-ink2']).toBe('#F5B428');

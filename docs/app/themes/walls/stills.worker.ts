@@ -14,7 +14,6 @@ scope.addEventListener('message', ({ data }) => {
         ...data.mark,
         state: data.state,
         sizePx: data.sizePx,
-        eyeColor: 'var(--aora-bg-base)',
         colorScheme: 'page',
       }),
     )

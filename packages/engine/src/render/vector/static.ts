@@ -8,6 +8,7 @@ import {
   getInkGradientFor,
   HAIR_SHADE,
   lineInks,
+  rimInks,
   RISO_INK,
   risoSecondInk,
   type FaceInks,
@@ -20,7 +21,7 @@ import { paletteInk, schemeStyle } from '../scheme.js';
 import { serializeNode } from '../scene.js';
 import { createVectorScene, inkGradientVector, readVectorParams } from './build.js';
 import { themeExtras } from '../../themes/extras-hook.js';
-import { isLineVariant, mediumReaches, wearsDarkFace } from './media.js';
+import { isLineVariant, isMedium, mediumReaches, wearsDarkFace } from './media.js';
 
 /** The palette's own gradient, with the dark-mode stops switched by `schemeStyle`. */
 function paletteGradient(
@@ -110,6 +111,12 @@ export const renderVectorStatic: StaticRenderer = (frame, context) => {
   const lines = hollow ? lineInks(color) : null;
   const linePair =
     lines && (lines.light || lines.dark) ? { light: lines.light ?? light, dark: lines.dark ?? dark } : null;
+  // A filled body on a page it all but matches takes a hairline edge there (`rimInks`).
+  const rims = hollow || isMedium(frame.variant) ? null : rimInks(color);
+  const rimPair =
+    rims && (rims.light || rims.dark)
+      ? { light: rims.light ?? 'transparent', dark: rims.dark ?? 'transparent' }
+      : null;
   const seconds = frame.variant === 'riso' ? risoSecondInk(color) : null;
   const secondPair =
     seconds && (seconds.light || seconds.dark)
@@ -120,6 +127,7 @@ export const renderVectorStatic: StaticRenderer = (frame, context) => {
   let solid: string;
   let fxFill: string | undefined;
   let lineInk: string | undefined;
+  let rimInk: string | null = null;
   let defs = '';
   let root = '';
   if (own && 'flat' in own) {
@@ -132,10 +140,12 @@ export const renderVectorStatic: StaticRenderer = (frame, context) => {
     fill = solid = light;
     fxFill = fxPair?.light;
     lineInk = linePair?.light;
+    rimInk = rims?.light ?? null;
   } else {
     solid = `var(--${uid}-ink, ${light})`;
     fxFill = fxPair ? `var(--${uid}-fx, ${fxPair.light})` : undefined;
     lineInk = linePair ? `var(--${uid}-line, ${linePair.light})` : undefined;
+    rimInk = rimPair ? `var(--${uid}-rim, ${rimPair.light})` : null;
     defs = paletteInk(scheme, uid, light, dark, turns && (ruleSoft || ruleFeatures) ? pairOf('soft') : null, [
       ...(hollow ? [{ prop: `--${uid}-shift`, light: '#000', dark: '#fff' }] : []),
       ...(turns && ruleSticker ? [{ prop: `--${uid}-sticker`, ...pairOf('sticker') }] : []),
@@ -152,6 +162,7 @@ export const renderVectorStatic: StaticRenderer = (frame, context) => {
       ]),
       ...(fxPair ? [{ prop: `--${uid}-fx`, ...fxPair }] : []),
       ...(linePair ? [{ prop: `--${uid}-line`, ...linePair }] : []),
+      ...(rimPair ? [{ prop: `--${uid}-rim`, ...rimPair }] : []),
       ...(secondPair ? [{ prop: '--aora-ink2', ...secondPair }] : []),
     ]);
     root = ` class="${uid}"`;
@@ -192,6 +203,7 @@ export const renderVectorStatic: StaticRenderer = (frame, context) => {
     solidInk: solid,
     fxFill,
     lineInk,
+    rimInk,
     partColor,
     eyeFill: context.eyeColor,
     cutFill: cutFaceInk(color) ?? undefined,

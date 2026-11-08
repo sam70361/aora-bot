@@ -28,6 +28,15 @@
     overflow-x: clip;
   }
 
+  /*
+   * A soft light on every character the page shows (`DepthFilter`): on the
+   * body and its pieces, the siblings of the face, so the face and the effects
+   * stay flat. The wall's tiles are images and keep their flat look behind it.
+   */
+  .site-home .aora-mark svg :has(> [data-aora-face]) > :not([data-aora-face], [data-aora-fx]) {
+    filter: url(#site-depth);
+  }
+
   .site-icon {
     width: 1.0625rem;
     height: 1.0625rem;

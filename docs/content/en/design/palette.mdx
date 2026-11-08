@@ -57,7 +57,7 @@ The browser re-resolves it when `color-scheme` changes. That is the whole theme-
 
 ## Cream and the muted colours
 
-`cream` is a warm off-white. It leads `COLOR_IDS` and is Dot's colour; being so light, it wears the dark face, as `yellow` does. `sage`, `clay`, `navy` and `mauve` are four muted colours after the bright hues; `navy` is lifted a step on a dark page so that it does not sink into it. `night` is a near-black that stays dark on a dark page; it is accepted by id but left out of the default lists (`UNLISTED_COLOR_IDS`).
+`cream` is a warm off-white. It leads `COLOR_IDS` and is Dot's colour; being so light, it wears the dark face, as `yellow` does. `ivory`, the white of the palette, follows it. Both all but match a light page, so a filled body in either takes a hairline edge in its line ink there (`--aora-rim`), one screen pixel wide at any size; on a dark page they read without one, and `night` takes the same edge on a dark page. `sage`, `clay`, `navy` and `mauve` are four muted colours after the bright hues; `navy` is lifted a step on a dark page so that it does not sink into it. `night` is a near-black that stays dark on a dark page; it is accepted by id but left out of the default lists (`UNLISTED_COLOR_IDS`).
 
 ## Variables beyond the ink
 
@@ -72,6 +72,7 @@ The body ink is `--aora-fg`, but the face and a couple of variants need colours 
 | `--aora-hair-shade`   | The shade laid over hair on a filled body          | `#000000` by default; for `black`, `getInkVars` writes `light-dark(#FFFFFF, #000000)`, so a black character's hair stays readable on a light page |
 | `--aora-ink2`         | The `riso` variant's second ink                    | A light ink prints over itself on the page where it is light; gold on a pink body; the stylesheet default otherwise                               |
 | `--aora-ink-line`     | Lines in the ink: `outline`, `glass`, kaomoji      | Only written where the ink is too faint on a page: deepened on a light page, keeping its hue, and lifted on a dark one                            |
+| `--aora-rim`          | The hairline edge of a filled body                 | Only written where the body all but matches a page: its line ink there, `transparent` on the other page                                           |
 | `--aora-eye`          | The eye holes of the `eyes` and `line` faces       | Only written for a body that would swallow the page: the dark face on a light body, white on a dark one                                           |
 
 A colour picker's chip should show the colour the character takes on the current page, so `getSwatchCss(id)` returns `black` as its `light-dark()` pair rather than the fixed swatch. `CharacterSelector` also rings a chip that is too faint on the page in its `--aora-ink-line`.

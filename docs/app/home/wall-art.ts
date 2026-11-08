@@ -106,7 +106,7 @@ export class TileShop {
         // oxlint-disable-next-line no-await-in-loop -- one tile per task is the point
         if (pause) await pause();
         // The options `StillMark` draws with, so a tile is the mark it replaces.
-        const svg = renderStaticSvg({ ...tile, eyeColor: 'var(--aora-bg-base)', colorScheme: 'page' });
+        const svg = renderStaticSvg({ ...tile, colorScheme: 'page' });
         entry = { svg, color: tile.color };
         this.drawn.set(key, entry);
       }

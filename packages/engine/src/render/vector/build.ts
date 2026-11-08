@@ -82,6 +82,12 @@ export const EYE_TOKEN = 'var(--aora-bg, var(--aora-bg-base, #fcfcfc))';
  */
 export const CUT_TOKEN = `var(--aora-eye, ${EYE_TOKEN})`;
 
+/** The edge of a filled body on a page it all but matches: none, unless the host sets one (`getInkVars`). */
+export const RIM_TOKEN = 'var(--aora-rim, transparent)';
+
+/** The rim is a hairline in screen pixels at any size, and only half there: a hint of the edge, not a line. */
+const RIM = { px: 1, opacity: 0.6 } as const;
+
 /**
  * The sticker's paper: its border, its eyes and the ring round its badge.
  *
@@ -268,6 +274,8 @@ export interface VectorSceneContext {
   cutFill?: string;
   /** The palette ink as a line on the page, where `solidInk` is that ink. Defaults to `LINE_TOKEN` for the token. */
   lineInk?: string;
+  /** The edge of a filled body (`rimInks`). Defaults to `RIM_TOKEN`; `null` draws none. */
+  rimInk?: string | null;
   /** Colour of the cute face on a filled body. Defaults to `FACE_TOKEN`. */
   faceFill?: string;
   /** Colour of the cute face in the soft variant. Defaults to `SOFT_FACE_TOKEN`. */
@@ -769,7 +777,18 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
         };
       default: {
         const core = frame.body.coreOpacity;
-        return { d, fill: ink, 'fill-opacity': core === null ? undefined : r2(core) };
+        const rim = isMedium(frame.variant) ? null : ctx.rimInk === undefined ? RIM_TOKEN : ctx.rimInk;
+        return {
+          d,
+          fill: ink,
+          'fill-opacity': core === null ? undefined : r2(core),
+          ...(rim && {
+            stroke: rim,
+            'stroke-width': RIM.px,
+            'stroke-opacity': r2(RIM.opacity * (core ?? 1)),
+            'vector-effect': 'non-scaling-stroke',
+          }),
+        };
       }
     }
   }
