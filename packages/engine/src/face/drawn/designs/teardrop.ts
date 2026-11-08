@@ -1,31 +1,24 @@
 /**
- * `teardrop`: drops of coloured jelly.
+ * `teardrop`: tall dark drops.
  *
- * Each eye is a drop painted straight onto the body, round at the top and
- * drawn to a soft point below, the point turned a little towards the nose:
- * a dark rim round a pool of the body's own ink, deepened, so the eyes take
- * the character's colour where `glossy` stays black. A large light sits high
- * on the outer side and a small one low on the inner. Anger and sorrow press
- * a slanted lid down over the top, a smile is a raised arc and a shut eye a
- * lowered one.
+ * Each eye is one upright drop painted straight onto the body, round at the
+ * top and a little narrower below, with a single light high on the outer
+ * side. Anger and sorrow press a slanted lid down over the top, a smile is a
+ * raised arc and a shut eye a lowered one.
  */
 import type { Point } from '../../../core/types.js';
 import { STATE_CUTE_EYES, STATE_CUTE_MOUTH } from '../../../motion/states.js';
 import { CUTE_MOUTHS } from '../../features.js';
-import { circleRing, place, quad, ribbon, sparkleRing, starRing } from '../geometry.js';
+import { circleRing, place, quad, ribbon, starRing } from '../geometry.js';
 import { CUTE_MOUTH_GLYPHS } from '../glyphs.js';
 import { fallingTear, LayerList, looking, unit, vocabulary } from '../reading.js';
 import type { DrawnEye, EyeContext, FaceDesign, FaceLayer } from '../types.js';
 
-/** The drop's half-width and half-height, in dot radii; the pinch leaves it about three quarters as wide. */
-const RX = 2.1;
-const RY = 2.25;
-/** How sharply the drop narrows to its point: 0 is an ellipse. */
-const POINT = 0.75;
-/** The point's turn towards the nose, in radians. */
-const TURN = -0.12;
-/** The pool of colour inside the rim: its share of the drop, how far it sits up, and the rim it keeps under a lid. */
-const POOL = { k: 0.74, up: 0.12, rim: 0.42 } as const;
+/** The drop's half-width and half-height, in dot radii. */
+const RX = 1.75;
+const RY = 2.05;
+/** How much narrower the drop is at the bottom than at the top. */
+const TAPER = 0.18;
 const LIFT = 0.45;
 const SEPARATION = 5.5;
 const MOUTH_GAP = 0.9;
@@ -74,12 +67,12 @@ const EXPRESSIONS = vocabulary<Field>(REST, (read) => {
   }
 });
 
-/** The drop about its own centre: round on top, narrowing to a point below. */
+/** The drop about its own centre: round on top, a little narrower below. */
 function drop(rx: number, ry: number): Point[] {
   return Array.from({ length: SAMPLES }, (_, i) => {
     const t = (i / SAMPLES) * Math.PI * 2;
-    const pinch = Math.abs(Math.sin(t / 2)) ** POINT;
-    return [rx * Math.sin(t) * pinch, ry * Math.cos(t)] as Point;
+    const y = Math.cos(t);
+    return [rx * Math.sin(t) * (1 - TAPER * Math.max(0, y)), ry * y] as Point;
   });
 }
 
@@ -91,28 +84,19 @@ function eye(s: DrawnEye<Field>, ctx: EyeContext): FaceLayer[] {
   const cy = s.py + ctx.look[1];
   const squash = Math.max(BLINK_FLOOR, s.open * unit(ctx.blink));
   const lidAt = (x: number): number => cy - ry + s.lid * 2 * ry + s.lidA * (x - cx);
-  const at = (k: number, up: number): Point[] =>
-    place(drop(rx * k, ry * k), 0, -up * ry, 1, TURN).map(([x, y]) => [cx + x, cy + y * squash] as Point);
-  const lid = (ring: Point[], rim = 0): Point[] =>
-    s.lid > 0.004 ? ring.map(([x, y]) => [x, Math.max(y, lidAt(x) + rim * unit(s.lid * 6))] as Point) : ring;
+  const ring = drop(rx, ry).map(([x, y]) => [cx + x, cy + y * squash] as Point);
+  const lidded = s.lid > 0.004 ? ring.map(([x, y]) => [x, Math.max(y, lidAt(x))] as Point) : ring;
   const shown = 1 - unit(Math.max(s.arc, s.shut, s.x, s.star));
   const lit = shown * unit((squash - 0.45) / 0.3) * (1 - unit(s.lid * 3.5));
 
   const out = new LayerList();
-  out.add('feature', [lid(at(1, 0))], shown);
-  out.add('iris', [lid(at(POOL.k, POOL.up), POOL.rim * s.sc)], shown * unit((squash - 0.3) / 0.3), {
-    detail: true,
-  });
-  out.add('glint', [circleRing(cx - rx * 0.32, cy - ry * 0.42 * squash, rx * 0.3, 14)], lit);
-  out.add('glint', [circleRing(cx + rx * 0.34, cy + ry * 0.28 * squash, rx * 0.13, 10)], lit, {
-    detail: true,
-  });
+  out.add('feature', [lidded], shown);
+  out.add('glint', [circleRing(cx - rx * 0.3, cy - ry * 0.4 * squash, rx * 0.3, 14)], lit);
   out.add(
     'feature',
     [ribbon(quad([cx - 1.6, cy + 0.55], [cx, cy - 1.4], [cx + 1.6, cy + 0.55]), 0.3 * w)],
     s.arc,
   );
-  out.add('glint', [place(sparkleRing(0.55), cx - 1.5, cy - 1.2)], s.arc, { detail: true });
   out.add(
     'feature',
     [ribbon(quad([cx - 1.55, cy - 0.15], [cx, cy + 1.1], [cx + 1.55, cy - 0.15]), 0.27 * w)],

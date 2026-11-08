@@ -2,7 +2,7 @@ import { StyleParamsDemo } from '@theme';
 
 # Vector styles
 
-The `vector` series draws a character as smooth SVG paths. It has fifteen variants that differ in paint only: the geometry, the animation and the face are the same in all of them, so a new state or a new shape arrives in every variant at once. Six are drawing media, the same character drawn by hand, and the last two are paper media, origami and relief.
+The `vector` series draws a character as smooth SVG paths. It has sixteen variants that differ in paint only: the geometry, the animation and the face are the same in all of them, so a new state or a new shape arrives in every variant at once. Seven are drawing media, the same character drawn by hand, and two are paper media, origami and relief.
 
 ```tsx preview
 import { getStyle } from '@aora-bot/engine';
@@ -41,6 +41,7 @@ export default function Demo() {
 | `chalk`      | A crumbling chalk line, diagonal strokes, dust along the line            | Chalk: the ink, paler or deeper | `strokeWidth`, `wobble`, `grain`, `hatching` |
 | `origami`    | Crumpled sheets pressed flat, many soft facets, each on its own shadow   | As `solid`                      | —                                            |
 | `relief`     | A thick card pressed up from behind: a lit rim and a shaded rim          | As `solid`                      | —                                            |
+| `gothic`     | Darkened edge, ink hatching in shadow, a brushed ink line, paper grain   | As `solid`                      | `grain`, `hatching`                          |
 
 `solid`, `outline` and `glass` are described with the [`CharacterMark`](/components/character-mark) props. This page covers the other variants, the drawing media, and the one-colour line look that `outline` gives.
 
@@ -244,14 +245,14 @@ export default function Demo() {
 
 ## Drawing media
 
-`pencil`, `marker`, `crayon`, `watercolor`, `neon` and `chalk` draw the same snapshot by hand. The body and its pieces — ears, leaves, hair — are redrawn from their outlines: a wobbling double line, hatching, a scribble, a ragged waxy edge, a dried edge, a glowing tube. The face, in any face style, and the effects, the HUD dials, the belt and the confetti are only known as groups, so they take the medium as a group: pencil and chalk grain them, neon glows them, marker outlines the face. Pencil's effects are graphite; the other media keep the effects' own colours, as coloured tubes or coloured chalk. `origami` and `relief` are made of paper rather than drawn: the body and each of its pieces is a sheet of its own, crumpled or pressed up, and the face and the effects sit on it as usual.
+`pencil`, `marker`, `crayon`, `watercolor`, `neon`, `chalk` and `gothic` draw the same snapshot by hand. The body and its pieces — ears, leaves, hair — are redrawn from their outlines: a wobbling double line, hatching, a scribble, a ragged waxy edge, a dried edge, a glowing tube, a brushed ink line. The face, in any face style, and the effects, the HUD dials, the belt and the confetti are only known as groups, so they take the medium as a group: pencil and chalk grain them, neon glows them, marker outlines the face. Pencil's effects are graphite; the other media keep the effects' own colours, as coloured tubes or coloured chalk. `origami` and `relief` are made of paper rather than drawn: the body and each of its pieces is a sheet of its own, crumpled or pressed up, and the face and the effects sit on it as usual.
 
 None of them paints a background. They read on the page they are put on, light or dark, through the same ink tokens as the other variants:
 
 ```tsx preview
 import { CharacterMark } from '@aora-bot/react';
 
-const media = ['pencil', 'marker', 'crayon', 'watercolor', 'neon', 'chalk', 'origami', 'relief'];
+const media = ['pencil', 'marker', 'crayon', 'watercolor', 'neon', 'chalk', 'gothic', 'origami', 'relief'];
 const surfaces = [
   { bg: '#fcfcfc', scheme: 'light' },
   { bg: '#16161a', scheme: 'dark' },
@@ -526,6 +527,60 @@ export default function Demo() {
 }
 ```
 
+### Gothic
+
+A dark storybook drawing in ink. Each piece is darkened from the edge in, hatched and then cross-hatched on the side away from the light, and ringed by a brushed ink line in a warm black that swells on the shadow side and thins where the brush lifts. The fill carries a fine paper grain. The face is the white face of `solid`, so it stays bright against the shading. `hatching` switches the hatching and `grain` sets the paper; a piece smaller than an ear is left unhatched.
+
+```tsx preview
+import { renderStaticSvgDataUrl } from '@aora-bot/react';
+
+const cases = [
+  { label: 'default', styleOptions: {} },
+  { label: 'grain 0', styleOptions: { grain: 0 } },
+  { label: 'hatching false', styleOptions: { hatching: false } },
+];
+const cast = [
+  { shape: 'cat', color: 'orange' },
+  { shape: 'strawberry', color: 'red' },
+  { shape: 'mushroom', color: 'red' },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {cases.map(({ label, styleOptions }) => (
+        <div className="site-demo__cell" key={label}>
+          <img
+            alt=""
+            width={96}
+            height={96}
+            src={renderStaticSvgDataUrl({
+              shape: 'bear',
+              color: 'brown',
+              state: 'happy',
+              variant: 'gothic',
+              styleOptions,
+            })}
+          />
+          <span className="site-demo__label">{label}</span>
+        </div>
+      ))}
+      {cast.map((props) => (
+        <div className="site-demo__cell" key={props.shape}>
+          <img
+            alt=""
+            width={96}
+            height={96}
+            src={renderStaticSvgDataUrl({ ...props, state: 'happy', variant: 'gothic' })}
+          />
+          <span className="site-demo__label">{props.shape}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
 ### Origami
 
 Each piece is a sheet crumpled and pressed flat again. The outline is kept as it is, so the silhouette stays round; inside it, a jittered grid of points and a share of the outline's own points are triangulated, and every triangle is one facet, tipped a little and lit by how far it then faces the light at the top left. A body is crumpled finer than an ear or a leaf. The light is laid over the colour in white and black, so a token or a gradient folds as well, and faint creases trace the facets. Each sheet lies on a small shadow of its own, so the sheets of a figure read as fitted together. A concave outline such as the crescent or the speech bubble is still cut cleanly and never spills past its own edge.
@@ -657,8 +712,8 @@ Parameters belong to the series and every variant reads only its own. Out-of-ran
 | `risoOffset`    | riso                                        | 10      | 0–20, by 1  | Misregistration between the two passes                                   |
 | `risoHalftone`  | riso                                        | `true`  | —           | Whether the halftone screen is laid on                                   |
 | `wobble`        | pencil, marker, crayon, watercolor, chalk   | 4       | 0–8, by 1   | How far a hand-drawn line strays from the outline, in shape-space units  |
-| `grain`         | pencil, crayon, watercolor, chalk           | 1       | 0–2, by 0.1 | Strength of the paper grain, as a share of the medium's own; 0 is clean  |
-| `hatching`      | pencil and chalk                            | `true`  | —           | Whether pencil shades, and chalk fills, with hatching                    |
+| `grain`         | pencil, crayon, watercolor, chalk, gothic   | 1       | 0–2, by 0.1 | Strength of the paper grain, as a share of the medium's own; 0 is clean  |
+| `hatching`      | pencil, chalk and gothic                    | `true`  | —           | Whether pencil and gothic shade, and chalk fills, with hatching          |
 | `neonGlow`      | neon                                        | 8       | 0–20, by 1  | Radius of the glow, in shape-space units; 0 is the bare tube             |
 
 Pick a variant and the panel lists only the parameters that variant reads. It is built from the registry, so it stays in step with the table above.

@@ -19,11 +19,11 @@ import type {
  * How the `vector` style paints the body.
  *
  * The geometry, the animation and the face are identical across all of them —
- * only the paint changes. Keeping them as one renderer rather than fifteen
- * means a new state or a new shape arrives in every style at once. Eight are
+ * only the paint changes. Keeping them as one renderer rather than sixteen
+ * means a new state or a new shape arrives in every style at once. Nine are
  * media: the same snapshot drawn by hand in pencil, marker, crayon,
- * watercolour, neon tubes or chalk, or made of paper, crumpled as origami or
- * pressed up as relief. Theme skins are drawn by the same machinery under ids
+ * watercolour, neon tubes, chalk or dark brushed ink, or made of paper,
+ * crumpled as origami or pressed up as relief. Theme skins are drawn by the same machinery under ids
  * of their own, which `StyleVariant` accepts.
  *
  * The order is the order the series lists them in, and the one list a new
@@ -45,6 +45,7 @@ export const VECTOR_VARIANTS = [
   'chalk',
   'origami',
   'relief',
+  'gothic',
 ] as const;
 export type CharacterVariant = (typeof VECTOR_VARIANTS)[number];
 

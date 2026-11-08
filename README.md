@@ -20,10 +20,10 @@
 （有的带耳朵、叶子或天线这样的独立部件），每个表情都是几个数字描述的一段曲线笔画、由弹簧插值，
 每一帧动画都由一个 `requestAnimationFrame` 循环直接写进 SVG 属性。
 
-角色一共 68 个，从圆滚滚的团子、年糕，到水果、美食、小动物、物件和人物。下面是全体成员，各自戴着自己的脸、穿着自己的颜色，正开心着，打头的是奶白色的小圆球球球：
+角色一共 70 个，从圆滚滚的团子、年糕，到水果、美食、小动物、物件、人物和煤球。下面是全体成员，各自戴着自己的脸、穿着自己的颜色，正开心着，打头的是奶白色的小圆球球球：
 
 <p align="center">
-  <img src=".github/media/cast.png" width="760" alt="全部 68 个阵容成员排成网格，个个笑着，下方标注成员 id，第一个是球球">
+  <img src=".github/media/cast.png" width="760" alt="全部 70 个阵容成员排成网格，个个笑着，下方标注成员 id，第一个是球球">
 </p>
 
 另外还有 7 个节日与季节主题，共 122 个主题角色：万圣节、圣诞节、春节、中秋节、复活节、夏日和情人节。每个主题是一个独立入口（`@aora-bot/engine/themes/<id>`），用到时才加载，不会增加主包体积。全部主题见[主题展](https://aora-bot.vercel.app/themes/)。
@@ -35,9 +35,9 @@
 一个角色由几项互相独立的选择组成，都可以在[控制台](https://aora-bot.vercel.app)里直接试：角色本身、画风（`vector`、`pixel` 或 `kaomoji`）及其变体、墨色、脸和动画状态。
 
 <p align="center">
-  <img src=".github/media/styles.gif" width="860" alt="球球的所有画风：十五种 vector 变体、三种 pixel 变体和两种 kaomoji 变体，同步动起来">
+  <img src=".github/media/styles.gif" width="860" alt="球球的所有画风：十六种 vector 变体、三种 pixel 变体和两种 kaomoji 变体，同步动起来">
   <br>
-  <sub>球球的所有画风：<code>vector</code>（<code>solid</code>、<code>outline</code>、<code>glass</code>、<code>sticker</code>、<code>paper</code>、<code>soft</code>、<code>riso</code>、<code>pencil</code>、<code>marker</code>、<code>crayon</code>、<code>watercolor</code>、<code>neon</code>、<code>chalk</code>、<code>origami</code>、<code>relief</code>）、<code>pixel</code>（<code>crisp</code>、<code>dot</code>、<code>block</code>）和 <code>kaomoji</code>（<code>plain</code>、<code>bubble</code>）。</sub>
+  <sub>球球的所有画风：<code>vector</code>（<code>solid</code>、<code>outline</code>、<code>glass</code>、<code>sticker</code>、<code>paper</code>、<code>soft</code>、<code>riso</code>、<code>pencil</code>、<code>marker</code>、<code>crayon</code>、<code>watercolor</code>、<code>neon</code>、<code>chalk</code>、<code>origami</code>、<code>relief</code>、<code>gothic</code>）、<code>pixel</code>（<code>crisp</code>、<code>dot</code>、<code>block</code>）和 <code>kaomoji</code>（<code>plain</code>、<code>bubble</code>）。</sub>
 </p>
 
 引擎之上是一组 React 组件，覆盖产品真正需要的角色能力：由任意 id 推导出的稳定用户角色、
@@ -119,7 +119,7 @@ examples/            独立示例，不参与工作区构建
 本仓库原为 Emotion Ball 表情馆。表情馆现已正式升级为 Aora Bot；经典版完整保留在 [`emotion-ball` 分支](https://github.com/sam70361/aora-bot/tree/emotion-ball)，沿用原有授权，不再更新，可以[在线体验](https://sam70361.github.io/aora-bot/)。
 
 - **引擎重写**：从几份原生 JavaScript 脚本，重写为 TypeScript 编写的四个 npm 包，带完整类型、测试与服务端渲染。
-- **角色原创**：首发的 46 个角色全部为原创设计，Mood Mates 的云宝和亮亮也作为原创角色加入了阵容，此后阵容扩展到 68 个。表情馆标志性的小圆球以球球（`dot`）的形象延续下来，排在阵容第一位。
+- **角色原创**：首发的 46 个角色全部为原创设计，Mood Mates 的云宝和亮亮也作为原创角色加入了阵容，此后阵容扩展到 70 个。表情馆标志性的小圆球以球球（`dot`）的形象延续下来，排在阵容第一位。
 - **能力扩展**：32 种表情扩展为 44 种动画状态，新增三种脸，矢量、像素、颜文字三种画风，HUD 表盘和一整套 React 组件。情绪协议仍然接受 `{ emotionId }` 消息，AI 侧的接入方式不变。
 - **许可**：从「非商用免费、商业另行授权」改为分级授权：个人、教育、非营利、开源项目和 3 人以内的团队可以免费商用，规模更大的公司购买商业授权。
 

@@ -24,7 +24,7 @@ import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { CAST, listStyles, THEME_MANIFEST } from '@aora-bot/engine';
+import { CAST, listStyles, loadThemes, THEME_MANIFEST, themeLook } from '@aora-bot/engine';
 import gifenc from 'gifenc';
 import { PNG } from 'pngjs';
 
@@ -64,6 +64,22 @@ const STYLE_STEP_MS = 2000;
 
 /** Members of each theme on its row of the themes image. */
 const THEME_PER_ROW = 6;
+
+/** Every theme installed, so each member is shown as its theme presents it: the theme's skin, colour and face. */
+await loadThemes(THEME_MANIFEST.map((theme) => theme.id));
+const themeMember = (theme, id, seed) => {
+  const look = themeLook(theme, id);
+  return element({
+    character: id,
+    color: look.color,
+    face: look.face,
+    'style-id': look.style,
+    variant: look.variant,
+    size: 84,
+    seed,
+    state: 'happy',
+  });
+};
 
 const element = (attrs) =>
   `<aora-bot ${Object.entries(attrs)
@@ -160,8 +176,7 @@ const SCENES = {
         `<span class="theme">${theme.id}</span>${theme.cast
           .slice(0, THEME_PER_ROW)
           .map(
-            (id, i) =>
-              `<div class="cell">${element({ character: id, size: 84, seed: `${theme.id}-${i}`, state: 'happy' })}<span>${id}</span></div>`,
+            (id, i) => `<div class="cell">${themeMember(theme.id, id, `${theme.id}-${i}`)}<span>${id}</span></div>`,
           )
           .join('')}`,
     ).join('')}</div>`,

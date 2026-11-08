@@ -28,8 +28,8 @@ export function defineVectorMedium(
  * The default series: smooth SVG paths, with the body filled, outlined,
  * glassy, stuck on as a sticker, cut out of paper, rounded off as a soft toy
  * or printed in two inks — or drawn by hand in pencil, marker, crayon,
- * watercolour, neon or chalk, or made of paper, crumpled as origami or pressed
- * up as relief.
+ * watercolour, neon, chalk or dark brushed ink, or made of paper, crumpled as
+ * origami or pressed up as relief.
  * Everything else in the engine was written
  * against this series, so it is the one every other is measured against.
  *
@@ -80,12 +80,16 @@ export const vectorStyle = defineStyle({
      */
     wobble: 4,
     /**
-     * Strength of the paper grain in pencil, crayon, watercolour and chalk, as
-     * a share of each medium's own: 0 is a clean fill, 2 twice as rough. The
-     * grain is in shape units, so it melts into the tone at avatar sizes.
+     * Strength of the paper grain in pencil, crayon, watercolour, chalk and
+     * gothic, as a share of each medium's own: 0 is a clean fill, 2 twice as
+     * rough. The grain is in shape units, so it melts into the tone at avatar
+     * sizes.
      */
     grain: 1,
-    /** Whether pencil shades the side away from the light, and chalk fills the body, with hatching. */
+    /**
+     * Whether pencil and gothic shade the side away from the light, and chalk
+     * fills the body, with hatching.
+     */
     hatching: true,
     /** Radius of the neon glow, in shape units; 0 leaves the bare tube. */
     neonGlow: 8,
@@ -150,9 +154,9 @@ export const vectorStyle = defineStyle({
       max: 2,
       step: 0.1,
       label: 'Paper grain',
-      variants: ['pencil', 'crayon', 'watercolor', 'chalk'],
+      variants: ['pencil', 'crayon', 'watercolor', 'chalk', 'gothic'],
     },
-    hatching: { type: 'boolean', label: 'Hatching', variants: ['pencil', 'chalk'] },
+    hatching: { type: 'boolean', label: 'Hatching', variants: ['pencil', 'chalk', 'gothic'] },
     neonGlow: { type: 'number', min: 0, max: 20, step: 1, label: 'Neon glow', variants: ['neon'] },
   },
   createRenderer: createVectorRenderer,

@@ -26,6 +26,7 @@
  */
 import type { CoreShapeId } from '../../core/types.js';
 import type { CharacterArt } from './art.js';
+import { COAL } from './coal.js';
 import { CRITTER } from './critter.js';
 import { FIGURE } from './figure.js';
 import { FRUIT } from './fruit.js';
@@ -54,4 +55,5 @@ export const CHARACTERS: Record<CoreShapeId, CharacterArt> = {
   ...SEA,
   ...CRITTER,
   ...PEOPLE,
+  ...COAL,
 };

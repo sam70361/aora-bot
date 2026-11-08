@@ -105,6 +105,7 @@ export type Ring = Point[];
     label: { en: 'People', zh: '人物' },
     shapes: ['bob', 'topknot', 'spiky', 'curly', 'twinbuns'],
   },
+  { id: 'coal', label: { en: 'Coal', zh: '煤球' }, shapes: ['chunk', 'lump'] },
 ] as const satisfies readonly FamilyEntry[];
 
 interface FamilyEntry {

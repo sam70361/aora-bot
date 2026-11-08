@@ -2,7 +2,7 @@ import { StyleParamsDemo } from '@theme';
 
 # 矢量风格
 
-`vector` 系列把角色画成平滑的 SVG 路径。它有十五种变体，区别只在颜料：几何、动画和面部在所有变体里都一样，所以新状态或新形状会同时出现在每一种变体里。其中六种是画材：同一个角色用铅笔、马克笔、蜡笔、水彩、霓虹灯管和粉笔画出来；最后两种是纸艺：折纸和浮雕。
+`vector` 系列把角色画成平滑的 SVG 路径。它有十六种变体，区别只在颜料：几何、动画和面部在所有变体里都一样，所以新状态或新形状会同时出现在每一种变体里。其中七种是画材：同一个角色用铅笔、马克笔、蜡笔、水彩、霓虹灯管、粉笔和暗黑手绘的墨线画出来；还有两种是纸艺：折纸和浮雕。
 
 ```tsx preview
 import { getStyle } from '@aora-bot/engine';
@@ -41,6 +41,7 @@ export default function Demo() {
 | `chalk`      | 碎裂的粉笔线，斜向排线，线边的粉尘               | 粉笔：变浅或变深的墨色     | `strokeWidth`、`wobble`、`grain`、`hatching` |
 | `origami`    | 揉皱再压平的纸片，细碎柔和的明暗面，纸片微微浮起 | 与 `solid` 相同            | —                                            |
 | `relief`     | 厚卡纸从背后压凸：左上亮边、右下暗边             | 与 `solid` 相同            | —                                            |
+| `gothic`     | 边缘压暗，背光处墨线排线，毛笔墨线外框，纸纹     | 与 `solid` 相同            | `grain`、`hatching`                          |
 
 `solid`、`outline`、`glass` 在 [`CharacterMark`](/components/character-mark) 里已有说明。本页讲其余几种变体、画材，以及 `outline` 给出的单色线条画法。
 
@@ -244,14 +245,14 @@ export default function Demo() {
 
 ## 画材
 
-`pencil`、`marker`、`crayon`、`watercolor`、`neon`、`chalk` 用手把同一帧画出来。身体和它的配件（耳朵、叶子、头发）从轮廓重画：抖动的双线、排线、来回涂抹、毛糙的蜡边、干后的深边、发光的灯管。脸（任何脸型）、特效、HUD 刻度盘、腰带和彩纸只能当作一个整体来处理，所以它们整体吃到画材：铅笔和粉笔给它们加颗粒，霓虹让它们发光，马克笔给脸描边。铅笔的特效是石墨色；其余画材保留特效自己的颜色，像彩色灯管或彩色粉笔。`origami` 和 `relief` 不是画出来，而是用纸做出来的：身体和每个配件各是一张纸，或揉皱或压凸，脸和特效照常画在上面。
+`pencil`、`marker`、`crayon`、`watercolor`、`neon`、`chalk`、`gothic` 用手把同一帧画出来。身体和它的配件（耳朵、叶子、头发）从轮廓重画：抖动的双线、排线、来回涂抹、毛糙的蜡边、干后的深边、发光的灯管、毛笔墨线。脸（任何脸型）、特效、HUD 刻度盘、腰带和彩纸只能当作一个整体来处理，所以它们整体吃到画材：铅笔和粉笔给它们加颗粒，霓虹让它们发光，马克笔给脸描边。铅笔的特效是石墨色；其余画材保留特效自己的颜色，像彩色灯管或彩色粉笔。`origami` 和 `relief` 不是画出来，而是用纸做出来的：身体和每个配件各是一张纸，或揉皱或压凸，脸和特效照常画在上面。
 
 它们都不画背景，放在什么页面上就在什么页面上读得清，浅色深色都行，用的是和其他变体同一套墨色令牌：
 
 ```tsx preview
 import { CharacterMark } from '@aora-bot/react';
 
-const media = ['pencil', 'marker', 'crayon', 'watercolor', 'neon', 'chalk', 'origami', 'relief'];
+const media = ['pencil', 'marker', 'crayon', 'watercolor', 'neon', 'chalk', 'gothic', 'origami', 'relief'];
 const surfaces = [
   { bg: '#fcfcfc', scheme: 'light' },
   { bg: '#16161a', scheme: 'dark' },
@@ -526,6 +527,60 @@ export default function Demo() {
 }
 ```
 
+### 暗黑手绘
+
+一种暗色调的绘本墨画。每个部件从边缘向内压暗，背光一侧先排线、再交叉排线，外面一圈暖黑色的毛笔墨线：背光处更粗，提笔处变细。底色带一层细细的纸纹。脸用 `solid` 的白色脸，在阴影里也够亮。`hatching` 控制排线，`grain` 控制纸纹；比耳朵还小的部件不排线。
+
+```tsx preview
+import { renderStaticSvgDataUrl } from '@aora-bot/react';
+
+const cases = [
+  { label: 'default', styleOptions: {} },
+  { label: 'grain 0', styleOptions: { grain: 0 } },
+  { label: 'hatching false', styleOptions: { hatching: false } },
+];
+const cast = [
+  { shape: 'cat', color: 'orange' },
+  { shape: 'strawberry', color: 'red' },
+  { shape: 'mushroom', color: 'red' },
+];
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {cases.map(({ label, styleOptions }) => (
+        <div className="site-demo__cell" key={label}>
+          <img
+            alt=""
+            width={96}
+            height={96}
+            src={renderStaticSvgDataUrl({
+              shape: 'bear',
+              color: 'brown',
+              state: 'happy',
+              variant: 'gothic',
+              styleOptions,
+            })}
+          />
+          <span className="site-demo__label">{label}</span>
+        </div>
+      ))}
+      {cast.map((props) => (
+        <div className="site-demo__cell" key={props.shape}>
+          <img
+            alt=""
+            width={96}
+            height={96}
+            src={renderStaticSvgDataUrl({ ...props, state: 'happy', variant: 'gothic' })}
+          />
+          <span className="site-demo__label">{props.shape}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
 ### 折纸
 
 每个配件都是一张揉皱后又压平的纸。轮廓保持原样，所以外形依旧圆润；轮廓内部用一组抖动的网格点和轮廓上的部分点做三角剖分，每个三角形是一个小折面，各自微微倾斜，再按朝向左上方光源的程度提亮或压暗。身体比耳朵、叶子揉得更细。明暗用白色和黑色叠在原色上，令牌色和渐变色一样能折，淡淡的折痕勾出每个面。每张纸下面垫一小块投影，一个角色的几张纸读起来像是拼在一起的。月牙、对话气泡这类凹形也能干净地切开，不会越出自己的边。
@@ -657,8 +712,8 @@ const svg = renderStaticSvg({ variant: 'outline', ink: { flat: 'currentColor' } 
 | `risoOffset`    | riso                                        | 10      | 0–20，步长 1  | 两遍印刷的错位距离                               |
 | `risoHalftone`  | riso                                        | `true`  | —             | 是否罩半调网点                                   |
 | `wobble`        | pencil、marker、crayon、watercolor、chalk   | 4       | 0–8，步长 1   | 手绘线条偏离轮廓的幅度，形状空间单位             |
-| `grain`         | pencil、crayon、watercolor、chalk           | 1       | 0–2，步长 0.1 | 纸纹强度，相对每种画材自己的强度；0 为干净       |
-| `hatching`      | pencil 与 chalk                             | `true`  | —             | 铅笔是否排线打阴影，粉笔是否斜线填色             |
+| `grain`         | pencil、crayon、watercolor、chalk、gothic   | 1       | 0–2，步长 0.1 | 纸纹强度，相对每种画材自己的强度；0 为干净       |
+| `hatching`      | pencil、chalk 与 gothic                     | `true`  | —             | 铅笔和暗黑手绘是否排线打阴影，粉笔是否斜线填色   |
 | `neonGlow`      | neon                                        | 8       | 0–20，步长 1  | 光晕半径，形状空间单位；0 只留灯管               |
 
 选一个变体，面板只列出该变体会读取的参数。它由注册表生成，所以和上面的表保持一致。

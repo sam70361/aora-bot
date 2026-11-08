@@ -604,4 +604,26 @@ export const FACE_BOXES: Partial<Record<string, StoredFaceBox>> = {
       leftDX: 0,
     },
   },
+  chunk: {
+    digest: '1qd8tm7',
+    box: {
+      x: 121.1877833280397,
+      y: 127.25122859700289,
+      sx: 110.52715427002151,
+      sy: 76.2256236344976,
+      eye: 1,
+      leftDX: 0,
+    },
+  },
+  lump: {
+    digest: '13ghhcz',
+    box: {
+      x: 119.80774193548388,
+      y: 117.56720430107525,
+      sx: 111.43669428307297,
+      sy: 76.85289260901584,
+      eye: 1,
+      leftDX: 0,
+    },
+  },
 };

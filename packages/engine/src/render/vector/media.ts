@@ -1,7 +1,7 @@
 /**
  * The vector series' drawing media: `pencil`, `marker`, `crayon`,
- * `watercolor`, `neon` and `chalk`, and the paper ones, `origami`, crumpled
- * rather than drawn, and `relief`, pressed up from behind.
+ * `watercolor`, `neon`, `chalk` and `gothic`, and the paper ones, `origami`,
+ * crumpled rather than drawn, and `relief`, pressed up from behind.
  *
  * A medium repaints the same snapshot by hand. The body and its pieces are
  * redrawn from their outlines — a wobbling double line, hatching, a scribbled
@@ -37,6 +37,7 @@ import { node, type SceneNode } from '../scene.js';
 import { HAIR_SHADE_OPACITY, INNER_WHITE, isBodyPiece, mergedSilhouette } from './parts.js';
 import type { BodySplit, VectorParams } from './build.js';
 import { grainImage, type GrainShape } from './grain.js';
+import { GOTHIC_GRAIN, paintGothic } from './gothic.js';
 import { fold } from './origami.js';
 import { themeExtras, type ExtrasScene } from '../../themes/extras-hook.js';
 import type { FaceInk } from '../../themes/extras/colour.js';
@@ -52,6 +53,7 @@ export const MEDIA = [
   'chalk',
   'origami',
   'relief',
+  'gothic',
 ] as const;
 export type BuiltinMedium = (typeof MEDIA)[number];
 /** A medium's id: a built-in one or one a theme defined. */
@@ -274,6 +276,7 @@ const GRAIN: Partial<Record<string, GrainSpec>> = {
     streaks: { count: 50, length: [2, 5], width: 0.9, angle: 35, spread: 25 },
     seed: 41,
   },
+  gothic: GOTHIC_GRAIN,
 };
 
 /**
@@ -341,7 +344,7 @@ function grainTones(variant: Medium, paint: MediumPaint, parts: readonly PartFra
 }
 
 /** The media whose fills are grained through a pattern. */
-const GRAINED_FILLS: ReadonlySet<string> = new Set<Medium>(['crayon', 'watercolor']);
+const GRAINED_FILLS: ReadonlySet<string> = new Set<Medium>(['crayon', 'watercolor', 'gothic']);
 const grainsFills = (variant: string): boolean =>
   GRAINED_FILLS.has(variant) || DEFINED.get(variant)?.grainedFills === true;
 
@@ -1455,6 +1458,8 @@ const PAINTERS: Record<BuiltinMedium, (piece: Piece, ctx: DrawContext) => SceneN
       }),
     ];
   },
+
+  gothic: paintGothic,
 };
 
 const painterOf = (variant: string): ((piece: Piece, ctx: DrawContext) => SceneNode[]) =>

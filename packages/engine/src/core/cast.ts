@@ -110,6 +110,8 @@ export const CORE_CAST_IDS = [
   'zip',
   'fuzz',
   'lulu',
+  'cinder',
+  'sooty',
 ] as const;
 
 export type CoreCastId = (typeof CORE_CAST_IDS)[number];
@@ -876,6 +878,28 @@ const CORE_CAST: readonly CharacterPreset[] = [
     shape: 'twinbuns',
     color: 'violet',
     accent: ink('violet'),
+  },
+  {
+    id: 'cinder',
+    name: { en: 'Cinder', zh: '红红' },
+    desc: {
+      en: 'A black lump of coal with blunt corners, named for the glow it keeps inside.',
+      zh: '一块有棱有角的黑煤块，名字来自它肚子里那点没熄的红火。',
+    },
+    shape: 'chunk',
+    color: 'night',
+    accent: ink('night'),
+  },
+  {
+    id: 'sooty',
+    name: { en: 'Sooty', zh: '烟烟' },
+    desc: {
+      en: 'A round ball of coal, bumpy all over, who leaves a little smudge wherever it sits.',
+      zh: '圆滚滚、边缘坑坑洼洼的小煤球，坐过的地方总会留下一点黑印。',
+    },
+    shape: 'lump',
+    color: 'night',
+    accent: ink('night'),
   },
 ];
 

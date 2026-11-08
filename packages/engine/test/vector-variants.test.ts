@@ -361,6 +361,7 @@ describe('style parameters', () => {
       'chalk',
       'origami',
       'relief',
+      'gothic',
     ]);
     expect(style.defaultVariant).toBe('solid');
   });

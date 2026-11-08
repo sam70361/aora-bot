@@ -14,14 +14,15 @@ This release has breaking changes; read "Breaking changes" below before upgradin
 
 ### Characters and faces
 
-- 22 new characters, each with a cast member, including a `treat` family and an `object` family; `ghost` is redrawn rounder.
-- 13 new drawn faces. `capsule` now comes first in the face list and pickers, and `teardrop` and `specs` have been redrawn. Each drawn face covers all 44 states and works in every vector variant, in pixel and in kaomoji. `defineFace` registers a face of your own.
+- 24 new characters, each with a cast member, including a `treat` family, an `object` family and a `coal` family; `ghost` is redrawn rounder. The coal family is two black lumps with uneven edges: Cinder (`chunk`), all blunt corners, and Sooty (`lump`), round and bumpy all the way round.
+- 13 new drawn faces. `capsule` now comes first in the face list and pickers. `teardrop` is now a tall dark drop with one highlight, and `specs` small, bold round glasses with a flat bridge and one dark eye with a highlight in each lens. Each drawn face covers all 44 states and works in every vector variant, in pixel and in kaomoji. `defineFace` registers a face of your own.
 - Dot (`dot`, 球球) is a cream-white ball wearing `capsule` and now comes first in the cast.
 
 ### Styles
 
 - Six drawing media: `pencil`, `marker`, `crayon`, `watercolor`, `neon` and `chalk`.
 - Two paper media: `origami`, a sheet crumpled and pressed flat into soft facets, and `relief`, a thick card pressed up from behind. See [Vector styles](/design/styles/vector).
+- `gothic` is the sixteenth vector variant: each piece darkened from the edge in, hatched and cross-hatched in ink on the side away from the light, and ringed by a brushed ink line that is heavier in shadow, over a paper grain.
 - `defineVectorMedium` registers a vector variant of your own.
 - A shape part can carry its own colour, and `defineShapeWithProps` dresses a character in props.
 

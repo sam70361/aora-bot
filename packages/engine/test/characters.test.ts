@@ -61,8 +61,8 @@ afterEach(() => {
 });
 
 describe('roster', () => {
-  it('keeps a roster of sixty-eight, led by the round ball', () => {
-    expect(SHAPE_IDS).toHaveLength(68);
+  it('keeps a roster of seventy, led by the round ball', () => {
+    expect(SHAPE_IDS).toHaveLength(70);
     expect(new Set(SHAPE_IDS).size).toBe(SHAPE_IDS.length);
     expect(SHAPE_IDS[0]).toBe('circle');
   });

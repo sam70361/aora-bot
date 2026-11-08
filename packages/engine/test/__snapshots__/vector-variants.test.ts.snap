@@ -432,6 +432,228 @@ exports[`crayon: static snapshots > sprout / thinking 1`] = `
 </svg>"
 `;
 
+exports[`gothic: static snapshots > blob / happy 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a1g4wv85" viewBox="-24 -24 288 288" fill="none" aria-hidden="true"><style>
+    .a1g4wv85 { --a1g4wv85-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a1g4wv85 { --a1g4wv85-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(120 120) scale(1) translate(-120 -120)">
+    <defs><image id="a1g4wv85-gothic-texture" href="4678:80713i" width="36" height="36" preserveAspectRatio="none"/><mask id="a1g4wv85-gothic-grain10" maskUnits="userSpaceOnUse" x="0" y="0" width="36" height="36"><rect width="36" height="36" fill="#fff"/><use href="#a1g4wv85-gothic-texture" opacity="0.5"/></mask><pattern id="a1g4wv85-gothic-body10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="var(--a1g4wv85-ink, #846BEC)" mask="url(#a1g4wv85-gothic-grain10)"/></pattern><pattern id="a1g4wv85-gothic-leaf10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="#34B36B" mask="url(#a1g4wv85-gothic-grain10)"/></pattern><pattern id="a1g4wv85-gothic-inner10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="color-mix(in oklab, var(--a1g4wv85-ink, #846BEC), #fff 45%)" mask="url(#a1g4wv85-gothic-grain10)"/></pattern><pattern id="a1g4wv85-gothic-hair10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="color-mix(in oklab, var(--a1g4wv85-ink, #846BEC), #000000 40%)" mask="url(#a1g4wv85-gothic-grain10)"/></pattern></defs>
+    <g><g><clipPath id="a1g4wv85-gothic-gothic-8hmkbz"><path d="3689:8hmkbz"/></clipPath><path d="3689:8hmkbz" fill="url(#a1g4wv85-gothic-body10)"/><g clip-path="url(#a1g4wv85-gothic-gothic-8hmkbz)"><path d="3689:8hmkbz" stroke="#000" stroke-opacity="0.13" stroke-width="71.8"/><path d="3689:8hmkbz" stroke="#000" stroke-opacity="0.13" stroke-width="33.5"/></g><path d="490:1xj1umv" stroke="#17110d" stroke-width="2.2" stroke-opacity="0.55" stroke-linecap="round"/><path d="248:7aylnz" stroke="#17110d" stroke-width="1.9" stroke-opacity="0.4" stroke-linecap="round"/><path d="4092:1mgun33" fill="#17110d" fill-rule="evenodd"/></g></g>
+    <g data-aora-face="">
+      <path d="258:27sblv" transform="translate(31.8681 136.6012) matrix(0.6766 0.072 0.0536 0.9878 0 0) translate(-51.669 -143.4871)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="278:11h3n1q" transform="translate(154.5303 133.5928) matrix(0.9564 -0.0864 0.0505 0.9898 0 0) translate(-178.952 -143.4871)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="1072:10zkwpm" transform="translate(53.2894 123.4257) matrix(0.8309 -0.0101 0.0243 0.9995 0 0) translate(-77.2719 -132.1012)" fill="#FFFFFF" opacity="1"/>
+      <path d="1158:9966nv" transform="translate(126.7069 121.6662) matrix(0.9982 -0.0244 0.0236 0.9996 0 0) translate(-153.3491 -132.1012)" fill="#FFFFFF" opacity="1"/>
+      <path d="442:19k84km" transform="translate(89.7169 146.4623) matrix(0.9652 -0.011 0.0679 0.9753 0 0) translate(-115.3105 -156.2155)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="9.51" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><path d="91:794him" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`gothic: static snapshots > blob / idle 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="ach1lqo" viewBox="-24 -24 288 288" fill="none" aria-hidden="true"><style>
+    .ach1lqo { --ach1lqo-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .ach1lqo { --ach1lqo-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(120 120) scale(1) translate(-120 -120)">
+    <defs><image id="ach1lqo-gothic-texture" href="4678:80713i" width="36" height="36" preserveAspectRatio="none"/><mask id="ach1lqo-gothic-grain10" maskUnits="userSpaceOnUse" x="0" y="0" width="36" height="36"><rect width="36" height="36" fill="#fff"/><use href="#ach1lqo-gothic-texture" opacity="0.5"/></mask><pattern id="ach1lqo-gothic-body10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="var(--ach1lqo-ink, #846BEC)" mask="url(#ach1lqo-gothic-grain10)"/></pattern><pattern id="ach1lqo-gothic-leaf10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="#34B36B" mask="url(#ach1lqo-gothic-grain10)"/></pattern><pattern id="ach1lqo-gothic-inner10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="color-mix(in oklab, var(--ach1lqo-ink, #846BEC), #fff 45%)" mask="url(#ach1lqo-gothic-grain10)"/></pattern><pattern id="ach1lqo-gothic-hair10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="color-mix(in oklab, var(--ach1lqo-ink, #846BEC), #000000 40%)" mask="url(#ach1lqo-gothic-grain10)"/></pattern></defs>
+    <g><g><clipPath id="ach1lqo-gothic-gothic-8hmkbz"><path d="3689:8hmkbz"/></clipPath><path d="3689:8hmkbz" fill="url(#ach1lqo-gothic-body10)"/><g clip-path="url(#ach1lqo-gothic-gothic-8hmkbz)"><path d="3689:8hmkbz" stroke="#000" stroke-opacity="0.13" stroke-width="71.8"/><path d="3689:8hmkbz" stroke="#000" stroke-opacity="0.13" stroke-width="33.5"/></g><path d="490:1xj1umv" stroke="#17110d" stroke-width="2.2" stroke-opacity="0.55" stroke-linecap="round"/><path d="248:7aylnz" stroke="#17110d" stroke-width="1.9" stroke-opacity="0.4" stroke-linecap="round"/><path d="4092:1mgun33" fill="#17110d" fill-rule="evenodd"/></g></g>
+    <g data-aora-face="">
+      <path d="1048:13nnq3q" transform="translate(53.1436 112.56) matrix(0.8304 -0.0446 0.0025 0.9971 0 0) translate(-77.2719 -121.2492)" fill="#FFFFFF" opacity="1"/>
+      <path d="1151:59n5xl" transform="translate(126.5652 110.802) matrix(0.9985 0.0018 0.0024 0.9971 0 0) translate(-153.3491 -121.2492)" fill="#FFFFFF" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`gothic: static snapshots > blob / powering-down 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="ach1lqo" viewBox="-24 -24 288 288" fill="none" aria-hidden="true"><style>
+    .ach1lqo { --ach1lqo-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .ach1lqo { --ach1lqo-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(120 120) scale(1) translate(-120 -120)">
+    <defs><image id="ach1lqo-gothic-texture" href="4678:80713i" width="36" height="36" preserveAspectRatio="none"/><mask id="ach1lqo-gothic-grain10" maskUnits="userSpaceOnUse" x="0" y="0" width="36" height="36"><rect width="36" height="36" fill="#fff"/><use href="#ach1lqo-gothic-texture" opacity="0.5"/></mask><pattern id="ach1lqo-gothic-body10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="var(--ach1lqo-ink, #846BEC)" mask="url(#ach1lqo-gothic-grain10)"/></pattern><pattern id="ach1lqo-gothic-leaf10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="#34B36B" mask="url(#ach1lqo-gothic-grain10)"/></pattern><pattern id="ach1lqo-gothic-inner10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="color-mix(in oklab, var(--ach1lqo-ink, #846BEC), #fff 45%)" mask="url(#ach1lqo-gothic-grain10)"/></pattern><pattern id="ach1lqo-gothic-hair10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="color-mix(in oklab, var(--ach1lqo-ink, #846BEC), #000000 40%)" mask="url(#ach1lqo-gothic-grain10)"/></pattern></defs>
+    <g opacity="0.85"><g><clipPath id="ach1lqo-gothic-gothic-8hmkbz"><path d="3689:8hmkbz"/></clipPath><path d="3689:8hmkbz" fill="url(#ach1lqo-gothic-body10)"/><g clip-path="url(#ach1lqo-gothic-gothic-8hmkbz)"><path d="3689:8hmkbz" stroke="#000" stroke-opacity="0.13" stroke-width="71.8"/><path d="3689:8hmkbz" stroke="#000" stroke-opacity="0.13" stroke-width="33.5"/></g><path d="490:1xj1umv" stroke="#17110d" stroke-width="2.2" stroke-opacity="0.55" stroke-linecap="round"/><path d="248:7aylnz" stroke="#17110d" stroke-width="1.9" stroke-opacity="0.4" stroke-linecap="round"/><path d="4092:1mgun33" fill="#17110d" fill-rule="evenodd"/></g></g>
+    <g data-aora-face="">
+      <path d="1048:13nnq3q" transform="translate(53.1436 112.56) matrix(0.8304 -0.0446 0.0025 0.9971 0 0) translate(-77.2719 -121.2492)" fill="#FFFFFF" opacity="1"/>
+      <path d="1151:59n5xl" transform="translate(126.5652 110.802) matrix(0.9985 0.0018 0.0024 0.9971 0 0) translate(-153.3491 -121.2492)" fill="#FFFFFF" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`gothic: static snapshots > blob / thinking 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="alwbvv3" viewBox="-24 -24 288 288" fill="none" aria-hidden="true"><style>
+    .alwbvv3 { --alwbvv3-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .alwbvv3 { --alwbvv3-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(120 120) scale(1) translate(-120 -120)">
+    <defs><image id="alwbvv3-gothic-texture" href="4678:80713i" width="36" height="36" preserveAspectRatio="none"/><mask id="alwbvv3-gothic-grain10" maskUnits="userSpaceOnUse" x="0" y="0" width="36" height="36"><rect width="36" height="36" fill="#fff"/><use href="#alwbvv3-gothic-texture" opacity="0.5"/></mask><pattern id="alwbvv3-gothic-body10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="var(--alwbvv3-ink, #846BEC)" mask="url(#alwbvv3-gothic-grain10)"/></pattern><pattern id="alwbvv3-gothic-leaf10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="#34B36B" mask="url(#alwbvv3-gothic-grain10)"/></pattern><pattern id="alwbvv3-gothic-inner10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="color-mix(in oklab, var(--alwbvv3-ink, #846BEC), #fff 45%)" mask="url(#alwbvv3-gothic-grain10)"/></pattern><pattern id="alwbvv3-gothic-hair10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="color-mix(in oklab, var(--alwbvv3-ink, #846BEC), #000000 40%)" mask="url(#alwbvv3-gothic-grain10)"/></pattern></defs>
+    <g><g><clipPath id="alwbvv3-gothic-gothic-8hmkbz"><path d="3689:8hmkbz"/></clipPath><path d="3689:8hmkbz" fill="url(#alwbvv3-gothic-body10)"/><g clip-path="url(#alwbvv3-gothic-gothic-8hmkbz)"><path d="3689:8hmkbz" stroke="#000" stroke-opacity="0.13" stroke-width="71.8"/><path d="3689:8hmkbz" stroke="#000" stroke-opacity="0.13" stroke-width="33.5"/></g><path d="490:1xj1umv" stroke="#17110d" stroke-width="2.2" stroke-opacity="0.55" stroke-linecap="round"/><path d="248:7aylnz" stroke="#17110d" stroke-width="1.9" stroke-opacity="0.4" stroke-linecap="round"/><path d="4092:1mgun33" fill="#17110d" fill-rule="evenodd"/></g></g>
+    <g data-aora-face="">
+      <path d="1105:1n6lhcz" transform="translate(63.0315 100.0205) matrix(0.8799 -0.0662 -0.0211 0.9838 0 0) translate(-88.1239 -109.1353)" fill="#FFFFFF" opacity="1"/>
+      <path d="1160:fe9qsw" transform="translate(138.0914 98.881) matrix(0.9883 0.0486 -0.0219 0.9832 0 0) translate(-164.2011 -109.1353)" fill="#FFFFFF" opacity="1"/>
+      <path d="447:1w8tk0f" transform="translate(89.7169 146.4623) matrix(0.9652 -0.011 0.0679 0.9753 0 0) translate(-115.3105 -156.2155)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="9.51" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><circle cx="198.14" cy="41.86" r="5.3" fill="var(--alwbvv3-ink, #846BEC)" opacity="1"/><circle cx="217.67" cy="20.93" r="7.53" fill="var(--alwbvv3-ink, #846BEC)" opacity="1"/><circle cx="240" cy="-2.79" r="9.77" fill="var(--alwbvv3-ink, #846BEC)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`gothic: static snapshots > cat / happy 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a18tjcem" viewBox="-24 -24 288 288" fill="none" aria-hidden="true"><style>
+    .a18tjcem { --a18tjcem-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a18tjcem { --a18tjcem-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(120 120) scale(1) translate(-120 -120)">
+    <defs><image id="a18tjcem-gothic-texture" href="4678:80713i" width="36" height="36" preserveAspectRatio="none"/><mask id="a18tjcem-gothic-grain10" maskUnits="userSpaceOnUse" x="0" y="0" width="36" height="36"><rect width="36" height="36" fill="#fff"/><use href="#a18tjcem-gothic-texture" opacity="0.5"/></mask><pattern id="a18tjcem-gothic-body10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="var(--a18tjcem-ink, #846BEC)" mask="url(#a18tjcem-gothic-grain10)"/></pattern><pattern id="a18tjcem-gothic-leaf10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="#34B36B" mask="url(#a18tjcem-gothic-grain10)"/></pattern><pattern id="a18tjcem-gothic-inner10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="color-mix(in oklab, var(--a18tjcem-ink, #846BEC), #fff 45%)" mask="url(#a18tjcem-gothic-grain10)"/></pattern><pattern id="a18tjcem-gothic-hair10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="color-mix(in oklab, var(--a18tjcem-ink, #846BEC), #000000 40%)" mask="url(#a18tjcem-gothic-grain10)"/></pattern></defs>
+    <g><g><clipPath id="a18tjcem-gothic-gothic-1ieagau"><path d="2623:1ieagau"/></clipPath><path d="2623:1ieagau" fill="url(#a18tjcem-gothic-body10)"/><g clip-path="url(#a18tjcem-gothic-gothic-1ieagau)"><path d="2623:1ieagau" stroke="#000" stroke-opacity="0.13" stroke-width="71.8"/><path d="2623:1ieagau" stroke="#000" stroke-opacity="0.13" stroke-width="33.5"/></g><path d="560:19hbi04" stroke="#17110d" stroke-width="2.2" stroke-opacity="0.55" stroke-linecap="round"/><path d="333:jl1s9" stroke="#17110d" stroke-width="1.9" stroke-opacity="0.4" stroke-linecap="round"/><path d="4219:1i7vwu2" fill="#17110d" fill-rule="evenodd"/></g></g>
+    <g data-aora-face="">
+      <path d="256:oulqj2" transform="translate(34.3717 158.7196) matrix(0.6931 0.1957 0.1022 0.9261 0 0) translate(-52.5299 -165.0761)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="276:ywbps" transform="translate(165.8535 156.074) matrix(0.9184 -0.2281 0.1022 0.9261 0 0) translate(-187.4701 -165.0761)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="1089:169bxac" transform="translate(56.3907 144.4906) matrix(0.8454 0.052 0.0657 0.9776 0 0) translate(-79.673 -153.0051)" fill="#FFFFFF" opacity="1"/>
+      <path d="1165:r9shnj" transform="translate(134.9775 142.9093) matrix(0.99 -0.0889 0.0657 0.9776 0 0) translate(-160.327 -153.0051)" fill="#FFFFFF" opacity="1"/>
+      <path d="430:1ci58ls" transform="translate(96.4396 169.4529) matrix(0.9744 -0.0196 0.1098 0.9109 0 0) translate(-120 -178.5701)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="10.08" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><path d="91:794him" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`gothic: static snapshots > cat / idle 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="anozhyv" viewBox="-24 -24 288 288" fill="none" aria-hidden="true"><style>
+    .anozhyv { --anozhyv-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .anozhyv { --anozhyv-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(120 120) scale(1) translate(-120 -120)">
+    <defs><image id="anozhyv-gothic-texture" href="4678:80713i" width="36" height="36" preserveAspectRatio="none"/><mask id="anozhyv-gothic-grain10" maskUnits="userSpaceOnUse" x="0" y="0" width="36" height="36"><rect width="36" height="36" fill="#fff"/><use href="#anozhyv-gothic-texture" opacity="0.5"/></mask><pattern id="anozhyv-gothic-body10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="var(--anozhyv-ink, #846BEC)" mask="url(#anozhyv-gothic-grain10)"/></pattern><pattern id="anozhyv-gothic-leaf10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="#34B36B" mask="url(#anozhyv-gothic-grain10)"/></pattern><pattern id="anozhyv-gothic-inner10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="color-mix(in oklab, var(--anozhyv-ink, #846BEC), #fff 45%)" mask="url(#anozhyv-gothic-grain10)"/></pattern><pattern id="anozhyv-gothic-hair10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="color-mix(in oklab, var(--anozhyv-ink, #846BEC), #000000 40%)" mask="url(#anozhyv-gothic-grain10)"/></pattern></defs>
+    <g><g><clipPath id="anozhyv-gothic-gothic-1ieagau"><path d="2623:1ieagau"/></clipPath><path d="2623:1ieagau" fill="url(#anozhyv-gothic-body10)"/><g clip-path="url(#anozhyv-gothic-gothic-1ieagau)"><path d="2623:1ieagau" stroke="#000" stroke-opacity="0.13" stroke-width="71.8"/><path d="2623:1ieagau" stroke="#000" stroke-opacity="0.13" stroke-width="33.5"/></g><path d="560:19hbi04" stroke="#17110d" stroke-width="2.2" stroke-opacity="0.55" stroke-linecap="round"/><path d="333:jl1s9" stroke="#17110d" stroke-width="1.9" stroke-opacity="0.4" stroke-linecap="round"/><path d="4219:1i7vwu2" fill="#17110d" fill-rule="evenodd"/></g></g>
+    <g data-aora-face="">
+      <path d="1075:nu5w8g" transform="translate(55.7467 132.7864) matrix(0.8435 0.0172 0.0428 0.9942 0 0) translate(-79.673 -141.5003)" fill="#FFFFFF" opacity="1"/>
+      <path d="1159:1thr2vi" transform="translate(134.3335 131.2052) matrix(0.9919 -0.0541 0.0428 0.9942 0 0) translate(-160.327 -141.5003)" fill="#FFFFFF" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`gothic: static snapshots > cat / powering-down 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="anozhyv" viewBox="-24 -24 288 288" fill="none" aria-hidden="true"><style>
+    .anozhyv { --anozhyv-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .anozhyv { --anozhyv-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(120 120) scale(1) translate(-120 -120)">
+    <defs><image id="anozhyv-gothic-texture" href="4678:80713i" width="36" height="36" preserveAspectRatio="none"/><mask id="anozhyv-gothic-grain10" maskUnits="userSpaceOnUse" x="0" y="0" width="36" height="36"><rect width="36" height="36" fill="#fff"/><use href="#anozhyv-gothic-texture" opacity="0.5"/></mask><pattern id="anozhyv-gothic-body10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="var(--anozhyv-ink, #846BEC)" mask="url(#anozhyv-gothic-grain10)"/></pattern><pattern id="anozhyv-gothic-leaf10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="#34B36B" mask="url(#anozhyv-gothic-grain10)"/></pattern><pattern id="anozhyv-gothic-inner10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="color-mix(in oklab, var(--anozhyv-ink, #846BEC), #fff 45%)" mask="url(#anozhyv-gothic-grain10)"/></pattern><pattern id="anozhyv-gothic-hair10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="color-mix(in oklab, var(--anozhyv-ink, #846BEC), #000000 40%)" mask="url(#anozhyv-gothic-grain10)"/></pattern></defs>
+    <g opacity="0.85"><g><clipPath id="anozhyv-gothic-gothic-1ieagau"><path d="2623:1ieagau"/></clipPath><path d="2623:1ieagau" fill="url(#anozhyv-gothic-body10)"/><g clip-path="url(#anozhyv-gothic-gothic-1ieagau)"><path d="2623:1ieagau" stroke="#000" stroke-opacity="0.13" stroke-width="71.8"/><path d="2623:1ieagau" stroke="#000" stroke-opacity="0.13" stroke-width="33.5"/></g><path d="560:19hbi04" stroke="#17110d" stroke-width="2.2" stroke-opacity="0.55" stroke-linecap="round"/><path d="333:jl1s9" stroke="#17110d" stroke-width="1.9" stroke-opacity="0.4" stroke-linecap="round"/><path d="4219:1i7vwu2" fill="#17110d" fill-rule="evenodd"/></g></g>
+    <g data-aora-face="">
+      <path d="1075:nu5w8g" transform="translate(55.7467 132.7864) matrix(0.8435 0.0172 0.0428 0.9942 0 0) translate(-79.673 -141.5003)" fill="#FFFFFF" opacity="1"/>
+      <path d="1159:1thr2vi" transform="translate(134.3335 131.2052) matrix(0.9919 -0.0541 0.0428 0.9942 0 0) translate(-160.327 -141.5003)" fill="#FFFFFF" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`gothic: static snapshots > cat / thinking 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a1t3j112" viewBox="-24 -24 288 288" fill="none" aria-hidden="true"><style>
+    .a1t3j112 { --a1t3j112-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a1t3j112 { --a1t3j112-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(120 120) scale(1) translate(-120 -120)">
+    <defs><image id="a1t3j112-gothic-texture" href="4678:80713i" width="36" height="36" preserveAspectRatio="none"/><mask id="a1t3j112-gothic-grain10" maskUnits="userSpaceOnUse" x="0" y="0" width="36" height="36"><rect width="36" height="36" fill="#fff"/><use href="#a1t3j112-gothic-texture" opacity="0.5"/></mask><pattern id="a1t3j112-gothic-body10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="var(--a1t3j112-ink, #846BEC)" mask="url(#a1t3j112-gothic-grain10)"/></pattern><pattern id="a1t3j112-gothic-leaf10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="#34B36B" mask="url(#a1t3j112-gothic-grain10)"/></pattern><pattern id="a1t3j112-gothic-inner10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="color-mix(in oklab, var(--a1t3j112-ink, #846BEC), #fff 45%)" mask="url(#a1t3j112-gothic-grain10)"/></pattern><pattern id="a1t3j112-gothic-hair10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="color-mix(in oklab, var(--a1t3j112-ink, #846BEC), #000000 40%)" mask="url(#a1t3j112-gothic-grain10)"/></pattern></defs>
+    <g><g><clipPath id="a1t3j112-gothic-gothic-1ieagau"><path d="2623:1ieagau"/></clipPath><path d="2623:1ieagau" fill="url(#a1t3j112-gothic-body10)"/><g clip-path="url(#a1t3j112-gothic-gothic-1ieagau)"><path d="2623:1ieagau" stroke="#000" stroke-opacity="0.13" stroke-width="71.8"/><path d="2623:1ieagau" stroke="#000" stroke-opacity="0.13" stroke-width="33.5"/></g><path d="560:19hbi04" stroke="#17110d" stroke-width="2.2" stroke-opacity="0.55" stroke-linecap="round"/><path d="333:jl1s9" stroke="#17110d" stroke-width="1.9" stroke-opacity="0.4" stroke-linecap="round"/><path d="4219:1i7vwu2" fill="#17110d" fill-rule="evenodd"/></g></g>
+    <g data-aora-face="">
+      <path d="1114:gdx17q" transform="translate(65.7851 119.3249) matrix(0.892 -0.0216 0.0167 0.9998 0 0) translate(-91.1778 -128.6577)" fill="#FFFFFF" opacity="1"/>
+      <path d="1163:1debc19" transform="translate(146.2352 118.447) matrix(0.9756 -0.0155 0.018 0.9998 0 0) translate(-171.8318 -128.6577)" fill="#FFFFFF" opacity="1"/>
+      <path d="443:2wzanf" transform="translate(96.4396 169.4529) matrix(0.9744 -0.0196 0.1098 0.9109 0 0) translate(-120 -178.5701)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="10.08" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><circle cx="198.14" cy="41.86" r="5.3" fill="var(--a1t3j112-ink, #846BEC)" opacity="1"/><circle cx="217.67" cy="20.93" r="7.53" fill="var(--a1t3j112-ink, #846BEC)" opacity="1"/><circle cx="240" cy="-2.79" r="9.77" fill="var(--a1t3j112-ink, #846BEC)" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`gothic: static snapshots > sprout / happy 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a16r9khd" viewBox="-24 -24 288 288" fill="none" aria-hidden="true"><style>
+    .a16r9khd { --a16r9khd-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a16r9khd { --a16r9khd-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(120 120) scale(1) translate(-120 -120)">
+    <defs><image id="a16r9khd-gothic-texture" href="4678:80713i" width="36" height="36" preserveAspectRatio="none"/><mask id="a16r9khd-gothic-grain10" maskUnits="userSpaceOnUse" x="0" y="0" width="36" height="36"><rect width="36" height="36" fill="#fff"/><use href="#a16r9khd-gothic-texture" opacity="0.5"/></mask><pattern id="a16r9khd-gothic-body10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="var(--a16r9khd-ink, #846BEC)" mask="url(#a16r9khd-gothic-grain10)"/></pattern><pattern id="a16r9khd-gothic-leaf10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="#34B36B" mask="url(#a16r9khd-gothic-grain10)"/></pattern><pattern id="a16r9khd-gothic-inner10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="color-mix(in oklab, var(--a16r9khd-ink, #846BEC), #fff 45%)" mask="url(#a16r9khd-gothic-grain10)"/></pattern><pattern id="a16r9khd-gothic-hair10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="color-mix(in oklab, var(--a16r9khd-ink, #846BEC), #000000 40%)" mask="url(#a16r9khd-gothic-grain10)"/></pattern></defs>
+    <g><g><clipPath id="a16r9khd-gothic-gothic-1mwcmxu"><path d="3098:1mwcmxu"/></clipPath><path d="3098:1mwcmxu" fill="url(#a16r9khd-gothic-body10)"/><g clip-path="url(#a16r9khd-gothic-gothic-1mwcmxu)"><path d="3098:1mwcmxu" stroke="#000" stroke-opacity="0.13" stroke-width="69.1"/><path d="3098:1mwcmxu" stroke="#000" stroke-opacity="0.13" stroke-width="32.2"/></g><path d="474:1ssq3ul" stroke="#17110d" stroke-width="2.1" stroke-opacity="0.55" stroke-linecap="round"/><path d="266:1l7hq8" stroke="#17110d" stroke-width="1.8" stroke-opacity="0.4" stroke-linecap="round"/><path d="4174:xdsz9n" fill="#17110d" fill-rule="evenodd"/></g><g><clipPath id="a16r9khd-gothic-gothic-1rn76r2"><path d="1086:1rn76r2"/></clipPath><path d="1086:1rn76r2" fill="url(#a16r9khd-gothic-leaf10)"/><g clip-path="url(#a16r9khd-gothic-gothic-1rn76r2)"><path d="1086:1rn76r2" stroke="#000" stroke-opacity="0.13" stroke-width="25.1"/><path d="1086:1rn76r2" stroke="#000" stroke-opacity="0.13" stroke-width="11.7"/></g><path d="543:18o9l4p" stroke="#17110d" stroke-width="1" stroke-opacity="0.55" stroke-linecap="round"/><path d="211:1mtu2wh" stroke="#17110d" stroke-width="1" stroke-opacity="0.4" stroke-linecap="round"/><path d="2198:ggo04m" fill="#17110d" fill-rule="evenodd"/></g><g><clipPath id="a16r9khd-gothic-gothic-j392yz"><path d="579:j392yz"/></clipPath><path d="579:j392yz" fill="url(#a16r9khd-gothic-leaf10)"/><g clip-path="url(#a16r9khd-gothic-gothic-j392yz)"><path d="579:j392yz" stroke="#000" stroke-opacity="0.13" stroke-width="15.5"/><path d="579:j392yz" stroke="#000" stroke-opacity="0.13" stroke-width="7.2"/></g><path d="280:1szyhn9" stroke="#17110d" stroke-width="1" stroke-opacity="0.55" stroke-linecap="round"/><path d="195:1a3ols0" stroke="#17110d" stroke-width="1" stroke-opacity="0.4" stroke-linecap="round"/><path d="1161:97vqd1" fill="#17110d" fill-rule="evenodd"/></g></g>
+    <g data-aora-face="">
+      <path d="253:1o8swci" transform="translate(48.5954 163.1006) matrix(0.7969 0.1473 0.1045 0.9216 0 0) translate(-68.9148 -170.4561)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="273:1ythnzq" transform="translate(148.1473 161.0974) matrix(0.9665 -0.1828 0.1045 0.9216 0 0) translate(-171.0852 -170.4561)" fill="#FFB3C7" opacity="0.6"/>
+      <path d="1094:1bvmdu5" transform="translate(65.8537 152.5485) matrix(0.8888 0.0511 0.0801 0.9612 0 0) translate(-89.4663 -161.3166)" fill="#FFFFFF" opacity="1"/>
+      <path d="1161:1l5anb1" transform="translate(125.356 151.3512) matrix(0.9958 -0.089 0.0801 0.9612 0 0) translate(-150.5337 -161.3166)" fill="#FFFFFF" opacity="1"/>
+      <path d="435:zlthl" transform="translate(96.7105 171.6502) matrix(0.9744 -0.0196 0.1137 0.9024 0 0) translate(-120 -180.6732)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="7.63" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><path d="91:794him" fill="#FF6F91" opacity="1"/></g></g>
+</svg>"
+`;
+
+exports[`gothic: static snapshots > sprout / idle 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="agr4lis" viewBox="-24 -24 288 288" fill="none" aria-hidden="true"><style>
+    .agr4lis { --agr4lis-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .agr4lis { --agr4lis-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(120 120) scale(1) translate(-120 -120)">
+    <defs><image id="agr4lis-gothic-texture" href="4678:80713i" width="36" height="36" preserveAspectRatio="none"/><mask id="agr4lis-gothic-grain10" maskUnits="userSpaceOnUse" x="0" y="0" width="36" height="36"><rect width="36" height="36" fill="#fff"/><use href="#agr4lis-gothic-texture" opacity="0.5"/></mask><pattern id="agr4lis-gothic-body10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="var(--agr4lis-ink, #846BEC)" mask="url(#agr4lis-gothic-grain10)"/></pattern><pattern id="agr4lis-gothic-leaf10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="#34B36B" mask="url(#agr4lis-gothic-grain10)"/></pattern><pattern id="agr4lis-gothic-inner10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="color-mix(in oklab, var(--agr4lis-ink, #846BEC), #fff 45%)" mask="url(#agr4lis-gothic-grain10)"/></pattern><pattern id="agr4lis-gothic-hair10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="color-mix(in oklab, var(--agr4lis-ink, #846BEC), #000000 40%)" mask="url(#agr4lis-gothic-grain10)"/></pattern></defs>
+    <g><g><clipPath id="agr4lis-gothic-gothic-1mwcmxu"><path d="3098:1mwcmxu"/></clipPath><path d="3098:1mwcmxu" fill="url(#agr4lis-gothic-body10)"/><g clip-path="url(#agr4lis-gothic-gothic-1mwcmxu)"><path d="3098:1mwcmxu" stroke="#000" stroke-opacity="0.13" stroke-width="69.1"/><path d="3098:1mwcmxu" stroke="#000" stroke-opacity="0.13" stroke-width="32.2"/></g><path d="474:1ssq3ul" stroke="#17110d" stroke-width="2.1" stroke-opacity="0.55" stroke-linecap="round"/><path d="266:1l7hq8" stroke="#17110d" stroke-width="1.8" stroke-opacity="0.4" stroke-linecap="round"/><path d="4174:xdsz9n" fill="#17110d" fill-rule="evenodd"/></g><g><clipPath id="agr4lis-gothic-gothic-1rn76r2"><path d="1086:1rn76r2"/></clipPath><path d="1086:1rn76r2" fill="url(#agr4lis-gothic-leaf10)"/><g clip-path="url(#agr4lis-gothic-gothic-1rn76r2)"><path d="1086:1rn76r2" stroke="#000" stroke-opacity="0.13" stroke-width="25.1"/><path d="1086:1rn76r2" stroke="#000" stroke-opacity="0.13" stroke-width="11.7"/></g><path d="543:18o9l4p" stroke="#17110d" stroke-width="1" stroke-opacity="0.55" stroke-linecap="round"/><path d="211:1mtu2wh" stroke="#17110d" stroke-width="1" stroke-opacity="0.4" stroke-linecap="round"/><path d="2198:ggo04m" fill="#17110d" fill-rule="evenodd"/></g><g><clipPath id="agr4lis-gothic-gothic-j392yz"><path d="579:j392yz"/></clipPath><path d="579:j392yz" fill="url(#agr4lis-gothic-leaf10)"/><g clip-path="url(#agr4lis-gothic-gothic-j392yz)"><path d="579:j392yz" stroke="#000" stroke-opacity="0.13" stroke-width="15.5"/><path d="579:j392yz" stroke="#000" stroke-opacity="0.13" stroke-width="7.2"/></g><path d="280:1szyhn9" stroke="#17110d" stroke-width="1" stroke-opacity="0.55" stroke-linecap="round"/><path d="195:1a3ols0" stroke="#17110d" stroke-width="1" stroke-opacity="0.4" stroke-linecap="round"/><path d="1161:97vqd1" fill="#17110d" fill-rule="evenodd"/></g></g>
+    <g data-aora-face="">
+      <path d="1122:7s58t6" transform="translate(65.1948 143.622) matrix(0.8874 0.0315 0.0632 0.9799 0 0) translate(-89.4663 -152.6056)" fill="#FFFFFF" opacity="1"/>
+      <path d="1173:sx0hyb" transform="translate(124.697 142.4247) matrix(0.9972 -0.0694 0.0632 0.9799 0 0) translate(-150.5337 -152.6056)" fill="#FFFFFF" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`gothic: static snapshots > sprout / powering-down 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="agr4lis" viewBox="-24 -24 288 288" fill="none" aria-hidden="true"><style>
+    .agr4lis { --agr4lis-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .agr4lis { --agr4lis-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(120 120) scale(1) translate(-120 -120)">
+    <defs><image id="agr4lis-gothic-texture" href="4678:80713i" width="36" height="36" preserveAspectRatio="none"/><mask id="agr4lis-gothic-grain10" maskUnits="userSpaceOnUse" x="0" y="0" width="36" height="36"><rect width="36" height="36" fill="#fff"/><use href="#agr4lis-gothic-texture" opacity="0.5"/></mask><pattern id="agr4lis-gothic-body10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="var(--agr4lis-ink, #846BEC)" mask="url(#agr4lis-gothic-grain10)"/></pattern><pattern id="agr4lis-gothic-leaf10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="#34B36B" mask="url(#agr4lis-gothic-grain10)"/></pattern><pattern id="agr4lis-gothic-inner10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="color-mix(in oklab, var(--agr4lis-ink, #846BEC), #fff 45%)" mask="url(#agr4lis-gothic-grain10)"/></pattern><pattern id="agr4lis-gothic-hair10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="color-mix(in oklab, var(--agr4lis-ink, #846BEC), #000000 40%)" mask="url(#agr4lis-gothic-grain10)"/></pattern></defs>
+    <g opacity="0.85"><g><clipPath id="agr4lis-gothic-gothic-1mwcmxu"><path d="3098:1mwcmxu"/></clipPath><path d="3098:1mwcmxu" fill="url(#agr4lis-gothic-body10)"/><g clip-path="url(#agr4lis-gothic-gothic-1mwcmxu)"><path d="3098:1mwcmxu" stroke="#000" stroke-opacity="0.13" stroke-width="69.1"/><path d="3098:1mwcmxu" stroke="#000" stroke-opacity="0.13" stroke-width="32.2"/></g><path d="474:1ssq3ul" stroke="#17110d" stroke-width="2.1" stroke-opacity="0.55" stroke-linecap="round"/><path d="266:1l7hq8" stroke="#17110d" stroke-width="1.8" stroke-opacity="0.4" stroke-linecap="round"/><path d="4174:xdsz9n" fill="#17110d" fill-rule="evenodd"/></g><g><clipPath id="agr4lis-gothic-gothic-1rn76r2"><path d="1086:1rn76r2"/></clipPath><path d="1086:1rn76r2" fill="url(#agr4lis-gothic-leaf10)"/><g clip-path="url(#agr4lis-gothic-gothic-1rn76r2)"><path d="1086:1rn76r2" stroke="#000" stroke-opacity="0.13" stroke-width="25.1"/><path d="1086:1rn76r2" stroke="#000" stroke-opacity="0.13" stroke-width="11.7"/></g><path d="543:18o9l4p" stroke="#17110d" stroke-width="1" stroke-opacity="0.55" stroke-linecap="round"/><path d="211:1mtu2wh" stroke="#17110d" stroke-width="1" stroke-opacity="0.4" stroke-linecap="round"/><path d="2198:ggo04m" fill="#17110d" fill-rule="evenodd"/></g><g><clipPath id="agr4lis-gothic-gothic-j392yz"><path d="579:j392yz"/></clipPath><path d="579:j392yz" fill="url(#agr4lis-gothic-leaf10)"/><g clip-path="url(#agr4lis-gothic-gothic-j392yz)"><path d="579:j392yz" stroke="#000" stroke-opacity="0.13" stroke-width="15.5"/><path d="579:j392yz" stroke="#000" stroke-opacity="0.13" stroke-width="7.2"/></g><path d="280:1szyhn9" stroke="#17110d" stroke-width="1" stroke-opacity="0.55" stroke-linecap="round"/><path d="195:1a3ols0" stroke="#17110d" stroke-width="1" stroke-opacity="0.4" stroke-linecap="round"/><path d="1161:97vqd1" fill="#17110d" fill-rule="evenodd"/></g></g>
+    <g data-aora-face="">
+      <path d="1122:7s58t6" transform="translate(65.1948 143.622) matrix(0.8874 0.0315 0.0632 0.9799 0 0) translate(-89.4663 -152.6056)" fill="#FFFFFF" opacity="1"/>
+      <path d="1173:sx0hyb" transform="translate(124.697 142.4247) matrix(0.9972 -0.0694 0.0632 0.9799 0 0) translate(-150.5337 -152.6056)" fill="#FFFFFF" opacity="1"/>
+    </g></g>
+</svg>"
+`;
+
+exports[`gothic: static snapshots > sprout / thinking 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" class="a192bxdf" viewBox="-24 -24 288 288" fill="none" aria-hidden="true"><style>
+    .a192bxdf { --a192bxdf-ink: #846BEC; }
+    @media (prefers-color-scheme: dark) {
+      .a192bxdf { --a192bxdf-ink: #7962D9; }
+    }
+  </style>
+  <g transform="translate(120 120) scale(1) translate(-120 -120)">
+    <defs><image id="a192bxdf-gothic-texture" href="4678:80713i" width="36" height="36" preserveAspectRatio="none"/><mask id="a192bxdf-gothic-grain10" maskUnits="userSpaceOnUse" x="0" y="0" width="36" height="36"><rect width="36" height="36" fill="#fff"/><use href="#a192bxdf-gothic-texture" opacity="0.5"/></mask><pattern id="a192bxdf-gothic-body10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="var(--a192bxdf-ink, #846BEC)" mask="url(#a192bxdf-gothic-grain10)"/></pattern><pattern id="a192bxdf-gothic-leaf10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="#34B36B" mask="url(#a192bxdf-gothic-grain10)"/></pattern><pattern id="a192bxdf-gothic-inner10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="color-mix(in oklab, var(--a192bxdf-ink, #846BEC), #fff 45%)" mask="url(#a192bxdf-gothic-grain10)"/></pattern><pattern id="a192bxdf-gothic-hair10" width="36" height="36" patternUnits="userSpaceOnUse" patternTransform="rotate(17)"><rect width="36" height="36" fill="color-mix(in oklab, var(--a192bxdf-ink, #846BEC), #000000 40%)" mask="url(#a192bxdf-gothic-grain10)"/></pattern></defs>
+    <g><g><clipPath id="a192bxdf-gothic-gothic-1mwcmxu"><path d="3098:1mwcmxu"/></clipPath><path d="3098:1mwcmxu" fill="url(#a192bxdf-gothic-body10)"/><g clip-path="url(#a192bxdf-gothic-gothic-1mwcmxu)"><path d="3098:1mwcmxu" stroke="#000" stroke-opacity="0.13" stroke-width="69.1"/><path d="3098:1mwcmxu" stroke="#000" stroke-opacity="0.13" stroke-width="32.2"/></g><path d="474:1ssq3ul" stroke="#17110d" stroke-width="2.1" stroke-opacity="0.55" stroke-linecap="round"/><path d="266:1l7hq8" stroke="#17110d" stroke-width="1.8" stroke-opacity="0.4" stroke-linecap="round"/><path d="4174:xdsz9n" fill="#17110d" fill-rule="evenodd"/></g><g><clipPath id="a192bxdf-gothic-gothic-1rn76r2"><path d="1086:1rn76r2"/></clipPath><path d="1086:1rn76r2" fill="url(#a192bxdf-gothic-leaf10)"/><g clip-path="url(#a192bxdf-gothic-gothic-1rn76r2)"><path d="1086:1rn76r2" stroke="#000" stroke-opacity="0.13" stroke-width="25.1"/><path d="1086:1rn76r2" stroke="#000" stroke-opacity="0.13" stroke-width="11.7"/></g><path d="543:18o9l4p" stroke="#17110d" stroke-width="1" stroke-opacity="0.55" stroke-linecap="round"/><path d="211:1mtu2wh" stroke="#17110d" stroke-width="1" stroke-opacity="0.4" stroke-linecap="round"/><path d="2198:ggo04m" fill="#17110d" fill-rule="evenodd"/></g><g><clipPath id="a192bxdf-gothic-gothic-j392yz"><path d="579:j392yz"/></clipPath><path d="579:j392yz" fill="url(#a192bxdf-gothic-leaf10)"/><g clip-path="url(#a192bxdf-gothic-gothic-j392yz)"><path d="579:j392yz" stroke="#000" stroke-opacity="0.13" stroke-width="15.5"/><path d="579:j392yz" stroke="#000" stroke-opacity="0.13" stroke-width="7.2"/></g><path d="280:1szyhn9" stroke="#17110d" stroke-width="1" stroke-opacity="0.55" stroke-linecap="round"/><path d="195:1a3ols0" stroke="#17110d" stroke-width="1" stroke-opacity="0.4" stroke-linecap="round"/><path d="1161:97vqd1" fill="#17110d" fill-rule="evenodd"/></g></g>
+    <g data-aora-face="">
+      <path d="1103:w9sthp" transform="translate(72.6964 133.3921) matrix(0.918 0.0007 0.0436 0.9938 0 0) translate(-98.1772 -142.8818)" fill="#FFFFFF" opacity="1"/>
+      <path d="1125:ccm8p2" transform="translate(133.2537 132.5932) matrix(0.9928 -0.0571 0.0454 0.9928 0 0) translate(-159.2446 -142.8818)" fill="#FFFFFF" opacity="1"/>
+      <path d="443:1ajig07" transform="translate(96.7105 171.6502) matrix(0.9744 -0.0196 0.1137 0.9024 0 0) translate(-120 -180.6732)" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="7.63" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+    </g>
+    <g data-aora-fx=""><circle cx="198.14" cy="41.86" r="5.3" fill="var(--a192bxdf-ink, #846BEC)" opacity="1"/><circle cx="217.67" cy="20.93" r="7.53" fill="var(--a192bxdf-ink, #846BEC)" opacity="1"/><circle cx="240" cy="-2.79" r="9.77" fill="var(--a192bxdf-ink, #846BEC)" opacity="1"/></g></g>
+</svg>"
+`;
+
 exports[`marker: static snapshots > blob / happy 1`] = `
 "<svg xmlns="http://www.w3.org/2000/svg" class="a1g4wv85" viewBox="-24 -24 288 288" fill="none" aria-hidden="true"><style>
     .a1g4wv85 { --a1g4wv85-ink: #846BEC; }
