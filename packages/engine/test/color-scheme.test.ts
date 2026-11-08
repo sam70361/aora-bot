@@ -9,7 +9,6 @@ const SERIES: [string, StaticOptions][] = [
   ['vector glass', { shape: 'mochi', color: 'blue', variant: 'glass' }],
   ['vector soft on black', { shape: 'mochi', color: 'black', variant: 'soft' }],
   ['pixel crisp', { shape: 'mochi', color: 'blue', style: 'pixel', variant: 'crisp' }],
-  ['pixel dot', { shape: 'mochi', color: 'blue', style: 'pixel', variant: 'dot' }],
   ['kaomoji', { shape: 'mochi', color: 'black', style: 'kaomoji' }],
 ];
 
@@ -36,6 +35,21 @@ describe('StaticOptions.colorScheme', () => {
   it('puts both halves of the pair in the rule, light first', () => {
     const page = renderStaticSvg({ shape: 'mochi', color: 'blue', colorScheme: 'page' });
     expect(page).toMatch(/--a[0-9a-z]+-ink: light-dark\(#[0-9a-f]{6}, #[0-9a-f]{6}\);/i);
+  });
+
+  it('lights the LED panel in the dark page ink on either page: nothing to switch', () => {
+    for (const colorScheme of ['system', 'page'] as const) {
+      const svg = renderStaticSvg({
+        shape: 'mochi',
+        color: 'black',
+        style: 'pixel',
+        variant: 'dot',
+        colorScheme,
+      });
+      expect(svg).toContain('color-scheme:dark');
+      expect(svg).not.toContain('prefers-color-scheme');
+      expect(svg).not.toContain('light-dark(');
+    }
   });
 
   it('leaves a flat or caller-owned ink alone: nothing to switch', () => {

@@ -352,12 +352,12 @@
     border-radius: var(--aora-radius-pill);
     background: var(--aora-swatch);
     cursor: pointer;
-    box-shadow: inset 0 0 0 1px var(--aora-line);
+    box-shadow: inset 0 0 0 1px var(--aora-swatch-edge, var(--aora-line));
     transition: box-shadow var(--aora-duration-fast) var(--aora-ease-standard);
 
     &[data-selected] {
       box-shadow:
-        inset 0 0 0 1px var(--aora-line),
+        inset 0 0 0 1px var(--aora-swatch-edge, var(--aora-line)),
         0 0 0 2px var(--aora-bg-base),
         0 0 0 4px var(--aora-accent);
     }

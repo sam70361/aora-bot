@@ -1,10 +1,13 @@
 import { getLeafColor } from '../../core/leaf.js';
 import {
+  cutFaceInk,
   effectInks,
   faceInks,
   getInkColor,
   getInkGradientFor,
   hairShade,
+  inkTone,
+  lineInks,
   type FaceInks,
 } from '../../core/palette.js';
 import { VIEWBOX_STR } from '../../core/types.js';
@@ -12,7 +15,7 @@ import type { StaticRenderer } from '../renderer.js';
 import { serializeNode } from '../scene.js';
 import { partColorPair, partRimPair } from '../part-color.js';
 import { schemeStyle } from '../scheme.js';
-import { emit } from './emit.js';
+import { emit, PLATE_COLOUR } from './emit.js';
 import { pixelGrid } from './grid.js';
 import {
   EYE_TOKEN,
@@ -51,11 +54,14 @@ export const renderPixelStatic: StaticRenderer = (frame, context) => {
   const table = createPaintTable();
   const paint = new Uint16Array(grid.size * grid.size);
 
-  const eyeColour = context.eyeColor ?? (variant === 'dot' ? LED_EYE : EYE_TOKEN);
+  // The LED panel is dark on either page, so it is lit in the dark page's ink, and its eyes are lit unless
+  // that ink is light, where they are left unlit.
+  const panel = variant === 'dot';
+  const ledEye = inkTone(getInkColor(color, 'dark')) === 'light' ? PLATE_COLOUR : LED_EYE;
+  const eyeColour = context.eyeColor ?? (panel ? ledEye : (cutFaceInk(color) ?? EYE_TOKEN));
   // The face rule (`faceInks`); a colour that turns with the page has its face cut out of it.
   const rule = faceInks(color);
-  const faceColour =
-    context.eyeColor ?? (variant === 'dot' ? LED_EYE : rule.cutOut ? EYE_TOKEN : rule.light.face);
+  const faceColour = context.eyeColor ?? (panel ? ledEye : rule.cutOut ? EYE_TOKEN : rule.light.face);
   rasterise(
     frame,
     {
@@ -75,8 +81,10 @@ export const renderPixelStatic: StaticRenderer = (frame, context) => {
   const bands = flat ? 1 : Math.max(1, Math.round(options.shades));
   const light = getInkGradientFor(color, 'light');
   const dark = getInkGradientFor(color, 'dark');
+  const lifted = panel ? lineInks(color).dark : null;
   const base = (band: number, scheme: 'light' | 'dark'): string => {
-    if (flat) return getInkColor(color, 'light');
+    if (lifted) return lifted;
+    if (flat) return getInkColor(color, panel ? 'dark' : 'light');
     const g = scheme === 'light' ? light : dark;
     return mixHex(g.from, g.to, (band + 0.5) / bands);
   };
@@ -90,6 +98,10 @@ export const renderPixelStatic: StaticRenderer = (frame, context) => {
     [GLINT_TOKEN]: ruled('glint'),
   };
   const colour = (def: PaintDef): { value: string; dark?: string } => {
+    const both = paintOf(def);
+    return panel ? { value: both.dark ?? both.value } : both;
+  };
+  const paintOf = (def: PaintDef): { value: string; dark?: string } => {
     const tint = def.tint;
     if (tint.kind === 'css' && drawnColours[tint.value]) return drawnColours[tint.value]!;
     if (tint.kind === 'css')

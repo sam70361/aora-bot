@@ -1,4 +1,4 @@
-import { getInkColor } from '../../core/palette.js';
+import { getInkColor, lineInks } from '../../core/palette.js';
 import { VIEWBOX_STR } from '../../core/types.js';
 import type { StaticRenderer } from '../renderer.js';
 import { serializeNode } from '../scene.js';
@@ -11,11 +11,15 @@ import { buildKaomojiScene, readKaomojiOptions } from './build.js';
  * No DOM and no timers, like the other series. The text takes the palette ink
  * through a custom property whose dark-mode value follows `colorScheme`: the
  * OS for a data URL, the page's own `color-scheme` for an inlined document.
+ * The text is a line on the page, so an ink too faint there is taken a step
+ * towards the page's contrast (`lineInks`).
  */
 export const renderKaomojiStatic: StaticRenderer = (frame, context) => {
   const { color, uid, flat } = context;
   const own = frame.ink;
-  const light = getInkColor(color, 'light');
+  const lines = lineInks(color);
+  const light = lines.light ?? getInkColor(color, 'light');
+  const dark = lines.dark ?? getInkColor(color, 'dark');
 
   let ink: string;
   let defs = '';
@@ -26,7 +30,7 @@ export const renderKaomojiStatic: StaticRenderer = (frame, context) => {
     ink = light;
   } else {
     ink = `var(--${uid}-ink, ${light})`;
-    defs = paletteInk(context.colorScheme ?? 'system', uid, light, getInkColor(color, 'dark'), null);
+    defs = paletteInk(context.colorScheme ?? 'system', uid, light, dark, null);
     root = ` class="${uid}"`;
   }
 

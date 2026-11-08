@@ -327,6 +327,7 @@ export {
   shapeGenerators,
   // Palette
   getSwatch,
+  getSwatchCss,
   getSwatchHex,
   getInkColor,
   getInkColorCss,

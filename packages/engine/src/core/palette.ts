@@ -196,6 +196,16 @@ export const getSwatch = (id: ColorId): Swatch => {
 
 export const getSwatchHex = (id: ColorId): string => getSwatch(id).value;
 
+/**
+ * A picker chip's paint: the chip colour, or, for a colour whose ink turns
+ * with the page, that ink as a `light-dark()` pair, so the chip is the colour
+ * the character is on this page. Black's chip is white on a dark page.
+ */
+export const getSwatchCss = (id: ColorId): string => {
+  const { ink, value } = getSwatch(id);
+  return inkTone(ink.light) === inkTone(ink.dark) ? value : getInkColorCss(id);
+};
+
 export const getInkColor = (id: ColorId, scheme: 'light' | 'dark' = 'light'): string =>
   getSwatch(id).ink[scheme];
 
@@ -216,8 +226,10 @@ export const getInkColorCss = (id: ColorId): string => {
 export const FACE_INK = '#FFFFFF';
 /** The soft variant's face: dark brown. */
 export const SOFT_FACE_INK = '#2B2420';
-/** The riso variant's second ink on a pink body; every other colour uses the default in `RISO_TOKEN`. */
+/** The riso variant's second ink on a pink body (`risoSecondInk`). */
 export const RISO_INK_ON_PINK = '#F5B428';
+/** The riso variant's default second ink, matching the fallback in `RISO_TOKEN`. */
+export const RISO_INK = '#FF78A6';
 /** What hair is shaded towards: black, except on a body too dark for black to show. */
 export const HAIR_SHADE = '#000000';
 /** The hair shade in a live scene: a token, so the host can turn it white for a dark body (`getInkVars`). */
@@ -346,6 +358,89 @@ export function effectInks(id: ColorId): { light: string | null; dark: string | 
   };
 }
 
+/** Contrast against the page below which an ink drawn as a line on it is too faint to read. */
+const LINE_FAINT = 2.2;
+/**
+ * Contrast against the page an ink too faint to read is taken to as a line.
+ * The same ratio looks weaker on a dark page, so a lifted line goes further.
+ */
+const LINE_CONTRAST = { light: 3, dark: 4.5 };
+
+const channels = (hex: string): number[] =>
+  [1, 3, 5].map((i) => {
+    const v = Number.parseInt(hex.slice(i, i + 2), 16) / 255;
+    return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+  });
+
+const toHex = (linear: number[]): string =>
+  `#${linear
+    .map((v) => {
+      const c = Math.min(1, Math.max(0, v));
+      const g = c <= 0.0031308 ? c * 12.92 : 1.055 * c ** (1 / 2.4) - 0.055;
+      return Math.round(g * 255)
+        .toString(16)
+        .padStart(2, '0');
+    })
+    .join('')
+    .toUpperCase()}`;
+
+/**
+ * The ink darkened until it reads at `LINE_CONTRAST` on a white page. Every
+ * channel is scaled by one factor in linear light, so the hue and the
+ * saturation are the ink's own.
+ */
+function deepened(hex: string): string {
+  const l = luminance(hex);
+  const k = (1.05 / LINE_CONTRAST.light - 0.05) / l;
+  return toHex(channels(hex).map((v) => v * k));
+}
+
+/** The ink lightened, towards white, until it reads at `LINE_CONTRAST` on a black page. */
+function lifted(hex: string): string {
+  const l = luminance(hex);
+  const t = (0.05 * LINE_CONTRAST.dark - 0.05 - l) / (1 - l);
+  return toHex(channels(hex).map((v) => v + (1 - v) * t));
+}
+
+/**
+ * What a colour is drawn in as a line on a light and on a dark page, where its
+ * ink is too faint there: the outline and the glass rim, a line variant's face
+ * and features, and the kaomoji's text. Cream on a light page deepens to a tan,
+ * night on a dark one lifts to a grey; `null` on a page where the ink itself
+ * reads.
+ */
+export function lineInks(id: ColorId): { light: string | null; dark: string | null } {
+  const { ink } = getSwatch(id);
+  return {
+    light: contrast(luminance(ink.light), 1) < LINE_FAINT ? deepened(ink.light) : null,
+    dark: contrast(luminance(ink.dark), 0) < LINE_FAINT ? lifted(ink.dark) : null,
+  };
+}
+
+/**
+ * The riso variant's second ink for a colour on a light and on a dark page,
+ * `null` where it is the default pink. A pale ink multiplied over pink prints
+ * as pink, so a light ink is printed twice, over itself, which deepens it the
+ * way a double hit does; pink would vanish into its own, so it takes gold.
+ */
+export function risoSecondInk(id: ColorId): { light: string | null; dark: string | null } {
+  if (id === 'pink') return { light: RISO_INK_ON_PINK, dark: RISO_INK_ON_PINK };
+  const { ink } = getSwatch(id);
+  const own = (hex: string): string | null => (inkTone(hex) === 'light' ? hex : null);
+  return { light: own(ink.light), dark: own(ink.dark) };
+}
+
+/**
+ * The eyes of a face cut out of the body (`eyes`, `line`) on a body of one
+ * tone on both pages, or `null` where the page shows through: a light body
+ * would swallow a light page, and a dark one a dark page, so they take the
+ * face rule's face, dark on cream and white on night.
+ */
+export function cutFaceInk(id: ColorId): string | null {
+  const { light, cutOut, plain } = faceInks(id);
+  return plain || cutOut ? null : light.face;
+}
+
 const pairCss = (light: string, dark: string): string =>
   light === dark ? light : `light-dark(${light}, ${dark})`;
 
@@ -360,14 +455,19 @@ const pairCss = (light: string, dark: string): string =>
  * face's features), `--aora-face-sticker`, `--aora-hair-shade`,
  * `--aora-face-pupil` (what reads on the face) and `--aora-face-glint` (what
  * reads on the features). `--aora-fx` is what state effects are drawn in,
- * written only for an ink lost on one of the pages (`effectInks`).
- * `--aora-ink2` is the riso variant's second ink, which only pink needs to
- * change.
+ * written only for an ink lost on one of the pages (`effectInks`), and
+ * `--aora-ink-line` what lines on the page are drawn in, only for an ink too faint
+ * on one of them (`lineInks`). `--aora-eye` is a cut-out face's eyes on a body
+ * that would swallow the page (`cutFaceInk`). `--aora-ink2` is the riso
+ * variant's second ink, for pink and the light inks (`risoSecondInk`).
  */
 export const getInkVars = (id: ColorId): Record<string, string> => {
   const { light, dark, cutOut, plain } = faceInks(id);
   const pair = (key: keyof FaceInks): string => pairCss(light[key], dark[key]);
   const effects = effectInks(id);
+  const lines = lineInks(id);
+  const eye = cutFaceInk(id);
+  const second = risoSecondInk(id);
   const { ink } = getSwatch(id);
   return {
     '--aora-fg': getInkColorCss(id),
@@ -384,7 +484,13 @@ export const getInkVars = (id: ColorId): Record<string, string> => {
     ...(effects.light || effects.dark
       ? { '--aora-fx': pairCss(effects.light ?? ink.light, effects.dark ?? ink.dark) }
       : null),
-    ...(id === 'pink' ? { '--aora-ink2': RISO_INK_ON_PINK } : null),
+    ...(lines.light || lines.dark
+      ? { '--aora-ink-line': pairCss(lines.light ?? ink.light, lines.dark ?? ink.dark) }
+      : null),
+    ...(eye ? { '--aora-eye': eye } : null),
+    ...(second.light || second.dark
+      ? { '--aora-ink2': pairCss(second.light ?? RISO_INK, second.dark ?? RISO_INK) }
+      : null),
   };
 };
 

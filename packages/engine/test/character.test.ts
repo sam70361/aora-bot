@@ -360,13 +360,15 @@ describe('createCharacter', () => {
       const outline = createCharacter(mount(), { face: 'line', variant: 'outline', reducedMotion: true });
       const [nose] = featuresOf(outline.element);
       expect(nose?.getAttribute('stroke')).toBe(
-        'color-mix(in oklab, var(--aora-fg, currentColor), light-dark(#000, #fff) 22%)',
+        'color-mix(in oklab, var(--aora-ink-line, var(--aora-fg, currentColor)), light-dark(#000, #fff) 22%)',
       );
       outline.destroy();
 
       const solid = createCharacter(mount(), { face: 'line', variant: 'solid', reducedMotion: true });
       const [mouth] = featuresOf(solid.element).slice(1);
-      expect(mouth?.getAttribute('stroke')).toBe('var(--aora-bg, var(--aora-bg-base, #fcfcfc))');
+      expect(mouth?.getAttribute('stroke')).toBe(
+        'var(--aora-eye, var(--aora-bg, var(--aora-bg-base, #fcfcfc)))',
+      );
       solid.destroy();
     });
   });
@@ -499,7 +501,9 @@ describe('createCharacter', () => {
     expect(bodyOf(gradient.element).getAttribute('stroke')).toBe(`url(#${def.id})`);
 
     gradient.update({ ink: null });
-    expect(bodyOf(gradient.element).getAttribute('stroke')).toBe('var(--aora-fg, currentColor)');
+    expect(bodyOf(gradient.element).getAttribute('stroke')).toBe(
+      'var(--aora-ink-line, var(--aora-fg, currentColor))',
+    );
     gradient.destroy();
   });
 

@@ -68,3 +68,16 @@ export const FX_TOKEN = `var(--aora-fx, ${INK_TOKEN})`;
 
 /** What an eye is on a dark LED panel: lit. */
 export const LED_EYE = '#FFFFFF';
+
+/**
+ * An eye on the LED panel in a live scene, where the panel resolves the
+ * tokens as a dark page does: the face rule's face there (`--aora-face`), lit
+ * on most inks and unlit on a light one, else unlit, the plate's own colour.
+ */
+export const LED_EYE_TOKEN = 'var(--aora-face, #17181D)';
+
+/** A cut-out face's eyes, matching `render/vector/build.ts`'s `CUT_TOKEN`. */
+export const CUT_TOKEN = `var(--aora-eye, ${EYE_TOKEN})`;
+
+/** The ink as a line on the page, matching `render/vector/build.ts`'s `LINE_TOKEN`: what lights the LED panel. */
+export const LINE_TOKEN = `var(--aora-ink-line, ${INK_TOKEN})`;

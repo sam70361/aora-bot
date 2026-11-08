@@ -15,7 +15,9 @@ A character's colours come down to a few CSS custom properties.
 | `--aora-face-soft`    | The dark face of the `soft`, `crayon` and `watercolor` variants, written for `black` only.            |
 | `--aora-face-sticker` | The `sticker` variant's face, written for `black` only: it turns black with the white dark-mode body. |
 | `--aora-hair-shade`   | The shade laid over hair on a filled body, `#000000` by default. Written for `black` only.            |
-| `--aora-ink2`         | The second ink of the `riso` variant, written for `pink` only.                                        |
+| `--aora-ink2`         | The second ink of the `riso` variant, written for `pink` and the light inks.                          |
+| `--aora-ink-line`     | Lines drawn in the ink, written where the ink is too faint on a page.                                 |
+| `--aora-eye`          | The eye cut-outs on a body that would swallow the page. Falls back to `--aora-bg`.                    |
 | `--aora-bg`           | The eye cut-outs of the `eyes` and `line` faces. Defaults to `--aora-bg-base`.                        |
 
 The component sets the first few for you, from the engine's `getInkVars(color)`. `--aora-bg-base` is the one you may need to change.

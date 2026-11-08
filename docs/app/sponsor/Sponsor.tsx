@@ -76,9 +76,9 @@ const AUDIENCE = [
 
 /** Sponsor seats, all open: the lead seat spans the row. */
 const SEATS = [
-  { tier: 'sponsor.seatLead', lead: true },
-  { tier: 'sponsor.seatTier', lead: false },
-  { tier: 'sponsor.seatTier', lead: false },
+  { id: 'lead', tier: 'sponsor.seatLead', lead: true },
+  { id: 'second', tier: 'sponsor.seatTier', lead: false },
+  { id: 'third', tier: 'sponsor.seatTier', lead: false },
 ] as const;
 
 /** The kinds of sponsor the audience suits, each with the reach it gives them. */
@@ -202,8 +202,8 @@ export function Sponsor() {
         </header>
 
         <ul className="site-sponsor__seats">
-          {SEATS.map(({ tier, lead }, i) => (
-            <li key={i} className="site-sponsor__seat" data-lead={lead || undefined}>
+          {SEATS.map(({ id, tier, lead }) => (
+            <li key={id} className="site-sponsor__seat" data-lead={lead || undefined}>
               <span className="site-sponsor__seat-tier">{t(tier)}</span>
               <span className="site-sponsor__seat-mark">
                 <PlusIcon />

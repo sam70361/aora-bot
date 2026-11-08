@@ -206,7 +206,7 @@ export default function Demo() {
 
 ## Riso
 
-`riso` imitates two-colour stencil printing: the body is printed in its own ink in place, multiplied over a copy in the second ink (`--aora-ink2`, pink by default and gold on a pink body) shifted a little to one side, with a halftone screen over the top. The edge where the two passes miss each other is the look of this variant. `risoOffset` is the misregistration in shape-space units, and `risoHalftone` switches the screen.
+`riso` imitates two-colour stencil printing: the body is printed in its own ink in place, multiplied over a copy in the second ink (`--aora-ink2`, pink by default, gold on a pink body, and the ink itself for a light ink on the page where it is light, so cream stays cream) shifted a little to one side, with a halftone screen over the top. The edge where the two passes miss each other is the look of this variant. `risoOffset` is the misregistration in shape-space units, and `risoHalftone` switches the screen.
 
 ```tsx preview
 import { renderStaticSvgDataUrl } from '@aora-bot/react';

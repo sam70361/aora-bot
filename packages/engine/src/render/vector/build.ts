@@ -64,6 +64,9 @@ export const INK_TOKEN = 'var(--aora-fg, currentColor)';
 /** What state effects are drawn in: the ink, unless the host sets an ink of their own (`getInkVars`). */
 export const FX_TOKEN = `var(--aora-fx, ${INK_TOKEN})`;
 
+/** What the ink is drawn in as a line on the page: the ink, unless it is too faint there (`getInkVars`). */
+export const LINE_TOKEN = `var(--aora-ink-line, ${INK_TOKEN})`;
+
 /**
  * The colour of the eye cut-outs. `--aora-bg` is what a host sets to re-theme
  * the holes; it defaults to `--aora-bg-base` in the stylesheet, and the
@@ -71,6 +74,13 @@ export const FX_TOKEN = `var(--aora-fx, ${INK_TOKEN})`;
  * a styled one.
  */
 export const EYE_TOKEN = 'var(--aora-bg, var(--aora-bg-base, #fcfcfc))';
+
+/**
+ * The eyes of a face cut out of a filled body (`eyes`, `line`): the page,
+ * unless the host names a colour for a body that would swallow it
+ * (`--aora-eye`, `getInkVars`).
+ */
+export const CUT_TOKEN = `var(--aora-eye, ${EYE_TOKEN})`;
 
 /**
  * The sticker's paper: its border, its eyes and the ring round its badge.
@@ -252,8 +262,12 @@ export interface VectorSceneContext {
   shadowId?: string;
   /** Body paint, resolved by the caller. Absent: derived from the snapshot's ink. */
   ink?: string;
-  /** Eye cut-out colour in the solid variant. Defaults to `EYE_TOKEN`. */
+  /** Eye cut-out colour in the solid variant, overriding `cutFill`. */
   eyeFill?: string;
+  /** A cut-out face's eyes on a filled body. Defaults to `CUT_TOKEN`. */
+  cutFill?: string;
+  /** The palette ink as a line on the page, where `solidInk` is that ink. Defaults to `LINE_TOKEN` for the token. */
+  lineInk?: string;
   /** Colour of the cute face on a filled body. Defaults to `FACE_TOKEN`. */
   faceFill?: string;
   /** Colour of the cute face in the soft variant. Defaults to `SOFT_FACE_TOKEN`. */
@@ -447,6 +461,13 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
   const opacity = (v: number): number | undefined => (!live && v >= 1 ? undefined : r2(v));
   /** A node a static scene drops when it is invisible. */
   const keep = (visible: boolean): boolean => live || visible;
+  /** The palette ink as a line on the page (`lineInks`); any other paint is its own line. */
+  const asLine = (paint: string): string =>
+    paint === INK_TOKEN
+      ? (ctx.lineInk ?? LINE_TOKEN)
+      : ctx.lineInk && paint === ctx.solidInk
+        ? ctx.lineInk
+        : paint;
   /**
    * A hollow body's face paint. A gradient cannot be mixed, and a
    * `currentColor` ink is a single-colour line drawing that has to stay in
@@ -455,7 +476,7 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
   const hollowFace = (solid: string, variant: string): string =>
     solid.startsWith('url(') || solid === 'currentColor'
       ? solid
-      : `color-mix(in oklab, ${solid}, ${ctx.faceShift ?? FACE_SHIFT_TOKEN} ${lineShift(variant)}%)`;
+      : `color-mix(in oklab, ${asLine(solid)}, ${ctx.faceShift ?? FACE_SHIFT_TOKEN} ${lineShift(variant)}%)`;
   /**
    * What uncoloured hair is shaded towards: the deep tone of the ink its shape
    * asks for (`DrawnArt.hairDeep`), else the face rule's hair shade.
@@ -525,7 +546,7 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
       ? hollowFace(ctx.solidInk ?? ink, variant)
       : variant === 'sticker'
         ? stickerFace
-        : (ctx.eyeFill ?? EYE_TOKEN);
+        : (ctx.eyeFill ?? ctx.cutFill ?? CUT_TOKEN);
     const belt = line ?? ctx.beltPaint ?? flatInk(frame) ?? INK_TOKEN;
     const effects = effectPaint(frame, ink);
     const d = bodyPath(frame.body.outline);
@@ -732,7 +753,7 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
           d,
           fill: ink,
           'fill-opacity': r2(OUTLINE_FILL * (frame.body.coreOpacity ?? 1)),
-          stroke: ink,
+          stroke: asLine(ink),
           'stroke-width': width,
           'stroke-linejoin': 'round',
         };
@@ -741,7 +762,7 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
           d,
           fill: ink,
           'fill-opacity': r2(GLASS.tint * (frame.body.coreOpacity ?? 1)),
-          stroke: ink,
+          stroke: asLine(ink),
           'stroke-width': r2(width * GLASS.rim),
           'stroke-opacity': GLASS.rimOpacity,
           'stroke-linejoin': 'round',

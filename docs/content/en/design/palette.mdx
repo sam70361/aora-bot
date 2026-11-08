@@ -70,7 +70,11 @@ The body ink is `--aora-fg`, but the face and a couple of variants need colours 
 | `--aora-face-soft`    | The dark face of `soft`, `crayon` and `watercolor` | Only written for `black`: its body flips with the scheme, so this dark face flips with it                                                         |
 | `--aora-face-sticker` | The `sticker` variant's face                       | Only written for `black`: on a dark page the body turns white, so the face turns from paper white to black                                        |
 | `--aora-hair-shade`   | The shade laid over hair on a filled body          | `#000000` by default; for `black`, `getInkVars` writes `light-dark(#FFFFFF, #000000)`, so a black character's hair stays readable on a light page |
-| `--aora-ink2`         | The `riso` variant's second ink                    | Gold on a pink body, the stylesheet default otherwise                                                                                             |
+| `--aora-ink2`         | The `riso` variant's second ink                    | A light ink prints over itself on the page where it is light; gold on a pink body; the stylesheet default otherwise                               |
+| `--aora-ink-line`     | Lines in the ink: `outline`, `glass`, kaomoji      | Only written where the ink is too faint on a page: deepened on a light page, keeping its hue, and lifted on a dark one                            |
+| `--aora-eye`          | The eye holes of the `eyes` and `line` faces       | Only written for a body that would swallow the page: the dark face on a light body, white on a dark one                                           |
+
+A colour picker's chip should show the colour the character takes on the current page, so `getSwatchCss(id)` returns `black` as its `light-dark()` pair rather than the fixed swatch. `CharacterSelector` also rings a chip that is too faint on the page in its `--aora-ink-line`.
 
 ```tsx preview
 import { getInkVars } from '@aora-bot/engine';

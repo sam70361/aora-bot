@@ -15,6 +15,7 @@ export {
   autoColorForKey,
   autoShapeForKey,
   autoNoseForKey,
+  getSwatchCss,
   getSwatchHex,
   getInkColorCss,
   haloBackground,

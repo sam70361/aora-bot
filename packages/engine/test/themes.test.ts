@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, expectTypeOf, it } from 'vitest';
 import { CAST, allCast, castMember, type CastId } from '../src/core/cast.js';
-import { getInkVars } from '../src/core/palette.js';
+import { getInkVars, getSwatchCss } from '../src/core/palette.js';
 import {
   ALL_COLOR_IDS,
   COLOR_IDS,
@@ -422,8 +422,41 @@ describe('palette', () => {
       '--aora-hair-shade': 'light-dark(#FFFFFF, #000000)',
       '--aora-face-pupil': 'light-dark(#2B2420, #FFFFFF)',
       '--aora-face-glint': 'light-dark(#2B2420, #FFFFFF)',
+      '--aora-ink2': 'light-dark(#FF78A6, #FFFFFF)',
     });
     expect(getInkVars('blue')).toEqual({ '--aora-fg': expect.any(String), '--aora-face': '#FFFFFF' });
+  });
+
+  it('draws lines on the page in a deeper or lighter ink where the ink is too faint there', () => {
+    const cream = getInkVars('cream')['--aora-ink-line']!;
+    expect(cream).toMatch(/^light-dark\(#[0-9A-F]{6}, #EADBB9\)$/);
+    expect(getInkVars('night')['--aora-ink-line']).toMatch(/^light-dark\(#2A2433, #[0-9A-F]{6}\)$/);
+    for (const color of ['blue', 'orange', 'black', 'navy'] as const)
+      expect(getInkVars(color)['--aora-ink-line'], color).toBeUndefined();
+    // Cream's line on a light page keeps its hue: still warmer in red than in blue.
+    const [r, , b] = [1, 3, 5].map((i) => Number.parseInt(cream.slice(12 + i, 14 + i), 16));
+    expect(r!).toBeGreaterThan(b!);
+    expect(renderStaticSvg({ color: 'cream', variant: 'outline' })).toContain('-line: ');
+    expect(renderStaticSvg({ color: 'cream', style: 'kaomoji', flat: true })).not.toContain('#F1E2C1');
+  });
+
+  it('gives a cut-out face eyes that read on a body that would swallow the page', () => {
+    expect(getInkVars('cream')['--aora-eye']).toBe('#2B2420');
+    expect(getInkVars('night')['--aora-eye']).toBe('#FFFFFF');
+    for (const color of ['blue', 'black'] as const)
+      expect(getInkVars(color)['--aora-eye'], color).toBeUndefined();
+    expect(renderStaticSvg({ color: 'cream', face: 'eyes' })).toContain('fill="#2B2420"');
+  });
+
+  it('prints a light ink over itself in riso, and pink over gold', () => {
+    expect(getInkVars('cream')['--aora-ink2']).toBe('light-dark(#F1E2C1, #EADBB9)');
+    expect(getInkVars('pink')['--aora-ink2']).toBe('#F5B428');
+    expect(getInkVars('blue')['--aora-ink2']).toBeUndefined();
+  });
+
+  it('shows black as the colour it is on the page in a picker chip', () => {
+    expect(getSwatchCss('black')).toBe('light-dark(#1F1F1F, #FFFFFF)');
+    expect(getSwatchCss('cream')).toBe('#E9D9B6');
   });
 });
 

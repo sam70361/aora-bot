@@ -158,5 +158,10 @@ export function emit(paint: Uint16Array, table: PaintTable, ctx: EmitContext): E
       { layout: 'block' },
     ),
   ];
-  return { scene: node('g', { transform }, children, { layout: 'block' }), overrides, stroked };
+  // The panel is dark on either page, so its tokens resolve as a dark page's do: black lights it white.
+  return {
+    scene: node('g', { transform, style: 'color-scheme:dark' }, children, { layout: 'block' }),
+    overrides,
+    stroked,
+  };
 }

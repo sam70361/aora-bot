@@ -15,7 +15,9 @@ import { TokenTable } from '@theme';
 | `--aora-face-soft`    | `soft`、`crayon`、`watercolor` 变体的深色脸，只为 `black` 写。  |
 | `--aora-face-sticker` | `sticker` 变体的脸，只为 `black` 写：暗色下随白色身体换成黑色。 |
 | `--aora-hair-shade`   | 实心身体上头发叠加的阴影色，默认 `#000000`。只为 `black` 写。   |
-| `--aora-ink2`         | `riso` 变体的第二种墨，只为 `pink` 写。                         |
+| `--aora-ink2`         | `riso` 变体的第二种墨，为 `pink` 和浅色墨写。                   |
+| `--aora-ink-line`     | 用墨色画的线，只在墨色在某一页面上太淡时写。                    |
+| `--aora-eye`          | 会吞掉页面底色的身体上的眼睛挖孔，回落到 `--aora-bg`。          |
 | `--aora-bg`           | 眼睛挖孔（`eyes`、`line` 脸）。默认等于 `--aora-bg-base`。      |
 
 组件会替你设置前几个，它们来自引擎的 `getInkVars(color)`。你可能需要改的是 `--aora-bg-base`。

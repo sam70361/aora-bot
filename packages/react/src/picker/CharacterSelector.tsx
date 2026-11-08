@@ -2,7 +2,8 @@ import {
   DEFAULT_FACE,
   COLOR_SWATCHES,
   FACE_STYLES,
-  getSwatchHex,
+  getInkVars,
+  getSwatchCss,
   NOSE_IDS,
   SHAPE_IDS,
   shapeRingMaskImage,
@@ -154,7 +155,12 @@ export function CharacterSelector({
             className="aora-picker__swatch"
             data-selected={(showSelection && selected) || undefined}
             onClick={() => onSelectColor?.(id)}
-            style={{ '--aora-swatch': getSwatchHex(id) } as CSSProperties}
+            style={
+              {
+                '--aora-swatch': getSwatchCss(id),
+                '--aora-swatch-edge': getInkVars(id)['--aora-ink-line'],
+              } as CSSProperties
+            }
           />
         )}
       />

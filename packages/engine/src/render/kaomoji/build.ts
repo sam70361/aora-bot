@@ -30,6 +30,9 @@ export function readKaomojiOptions(raw: Record<string, unknown>): KaomojiOptions
 /** The default ink in a live document, matching `render/vector/build.ts`'s `INK_TOKEN`. */
 export const INK_TOKEN = 'var(--aora-fg, currentColor)';
 
+/** The text is a line on the page, so it takes the ink as a line (`LINE_TOKEN` in `render/vector/build.ts`). */
+export const LINE_TOKEN = `var(--aora-ink-line, ${INK_TOKEN})`;
+
 /** Text is a font, not a path: these are looked up on the host and fall back to any sans-serif. */
 const FONT_FAMILY = "ui-sans-serif, system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif";
 
@@ -44,7 +47,7 @@ const PLATE_OPACITY = 0.12;
 /** A body paint as a single colour: a gradient ink writes its first stop. */
 export function inkOf(frame: FrameSnapshot): string {
   const ink = frame.ink;
-  if (!ink) return INK_TOKEN;
+  if (!ink) return LINE_TOKEN;
   return 'flat' in ink ? ink.flat : ink.from;
 }
 

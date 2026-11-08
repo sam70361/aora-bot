@@ -1,12 +1,15 @@
 import type { InkPaint, StaticColorScheme } from '../../core/options.js';
 import { getLeafColor } from '../../core/leaf.js';
 import {
+  cutFaceInk,
   effectInks,
   faceInks,
   getInkColor,
   getInkGradientFor,
   HAIR_SHADE,
-  RISO_INK_ON_PINK,
+  lineInks,
+  RISO_INK,
+  risoSecondInk,
   type FaceInks,
 } from '../../core/palette.js';
 import { isDrawnFace, VIEWBOX_STR, type PartColor } from '../../core/types.js';
@@ -103,9 +106,20 @@ export const renderVectorStatic: StaticRenderer = (frame, context) => {
       ? { light: effects.light ?? light, dark: effects.dark ?? dark }
       : null;
 
+  // A line variant draws its lines in an ink too faint on one of the pages a step towards that page's contrast.
+  const lines = hollow ? lineInks(color) : null;
+  const linePair =
+    lines && (lines.light || lines.dark) ? { light: lines.light ?? light, dark: lines.dark ?? dark } : null;
+  const seconds = frame.variant === 'riso' ? risoSecondInk(color) : null;
+  const secondPair =
+    seconds && (seconds.light || seconds.dark)
+      ? { light: seconds.light ?? RISO_INK, dark: seconds.dark ?? RISO_INK }
+      : null;
+
   let fill: string;
   let solid: string;
   let fxFill: string | undefined;
+  let lineInk: string | undefined;
   let defs = '';
   let root = '';
   if (own && 'flat' in own) {
@@ -117,9 +131,11 @@ export const renderVectorStatic: StaticRenderer = (frame, context) => {
   } else if (flat) {
     fill = solid = light;
     fxFill = fxPair?.light;
+    lineInk = linePair?.light;
   } else {
     solid = `var(--${uid}-ink, ${light})`;
     fxFill = fxPair ? `var(--${uid}-fx, ${fxPair.light})` : undefined;
+    lineInk = linePair ? `var(--${uid}-line, ${linePair.light})` : undefined;
     defs = paletteInk(scheme, uid, light, dark, turns && (ruleSoft || ruleFeatures) ? pairOf('soft') : null, [
       ...(hollow ? [{ prop: `--${uid}-shift`, light: '#000', dark: '#fff' }] : []),
       ...(turns && ruleSticker ? [{ prop: `--${uid}-sticker`, ...pairOf('sticker') }] : []),
@@ -135,6 +151,8 @@ export const renderVectorStatic: StaticRenderer = (frame, context) => {
         { prop: partVar(part, 'rim'), ...partRimPair(part)! },
       ]),
       ...(fxPair ? [{ prop: `--${uid}-fx`, ...fxPair }] : []),
+      ...(linePair ? [{ prop: `--${uid}-line`, ...linePair }] : []),
+      ...(secondPair ? [{ prop: '--aora-ink2', ...secondPair }] : []),
     ]);
     root = ` class="${uid}"`;
     fill = solid;
@@ -173,8 +191,10 @@ export const renderVectorStatic: StaticRenderer = (frame, context) => {
     ink: fill,
     solidInk: solid,
     fxFill,
+    lineInk,
     partColor,
     eyeFill: context.eyeColor,
+    cutFill: cutFaceInk(color) ?? undefined,
     faceFill,
     softFaceFill,
     stickerFaceFill: ruleSticker && (!turns || root) ? paint('sticker') : undefined,
@@ -194,9 +214,9 @@ export const renderVectorStatic: StaticRenderer = (frame, context) => {
     displaySizePx: context.sizePx,
     params: readVectorParams(context.styleOptions),
   });
-  // Pink's second ink would vanish into its own body, so the riso variant swaps it.
-  const second =
-    color === 'pink' && frame.variant === 'riso' ? ` style="--aora-ink2:${RISO_INK_ON_PINK}"` : '';
+  // Pink and the light inks would vanish into, or print as, the default pink, so the riso variant swaps it;
+  // where the ink switches with the page, so does the second ink, in the root's rule.
+  const second = secondPair && !root ? ` style="--aora-ink2:${secondPair.light}"` : '';
   const size = context.sizePx ? ` width="${context.sizePx}" height="${context.sizePx}"` : '';
   // Decorations or an underlay that reach past the box show where the page lets the SVG overflow.
   const bleed =

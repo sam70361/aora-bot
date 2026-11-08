@@ -285,7 +285,7 @@ describe('single line: outline with a currentColor ink', () => {
     const host = document.createElement('div');
     const character = createCharacter(host, { variant: 'outline', reducedMotion: true });
     const stroke = character.element.querySelector('path[stroke]')!.getAttribute('stroke');
-    expect(stroke).toBe('var(--aora-fg, currentColor)');
+    expect(stroke).toBe('var(--aora-ink-line, var(--aora-fg, currentColor))');
     character.destroy();
   });
 
@@ -597,7 +597,7 @@ describe('riso', () => {
 
   it('swaps the second ink on pink, where it would disappear into its own body', () => {
     const svg = staticSvg('riso', { color: 'pink' });
-    expect(svg).toContain('--aora-ink2:#F5B428');
+    expect(svg).toContain('--aora-ink2: #F5B428');
   });
 
   it('screens the print with halftone dots unless told not to', () => {
