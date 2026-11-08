@@ -51,7 +51,7 @@ the cast member's choice, and never throws.
 | `style-options`  | A JSON object of the style's parameters, such as `{"paperOffset":12}` | The style's own defaults        |
 | `seed`           | Any string; makes blinks and idle motion differ per instance          | `shape:color`                   |
 | `size`           | A CSS length, or a number of pixels                                   | `28px`                          |
-| `eye-color`      | Any CSS colour for the eye cut-outs                                   | The page background             |
+| `eye-color`      | Any CSS colour for the eyes of the `cute`, `eyes` and `line` faces    | Chosen by the colour            |
 | `badge-color`    | Any CSS colour for the `notifying` badge                              | `var(--aora-accent)`            |
 | `eye-scale`      | A positive number                                                     | `1`                             |
 | `line-weight`    | A number from 0.8 to 1.25                                             | `1`                             |
@@ -98,8 +98,8 @@ or `hud`, call `el.controller.update({ ... })`.
 
 The character is drawn in a shadow root, so page CSS cannot reach inside. The host is
 `display: inline-block`; size it with `size`, or with your own `width` and `height`. Ink follows
-the page's `color-scheme`, and `--aora-bg-base` on any ancestor sets the colour behind the eye
-cut-outs.
+the page's `color-scheme`, and `--aora-bg-base` on any ancestor sets the page colour a face shows,
+such as a drawn face's whites on a line body.
 
 ## Without the element
 

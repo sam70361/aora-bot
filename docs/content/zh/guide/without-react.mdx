@@ -61,7 +61,7 @@ defineAoraBot();
 | `style-options`  | 该画风参数的 JSON 对象，例如 `{"paperOffset":12}`                                      |
 | `seed`           | 任意字符串；种子不同的角色不会同时眨眼                                                 |
 | `size`           | CSS 长度，或像素数；默认 `32px`                                                        |
-| `eye-color`      | 眼睛镂空处的 CSS 颜色                                                                  |
+| `eye-color`      | `cute`、`eyes`、`line` 脸眼睛的 CSS 颜色                                               |
 | `badge-color`    | `notifying` 状态下角标的 CSS 颜色                                                      |
 | `eye-scale`      | 眼睛大小的正数倍率，默认 `1`                                                           |
 | `line-weight`    | 线条粗细的倍率，范围 0.8 到 1.25，默认 `1`                                             |
@@ -81,7 +81,7 @@ defineAoraBot();
 
 元素带有 `role="img"`，`aria-label` 是阵容成员的名字；最近的 `lang` 是 `zh` 时用中文名。自己设置了 `aria-label` 或 `role`，它们就不会被改动。
 
-角色画在 shadow root 里，页面的 CSS 够不到里面。宿主是 `display: inline-block`；用 `size` 设置大小，也可以自己写 `width` 和 `height`。墨色跟随页面的 `color-scheme`，任意祖先上的 `--aora-bg-base` 决定眼睛镂空处的底色，详见[主题](/guide/theming)。
+角色画在 shadow root 里，页面的 CSS 够不到里面。宿主是 `display: inline-block`；用 `size` 设置大小，也可以自己写 `width` 和 `height`。墨色跟随页面的 `color-scheme`，任意祖先上的 `--aora-bg-base` 决定脸上露出的页面色，比如线条身体上绘制脸的眼白，详见[主题](/guide/theming)。
 
 ## 方法
 

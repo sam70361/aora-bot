@@ -22,7 +22,7 @@ import {
 } from '../../face/drawn/index.js';
 import { PIXEL_SHOWN, rasteriseDrawn, rasteriseInMouth } from './drawn.js';
 import { glyphShift, rasteriseEyes, rasteriseGlyph, rasteriseStroke, type Poly } from './face.js';
-import { FEATURE_TOKEN, GLINT_TOKEN, PUPIL_TOKEN } from './options.js';
+import { FEATURE_TOKEN, GLINT_TOKEN, PUPIL_TOKEN } from '../../core/palette.js';
 import { PIXEL_GLYPHS } from './glyphs.js';
 import {
   apply,
@@ -49,9 +49,9 @@ export interface RasterSettings {
   variant: PixelVariant;
   /** Direction of a gradient ink in degrees, or null when the ink is one colour. */
   gradient: number | null;
-  /** The eye cut-out, and what the face features are drawn in. */
+  /** What the `eyes` and `line` faces are drawn in: the features' colour. */
   eye: Tint;
-  /** What the cute face is drawn in. Absent: the cut-out colour. */
+  /** What the cute face and a drawn face's whites are drawn in: the face colour. Absent: `eye`. */
   face?: Tint;
 }
 

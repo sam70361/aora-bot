@@ -30,7 +30,7 @@ export const renderKaomojiStatic: StaticRenderer = (frame, context) => {
     ink = light;
   } else {
     ink = `var(--${uid}-ink, ${light})`;
-    defs = paletteInk(context.colorScheme ?? 'system', uid, light, dark, null);
+    defs = paletteInk(context.colorScheme ?? 'system', uid, light, dark);
     root = ` class="${uid}"`;
   }
 

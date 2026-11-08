@@ -262,7 +262,7 @@ export const AUTO_SHAPE_POOL: ShapeId[] = [
  * How the face is drawn.
  *
  * `cute` is the default: small round eyes, a small mouth and pink blush,
- * painted in a face colour on the body. `eyes` is two cut-out eyes and
+ * painted in a face colour on the body. `eyes` is two large eyes and
  * nothing else — the silhouette does the rest. `line` adds a stroked nose and
  * a parametric mouth at the same line weight as the eyes, and moves the three
  * as one plate. All styles share every state and pose; only the feature set

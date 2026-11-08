@@ -11,15 +11,15 @@ A character's colours come down to a few CSS custom properties.
 | Variable              | Role                                                                                                     |
 | --------------------- | -------------------------------------------------------------------------------------------------------- |
 | `--aora-fg`           | The ink. Set per instance from the `color` prop.                                                         |
-| `--aora-face`         | The colour of the `cute` face, by the face rule. Not written for `black`, which falls back to a cut-out. |
-| `--aora-face-soft`    | The dark face of `soft`, `crayon` and `watercolor`, and brows: written off the middle of the range.      |
+| `--aora-face`         | The face colour: the `cute` face and a drawn face's whites, by the face rule.                            |
+| `--aora-face-soft`    | The features colour: the `eyes` and `line` faces, brows, and the face of `soft`, `crayon`, `watercolor`. |
 | `--aora-face-sticker` | The `sticker` variant's face: dark where the white face does not read on the body.                       |
 | `--aora-hair-shade`   | The shade laid over hair on a filled body, `#000000` by default, white on a nearly black body.           |
 | `--aora-ink2`         | The second ink of the `riso` variant, written for the light inks and the hues of the default ink.        |
 | `--aora-ink-line`     | Lines drawn in the ink, written where the ink is too faint on a page.                                    |
-| `--aora-eye`          | The eye cut-outs on a page that does not read on the body. Falls back to `--aora-bg`.                    |
+| `--aora-eye`          | The eyes of the `cute`, `eyes` and `line` faces in a colour of your own, set from `eyeColor`.            |
 | `--aora-rim`          | The hairline edge of a filled body on a page it all but matches, `transparent` elsewhere.                |
-| `--aora-bg`           | The eye cut-outs of the `eyes` and `line` faces. Defaults to `--aora-bg-base`.                           |
+| `--aora-bg`           | The page where a face shows it: a drawn face's whites on a line body. Defaults to `--aora-bg-base`.      |
 
 The component sets the first few for you, from the engine's `getInkVars(color)`. `--aora-bg-base` is the one you may need to change.
 
@@ -53,9 +53,9 @@ Every colour token is a `light-dark()` pair, and the page picks the half with `c
 
 Several class names are supported because application shells and documentation frameworks disagree about which to use.
 
-## Eye cut-outs
+## The page behind a face
 
-The default `cute` face is painted white and does not depend on the background. The eyes of the `eyes` and `line` faces are holes: filled with `--aora-bg` and clipped to the body, so they read as transparent on any surface, and so is the `cute` face of the `black` ink. That only holds while `--aora-bg-base` matches what is actually behind the character.
+Every face is painted on the body, in colours the face rule picks for that body, so it reads the same on any surface. A body that is a line (`outline`, `glass`) is mostly page, and there a drawn face's whites and the ring round a badge are drawn in the page itself: `--aora-bg`, which follows `--aora-bg-base`. That only holds while `--aora-bg-base` matches what is actually behind the character.
 
 Override it on any ancestor and the whole subtree follows:
 
@@ -77,7 +77,7 @@ export default function Demo() {
             ['--aora-bg-base' as string]: bg,
           }}
         >
-          <CharacterMark shape="tofu" color="yellow" face="eyes" sizePx={72} />
+          <CharacterMark shape="tofu" color="yellow" face="capsule" variant="outline" sizePx={72} />
         </div>
       ))}
     </div>
@@ -85,7 +85,7 @@ export default function Demo() {
 }
 ```
 
-If you need the eyes to be a solid colour rather than a hole, pass `eyeColor`.
+To paint the eyes of the `cute`, `eyes` and `line` faces in a colour of your own, pass `eyeColor`.
 
 ## Cascade layers
 

@@ -577,8 +577,8 @@ export function StagedMark({
 
   if (status === 'overflow') {
     // Inline rather than an <img> data URL: an SVG document inside <img> is
-    // isolated from the page, so the eye cut-outs could not read the
-    // background token and would punch light holes into a dark card.
+    // isolated from the page, so it could neither read the colour tokens nor
+    // follow the page's `color-scheme`.
     return (
       <span
         className={`${classes} aora-mark--still`}
@@ -592,7 +592,6 @@ export function StagedMark({
           {
             ...getInkVars(color),
             '--aora-leaf': getLeafColor(color),
-            ...(eyeColor ? { '--aora-bg': eyeColor } : null),
             width: sizePx,
             ...style,
           } as CSSProperties
@@ -608,7 +607,7 @@ export function StagedMark({
             style: appearance.styleId,
             variant: appearance.variant,
             styleOptions: appearance.styleOptions ?? undefined,
-            eyeColor: 'var(--aora-bg)',
+            eyeColor,
             // Inlined into the host's page, so the ink follows its `color-scheme`
             // like every token does, not the OS.
             colorScheme: 'page',

@@ -99,7 +99,7 @@ export function CharacterMarkMirror({
         {
           ...getInkVars(color),
           '--aora-leaf': getLeafColor(color),
-          ...(eyeColor ? { '--aora-bg': eyeColor } : null),
+          ...(eyeColor ? { '--aora-eye': eyeColor } : null),
           width: size,
           ...style,
         } as CSSProperties

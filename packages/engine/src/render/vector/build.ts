@@ -7,7 +7,19 @@
  * (hidden, not absent), so the DOM can be updated in place; a static scene is
  * the culled, flattened form that reads well as a string.
  */
-import { FACE_INK, HAIR_SHADE_TOKEN, PAGE_TOKEN, SOFT_FACE_INK } from '../../core/palette.js';
+import {
+  eyeToken,
+  FACE_TOKEN,
+  FEATURE_TOKEN,
+  FX_TOKEN,
+  GLINT_TOKEN,
+  HAIR_SHADE_TOKEN,
+  INK_TOKEN,
+  LINE_TOKEN,
+  PAGE_TOKEN,
+  PUPIL_TOKEN,
+  RISO_INK,
+} from '../../core/palette.js';
 import { CENTER, isCuteFamily, type PartColor, type Ring } from '../../core/types.js';
 import { livePartPaint, type PartColorPaint } from '../part-color.js';
 import { FACE_ACCENTS, type FaceAccent } from '../../face/drawn/index.js';
@@ -59,25 +71,6 @@ import {
   type PartLayers,
 } from './parts.js';
 
-/** The theme's foreground token: the default body ink. */
-export const INK_TOKEN = 'var(--aora-fg, currentColor)';
-
-/** What state effects are drawn in: the ink, unless the host sets an ink of their own (`getInkVars`). */
-export const FX_TOKEN = `var(--aora-fx, ${INK_TOKEN})`;
-
-/** What the ink is drawn in as a line on the page: the ink, unless it is too faint there (`getInkVars`). */
-export const LINE_TOKEN = `var(--aora-ink-line, ${INK_TOKEN})`;
-
-/** The colour of the eye cut-outs: the page (`PAGE_TOKEN`). */
-export const EYE_TOKEN = PAGE_TOKEN;
-
-/**
- * The eyes of a face cut out of a filled body (`eyes`, `line`): the page,
- * unless the host names a colour for a body the page does not read on
- * (`--aora-eye`, `getInkVars`).
- */
-export const CUT_TOKEN = `var(--aora-eye, ${EYE_TOKEN})`;
-
 /** The edge of a filled body on a page it all but matches: none, unless the host sets one (`getInkVars`). */
 export const RIM_TOKEN = 'var(--aora-rim, transparent)';
 
@@ -100,29 +93,17 @@ export const STICKER_FACE_TOKEN = `var(--aora-face-sticker, ${PAPER_TOKEN})`;
  * vanishes; a step towards the page's own contrast keeps it the ink's colour
  * and still lets it read.
  */
-export const FACE_SHIFT_TOKEN = 'light-dark(#000, #fff)';
+export const FACE_SHIFT = { light: '#000', dark: '#fff' } as const;
+/** `FACE_SHIFT` switched with the page. */
+export const FACE_SHIFT_TOKEN = `light-dark(${FACE_SHIFT.light}, ${FACE_SHIFT.dark})`;
 
-/**
- * The cute face's own colour. A host that sets `--aora-face` (white, for every
- * hue but black) gets the white face; without it the face is a cut-out in
- * the page colour, which reads on any body.
- */
-export const FACE_TOKEN = `var(--aora-face, ${PAGE_TOKEN})`;
-
-/**
- * The dark face of the painted variants (`soft`, `crayon`, `watercolor`): a
- * dark brown, with a host override for a black body.
- */
-export const SOFT_FACE_TOKEN = 'var(--aora-face-soft, #2B2420)';
-
-/**
- * A drawn face's pupils: dark on the white face, and on a black body light
- * on a dark page, where the face is the page's own dark (`getInkVars`).
- */
-export const PUPIL_TOKEN = `var(--aora-face-pupil, ${SOFT_FACE_INK})`;
-
-/** The light on an eye a drawn face paints straight onto the body: white, except where the feature colour is. */
-export const GLINT_TOKEN = `var(--aora-face-glint, ${FACE_INK})`;
+/** A face's paints by role (`facePalette`), and what the faces without pupils paint their eyes in. */
+interface FacePalette extends DrawnPalette {
+  /** The cute face. */
+  cute: string;
+  /** The `eyes` and `line` faces' eyes, nose and mouth. */
+  features: string;
+}
 
 /** How a drawn face's iris deepens the body's ink. */
 const IRIS_DEPTH = { color: '#1A1226', share: 38 } as const;
@@ -148,7 +129,7 @@ const HOLLOW_ACCENT_SHARE: Record<FaceAccent, number> = {
 const PLATE_RIM = 0.32;
 
 /** The riso variant's second ink. `--aora-ink2` swaps it, as pink needs. */
-export const RISO_TOKEN = 'var(--aora-ink2, #FF78A6)';
+export const RISO_TOKEN = `var(--aora-ink2, ${RISO_INK})`;
 
 /** How much black is laid over the ink to make the paper variant's cast shadow. */
 const PAPER_SHADOW_DARKNESS = 0.32;
@@ -261,30 +242,34 @@ export interface VectorSceneContext {
   shadowId?: string;
   /** Body paint, resolved by the caller. Absent: derived from the snapshot's ink. */
   ink?: string;
-  /** Eye cut-out colour in the solid variant, overriding `cutFill`. */
+  /**
+   * The eyes of the cute, `eyes` and `line` faces on a filled body, whatever
+   * the face rule chose (`eyeColor`). Absent: the rule, which a live host can
+   * still override with `--aora-eye`.
+   */
   eyeFill?: string;
-  /** A cut-out face's eyes on a filled body. Defaults to `CUT_TOKEN`. */
-  cutFill?: string;
   /** The palette ink as a line on the page, where `solidInk` is that ink. Defaults to `LINE_TOKEN` for the token. */
   lineInk?: string;
   /** The edge of a filled body (`rimInks`). Defaults to `RIM_TOKEN`; `null` draws none. */
   rimInk?: string | null;
-  /** Colour of the cute face on a filled body. Defaults to `FACE_TOKEN`. */
+  /*
+   * The face rule's paints on a filled body (`facePalette`), resolved by the
+   * caller; each defaults to its token.
+   */
+  /** The face colour. Defaults to `FACE_TOKEN`. */
   faceFill?: string;
-  /** Colour of the cute face in the soft variant. Defaults to `SOFT_FACE_TOKEN`. */
-  softFaceFill?: string;
-  /** Colour of the face and eyes in the sticker variant. Defaults to `STICKER_FACE_TOKEN`. */
+  /** The features' colour. Defaults to `FEATURE_TOKEN`. */
+  featureFill?: string;
+  /** A drawn face's pupils. Defaults to `PUPIL_TOKEN`. */
+  pupilFill?: string;
+  /** The light on an eye drawn on the body. Defaults to `GLINT_TOKEN`. */
+  glintFill?: string;
+  /** The sticker's face. Defaults to `STICKER_FACE_TOKEN`. */
   stickerFaceFill?: string;
   /** What a hollow body's face is mixed towards. Defaults to `FACE_SHIFT_TOKEN`. */
   faceShift?: string;
   /** What hair is shaded towards on a filled body. Defaults to `HAIR_SHADE_TOKEN`. */
   hairShade?: string;
-  /** A drawn face's pupils on a filled body. Defaults to `PUPIL_TOKEN`. */
-  pupilFill?: string;
-  /** A drawn face's brows, lids and body-drawn eyes on a filled body. Defaults to the soft face colour. */
-  featureFill?: string;
-  /** The light on a body-drawn eye. Defaults to `GLINT_TOKEN`. */
-  glintFill?: string;
   /** The body's ink as a solid paint, for strokes too thin for a gradient. Defaults to `ink`. */
   solidInk?: string;
   /** What state effects are drawn in. Defaults to `solidInk`, then to `FX_TOKEN`. */
@@ -452,7 +437,7 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
     return {
       ink: ctx.solidInk ?? (own && 'from' in own ? own.from : buildingInk),
       fx: ctx.fxFill ?? ctx.solidInk ?? ctx.beltPaint ?? flatInk(frame) ?? FX_TOKEN,
-      page: ctx.eyeFill ?? EYE_TOKEN,
+      page: PAGE_TOKEN,
       contrast: ctx.faceShift ?? FACE_SHIFT_TOKEN,
       partColor: ctx.partColor ?? livePartPaint,
     };
@@ -534,7 +519,6 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
     const frame = withoutFineParts(snapshot, ctx.displaySizePx ?? 0);
     const ink = resolveInk(frame, ctx);
     const variant = frame.variant;
-    const hollow = isHollow(variant);
     const medium = isMedium(variant);
     sized = mediumSize(ctx.params, ctx.displaySizePx ?? 0, frame.shapeScale);
     const line = mediumLine(frame, ink);
@@ -543,14 +527,6 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
     if (!extras) extras = themeExtras()?.scene(live, ctx.phaseSeed) ?? null;
     extras?.begin(frame, getShape(frame.shape), paintsNow, ctx.displaySizePx ?? 0);
     motion = extras ?? undefined;
-    // Outlined bodies are not a filled mass, so cut-out eyes would vanish: the
-    // eyes and features switch to the ink instead. A sticker's eyes are its
-    // paper, whatever the page behind it is.
-    const eyeFill = hollow
-      ? hollowFace(ctx.solidInk ?? ink, variant)
-      : variant === 'sticker'
-        ? stickerFace
-        : (ctx.eyeFill ?? ctx.cutFill ?? CUT_TOKEN);
     const belt = line ?? ctx.beltPaint ?? flatInk(frame) ?? INK_TOKEN;
     const effects = effectPaint(frame, ink);
     const d = bodyPath(frame.body.outline);
@@ -586,14 +562,14 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
         node(
           'g',
           tilt === 0 ? undefined : { transform: `rotate(${r2(tilt)} ${CENTER} ${CENTER})` },
-          [paperShadow(frame, ink, d), bodyGroup(frame, body, eyeFill, d, ink, parts)],
+          [paperShadow(frame, ink, d), bodyGroup(frame, body, d, ink, parts)],
           { fragment: tilt === 0 },
         ),
       );
     } else if (split) {
-      bodySplit(frame, body, eyeFill, d, ink, parts, split);
+      bodySplit(frame, body, d, ink, parts, split);
     } else {
-      children.push(bodyGroup(frame, body, eyeFill, d, ink, parts));
+      children.push(bodyGroup(frame, body, d, ink, parts));
     }
     const front = [
       node('g', undefined, beltDots(frame, belt), { fragment: true }),
@@ -802,12 +778,11 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
   function bodyGroup(
     frame: FrameSnapshot,
     body: SceneNode,
-    eyeFill: string,
     d: string,
     ink: string,
     parts: PartLayers,
   ): SceneNode {
-    const children = [...skinNodes(frame, body, d, ink, parts), ...faceNodes(frame, eyeFill, ink)];
+    const children = [...skinNodes(frame, body, d, ink, parts), ...faceNodes(frame, ink)];
     const { transform, atRest } = bodyMotion(frame.body);
     // Inside the motion, so a medium's grain and glow ride the body rather than slide over it.
     const content = isMedium(frame.variant) ? [treated(frame, 'body', children)] : children;
@@ -818,14 +793,13 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
   function bodySplit(
     frame: FrameSnapshot,
     body: SceneNode,
-    eyeFill: string,
     d: string,
     ink: string,
     parts: PartLayers,
     into: BodySplit,
   ): void {
     into.skin = skinNodes(frame, body, d, ink, parts, into);
-    into.face = faceNodes(frame, eyeFill, ink);
+    into.face = faceNodes(frame, ink);
     into.treat = isMedium(frame.variant) ? (nodes) => treated(frame, 'body', nodes) : null;
   }
 
@@ -922,16 +896,16 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
   }
 
   /** The face, the effects that belong to it and the badge. */
-  function faceNodes(frame: FrameSnapshot, eyeFill: string, ink: string): SceneNode[] {
+  function faceNodes(frame: FrameSnapshot, ink: string): SceneNode[] {
     const sticker = frame.variant === 'sticker';
     const medium = isMedium(frame.variant);
     const children: SceneNode[] = [];
-    const faceGroup = face(frame.face, eyeFill, frame.variant, ink);
+    const faceGroup = face(frame.face, frame.variant, ink);
     if (faceGroup) children.push(medium ? treated(frame, 'face', [faceGroup]) : faceGroup);
     // Effects that belong to the face (a tear) ride the body's own motion.
     if (live || frame.fx?.space === 'face') children.push(fxLayer(frame, 'face', effectPaint(frame, ink)));
 
-    const ring = sticker ? PAPER_TOKEN : EYE_TOKEN;
+    const ring = sticker ? PAPER_TOKEN : PAGE_TOKEN;
     const badge = frame.badge;
     if (badge) {
       children.push(
@@ -1073,25 +1047,15 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
   }
 
   /** The cute face: cheeks, then eyes, then the mouth, painted in the variant's face colour. */
-  function cuteFace(f: FaceFrame, variant: string, ink: string): SceneNode[] {
+  function cuteFace(f: FaceFrame, variant: string, solid: string, palette: FacePalette): SceneNode[] {
     const g = f.geometry;
     const hollow = isHollow(variant);
-    const soft = wearsDarkFace(variant);
-    const solid = ctx.solidInk ?? ink;
-    // A sticker's face is cut from the same paper as its border, whatever colour
-    // the page asks for, unless the body itself turns paper-white.
-    const paint = hollow
-      ? hollowFace(solid, variant)
-      : faceInkOf(
-          variant,
-          soft
-            ? (ctx.softFaceFill ?? SOFT_FACE_TOKEN)
-            : variant === 'sticker'
-              ? stickerFace
-              : (ctx.faceFill ?? FACE_TOKEN),
-          solid,
-        );
-    const blush = hollow ? { color: solid, opacity: BLUSH_HOLLOW_OPACITY } : soft ? BLUSH_SOFT : BLUSH;
+    const paint = palette.cute;
+    const blush = hollow
+      ? { color: solid, opacity: BLUSH_HOLLOW_OPACITY }
+      : wearsDarkFace(variant)
+        ? BLUSH_SOFT
+        : BLUSH;
 
     const children: SceneNode[] = [];
     const add = (n: SceneNode | null): void => void (n && children.push(n));
@@ -1103,9 +1067,8 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
 
     // A drawn face lays its own eyes over the plain ones and paints its mouth in its own role.
     const drawn = g?.drawn;
-    const palette = drawn ? drawnPalette(variant, solid) : null;
-    if (drawn && palette) children.push(...drawnEyeNodes(drawn, 1, palette));
-    const mouthPaint = drawn && palette ? drawnMouthPaint(drawn, g?.eyeOpacity ?? 1, paint, palette) : paint;
+    if (drawn) children.push(...drawnEyeNodes(drawn, 1, palette));
+    const mouthPaint = drawn ? drawnMouthPaint(drawn, g?.eyeOpacity ?? 1, paint, palette) : paint;
 
     const mouth = g?.mouth;
     // An outlined body draws its mouth as an outline even when it is open; a filled one fills it.
@@ -1124,29 +1087,38 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
         (mouth?.opacity ?? 1) * f.cute,
       ),
     );
-    if (drawn && palette)
-      children.push(...drawnMouthNodes(drawn, mouth, (mouth?.opacity ?? 1) * f.cute, palette));
+    if (drawn) children.push(...drawnMouthNodes(drawn, mouth, (mouth?.opacity ?? 1) * f.cute, palette));
     return children;
   }
 
   /**
-   * What a drawn face's paint roles are in this variant. Whites take the
-   * cute face's colour, and the features the colour that reads on the body;
-   * on a body that is a line every role is the line or the page, and the
-   * plates get a rim, as the cute face becomes the line there too. Accents
-   * keep their colour unless the variant throws its effects in one colour.
+   * Every face's paints in this variant, by role (`faceInks`). On a filled
+   * body the face colour (`face`) is the cute face and a drawn face's whites,
+   * and the features' colour (`feature`) everything drawn straight on the
+   * body: the `eyes` and `line` faces, a drawn face's brows, lids and eyes; a
+   * pupil reads on the face colour and a glint on the features'. A face
+   * without pupils uses the first two, a drawn face all four. The painted
+   * variants paint the cute face in the features' colour, and a sticker its
+   * face in its paper. On a body that is a line every role is the line or the
+   * page, and the plates get a rim. Accents keep their colour unless the
+   * variant throws its effects in one colour.
    */
-  function drawnPalette(variant: string, solid: string): DrawnPalette {
+  function facePalette(variant: string, solid: string): FacePalette {
     const hollow = isHollow(variant);
+    const sticker = variant === 'sticker';
     const line = hollowFace(solid, variant);
-    const page = ctx.eyeFill ?? EYE_TOKEN;
+    const page = PAGE_TOKEN;
     const mono = hollow && monochromeEffects(variant);
+    const featureInk = hollow ? line : (ctx.featureFill ?? FEATURE_TOKEN);
     const faceInk = hollow
       ? page
-      : faceInkOf(variant, variant === 'sticker' ? stickerFace : (ctx.faceFill ?? FACE_TOKEN), solid);
+      : faceInkOf(variant, sticker ? stickerFace : (ctx.faceFill ?? FACE_TOKEN), solid);
     const pupil = hollow ? line : (ctx.pupilFill ?? PUPIL_TOKEN);
-    const featureInk = hollow ? line : (ctx.featureFill ?? ctx.softFaceFill ?? SOFT_FACE_TOKEN);
     const glint = hollow ? page : (ctx.glintFill ?? GLINT_TOKEN);
+    // The host's eye colour, where it names one, over the eyes of the faces without pupils.
+    const eyed = (paint: string): string =>
+      hollow || sticker ? paint : (ctx.eyeFill ?? (live ? eyeToken(paint) : paint));
+    const cute = hollow ? line : wearsDarkFace(variant) ? faceInkOf(variant, featureInk, solid) : faceInk;
     const base = hollow ? line : solid;
     const iris = base.startsWith('url(')
       ? base
@@ -1157,6 +1129,8 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
       return share >= 100 ? line : share <= 0 ? page : `color-mix(in oklab, ${line} ${share}%, ${page})`;
     };
     return {
+      cute: eyed(cute),
+      features: eyed(featureInk),
       paint(role, light) {
         switch (role) {
           case 'face':
@@ -1179,9 +1153,11 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
     };
   }
 
-  function face(f: FaceFrame, eyeFill: string, variant: string, ink: string): SceneNode | null {
+  function face(f: FaceFrame, variant: string, ink: string): SceneNode | null {
     if (!keep(f.opacity > 0.01 && f.geometry !== null)) return null;
     const g = f.geometry;
+    const solid = ctx.solidInk ?? ink;
+    const palette = facePalette(variant, solid);
 
     const attrs = {
       'data-aora-face': '',
@@ -1189,8 +1165,9 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
       opacity: opacity(f.opacity),
     };
     if (f.cute > 0.005 || isCuteFamily(f.style)) {
-      return node('g', attrs, cuteFace(f, variant, ink), { layout: 'block' });
+      return node('g', attrs, cuteFace(f, variant, solid, palette), { layout: 'block' });
     }
+    const eyeFill = palette.features;
 
     const eye = (shape: EyeShape | undefined): SceneNode =>
       node(

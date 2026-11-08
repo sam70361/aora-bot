@@ -212,10 +212,10 @@ export const getInkColorCss = (id: ColorId): string => {
   return `light-dark(${ink.light}, ${ink.dark})`;
 };
 
-/** The cute face's own colour: what the face rule prefers for it (`READS`). */
+/** The face colour the face rule prefers (`READS`): white. */
 export const FACE_INK = '#FFFFFF';
-/** The soft variant's face: dark brown. */
-export const SOFT_FACE_INK = '#2B2420';
+/** The features' colour the face rule prefers (`READS`): dark brown. */
+export const FEATURE_INK = '#2B2420';
 /** The riso variant's second ink on a body of the default second ink's hue (`risoSecondInk`). */
 export const RISO_INK_ON_PINK = '#F5B428';
 /** The riso variant's default second ink, matching the fallback in `RISO_TOKEN`. */
@@ -224,6 +224,38 @@ export const RISO_INK = '#FF78A6';
 export const HAIR_SHADE = '#000000';
 /** The hair shade in a live scene: a token, so the host can turn it white for a dark body (`getInkVars`). */
 export const HAIR_SHADE_TOKEN = `var(--aora-hair-shade, ${HAIR_SHADE})`;
+
+/** The theme's foreground token: the default body ink. */
+export const INK_TOKEN = 'var(--aora-fg, currentColor)';
+/** What state effects are drawn in: the ink, unless the host sets an ink of their own (`getInkVars`). */
+export const FX_TOKEN = `var(--aora-fx, ${INK_TOKEN})`;
+/** What the ink is drawn in as a line on the page: the ink, unless it is too faint there (`getInkVars`). */
+export const LINE_TOKEN = `var(--aora-ink-line, ${INK_TOKEN})`;
+
+/**
+ * The page itself, where a face shows it: the whites of a drawn face on a
+ * hollow body, and the ring round a badge. `--aora-bg` is what a host sets to
+ * re-theme it; it defaults to `--aora-bg-base` in the stylesheet, and the
+ * fallback here is that token's own default, so an unstyled page agrees with
+ * a styled one.
+ */
+export const PAGE_TOKEN = 'var(--aora-bg, var(--aora-bg-base, #fcfcfc))';
+
+/*
+ * The face rule's paints in a live scene (`faceInks`), each defaulting to what
+ * a hue in the middle of the range wears, so a host writes only those its
+ * colour changes (`getInkVars`).
+ */
+/** The face colour: the cute face, a drawn face's whites. */
+export const FACE_TOKEN = `var(--aora-face, ${FACE_INK})`;
+/** The features' colour: everything drawn straight on the body, and the painted variants' face. */
+export const FEATURE_TOKEN = `var(--aora-face-soft, ${FEATURE_INK})`;
+/** A drawn face's pupils: what reads on the face colour. */
+export const PUPIL_TOKEN = `var(--aora-face-pupil, ${FEATURE_INK})`;
+/** The light on an eye drawn straight on the body: what reads on the features' colour. */
+export const GLINT_TOKEN = `var(--aora-face-glint, ${FACE_INK})`;
+/** The eyes of the cute, `eyes` and `line` faces when the host names a colour for them (`eyeColor`). */
+export const eyeToken = (paint: string): string => `var(--aora-eye, ${paint})`;
 
 /** A `#rrggbb` colour's channels in linear light. */
 const channels = (hex: string): number[] =>
@@ -263,16 +295,10 @@ const contrastOf = (a: string, b: string): number => contrast(luminance(a), lumi
 const READS = {
   /** A cute face, a drawn face's whites, a sticker's face: large shapes, white wherever white holds. */
   face: 2.4,
-  /** The soft face, brows, lids and eyes drawn on the body: small and thin, so dark needs more to hold. */
+  /** Eyes, brows, lids and lines drawn on the body: small and thin, so dark needs more to hold. */
   feature: 3,
   /** Hair shaded towards black: a shade only, lost on a body that is nearly black itself. */
   shade: 1.8,
-  /**
-   * A cut-out eye, measured against the far end of its page (`PAGE`): a real
-   * page seldom is one, a dark one least of all, so the hole keeps a margin
-   * that still leaves about a feature's contrast on a common dark page.
-   */
-  hole: 4.5,
 } as const;
 
 /** `preferred` where it reads on `ground` at `min`, otherwise whichever of the two reads better there. */
@@ -282,25 +308,25 @@ const readsOn = (ground: string, preferred: string, other: string, min: number):
 };
 
 /** The other face paint: what reads on a paint of the face. */
-const across = (paint: string): string => (paint === FACE_INK ? SOFT_FACE_INK : FACE_INK);
+const across = (paint: string): string => (paint === FACE_INK ? FEATURE_INK : FACE_INK);
 
 /** An ink a white face does not read on: cream, yellow, black on a dark page. */
 export const isLightInk = (hex: string): boolean =>
-  readsOn(hex, FACE_INK, SOFT_FACE_INK, READS.face) !== FACE_INK;
+  readsOn(hex, FACE_INK, FEATURE_INK, READS.face) !== FACE_INK;
 
 /** The face's paints on one body ink. */
 export interface FaceInks {
   /** The cute face, and a drawn face's whites. */
   face: string;
-  /** The dark face of the painted variants, and a drawn face's brows and body-drawn eyes. */
-  soft: string;
+  /** The features drawn on the body: the `eyes` and `line` faces, a drawn face's brows, lids and eyes, and the painted variants' face. */
+  feature: string;
   /** The sticker's face. */
   sticker: string;
   /** What hair is shaded towards. */
   hair: string;
   /** A drawn face's pupils: what reads on `face`. */
   pupil: string;
-  /** The light on a body-drawn eye: what reads on `soft`. */
+  /** The light on a body-drawn eye: what reads on `feature`. */
   glint: string;
 }
 
@@ -315,25 +341,25 @@ const STICKER_DARK = '#1F1F1F';
  * its hair shading too.
  */
 function faceOn(ink: string): FaceInks {
-  const face = readsOn(ink, FACE_INK, SOFT_FACE_INK, READS.face);
-  const soft = readsOn(ink, SOFT_FACE_INK, FACE_INK, READS.feature);
+  const face = readsOn(ink, FACE_INK, FEATURE_INK, READS.face);
+  const feature = readsOn(ink, FEATURE_INK, FACE_INK, READS.feature);
   return {
     face,
-    soft,
+    feature,
     sticker: face === FACE_INK ? FACE_INK : STICKER_DARK,
     hair: readsOn(ink, HAIR_SHADE, '#FFFFFF', READS.shade),
     pupil: across(face),
-    glint: across(soft),
+    glint: across(feature),
   };
 }
 
 /** The face paints the tokens default to: what a mid hue wears, so a host needs to write none of them. */
 const PLAIN_FACE: FaceInks = {
   face: FACE_INK,
-  soft: SOFT_FACE_INK,
+  feature: FEATURE_INK,
   sticker: FACE_INK,
   hair: HAIR_SHADE,
-  pupil: SOFT_FACE_INK,
+  pupil: FEATURE_INK,
   glint: FACE_INK,
 };
 
@@ -342,15 +368,13 @@ const sameFace = (a: FaceInks, b: FaceInks): boolean => KEYS.every((key) => a[ke
 
 /**
  * A colour's face paints on a light and on a dark page. `turns` when any of
- * them differs between the pages; `cutOut` when the face itself does, as on
- * black, whose face is then cut out of the page, which reads on either;
+ * them differs between the pages, as on black, whose body itself turns;
  * `plain` when both pages wear the tokens' defaults.
  */
 export function faceInks(id: ColorId): {
   light: FaceInks;
   dark: FaceInks;
   turns: boolean;
-  cutOut: boolean;
   plain: boolean;
 } {
   const { ink } = getSwatch(id);
@@ -360,7 +384,6 @@ export function faceInks(id: ColorId): {
     light,
     dark,
     turns: !sameFace(light, dark),
-    cutOut: light.face !== dark.face,
     plain: sameFace(light, PLAIN_FACE) && sameFace(dark, PLAIN_FACE),
   };
 }
@@ -379,14 +402,6 @@ export const hairShade = (id: ColorId): { light: string; dark: string } => {
 
 type Page = 'light' | 'dark';
 type PerPage<T> = { light: T; dark: T };
-
-/**
- * The page itself, as a cut-out shows it. `--aora-bg` is what a host sets to
- * re-theme the holes; it defaults to `--aora-bg-base` in the stylesheet, and
- * the fallback here is that token's own default, so an unstyled page agrees
- * with a styled one.
- */
-export const PAGE_TOKEN = 'var(--aora-bg, var(--aora-bg-base, #fcfcfc))';
 
 /** The pages a colour is measured against: the far ends of any light and any dark page. */
 const PAGE: PerPage<string> = { light: '#FFFFFF', dark: '#000000' };
@@ -502,20 +517,6 @@ export function risoSecondInk(id: ColorId): PerPage<string | null> {
   });
 }
 
-/**
- * The eyes of a face cut out of the body (`eyes`, `line`) on a light and on a
- * dark page: the page where it reads on the body at `READS.hole`, otherwise
- * whichever of the page and the face rule's face reads better there. Cream on
- * a light page and navy or night on a dark one take their face; `null` on a
- * page that shows through.
- */
-export function cutFaceInk(id: ColorId): PerPage<string | null> {
-  const rule = faceInks(id);
-  return perPage(id, (ink, page) =>
-    readsOn(ink, PAGE[page], rule[page].face, READS.hole) === PAGE[page] ? null : rule[page].face,
-  );
-}
-
 const pairCss = (light: string, dark: string): string =>
   light === dark ? light : `light-dark(${light}, ${dark})`;
 
@@ -525,24 +526,21 @@ const pairCss = (light: string, dark: string): string =>
  * `--aora-fg` is the body ink. The rest follow the face rule (`faceInks`):
  * on a hue in the middle of the range only `--aora-face` is written, white,
  * and the tokens' defaults do the rest. A colour with a dark or a light ink
- * writes them all: `--aora-face` (absent where the face is a cut-out of the
- * page, as on black), `--aora-face-soft` (the soft variant's face and a drawn
- * face's features), `--aora-face-sticker`, `--aora-hair-shade`,
- * `--aora-face-pupil` (what reads on the face) and `--aora-face-glint` (what
- * reads on the features). `--aora-fx` is what state effects are drawn in,
- * written only for an ink lost on one of the pages (`effectInks`), and
- * `--aora-ink-line` what lines on the page are drawn in, only for an ink too faint
- * on one of them (`lineInks`). `--aora-eye` is a cut-out face's eyes where the
- * page does not read on the body (`cutFaceInk`), and `--aora-rim` the edge of a
- * filled body on a page it all but matches (`rimInks`). `--aora-ink2` is the riso
- * variant's second ink, for the light inks and the second ink's own hues (`risoSecondInk`).
+ * writes them all: `--aora-face`, `--aora-face-soft` (every feature drawn on
+ * the body), `--aora-face-sticker`, `--aora-hair-shade`, `--aora-face-pupil`
+ * (what reads on the face) and `--aora-face-glint` (what reads on the
+ * features). `--aora-fx` is what state effects are drawn in, written only for
+ * an ink lost on one of the pages (`effectInks`), `--aora-ink-line` what lines
+ * on the page are drawn in, only for an ink too faint on one of them
+ * (`lineInks`), and `--aora-rim` the edge of a filled body on a page it all
+ * but matches (`rimInks`). `--aora-ink2` is the riso variant's second ink, for
+ * the light inks and the second ink's own hues (`risoSecondInk`).
  */
 export const getInkVars = (id: ColorId): Record<string, string> => {
-  const { light, dark, cutOut, plain } = faceInks(id);
+  const { light, dark, plain } = faceInks(id);
   const pair = (key: keyof FaceInks): string => pairCss(light[key], dark[key]);
   const effects = effectInks(id);
   const lines = lineInks(id);
-  const eye = cutFaceInk(id);
   const rim = rimInks(id);
   const second = risoSecondInk(id);
   const { ink } = getSwatch(id);
@@ -551,8 +549,8 @@ export const getInkVars = (id: ColorId): Record<string, string> => {
     ...(plain
       ? { '--aora-face': FACE_INK }
       : {
-          ...(cutOut ? null : { '--aora-face': pair('face') }),
-          '--aora-face-soft': pair('soft'),
+          '--aora-face': pair('face'),
+          '--aora-face-soft': pair('feature'),
           '--aora-face-sticker': pair('sticker'),
           '--aora-hair-shade': pair('hair'),
           '--aora-face-pupil': pair('pupil'),
@@ -563,9 +561,6 @@ export const getInkVars = (id: ColorId): Record<string, string> => {
       : null),
     ...(lines.light || lines.dark
       ? { '--aora-ink-line': pairCss(lines.light ?? ink.light, lines.dark ?? ink.dark) }
-      : null),
-    ...(eye.light || eye.dark
-      ? { '--aora-eye': pairCss(eye.light ?? PAGE_TOKEN, eye.dark ?? PAGE_TOKEN) }
       : null),
     ...(rim.light || rim.dark
       ? { '--aora-rim': pairCss(rim.light ?? 'transparent', rim.dark ?? 'transparent') }

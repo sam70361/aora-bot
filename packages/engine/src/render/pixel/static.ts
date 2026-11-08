@@ -1,13 +1,16 @@
 import { getLeafColor } from '../../core/leaf.js';
 import {
-  cutFaceInk,
   effectInks,
+  FACE_TOKEN,
   faceInks,
+  FEATURE_TOKEN,
   getInkColor,
   getInkGradientFor,
+  GLINT_TOKEN,
   hairShade,
   isLightInk,
   lineInks,
+  PUPIL_TOKEN,
   type FaceInks,
 } from '../../core/palette.js';
 import { VIEWBOX_STR } from '../../core/types.js';
@@ -17,16 +20,7 @@ import { partColorPair, partRimPair } from '../part-color.js';
 import { schemeStyle } from '../scheme.js';
 import { emit, PLATE_COLOUR } from './emit.js';
 import { pixelGrid } from './grid.js';
-import {
-  CUT_TOKEN,
-  EYE_TOKEN,
-  FEATURE_TOKEN,
-  GLINT_TOKEN,
-  LED_EYE,
-  PUPIL_TOKEN,
-  readOptions,
-  variantOf,
-} from './options.js';
+import { LED_EYE, readOptions, variantOf } from './options.js';
 import { createPaintTable, type PaintDef } from './paints.js';
 import { HAIR_MIX, PIXEL_LEAF_TOKEN } from './parts.js';
 import { createScratch, rasterise } from './rasterise.js';
@@ -59,10 +53,8 @@ export const renderPixelStatic: StaticRenderer = (frame, context) => {
   // that ink is light, where they are left unlit.
   const panel = variant === 'dot';
   const ledEye = isLightInk(getInkColor(color, 'dark')) ? PLATE_COLOUR : LED_EYE;
-  const eyeColour = context.eyeColor ?? (panel ? ledEye : CUT_TOKEN);
-  // The face rule (`faceInks`); a colour that turns with the page has its face cut out of it.
-  const rule = faceInks(color);
-  const faceColour = context.eyeColor ?? (panel ? ledEye : rule.cutOut ? EYE_TOKEN : rule.light.face);
+  const eyeColour = context.eyeColor ?? (panel ? ledEye : FEATURE_TOKEN);
+  const faceColour = context.eyeColor ?? (panel ? ledEye : FACE_TOKEN);
   rasterise(
     frame,
     {
@@ -90,17 +82,17 @@ export const renderPixelStatic: StaticRenderer = (frame, context) => {
     return mixHex(g.from, g.to, (band + 0.5) / bands);
   };
   const effects = effectInks(color);
-  // A drawn face's tokens resolved by the face rule, switched with the page where the colour turns.
+  // The face's tokens resolved by the face rule (`faceInks`), switched with the page where the colour turns
+  // and there is a page to switch with; the LED panel is always on a dark one.
+  const rule = faceInks(color);
   const ruled = (key: keyof FaceInks): { value: string; dark?: string } =>
-    rule.turns ? { value: rule.light[key], dark: rule.dark[key] } : { value: rule.light[key] };
-  // A cut-out face's eyes: the page, or the face where the page does not read on the body.
-  const cuts = cutFaceInk(color);
-  const cutLight = cuts.light ?? EYE_TOKEN;
-  const cutDark = cuts.dark ?? EYE_TOKEN;
-  const drawnColours: Record<string, { value: string; dark?: string }> = {
-    [CUT_TOKEN]: cutLight === cutDark ? { value: cutLight } : { value: cutLight, dark: cutDark },
+    rule.turns && (!flat || panel)
+      ? { value: rule.light[key], dark: rule.dark[key] }
+      : { value: rule.light[key] };
+  const faceColours: Record<string, { value: string; dark?: string }> = {
+    [FACE_TOKEN]: ruled('face'),
+    [FEATURE_TOKEN]: ruled('feature'),
     [PUPIL_TOKEN]: ruled('pupil'),
-    [FEATURE_TOKEN]: ruled('soft'),
     [GLINT_TOKEN]: ruled('glint'),
   };
   const colour = (def: PaintDef): { value: string; dark?: string } => {
@@ -109,7 +101,7 @@ export const renderPixelStatic: StaticRenderer = (frame, context) => {
   };
   const paintOf = (def: PaintDef): { value: string; dark?: string } => {
     const tint = def.tint;
-    if (tint.kind === 'css' && drawnColours[tint.value]) return drawnColours[tint.value]!;
+    if (tint.kind === 'css' && faceColours[tint.value]) return faceColours[tint.value]!;
     if (tint.kind === 'css')
       return { value: tint.value === PIXEL_LEAF_TOKEN ? getLeafColor(color) : tint.value };
     if (tint.kind === 'part') {

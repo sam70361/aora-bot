@@ -582,8 +582,8 @@ describe('soft', () => {
   });
 
   it('wears a dark face on a black body, light on every hue', () => {
-    expect(staticSvg('soft', { color: 'black' })).toMatch(/-soft: #2B2420/);
-    expect(staticSvg('soft', { color: 'blue' })).not.toMatch(/-soft: #2B2420/);
+    expect(staticSvg('soft', { color: 'black' })).toMatch(/-feature: #2B2420/);
+    expect(staticSvg('soft', { color: 'blue' })).not.toMatch(/-feature: #2B2420/);
   });
 });
 
@@ -744,7 +744,7 @@ describe('drawing media', () => {
     }
     // A painted dark face turns white on a black body, which is dark on a light page.
     if (variant === 'crayon' || variant === 'watercolor') {
-      expect(renderStaticSvg({ shape: 'blob', variant, color: 'black' })).toMatch(/-soft: #FFFFFF/);
+      expect(renderStaticSvg({ shape: 'blob', variant, color: 'black' })).toMatch(/-feature: #FFFFFF/);
     }
   });
 

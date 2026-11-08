@@ -366,9 +366,7 @@ describe('createCharacter', () => {
 
       const solid = createCharacter(mount(), { face: 'line', variant: 'solid', reducedMotion: true });
       const [mouth] = featuresOf(solid.element).slice(1);
-      expect(mouth?.getAttribute('stroke')).toBe(
-        'var(--aora-eye, var(--aora-bg, var(--aora-bg-base, #fcfcfc)))',
-      );
+      expect(mouth?.getAttribute('stroke')).toBe('var(--aora-eye, var(--aora-face-soft, #2B2420))');
       solid.destroy();
     });
   });

@@ -3,7 +3,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, expectTypeOf, it } from 'vitest';
 import { CAST, allCast, castMember, type CastId } from '../src/core/cast.js';
-import { getInkVars, PAGE_TOKEN } from '../src/core/palette.js';
+import { getInkVars } from '../src/core/palette.js';
 import {
   ALL_COLOR_IDS,
   COLOR_IDS,
@@ -414,9 +414,10 @@ describe('palette', () => {
       expect(getInkVars(color)['--aora-fx'], color).toBeUndefined();
   });
 
-  it('keeps black inverting, with its face cut out of the page', () => {
+  it('keeps black inverting, with its face turning as it does', () => {
     expect(getInkVars('black')).toEqual({
       '--aora-fg': 'light-dark(#1F1F1F, #FFFFFF)',
+      '--aora-face': 'light-dark(#FFFFFF, #2B2420)',
       '--aora-face-soft': 'light-dark(#FFFFFF, #2B2420)',
       '--aora-face-sticker': 'light-dark(#FFFFFF, #1F1F1F)',
       '--aora-hair-shade': 'light-dark(#FFFFFF, #000000)',
@@ -440,15 +441,17 @@ describe('palette', () => {
     expect(renderStaticSvg({ color: 'cream', style: 'kaomoji', flat: true })).not.toContain('#F1E2C1');
   });
 
-  it('gives a cut-out face eyes that read on a body the page does not', () => {
-    expect(getInkVars('cream')['--aora-eye']).toBe(`light-dark(#2B2420, ${PAGE_TOKEN})`);
-    expect(getInkVars('night')['--aora-eye']).toBe(`light-dark(${PAGE_TOKEN}, #FFFFFF)`);
-    expect(getInkVars('navy')['--aora-eye']).toBe(`light-dark(${PAGE_TOKEN}, #FFFFFF)`);
-    for (const color of ['blue', 'black', 'violet', 'brown'] as const)
+  it('draws the eyes face in the features colour, the same on either page', () => {
+    for (const color of ['blue', 'cream', 'navy', 'night', 'black'] as const)
       expect(getInkVars(color)['--aora-eye'], color).toBeUndefined();
     expect(renderStaticSvg({ color: 'cream', face: 'eyes', flat: true })).toContain('fill="#2B2420"');
-    expect(renderStaticSvg({ color: 'navy', face: 'eyes' })).toContain('-eye: #FFFFFF');
-    expect(renderStaticSvg({ color: 'navy', face: 'cute' })).not.toContain('-eye');
+    expect(renderStaticSvg({ color: 'navy', face: 'eyes', flat: true })).toContain('fill="#FFFFFF"');
+    expect(renderStaticSvg({ color: 'navy', face: 'eyes' })).not.toContain('-feature');
+    // Black turns with the page, and its features with it.
+    expect(renderStaticSvg({ color: 'black', face: 'eyes' })).toMatch(
+      /-feature: #FFFFFF[\s\S]*-feature: #2B2420/,
+    );
+    expect(renderStaticSvg({ color: 'red', face: 'eyes', eyeColor: '#123456' })).toContain('fill="#123456"');
   });
 
   it('keeps the white face on a dark ink and turns its features white too', () => {

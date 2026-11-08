@@ -4,10 +4,9 @@ import { SHAPE_IDS, SHAPE_SPACE, VIEWBOX_STR } from '../src/core/types.js';
 import { fnv1a32 } from '../src/math/hash.js';
 import { CHARACTER_STATES } from '../src/motion/states.js';
 import { createCharacter } from '../src/render/character.js';
-import { EYE_TOKEN as VECTOR_EYE_TOKEN, INK_TOKEN as VECTOR_INK_TOKEN } from '../src/render/vector/build.js';
 import { renderStaticSvg } from '../src/render/static-svg.js';
 import { pixelGrid } from '../src/render/pixel/grid.js';
-import { EYE_TOKEN, INK_TOKEN, PIXEL_DEFAULTS } from '../src/render/pixel/options.js';
+import { PIXEL_DEFAULTS } from '../src/render/pixel/options.js';
 import { createSimulation } from '../src/sim/simulation.js';
 import { getStyle, resolveStyleOptions, validateStyleOptions } from '../src/styles/index.js';
 
@@ -45,11 +44,6 @@ describe('pixel style definition', () => {
       fps: 7,
     });
     expect(validateStyleOptions(style, { grid: 999, bogus: 1 }).map((i) => i.key)).toEqual(['grid', 'bogus']);
-  });
-
-  it('keeps its colour tokens in step with the vector series', () => {
-    expect(INK_TOKEN).toBe(VECTOR_INK_TOKEN);
-    expect(EYE_TOKEN).toBe(VECTOR_EYE_TOKEN);
   });
 });
 
@@ -195,8 +189,12 @@ describe('pixel cute face', () => {
     expect(eyes).not.toContain('#FF6F91');
   });
 
-  it('cuts the face out of a black body instead', () => {
-    expect(pixel({ shape: 'blob', state: 'idle', color: 'black' })).toContain(EYE_TOKEN);
+  it('turns the face of a black body with the page, as the body turns', () => {
+    for (const face of ['cute', 'eyes'] as const) {
+      const svg = pixel({ shape: 'blob', state: 'idle', color: 'black', face });
+      const turned = /\.(\S+) \{ fill: #2B2420; \}/.exec(svg)?.[1];
+      expect(svg, face).toContain(`class="${turned}" fill="#FFFFFF"`);
+    }
   });
 });
 

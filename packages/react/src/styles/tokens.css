@@ -66,7 +66,8 @@
     /* ---- colour: semantic ----------------------------------------------- */
 
     /*
-     * The page background. It is also what the eye cut-outs are punched to,
+     * The page background. A character shows it where a face is drawn in the
+     * page (a drawn face's whites on a line body, the ring round a badge),
      * which is why it is overridable per container: a character on a coloured
      * card sets this on the card.
      */

@@ -1640,15 +1640,15 @@ exports[`paper: static snapshots > star / thinking 1`] = `
 
 exports[`paper: static snapshots > takes the parameters of its variant 1`] = `
 "<svg xmlns="http://www.w3.org/2000/svg" class="a1wakami" viewBox="-24 -24 288 288" fill="none" aria-hidden="true"><style>
-    .a1wakami { --a1wakami-ink: #1F1F1F; }
+    .a1wakami { --a1wakami-ink: #1F1F1F; --a1wakami-face: #FFFFFF; }
     @media (prefers-color-scheme: dark) {
-      .a1wakami { --a1wakami-ink: #FFFFFF; }
+      .a1wakami { --a1wakami-ink: #FFFFFF; --a1wakami-face: #2B2420; }
     }
   </style>
   <g transform="translate(120 120) scale(1) translate(-120 -120)">
     <g transform="rotate(-3 120 120)"><g transform="translate(-7 12.12)"><path d="6786:3qk6ha" fill="var(--a1wakami-ink, #1F1F1F)"/><path d="6786:3qk6ha" fill="#000" fill-opacity="0.32"/></g><path d="6786:3qk6ha" fill="var(--a1wakami-ink, #1F1F1F)"/><g data-aora-face="">
-      <path d="1081:pxyu50" transform="translate(60.0271 109.7396) matrix(0.8662 -0.0466 -0.0024 0.9952 0 0) translate(-84.9437 -118.7933)" fill="var(--aora-face, var(--aora-bg, var(--aora-bg-base, #fcfcfc)))" opacity="1"/>
-      <path d="1165:zmzfzy" transform="translate(128.3427 108.365) matrix(0.9976 0.0091 -0.0024 0.9952 0 0) translate(-155.0563 -118.7933)" fill="var(--aora-face, var(--aora-bg, var(--aora-bg-base, #fcfcfc)))" opacity="1"/>
+      <path d="1081:pxyu50" transform="translate(60.0271 109.7396) matrix(0.8662 -0.0466 -0.0024 0.9952 0 0) translate(-84.9437 -118.7933)" fill="var(--a1wakami-face, #FFFFFF)" opacity="1"/>
+      <path d="1165:zmzfzy" transform="translate(128.3427 108.365) matrix(0.9976 0.0091 -0.0024 0.9952 0 0) translate(-155.0563 -118.7933)" fill="var(--a1wakami-face, #FFFFFF)" opacity="1"/>
     </g></g></g>
 </svg>"
 `;
@@ -2547,17 +2547,17 @@ exports[`riso: static snapshots > star / thinking 1`] = `
 
 exports[`riso: static snapshots > takes the parameters of its variant 1`] = `
 "<svg xmlns="http://www.w3.org/2000/svg" class="anrfuzj" viewBox="-24 -24 288 288" fill="none" aria-hidden="true"><style>
-    .anrfuzj { --anrfuzj-ink: #1F1F1F; --aora-ink2: #FF78A6; }
+    .anrfuzj { --anrfuzj-ink: #1F1F1F; --anrfuzj-face: #FFFFFF; --aora-ink2: #FF78A6; }
     @media (prefers-color-scheme: dark) {
-      .anrfuzj { --anrfuzj-ink: #FFFFFF; --aora-ink2: #FFFFFF; }
+      .anrfuzj { --anrfuzj-ink: #FFFFFF; --anrfuzj-face: #2B2420; --aora-ink2: #FFFFFF; }
     }
   </style>
   <g transform="translate(120 120) scale(1) translate(-120 -120)">
     <defs><pattern id="anrfuzj-halftone" width="7.8" height="7.8" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="3.9" cy="3.9" r="1.7" fill="#fff" fill-opacity="0.42"/></pattern></defs>
     <g style="isolation:isolate"><g transform="translate(7.94 6.08)"><path d="6786:3qk6ha" fill="var(--aora-ink2, #FF78A6)"/></g><g opacity="0.92" style="mix-blend-mode:multiply"><path d="6786:3qk6ha" fill="var(--anrfuzj-ink, #1F1F1F)"/><path d="6786:3qk6ha" fill="#fff" fill-opacity="0.18"/></g><path d="6786:3qk6ha" fill="url(#anrfuzj-halftone)"/></g>
     <g data-aora-face="">
-      <path d="1081:pxyu50" transform="translate(60.0271 109.7396) matrix(0.8662 -0.0466 -0.0024 0.9952 0 0) translate(-84.9437 -118.7933)" fill="var(--aora-face, var(--aora-bg, var(--aora-bg-base, #fcfcfc)))" opacity="1"/>
-      <path d="1165:zmzfzy" transform="translate(128.3427 108.365) matrix(0.9976 0.0091 -0.0024 0.9952 0 0) translate(-155.0563 -118.7933)" fill="var(--aora-face, var(--aora-bg, var(--aora-bg-base, #fcfcfc)))" opacity="1"/>
+      <path d="1081:pxyu50" transform="translate(60.0271 109.7396) matrix(0.8662 -0.0466 -0.0024 0.9952 0 0) translate(-84.9437 -118.7933)" fill="var(--anrfuzj-face, #FFFFFF)" opacity="1"/>
+      <path d="1165:zmzfzy" transform="translate(128.3427 108.365) matrix(0.9976 0.0091 -0.0024 0.9952 0 0) translate(-155.0563 -118.7933)" fill="var(--anrfuzj-face, #FFFFFF)" opacity="1"/>
     </g></g>
 </svg>"
 `;
@@ -3088,9 +3088,9 @@ exports[`soft: static snapshots > star / thinking 1`] = `
 
 exports[`soft: static snapshots > takes the parameters of its variant 1`] = `
 "<svg xmlns="http://www.w3.org/2000/svg" class="a7esu9i" viewBox="-24 -24 288 288" fill="none" aria-hidden="true"><style>
-    .a7esu9i { --a7esu9i-ink: #1F1F1F; --a7esu9i-soft: #FFFFFF; }
+    .a7esu9i { --a7esu9i-ink: #1F1F1F; --a7esu9i-feature: #FFFFFF; }
     @media (prefers-color-scheme: dark) {
-      .a7esu9i { --a7esu9i-ink: #FFFFFF; --a7esu9i-soft: #2B2420; }
+      .a7esu9i { --a7esu9i-ink: #FFFFFF; --a7esu9i-feature: #2B2420; }
     }
   </style>
   <g transform="translate(120 120) scale(1) translate(-120 -120)">
@@ -3099,8 +3099,8 @@ exports[`soft: static snapshots > takes the parameters of its variant 1`] = `
     <path d="6786:3qk6ha" fill="var(--a7esu9i-ink, #1F1F1F)"/>
     <path d="6786:3qk6ha" fill="url(#a7esu9i-soft)"/>
     <g data-aora-face="">
-      <path d="1081:pxyu50" transform="translate(60.0271 109.7396) matrix(0.8662 -0.0466 -0.0024 0.9952 0 0) translate(-84.9437 -118.7933)" fill="var(--a7esu9i-soft, #FFFFFF)" opacity="1"/>
-      <path d="1165:zmzfzy" transform="translate(128.3427 108.365) matrix(0.9976 0.0091 -0.0024 0.9952 0 0) translate(-155.0563 -118.7933)" fill="var(--a7esu9i-soft, #FFFFFF)" opacity="1"/>
+      <path d="1081:pxyu50" transform="translate(60.0271 109.7396) matrix(0.8662 -0.0466 -0.0024 0.9952 0 0) translate(-84.9437 -118.7933)" fill="var(--a7esu9i-feature, #FFFFFF)" opacity="1"/>
+      <path d="1165:zmzfzy" transform="translate(128.3427 108.365) matrix(0.9976 0.0091 -0.0024 0.9952 0 0) translate(-155.0563 -118.7933)" fill="var(--a7esu9i-feature, #FFFFFF)" opacity="1"/>
     </g></g>
 </svg>"
 `;
@@ -3362,10 +3362,10 @@ exports[`solid, outline and glass, as restyled with the cute face > solid static
   <g transform="translate(120 120) scale(1) translate(-120 -120)">
     <path d="8981:1lx7l0u" fill="#1F1F1F"/>
     <g data-aora-face="">
-      <path d="1077:y13lty" transform="translate(61.0206 106.1731) matrix(0.8708 -0.0545 -0.0093 0.9918 0 0) translate(-86.0166 -115.2539)" fill="var(--aora-eye, var(--aora-bg, var(--aora-bg-base, #fcfcfc)))" opacity="1"/>
-      <path d="1145:1558r9a" transform="translate(127.2453 104.8405) matrix(0.9981 0.0169 -0.0093 0.9918 0 0) translate(-153.9834 -115.2539)" fill="var(--aora-eye, var(--aora-bg, var(--aora-bg-base, #fcfcfc)))" opacity="1"/>
-      <path d="219:40lmny" transform="translate(93.3285 128.359) matrix(0.9744 -0.0196 0.0347 0.9974 0 0) translate(-120 -138.4982)" fill="none" stroke="var(--aora-eye, var(--aora-bg, var(--aora-bg-base, #fcfcfc)))" stroke-width="9.19" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
-      <path d="432:5klak2" transform="translate(96.2967 168.2521) matrix(0.9744 -0.0196 0.1076 0.9154 0 0) translate(-120 -177.4189)" fill="none" stroke="var(--aora-eye, var(--aora-bg, var(--aora-bg-base, #fcfcfc)))" stroke-width="9.19" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+      <path d="1077:y13lty" transform="translate(61.0206 106.1731) matrix(0.8708 -0.0545 -0.0093 0.9918 0 0) translate(-86.0166 -115.2539)" fill="#FFFFFF" opacity="1"/>
+      <path d="1145:1558r9a" transform="translate(127.2453 104.8405) matrix(0.9981 0.0169 -0.0093 0.9918 0 0) translate(-153.9834 -115.2539)" fill="#FFFFFF" opacity="1"/>
+      <path d="219:40lmny" transform="translate(93.3285 128.359) matrix(0.9744 -0.0196 0.0347 0.9974 0 0) translate(-120 -138.4982)" fill="none" stroke="#FFFFFF" stroke-width="9.19" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
+      <path d="432:5klak2" transform="translate(96.2967 168.2521) matrix(0.9744 -0.0196 0.1076 0.9154 0 0) translate(-120 -177.4189)" fill="none" stroke="#FFFFFF" stroke-width="9.19" stroke-linecap="round" stroke-linejoin="round" opacity="1"/>
     </g></g>
 </svg>"
 `;

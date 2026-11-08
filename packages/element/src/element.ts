@@ -53,7 +53,7 @@ export interface AoraBotAttributes {
   seed?: string;
   /** A CSS length, or a bare number of pixels. Defaults to 32px. */
   size?: string | number;
-  /** Colour of the eye cut-outs. */
+  /** Colour of the eyes of the cute, `eyes` and `line` faces, in place of the one the face rule chose. */
   'eye-color'?: string;
   /** Corner badge colour, shown in the `notifying` state. */
   'badge-color'?: string;
@@ -329,7 +329,7 @@ export class AoraBotElement extends Base {
     const vars = { ...getInkVars(color), '--aora-leaf': getLeafColor(color) };
     this.#mark.removeAttribute('style');
     for (const [name, value] of Object.entries(vars)) this.#mark.style.setProperty(name, value);
-    if (eyeColor) this.#mark.style.setProperty('--aora-bg', eyeColor);
+    if (eyeColor) this.#mark.style.setProperty('--aora-eye', eyeColor);
 
     this.#label(member);
 

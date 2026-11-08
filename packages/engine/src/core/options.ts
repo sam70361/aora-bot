@@ -90,7 +90,7 @@ export interface CharacterOptions {
   styleOptions?: Record<string, unknown>;
   /**
    * Face style. `cute` (default) paints small round eyes, a small mouth and
-   * blush in a face colour; `eyes` draws two cut-out eyes alone; `line`
+   * blush in a face colour; `eyes` draws two large eyes alone; `line`
    * adds a stroked nose and a parametric mouth at the eyes' line weight. The
    * drawn faces (`DRAWN_FACE_STYLES`: `capsule`, `brow`, `glossy`, `sparkle`,
    * `button`, `shades`, `droopy`, `bigmouth`, `pie`, `screen`, `symbol`,
@@ -217,7 +217,7 @@ export interface StaticOptions {
    * text colour when it is inlined.
    */
   ink?: InkPaint | null;
-  /** Colour of the eye cut-outs. Defaults to the page background token. */
+  /** Colour of the eyes of the cute, `eyes` and `line` faces, in place of the one the face rule chose. */
   eyeColor?: string;
   /**
    * Which light/dark switch the palette ink uses. Defaults to `system`, which

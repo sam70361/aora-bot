@@ -16,8 +16,8 @@ const keyOf = (card: ThemeCard, state: CharacterState, sizePx: number) => {
 };
 
 /**
- * A card's still in one state, inlined the way `StillMark` inlines it: the eye
- * cut-outs and the ink read the page's custom properties, so one string serves
+ * A card's still in one state, inlined the way `StillMark` inlines it: the ink
+ * reads the page's custom properties and `color-scheme`, so one string serves
  * both colour modes. Drawn once per page: a themed still can take a frame or
  * more to draw, and a booklet, a card, the shelf's wall and a sticker all ask
  * for the same ones.

@@ -198,7 +198,7 @@ describe('<aora-bot>', () => {
     expect(mark(el).style.getPropertyValue('--aora-face-soft')).toBe('');
 
     el.setAttribute('eye-color', '#ff0000');
-    expect(mark(el).style.getPropertyValue('--aora-bg')).toBe('#ff0000');
+    expect(mark(el).style.getPropertyValue('--aora-eye')).toBe('#ff0000');
   });
 
   it('builds a new character when an option the engine reads once changes', () => {

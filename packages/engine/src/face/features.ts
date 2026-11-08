@@ -49,7 +49,7 @@ export function resolveLineWeight(multiplier?: number): number {
 /**
  * Eye size multipliers applied in line mode.
  *
- * The default eyes are large cut-outs sized to carry a face alone. Next to a
+ * The default eyes are large, sized to carry a face alone. Next to a
  * nose and a mouth they crowd the plate, so they shrink towards the dot
  * proportions of a drawn face. The floor `LINE_WEIGHT` sets keeps the thin
  * expressions at exactly the feature weight.

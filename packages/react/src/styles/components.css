@@ -1,10 +1,11 @@
 @layer aora.base {
   /*
    * The two variables every character reads. `--aora-fg` is set per instance
-   * by the component; `--aora-bg` defaults to the page background so the eye
-   * cut-outs look like holes rather than white paint. Overriding
-   * `--aora-bg-base` on any ancestor re-themes the holes for that subtree,
-   * which is what lets a character sit on a coloured card.
+   * by the component; `--aora-bg` defaults to the page background, which a
+   * face shows where it is drawn in the page: the whites of a drawn face on a
+   * line body, the ring round a badge. Overriding `--aora-bg-base` on any
+   * ancestor re-themes it for that subtree, which is what lets a character
+   * sit on a coloured card.
    */
   .aora-mark {
     position: relative;

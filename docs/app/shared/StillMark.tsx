@@ -56,9 +56,9 @@ export interface StillMarkProps extends Omit<StaticOptions, 'colorScheme' | 'siz
 /**
  * One frame of a character, inlined.
  *
- * Inlined rather than an `<img>` data URL because the eye cut-outs and the ink
- * read the page's custom properties, and an SVG document inside an `<img>`
- * cannot see them — it would draw light holes into a dark page. The ink follows
+ * Inlined rather than an `<img>` data URL because the ink and the page colour
+ * a face shows are the page's custom properties, and an SVG document inside an
+ * `<img>` cannot see them. The ink follows
  * the page's `color-scheme` (`colorScheme: 'page'`), not the OS, so the site's
  * own theme switch recolours it. Static output has no engine and no timer
  * behind it, which is what lets a screen of them cost nothing per frame.

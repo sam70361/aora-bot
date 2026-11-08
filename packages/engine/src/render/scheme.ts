@@ -49,10 +49,11 @@ export function paletteInk(
   uid: string,
   light: string,
   dark: string,
-  soft: { light: string; dark: string } | null,
   extra: SchemeRule['decls'] = [],
 ): string {
-  const decls = [{ prop: `--${uid}-ink`, light, dark }];
-  if (soft) decls.push({ prop: `--${uid}-soft`, ...soft });
-  return schemeStyle(scheme, [{ selector: `.${uid}`, decls: [...decls, ...extra] }], true);
+  return schemeStyle(
+    scheme,
+    [{ selector: `.${uid}`, decls: [{ prop: `--${uid}-ink`, light, dark }, ...extra] }],
+    true,
+  );
 }

@@ -1,4 +1,12 @@
-import { HAIR_SHADE_TOKEN } from '../../core/palette.js';
+import {
+  eyeToken,
+  FACE_TOKEN,
+  FEATURE_TOKEN,
+  FX_TOKEN,
+  HAIR_SHADE_TOKEN,
+  INK_TOKEN,
+  LINE_TOKEN,
+} from '../../core/palette.js';
 import { VIEWBOX_STR } from '../../core/types.js';
 import { fnv1a32 } from '../../math/hash.js';
 import type { FrameSnapshot } from '../../sim/snapshot.js';
@@ -7,16 +15,7 @@ import { partColorCss, partRimCss } from '../part-color.js';
 import type { LiveRenderer, LiveRendererContext } from '../renderer.js';
 import { emit } from './emit.js';
 import { pixelGrid, type PixelGrid } from './grid.js';
-import {
-  CUT_TOKEN,
-  FACE_TOKEN,
-  FX_TOKEN,
-  INK_TOKEN,
-  LED_EYE_TOKEN,
-  LINE_TOKEN,
-  readOptions,
-  variantOf,
-} from './options.js';
+import { LED_EYE_TOKEN, readOptions, variantOf } from './options.js';
 import { createPaintTable, type PaintDef, type Tint } from './paints.js';
 import { HAIR_MIX } from './parts.js';
 import { createScratch, rasterise, type RasterSettings, type Scratch } from './rasterise.js';
@@ -81,8 +80,8 @@ export function createPixelRenderer(host: Element, context: LiveRendererContext)
     const variant = variantOf(frame.variant);
     const ink = frame.ink;
     const gradient = ink && 'from' in ink ? (ink.angle ?? DEFAULT_ANGLE) : null;
-    const eye: Tint = { kind: 'css', value: variant === 'dot' ? LED_EYE_TOKEN : CUT_TOKEN };
-    const face: Tint = { kind: 'css', value: variant === 'dot' ? LED_EYE_TOKEN : FACE_TOKEN };
+    const eye: Tint = { kind: 'css', value: variant === 'dot' ? LED_EYE_TOKEN : eyeToken(FEATURE_TOKEN) };
+    const face: Tint = { kind: 'css', value: variant === 'dot' ? LED_EYE_TOKEN : eyeToken(FACE_TOKEN) };
     const inkKey = !ink ? '' : 'flat' in ink ? `f${ink.flat}` : `g${ink.from}|${ink.to}`;
     const next = `${variant}|${inkKey}|${gradient}`;
     if (next !== signature) {

@@ -125,7 +125,7 @@ export interface CharacterMarkProps {
    * duplicate timer.
    */
   onSettle?: (from: CharacterState, to: CharacterState) => void;
-  /** Colour of the eye cut-outs. Defaults to the surrounding background token. */
+  /** Colour of the eyes of the cute, `eyes` and `line` faces, in place of the one the face rule chose. */
   eyeColor?: string;
   /** Corner badge colour, shown in the `notifying` state. */
   badgeColor?: string;
@@ -377,7 +377,7 @@ export function CharacterMark({
         {
           ...getInkVars(color),
           '--aora-leaf': getLeafColor(color),
-          ...(eyeColor ? { '--aora-bg': eyeColor } : null),
+          ...(eyeColor ? { '--aora-eye': eyeColor } : null),
           width: size,
           ...(ready ? null : { aspectRatio: '1 / 1' }),
           ...style,

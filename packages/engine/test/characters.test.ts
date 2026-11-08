@@ -212,7 +212,7 @@ describe('parts', () => {
   it('shades hair towards white on a black body while it is dark, and towards black otherwise', () => {
     const black = renderStaticSvg({ shape: 'bob', color: 'black' });
     expect(black).toMatch(/--(\w+)-hair: #FFFFFF;[\s\S]*--\1-hair: #000000;/);
-    expect(black).toContain('-hair, #000000)" fill-opacity="0.4"');
+    expect(black).toContain('-hair, #FFFFFF)" fill-opacity="0.4"');
     expect(renderStaticSvg({ shape: 'bob', color: 'blue' })).toContain('fill="#000000" fill-opacity="0.4"');
     expect(renderStaticSvg({ shape: 'bob', color: 'black', colorScheme: 'page' })).not.toContain(
       'fill="#000000" fill-opacity="0.4"',

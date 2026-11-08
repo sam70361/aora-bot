@@ -60,7 +60,7 @@ export interface StaticRenderContext {
   flat?: boolean;
   /** How the palette ink switches between light and dark. See `StaticOptions.colorScheme`. */
   colorScheme?: StaticColorScheme;
-  /** Colour of the eye cut-outs. Defaults to the page background token. */
+  /** Colour of the eyes of the cute, `eyes` and `line` faces, in place of the one the face rule chose. */
   eyeColor?: string;
   sizePx?: number;
   /** Resolved style parameters. */

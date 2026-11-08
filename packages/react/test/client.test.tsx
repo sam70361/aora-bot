@@ -1,5 +1,5 @@
 // @vitest-environment happy-dom
-import { castMember, renderStaticSvg, ticker, VIEWBOX_STR } from '@aora-bot/engine';
+import { castMember, ticker, VIEWBOX_STR } from '@aora-bot/engine';
 import { act, createRef, type ReactNode } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -138,17 +138,13 @@ describe('CharacterStageProvider', () => {
     expect(cells.map((c) => c.classList.contains('aora-mark--still'))).toEqual([false, false, true, true]);
 
     for (const still of cells.slice(2)) {
-      // Inline SVG rather than an <img>, so the eye cut-outs can inherit
-      // --aora-bg from the page. (The markup itself is covered by the engine's
+      // Inline SVG rather than an <img>, so it inherits the colour tokens and
+      // the page's color-scheme. (The markup itself is covered by the engine's
       // static-render tests; here we only care that it is inline.)
       expect(still.querySelector('img')).toBeNull();
       expect(still.querySelector('svg')?.getAttribute('viewBox')).toBe(VIEWBOX_STR);
       expect(still.getAttribute('data-color')).toBe('blue');
     }
-    expect(
-      renderStaticSvg({ shape: 'tofu', state: 'happy', color: 'blue', eyeColor: 'var(--aora-bg)' }),
-    ).toContain('var(--aora-bg)');
-
     // Nothing in the roster is empty.
     for (const cell of cells) expect(cell.querySelector('svg')).not.toBeNull();
   });

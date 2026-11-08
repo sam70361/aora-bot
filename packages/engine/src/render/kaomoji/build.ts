@@ -1,3 +1,4 @@
+import { LINE_TOKEN } from '../../core/palette.js';
 import { CENTER, SHAPE_SPACE } from '../../core/types.js';
 import type { FrameSnapshot } from '../../sim/snapshot.js';
 import { node, r2, type SceneNode } from '../scene.js';
@@ -27,12 +28,6 @@ export function readKaomojiOptions(raw: Record<string, unknown>): KaomojiOptions
   };
 }
 
-/** The default ink in a live document, matching `render/vector/build.ts`'s `INK_TOKEN`. */
-export const INK_TOKEN = 'var(--aora-fg, currentColor)';
-
-/** The text is a line on the page, so it takes the ink as a line (`LINE_TOKEN` in `render/vector/build.ts`). */
-export const LINE_TOKEN = `var(--aora-ink-line, ${INK_TOKEN})`;
-
 /** Text is a font, not a path: these are looked up on the host and fall back to any sans-serif. */
 const FONT_FAMILY = "ui-sans-serif, system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif";
 
@@ -44,7 +39,7 @@ const MAX_FONT = 72;
 const PLATE_PAD = { x: 0.55, y: 0.5 };
 const PLATE_OPACITY = 0.12;
 
-/** A body paint as a single colour: a gradient ink writes its first stop. */
+/** A body paint as a single colour: a gradient ink writes its first stop. The text is a line on the page. */
 export function inkOf(frame: FrameSnapshot): string {
   const ink = frame.ink;
   if (!ink) return LINE_TOKEN;

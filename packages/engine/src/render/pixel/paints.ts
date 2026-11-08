@@ -18,7 +18,7 @@ export type Tint =
   | { kind: 'hair'; band: number }
   /** A state effect: the ink at `band`, or what the renderer draws effects in where the ink is lost on the page. */
   | { kind: 'fx'; band: number }
-  /** A literal CSS colour: confetti, the eye cut-out, the badge. */
+  /** A literal CSS colour or token: confetti, the face, the badge. */
   | { kind: 'css'; value: string }
   /** A part's own colour, or its ring (`rim`), a `tone` step lighter or darker (see `shade.ts`). */
   | { kind: 'part'; color: PartColor; tone: number; rim: boolean };

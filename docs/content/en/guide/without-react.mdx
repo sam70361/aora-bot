@@ -61,7 +61,7 @@ Every attribute is optional. A value the engine does not know falls back to the 
 | `style-options`  | A JSON object of that style's parameters, such as `{"paperOffset":12}`                 |
 | `seed`           | Any string; two characters with different seeds do not blink in unison                 |
 | `size`           | A CSS length, or a number of pixels; `32px` by default                                 |
-| `eye-color`      | A CSS colour for the eye cut-outs                                                      |
+| `eye-color`      | A CSS colour for the eyes of the `cute`, `eyes` and `line` faces                       |
 | `badge-color`    | A CSS colour for the badge shown in the `notifying` state                              |
 | `eye-scale`      | A positive multiplier on eye size, `1` by default                                      |
 | `line-weight`    | A multiplier from 0.8 to 1.25 on the stroke weight, `1` by default                     |
@@ -81,7 +81,7 @@ The style series is `style-id` because `style` is already the inline CSS attribu
 
 The element is `role="img"` and carries an `aria-label` with the cast member's name, in Chinese when the nearest `lang` is `zh`. Set your own `aria-label` or `role` and they are left alone.
 
-The character is drawn in a shadow root, so page CSS cannot reach inside it. The host is `display: inline-block`; size it with `size`, or with your own `width` and `height`. The ink follows the page's `color-scheme`, and `--aora-bg-base` on any ancestor sets the colour behind the eye cut-outs, as described in [Theming](/guide/theming).
+The character is drawn in a shadow root, so page CSS cannot reach inside it. The host is `display: inline-block`; size it with `size`, or with your own `width` and `height`. The ink follows the page's `color-scheme`, and `--aora-bg-base` on any ancestor sets the page colour a face shows, such as a drawn face's whites on a line body, as described in [Theming](/guide/theming).
 
 ## Methods
 

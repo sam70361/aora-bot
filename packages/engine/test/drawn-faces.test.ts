@@ -393,7 +393,7 @@ describe('effects a drawn face already shows', () => {
 describe('palette tokens', () => {
   it('turns a black body’s brows and pupils with the page in static output', () => {
     const svg = renderStaticSvg({ face: 'brow', color: 'black', state: 'idle' });
-    expect(svg).toMatch(/--a\w+-soft/);
+    expect(svg).toMatch(/--a\w+-feature/);
     expect(svg).toMatch(/--a\w+-pupil/);
   });
 
