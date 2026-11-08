@@ -54,7 +54,7 @@ export const renderPixelStatic: StaticRenderer = (frame, context) => {
   const panel = variant === 'dot';
   const ledEye = isLightInk(getInkColor(color, 'dark')) ? PLATE_COLOUR : LED_EYE;
   const eyeColour = context.eyeColor ?? (panel ? ledEye : FEATURE_TOKEN);
-  const faceColour = context.eyeColor ?? (panel ? ledEye : FACE_TOKEN);
+  const faceColour = panel ? ledEye : FACE_TOKEN;
   rasterise(
     frame,
     {

@@ -174,9 +174,10 @@ describe.each(['cute', 'eyes'] as const)('pixel eyes on the %s face', (face) => 
 });
 
 describe('pixel cute face', () => {
-  it('is white on a hue, with cheeks and the effect colour of the mood', () => {
+  it('is in the features colour on a hue, with cheeks and the effect colour of the mood', () => {
     const happy = pixel({ shape: 'blob', state: 'happy', color: 'blue' });
-    expect(happy).toContain('#FFFFFF');
+    expect(happy).toContain('#2B2420');
+    expect(happy).not.toContain('#FFFFFF');
     expect(happy).toContain('#FF9DBB');
     expect(happy).toContain('#FF6F91');
     expect(pixel({ shape: 'blob', state: 'sad', color: 'blue' })).toContain('#7CC7FF');

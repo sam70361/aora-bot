@@ -105,7 +105,7 @@ const doodle: ThemeVariant = {
   variant: 'doodle',
   reads: ['strokeWidth', 'stickerWidth', 'grain', 'hatching'],
   medium: {
-    darkFace: true,
+    deepBlush: true,
     faceInk: FACE_INK,
     followsMood: true,
     moodAccent: EDGE_MOODS,

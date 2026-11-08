@@ -304,7 +304,7 @@ const papercut: ThemeVariant = {
      * beige or mauve.
      */
     moodAccent: { chroma: 0.15, share: 0.75 },
-    darkFace: true,
+    deepBlush: true,
     /** The sheet's ink on a light or mid body and warm gold on a dark one, so the face always reads. */
     faceInk: { light: '#ffe08a', dark: '#2a1a1c' },
     grainedFills: true,

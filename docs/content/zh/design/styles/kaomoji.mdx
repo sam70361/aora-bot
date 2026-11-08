@@ -91,7 +91,7 @@ export default function Demo() {
 
 ## 表情和尾巴由状态决定
 
-括号里的脸沿用 `cute` 脸的语法：圆点眼表示在专注，弧线表示满足，叉表示拒绝。括号后面的尾巴是这个状态的情绪特效写成的符号：`zZ`、`♪`、`✎`、`!`。每个状态都有一张脸（`STATE_FACES`）和一个尾巴（`STATE_TAILS`，可以为空）。
+括号里的脸沿用 `cute` 脸的语法：圆点眼表示在专注，弧线表示满足，叉表示拒绝。手绘脸每个状态有自己的字形，所以 `capsule`、`specs` 写成文字也认得出来。括号后面的尾巴是这个状态的情绪特效写成的符号：`zZ`、`♪`、`✎`、`!`。每个状态都有一张脸（`STATE_FACES`）和一个尾巴（`STATE_TAILS`，可以为空）。
 
 ```tsx preview
 import { CHARACTER_STATES } from '@aora-bot/react';
@@ -115,13 +115,14 @@ export default function Demo() {
 
 ## 当作纯文本用
 
-`kaomoji(shape, state)` 返回的就是系列画出来的那一行字，所以聊天消息、终端输出、日志里都可以用同一套角色：
+`kaomoji(shape, state, face?)` 返回的就是系列画出来的那一行字，所以聊天消息、终端输出、日志里都可以用同一套角色。`faceText(state, face?)` 只返回脸，不带括号和尾巴；两者默认都是 `cute`：
 
 ```ts
 import { kaomoji } from '@aora-bot/engine';
 
 kaomoji('cat', 'happy'); // ฅ(^▽^)ฅ ♪
 kaomoji('mochi', 'thinking'); // (・_・)?
+kaomoji('mochi', 'happy', 'capsule'); // (/ω\) ♪
 ```
 
 ## 参数
@@ -147,6 +148,6 @@ kaomoji('mochi', 'thinking'); // (・_・)?
 
 ## 接下来
 
-- [矢量风格](/design/styles/vector)——默认系列的七种变体
+- [矢量风格](/design/styles/vector)——默认系列的十六种变体
 - [像素风格](/design/styles/pixel)——画在网格上的同一个角色
 - [形状](/design/shapes)——每个形状的括号从哪来

@@ -12,7 +12,7 @@ import {
   risoSecondInk,
   type FaceInks,
 } from '../../core/palette.js';
-import { isCuteFamily, isDrawnFace, VIEWBOX_STR, type PartColor } from '../../core/types.js';
+import { isDrawnFace, VIEWBOX_STR, type PartColor } from '../../core/types.js';
 import { fnv1a32 } from '../../math/hash.js';
 import { livePartPaint, partColorPair, partRimPair, type PartColorPaint } from '../part-color.js';
 import type { StaticRenderer } from '../renderer.js';
@@ -20,7 +20,7 @@ import { paletteInk, schemeStyle } from '../scheme.js';
 import { serializeNode } from '../scene.js';
 import { createVectorScene, FACE_SHIFT, inkGradientVector, readVectorParams } from './build.js';
 import { themeExtras } from '../../themes/extras-hook.js';
-import { isLineVariant, mediumReaches, wearsDarkFace } from './media.js';
+import { isLineVariant, mediumReaches } from './media.js';
 
 /** The palette's own gradient, with the dark-mode stops switched by `schemeStyle`. */
 function paletteGradient(
@@ -80,17 +80,16 @@ export const renderVectorStatic: StaticRenderer = (frame, context) => {
   const hollow = isLineVariant(frame.variant);
   const style = frame.face.style;
   const filled = !hollow;
-  // The rule's paints this face uses (`facePalette`): the face colour for the cute face and a drawn face's
-  // whites; the features' colour for the `eyes` and `line` faces, a drawn face's features and the painted
-  // variants' face; a drawn face's pupils and glints. A hue in the middle of the range leaves all but the
-  // face colour to the tokens.
+  // The rule's paints this face uses (`facePalette`): the features' colour for every face; the face colour
+  // for a drawn face's whites, with its pupils and glints. A hue in the middle of the range leaves all but
+  // the face colour to the tokens.
   const sticker = frame.variant === 'sticker';
-  const painted = wearsDarkFace(frame.variant);
+  const drawn = filled && isDrawnFace(style);
   const uses: Record<keyof FaceInks, boolean> = {
-    face: filled && !sticker && (isDrawnFace(style) || (style === 'cute' && !painted)),
-    feature: special && filled && (!isCuteFamily(style) || isDrawnFace(style) || painted),
-    pupil: special && filled && isDrawnFace(style),
-    glint: special && filled && isDrawnFace(style),
+    face: drawn && !sticker,
+    feature: special && filled,
+    pupil: special && drawn,
+    glint: special && drawn,
     sticker: special && sticker,
     hair: special && filled && frame.body.parts.some((part) => part.tone === 'hair'),
   };

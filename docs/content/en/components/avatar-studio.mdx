@@ -55,14 +55,14 @@ The upload tab is built from exported functions, so a host with its own crop UI 
 | Export                                  | Purpose                                                                                                                                                                                               |
 | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `readImageFile(file)`                   | Validate and read a dropped, pasted or chosen file. Resolves `{ ok, dataUrl }` or `{ ok: false, reason }` with `too-large` / `not-an-image` — a wrong file is something the person did, not an error. |
-| `loadImage(dataUrl)`                    | Decode and downsample to `MAX_SOURCE_PX` (1024) on the way in, so dragging a 6000px photo stays smooth.                                                                                               |
+| `loadImage(dataUrl)`                    | Decode and downsample to `MAX_SOURCE_PX` (1600) on the way in, so dragging a 6000px photo stays smooth.                                                                                               |
 | `fitImage(width, height, max?)`         | The size to decode a source at.                                                                                                                                                                       |
-| `coverScale(view)`, `clampZoom(zoom)`   | Scale that fills the crop window at a zoom between `ZOOM_MIN` (1) and `ZOOM_MAX` (5).                                                                                                                 |
+| `coverScale(view)`, `clampZoom(zoom)`   | Scale that fills the crop window at a zoom between `ZOOM_MIN` (1) and `ZOOM_MAX` (4).                                                                                                                 |
 | `panLimit(view)`, `clampPan(pan, view)` | How far the image may travel before an edge enters the window, and a pan held inside that.                                                                                                            |
 | `exportPlacement(request)`              | Where the source lands on the exported square.                                                                                                                                                        |
-| `cropToDataUrl(image, request)`         | Render the crop to a PNG data URL of `EXPORT_PX` (256) — four times the `CROP_STAGE_PX` (96) stage, so a retina avatar stays sharp.                                                                   |
+| `cropToDataUrl(image, request)`         | Render the crop to a PNG data URL of `EXPORT_PX` (360) — three times the `CROP_STAGE_PX` (120) stage, so a retina avatar stays sharp.                                                                 |
 
-Limits are exported too: `MAX_UPLOAD_BYTES` (25 MB), `ZOOM_STEP`.
+Limits are exported too: `MAX_UPLOAD_BYTES` (20 MB), `ZOOM_STEP` (0.25).
 
 ## API
 

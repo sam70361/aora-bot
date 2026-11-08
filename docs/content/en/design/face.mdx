@@ -26,11 +26,11 @@ The face belongs to the character, not to a style. All sixteen faces — the thr
 
 <FaceStyleRow />
 
-| `face`           | Drawn as                                                                                                                                            |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `cute` (default) | White dot eyes, a small mouth and pink blush painted on the body; some states also throw off a mood effect. See [Expressions](/design/expressions). |
-| `eyes`           | Two large eyes and nothing else — the silhouette does the rest.                                                                                     |
-| `line`           | A nose and a mouth on top of the eyes, all strokes at one line weight.                                                                              |
+| `face`           | Drawn as                                                                                                                                      |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cute` (default) | Dot eyes, a small mouth and pink blush painted on the body; some states also throw off a mood effect. See [Expressions](/design/expressions). |
+| `eyes`           | Two large eyes and nothing else — the silhouette does the rest.                                                                               |
+| `line`           | A nose and a mouth on top of the eyes, all strokes at one line weight.                                                                        |
 
 `cute` is the default; pass `face="eyes"` or `face="line"` for the other plain faces, or a drawn face's id for one of the [drawn faces](#drawn-faces). `eyes` and `line` have their own geometry and eye tables. Switching `face` on a mounted character does not jump: the `cute` face and the others cross over on the `cuteBlend` spring.
 
@@ -70,7 +70,7 @@ Expressions blend field by field, so on a state change a part grows or fades in 
 
 ### Paint roles
 
-Layers carry a paint role, not a colour. `face` is the cute face's colour (the whites), `pupil` what reads on it, `feature` what reads on the body (brows, lashes, eyes drawn straight onto the body — the soft variant's face colour), `glint` the light that reads on `feature`, `iris` the body's ink deepened, and the rest fixed accents (a gold star, a tear, a tongue, a heart, an anger mark, a button's thread and face, dark glass) and a display's light. Off the middle of the range `getInkVars` also writes `--aora-face-pupil` and `--aora-face-glint` by the face rule, and static output switches them with its colour scheme where they turn with the page, as on black.
+Layers carry a paint role, not a colour. `face` is the face colour (the whites), `pupil` what reads on it, `feature` what reads on the body (brows, lashes, eyes drawn straight onto the body, the colour of the cute face), `glint` the light that reads on `feature`, `iris` the body's ink deepened, and the rest fixed accents (a gold star, a tear, a tongue, a heart, an anger mark, a button's thread and face, dark glass) and a display's light. Off the middle of the range `getInkVars` also writes `--aora-face-pupil` and `--aora-face-glint` by the face rule, and static output switches them with its colour scheme where they turn with the page, as on black.
 
 <DrawnFacePalette />
 
@@ -86,9 +86,13 @@ Layers carry a paint role, not a colour. `face` is the cute face's colour (the w
 
 A design is drawn at its own size. Before it goes onto a body, the outline of every fixed part — brows, frames, visor, symbols, and the mouth's width — is measured and tested where it lands, through the head's projection: every band has to lie inside the body's width at its height and below hair or a leaf capping the head. A face that does not fit walks one path that shrinks it (to 0.45 at most) and lowers it (by up to 1.6 dot radii) together, and bisection finds the point where it just fits; the mouth and the cheeks move with it. Parts that drift free of the face (a falling tear, a rising Z) are not counted. On a body with room, the face keeps its drawn size.
 
+### A face of your own
+
+`defineFace(design, { label })` registers a `FaceDesign` of your own under `design.id`; it is then accepted as `face` everywhere a face is, and drawn by every series, fitted to each body the first time the pair is drawn. `FACE_KIT` lends it what the built-in faces are built with: the eye outlines and bands, the reading of the cute expressions into a design's numbers, and the cute face's tables (`STATE_CUTE_EYES`, `CUTE_MOUTHS`) to name rather than copy. `cute`, `eyes`, `line` and the built-in drawn faces cannot be replaced.
+
 ## cute: the default face
 
-The `cute` face is painted on the body in `--aora-face` (white, or dark on a light ink; see [Palette](/design/palette#the-face-rule)). Every state has its own eyes, mouth and blush, and the eyes cycle on an interval. The tables and demos are on [Expressions](/design/expressions); the mood and activity effects of each state are on [States](/design/states).
+The `cute` face is painted on the body in the features colour, `--aora-face-soft`, as the `eyes` and `line` faces are (dark on most hues, white on a dark ink; see [Palette](/design/palette#the-face-rule)). Every state has its own eyes, mouth and blush, and the eyes cycle on an interval. The tables and demos are on [Expressions](/design/expressions); the mood and activity effects of each state are on [States](/design/states).
 
 On the `cute` face the belt states do not shrink the body to a bead: the whole character, face included, stays, and what the belt says on the other faces is said by an effect beside it.
 

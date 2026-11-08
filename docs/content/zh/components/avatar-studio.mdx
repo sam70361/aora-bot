@@ -55,14 +55,14 @@ export default function Demo() {
 | 导出                                    | 用途                                                                                                                                                            |
 | --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `readImageFile(file)`                   | 校验并读取拖放、粘贴或选择的文件。resolve 为 `{ ok, dataUrl }` 或带 `too-large` / `not-an-image` 的 `{ ok: false, reason }`——选错文件是人的行为，不是程序错误。 |
-| `loadImage(dataUrl)`                    | 解码并在进入时降采样到 `MAX_SOURCE_PX`（1024），拖动一张 6000px 的照片也能保持流畅。                                                                            |
+| `loadImage(dataUrl)`                    | 解码并在进入时降采样到 `MAX_SOURCE_PX`（1600），拖动一张 6000px 的照片也能保持流畅。                                                                            |
 | `fitImage(width, height, max?)`         | 源图应当以多大的尺寸解码。                                                                                                                                      |
-| `coverScale(view)`、`clampZoom(zoom)`   | 在 `ZOOM_MIN`（1）到 `ZOOM_MAX`（5）之间的某个缩放下填满裁切框所需的比例。                                                                                      |
+| `coverScale(view)`、`clampZoom(zoom)`   | 在 `ZOOM_MIN`（1）到 `ZOOM_MAX`（4）之间的某个缩放下填满裁切框所需的比例。                                                                                      |
 | `panLimit(view)`、`clampPan(pan, view)` | 图片边缘进入裁切框之前最多能移多远，以及被限制在其中的平移量。                                                                                                  |
 | `exportPlacement(request)`              | 源图落在导出方形上的位置。                                                                                                                                      |
-| `cropToDataUrl(image, request)`         | 把裁切渲染为 `EXPORT_PX`（256）的 PNG data URL——是 `CROP_STAGE_PX`（96）舞台的四倍，视网膜屏上的头像依然清晰。                                                  |
+| `cropToDataUrl(image, request)`         | 把裁切渲染为 `EXPORT_PX`（360）的 PNG data URL——是 `CROP_STAGE_PX`（120）舞台的三倍，视网膜屏上的头像依然清晰。                                                 |
 
-限制值同样导出：`MAX_UPLOAD_BYTES`（25 MB）、`ZOOM_STEP`。
+限制值同样导出：`MAX_UPLOAD_BYTES`（20 MB）、`ZOOM_STEP`（0.25）。
 
 ## API
 

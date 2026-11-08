@@ -24,24 +24,24 @@ export default function Demo() {
 }
 ```
 
-| 变体         | 身体                                             | `cute` 脸的颜色            | 参数                                         |
-| ------------ | ------------------------------------------------ | -------------------------- | -------------------------------------------- |
-| `solid`      | 用墨色平涂                                       | 白色（`--aora-face`）      | —                                            |
-| `outline`    | 描边，里面染 8% 的墨色                           | 墨色                       | `strokeWidth`                                |
-| `glass`      | 半透明的身体，细边，顶部和内沿的光泽             | 墨色                       | `strokeWidth`                                |
-| `sticker`    | 填色，外面一圈白边和阴影                         | 纸色（`--aora-paper`）     | `stickerWidth`、`stickerShadow`              |
-| `paper`      | 填色，下面垫一层更深的自己                       | 白色                       | `paperOffset`、`paperAngle`、`paperTilt`     |
-| `soft`       | 径向渐变，脚下一块地面阴影，可选小高光           | 深棕（`--aora-face-soft`） | `softShadow`、`softGloss`                    |
-| `riso`       | 两色错位印刷，叠印处正片叠底，带半调网点         | 白色                       | `risoOffset`、`risoHalftone`                 |
-| `pencil`     | 抖动的双线石墨笔触，背光一侧排线，纸面颗粒       | 石墨：变灰的墨色           | `strokeWidth`、`wobble`、`grain`、`hatching` |
-| `marker`     | 淡色错位底，来回涂满的笔触，深色双重描边         | 白色，外描一圈深色马克笔   | `strokeWidth`、`wobble`                      |
-| `crayon`     | 蜡质填色透出纸纹，边缘毛糙，压重的外沿           | 深棕（`--aora-face-soft`） | `wobble`、`grain`                            |
-| `watercolor` | 浅色晕染，积色、水渍、颜料沉淀，干后的深边       | 深棕（`--aora-face-soft`） | `wobble`、`grain`                            |
-| `neon`       | 带灯芯的发光灯管，内部一层微光                   | 灯管的灯芯色               | `strokeWidth`、`neonGlow`                    |
-| `chalk`      | 碎裂的粉笔线，斜向排线，线边的粉尘               | 粉笔：变浅或变深的墨色     | `strokeWidth`、`wobble`、`grain`、`hatching` |
-| `origami`    | 揉皱再压平的纸片，细碎柔和的明暗面，纸片微微浮起 | 与 `solid` 相同            | —                                            |
-| `relief`     | 厚卡纸从背后压凸：左上亮边、右下暗边             | 与 `solid` 相同            | —                                            |
-| `gothic`     | 边缘压暗，背光处墨线排线，毛笔墨线外框，纸纹     | 与 `solid` 相同            | `grain`、`hatching`                          |
+| 变体         | 身体                                             | `cute` 脸的颜色                 | 参数                                         |
+| ------------ | ------------------------------------------------ | ------------------------------- | -------------------------------------------- |
+| `solid`      | 用墨色平涂                                       | 五官色（`--aora-face-soft`）    | —                                            |
+| `outline`    | 描边，里面染 8% 的墨色                           | 墨色                            | `strokeWidth`                                |
+| `glass`      | 半透明的身体，细边，顶部和内沿的光泽             | 墨色                            | `strokeWidth`                                |
+| `sticker`    | 填色，外面一圈白边和阴影                         | 与 `solid` 相同                 | `stickerWidth`、`stickerShadow`              |
+| `paper`      | 填色，下面垫一层更深的自己                       | 与 `solid` 相同                 | `paperOffset`、`paperAngle`、`paperTilt`     |
+| `soft`       | 径向渐变，脚下一块地面阴影，可选小高光           | 与 `solid` 相同，腮红更深       | `softShadow`、`softGloss`                    |
+| `riso`       | 两色错位印刷，叠印处正片叠底，带半调网点         | 与 `solid` 相同                 | `risoOffset`、`risoHalftone`                 |
+| `pencil`     | 抖动的双线石墨笔触，背光一侧排线，纸面颗粒       | 石墨：变灰的墨色                | `strokeWidth`、`wobble`、`grain`、`hatching` |
+| `marker`     | 淡色错位底，来回涂满的笔触，深色双重描边         | 与 `solid` 相同，外描深色马克笔 | `strokeWidth`、`wobble`                      |
+| `crayon`     | 蜡质填色透出纸纹，边缘毛糙，压重的外沿           | 与 `solid` 相同，腮红更深       | `wobble`、`grain`                            |
+| `watercolor` | 浅色晕染，积色、水渍、颜料沉淀，干后的深边       | 与 `solid` 相同，腮红更深       | `wobble`、`grain`                            |
+| `neon`       | 带灯芯的发光灯管，内部一层微光                   | 灯管的灯芯色                    | `strokeWidth`、`neonGlow`                    |
+| `chalk`      | 碎裂的粉笔线，斜向排线，线边的粉尘               | 粉笔：变浅或变深的墨色          | `strokeWidth`、`wobble`、`grain`、`hatching` |
+| `origami`    | 揉皱再压平的纸片，细碎柔和的明暗面，纸片微微浮起 | 与 `solid` 相同                 | —                                            |
+| `relief`     | 厚卡纸从背后压凸：左上亮边、右下暗边             | 与 `solid` 相同                 | —                                            |
+| `gothic`     | 边缘压暗，背光处墨线排线，毛笔墨线外框，纸纹     | 与 `solid` 相同                 | `grain`、`hatching`                          |
 
 `solid`、`outline`、`glass` 在 [`CharacterMark`](/components/character-mark) 里已有说明。本页讲其余几种变体、画材，以及 `outline` 给出的单色线条画法。
 
@@ -74,7 +74,7 @@ export default function Demo() {
 }
 ```
 
-纸不跟随页面。贴纸是带着自己边缘的东西，所以在深色页面上它仍然是浅色的——正是这份对比把它从表面上托起来。同样的道理，它的眼睛也是纸色，而不是会透出页面的孔。想要奶油色或带色调的边，在任意祖先元素上设置 `--aora-paper`：
+纸不跟随页面。贴纸是带着自己边缘的东西，所以在深色页面上它仍然是浅色的——正是这份对比把它从表面上托起来。同样的道理，手绘脸的眼白也是纸色，而不是页面色。想要奶油色或带色调的边，在任意祖先元素上设置 `--aora-paper`：
 
 ```css
 .card {
@@ -168,7 +168,7 @@ export default function Demo() {
 
 ## 软糖
 
-`soft` 是一个圆润的玩具：平涂的身体上盖一层径向渐变（左上偏亮、右下偏暗），脚下一块不随身体弹跳的地面阴影。脸用深棕色，腮红偏粉。左上角的小高光默认关闭（`softGloss`），因为脸偏上的形状会让它正好落在眼睛上。渐变和高光都是叠在身体上的覆盖层，不是从墨色算出来的渐变，所以在令牌、纯色和渐变墨色上都成立。配件（耳朵这类）一起吃到渐变，明暗和它在整个形象上的位置一致。
+`soft` 是一个圆润的玩具：平涂的身体上盖一层径向渐变（左上偏亮、右下偏暗），脚下一块不随身体弹跳的地面阴影。腮红更深、偏粉，透过渐变也看得出。左上角的小高光默认关闭（`softGloss`），因为脸偏上的形状会让它正好落在眼睛上。渐变和高光都是叠在身体上的覆盖层，不是从墨色算出来的渐变，所以在令牌、纯色和渐变墨色上都成立。配件（耳朵这类）一起吃到渐变，明暗和它在整个形象上的位置一致。
 
 ```tsx preview
 import { renderStaticSvgDataUrl } from '@aora-bot/react';
@@ -281,7 +281,7 @@ export default function Demo() {
 ```
 
 - **线条跟着页面走。** `pencil`、`neon`、`chalk` 是线描，所以和 `outline` 一样，脸和线条用的是朝页面对比色偏移的墨色：石墨在浅色页面上变深、在深色页面上变成银色；粉笔在浅色页面上变深、在深色页面上变浅；霓虹灯芯在深色页面上发白、在浅色页面上变深。
-- **涂色画材用深色脸。** `crayon` 和 `watercolor` 用更深的颜料画脸，也就是 `soft` 的深棕（`--aora-face-soft`）；黑色身体在深色时，`getInkVars('black')` 会把它变成白色。`marker` 保留白色的脸，外面描一圈深色马克笔。
+- **涂色画材腮红更深。** `crayon` 和 `watercolor` 和所有实心变体一样用五官色画脸，腮红用 `soft` 那种更深的粉色，透过颜料也看得出。`marker` 给脸描一圈深色马克笔。
 - **配件保留自己的颜色。** 涂色画材里叶子是绿的、耳朵内侧更浅；线描画材用线条色画所有配件，和 `outline` 一样不画耳朵内侧。
 
 所有纹理都有固定种子，静态渲染每次都一样；每条笔触对每个轮廓只算一次并缓存。颗粒放在颜料里——一张小的斑点图做成图案，或者每组一个蒙版——而不是每帧重算；辉光只用一次模糊。所以一页二十个动画角色，不管哪种画材，都能保持在 60 fps 左右。
@@ -529,7 +529,7 @@ export default function Demo() {
 
 ### 暗黑手绘
 
-一种暗色调的绘本墨画。每个部件从边缘向内压暗，背光一侧先排线、再交叉排线，外面一圈暖黑色的毛笔墨线：背光处更粗，提笔处变细。底色带一层细细的纸纹。脸用 `solid` 的白色脸，在阴影里也够亮。`hatching` 控制排线，`grain` 控制纸纹；比耳朵还小的部件不排线。
+一种暗色调的绘本墨画。每个部件从边缘向内压暗，背光一侧先排线、再交叉排线，外面一圈暖黑色的毛笔墨线：背光处更粗，提笔处变细。底色带一层细细的纸纹。脸和 `solid` 一样，画在阴影之上。`hatching` 控制排线，`grain` 控制纸纹；比耳朵还小的部件不排线。
 
 ```tsx preview
 import { renderStaticSvgDataUrl } from '@aora-bot/react';
@@ -695,6 +695,10 @@ const svg = renderStaticSvg({ variant: 'outline', ink: { flat: 'currentColor' } 
 
 要把这段标记内联到页面里。通过 `<img>` 加载的 SVG 没有可继承的外围文字颜色，`currentColor` 会变成黑色。
 
+## 自己的画材
+
+`defineVectorMedium(id, definition, reads)` 给矢量系列加一个变体：在任何地方都能作为 `variant` 绘制和使用，但在宿主列出之前不进 `variants`（也就不进选择器）；`acceptsVariant` 和 `allVariants` 能看到它。定义里的 `paint(piece, ctx)` 按轮廓画身体和每个配件，核心的几何工具在 `ctx.kit` 里，所以画材不需要再从引擎导入别的东西。可选字段可以加上 defs、底层、纸纹、更深的腮红（`deepBlush`）或自己的脸色（`faceInk`）。`reads` 列出它读取的系列参数。内置变体不能被替换，`VECTOR_VARIANTS` 列出了它们。
+
 ## 参数
 
 参数属于整个系列，每个变体只读自己的那部分。越界的数值会被夹到范围内并吸附到步长；类型不对则回落到默认值；未知的键会被丢弃。
@@ -733,7 +737,7 @@ character.update({ variant: 'paper', styleOptions: { paperOffset: 12, paperAngle
 
 ## 接下来
 
-- [CharacterMark](/components/character-mark) — 组件本身，以及前三种变体
+- [CharacterMark](/components/character-mark) — 组件本身，以及所有变体的并排对照
 - [颜文字风格](/design/styles/kaomoji) — 把角色写成一行文字
 - [五官](/design/face) — 每种变体都能戴的脸
 - [主题](/guide/theming) — 给角色上色的变量

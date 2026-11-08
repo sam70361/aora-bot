@@ -100,6 +100,9 @@ await loadTheme('halloween');
 const svg = renderStaticSvg({ shape: 'pumpkin', color: 'orange', variant: 'doodle', sizePx: 64 });
 ```
 
+`loadTheme` 通过引擎的主题清单（`THEME_MANIFEST`）取主题入口。想把主题提前打进包里，就导入它的入口再安装：`installTheme(HALLOWEEN)`，`HALLOWEEN` 来自 `@aora-bot/engine/themes/halloween`（React 应用里是 `@aora-bot/react/themes/halloween`）。重复安装不会有任何效果。`themesNeeded({ shape, preset, variant, style, color })` 列出一组 id 需要哪些主题，宿主可以先加载再绘制；`getTheme(id)` 和 `listThemes()` 读取已安装的主题定义，`themeLabel(kind, id)` 给出主题为自己的角色、皮肤和颜色起的名字。`CharacterMark` 和 `<aora-bot>` 会自己加载：遇到主题的角色、皮肤或颜色，先占住尺寸，加载主题后再绘制。
+
+主题的 id 在任何地方都能绘制、都被接受，但不进默认列表。`SHAPE_IDS`、`CAST`、`COLOR_IDS` 是列出的 id；`ALL_SHAPE_IDS`、`ALL_CAST_IDS`、`ALL_COLOR_IDS` 是引擎认识的全部 id，`CORE_SHAPE_IDS` 是核心自带的角色。
 想和这个接口画得一模一样，就用 `themeLook` 取主题成员的外观，接口用的也是这条规则：
 
 ```ts

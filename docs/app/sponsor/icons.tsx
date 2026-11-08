@@ -36,20 +36,6 @@ export const HeartIcon = () =>
     />,
   );
 
-/** A speech bubble with three dots. */
-export const ChatIcon = () =>
-  icon(
-    'site-sponsor__icon--chat',
-    <>
-      <path d="M7.5 4h9A2.5 2.5 0 0 1 19 6.5v6a2.5 2.5 0 0 1-2.5 2.5h-5l-4 3.5V15A2.5 2.5 0 0 1 5 12.5v-6A2.5 2.5 0 0 1 7.5 4z" />
-      <g fill="currentColor" stroke="none">
-        <circle cx="9" cy="9.5" r="1" />
-        <circle cx="12" cy="9.5" r="1" />
-        <circle cx="15" cy="9.5" r="1" />
-      </g>
-    </>,
-  );
-
 /** A contact card: a person on the left, two lines of details on the right. */
 export const CrmIcon = () =>
   icon(
@@ -58,17 +44,6 @@ export const CrmIcon = () =>
       <rect x="3" y="5" width="18" height="14" rx="3" />
       <circle cx="9" cy="10.5" r="2" />
       <path d="M5.8 16a3.4 3.4 0 0 1 6.4 0M14.5 10h3.5M14.5 13.5h2.5" />
-    </>,
-  );
-
-/** Two people, one behind the other. */
-export const GroupIcon = () =>
-  icon(
-    'site-sponsor__icon--group',
-    <>
-      <circle cx="9" cy="8.5" r="3.5" />
-      <path d="M2.5 19.5a6.5 6.5 0 0 1 13 0" />
-      <path d="M15.5 5.2a3.5 3.5 0 0 1 0 6.6M18 14.2a6.5 6.5 0 0 1 3.5 5.3" />
     </>,
   );
 
@@ -141,7 +116,7 @@ export const PenIcon = () =>
     </>,
   );
 
-/** The payment brands' own marks, filled in their own colours rather than outlined in `currentColor`. */
+/** The brands' own marks, filled in their own colours rather than outlined in `currentColor`. */
 const brand = (children: ReactNode) => (
   <svg className="site-sponsor__brand" viewBox="0 0 24 24" aria-hidden="true">
     {children}
@@ -173,6 +148,52 @@ export const AlipayIcon = () =>
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+    </>,
+  );
+
+/** A green rounded square with two white speech bubbles, each with two eyes. */
+export const WeChatIcon = () =>
+  brand(
+    <>
+      <rect x="1.5" y="1.5" width="21" height="21" rx="5" fill="#07C160" />
+      <path
+        d="M9.6 5.4c-3.1 0-5.6 2.06-5.6 4.6 0 1.45.82 2.75 2.1 3.6l-.55 1.95 2.25-1.2c.58.16 1.18.25 1.8.25 3.1 0 5.6-2.06 5.6-4.6S12.7 5.4 9.6 5.4z"
+        fill="#fff"
+      />
+      <path
+        d="M15.6 10.7c2.43 0 4.4 1.66 4.4 3.7 0 1.13-.6 2.14-1.56 2.82l.42 1.48-1.75-.93c-.47.14-.98.33-1.51.33-2.43 0-4.4-1.66-4.4-3.7s1.97-3.7 4.4-3.7z"
+        fill="#fff"
+        stroke="#07C160"
+        strokeWidth="1.2"
+      />
+      <g fill="#07C160">
+        <circle cx="7.7" cy="8.7" r="0.8" />
+        <circle cx="11.5" cy="8.7" r="0.8" />
+        <circle cx="14.1" cy="13.6" r="0.62" />
+        <circle cx="17.1" cy="13.6" r="0.62" />
+      </g>
+    </>,
+  );
+
+/** The QQ penguin: black, with a white belly and eyes, a yellow beak and feet and a red scarf. */
+export const QQIcon = () =>
+  brand(
+    <>
+      <g fill="#111" stroke="#fff" strokeWidth="0.5">
+        <ellipse cx="5.9" cy="14.6" rx="1.3" ry="3" transform="rotate(28 5.9 14.6)" />
+        <ellipse cx="18.1" cy="14.6" rx="1.3" ry="3" transform="rotate(-28 18.1 14.6)" />
+        <ellipse cx="12" cy="12.4" rx="6" ry="8.6" />
+      </g>
+      <ellipse cx="12" cy="15.4" rx="4.2" ry="5.2" fill="#fff" />
+      <path d="M6.5 11.9q5.5 2.5 11 0l.35 1.7q-5.85 2.7-11.7 0z" fill="#EB1923" />
+      <path d="M14.4 13.5l1.2 3.7 1.9-.8-.9-3.6z" fill="#EB1923" />
+      <ellipse cx="10.1" cy="7.7" rx="1.25" ry="1.7" fill="#fff" />
+      <ellipse cx="13.9" cy="7.7" rx="1.25" ry="1.7" fill="#fff" />
+      <ellipse cx="10.4" cy="8" rx="0.6" ry="0.85" fill="#111" />
+      <ellipse cx="13.6" cy="8" rx="0.6" ry="0.85" fill="#111" />
+      <ellipse cx="12" cy="10.5" rx="2.2" ry="1.05" fill="#FAAB07" />
+      <ellipse cx="9.3" cy="21.2" rx="2.5" ry="0.95" fill="#FAAB07" />
+      <ellipse cx="14.7" cy="21.2" rx="2.5" ry="0.95" fill="#FAAB07" />
     </>,
   );
 

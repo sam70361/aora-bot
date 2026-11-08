@@ -100,6 +100,9 @@ await loadTheme('halloween');
 const svg = renderStaticSvg({ shape: 'pumpkin', color: 'orange', variant: 'doodle', sizePx: 64 });
 ```
 
+`loadTheme` fetches the entry through the engine's manifest (`THEME_MANIFEST`). To bundle a theme up front instead, import its entry and install it: `installTheme(HALLOWEEN)`, with `HALLOWEEN` from `@aora-bot/engine/themes/halloween` (`@aora-bot/react/themes/halloween` in a React app). Installing twice does nothing. `themesNeeded({ shape, preset, variant, style, color })` lists the themes a set of ids needs, so a host can load them before drawing; `getTheme(id)` and `listThemes()` read the installed definitions, and `themeLabel(kind, id)` gives the name a theme puts on its characters, skins and colours. `CharacterMark` and `<aora-bot>` do the loading themselves: given a theme's character, skin or colour, they hold their box, load the theme, then draw.
+
+A theme's ids are drawn and accepted everywhere but stay out of the default lists. `SHAPE_IDS`, `CAST` and `COLOR_IDS` hold the listed ids; `ALL_SHAPE_IDS`, `ALL_CAST_IDS` and `ALL_COLOR_IDS` hold every id the engine knows, and `CORE_SHAPE_IDS` the core's own characters.
 To draw a theme's member exactly as this endpoint does, take its look from `themeLook`, the one rule the endpoint uses too:
 
 ```ts

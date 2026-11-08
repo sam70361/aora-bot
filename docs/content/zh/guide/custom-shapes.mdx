@@ -62,7 +62,7 @@ export default function Demo() {
 
 ## 耳朵、叶子和天线
 
-内置角色里的耳朵、叶子、天线是 `ShapeDef.parts`：它们跟着身体一起动，随身体的姿态变形；除了 `hair`（脸会避开它），都不参与脸的拟合。`defineShape` 在选项里接受它们，每个配件是一个 `tone` 加一条轮廓，坐标和身体的轮廓一致（四种 `tone` 各画成什么，见[形状](/design/shapes#配件)）。配件和身体一起归一化，不用自己去对齐那个 228 单位的框。
+内置角色里的耳朵、叶子、天线是 `ShapeDef.parts`：它们跟着身体一起动，随身体的姿态变形；除了 `hair`（脸会避开它），都不参与脸的拟合。`defineShape` 在选项里接受它们，每个配件是一个 `tone` 加一条轮廓，坐标和身体的轮廓一致（四种 `tone` 各画成什么，见[形状](/design/shapes#配件)）。配件和身体一起归一化，不用自己去对齐 240 单位的形状空间。
 
 ```tsx preview
 import { useEffect, useState } from 'react';
@@ -103,6 +103,16 @@ export default function Demo() {
 
 配件不形变：角色换形状时，旧配件淡出，新配件淡入。
 
+### 颜色和道具
+
+配件默认按 `tone` 从角色墨色取色；写了 `color` 就用它自己的颜色，可以是调色板 id 或任意 CSS 颜色（`PartColor`），所有变体里都保留。同一组选项里的 `props` 和配件一样画，但画在配件前面；道具盖在身体上的地方，脸会避开，就像避开头发一样。`defineShapeWithProps` 则给已有角色加道具：`base` 保留自己的身体、配件和脸，按 `scale` 绕 `at` 缩放，`props` 画在它上面的 100 × 100 框里；`drop` 去掉被道具取代的原有配件，`tint` 给原有配件上色，两者都按序号。
+
+````ts
+defineShapeWithProps('mochi-hat', {
+  base: 'mochi',
+  props: [{ tone: 'inner', color: 'red', outline: [[30, 22], [50, 2], [70, 22]] }],
+});
+```
 ## 好轮廓的规则
 
 **返回点，而不是路径字符串。** 注册表需要测量轮廓，测量路径意味着解析并展平它。
@@ -165,3 +175,4 @@ defineShape('triangle', triangle, { leftDX: -6 });
 - [形状推导](/internals/shape-derivation)——从轮廓到面部盒
 - [形状](/design/shapes)——全部内置角色
 - [性能](/guide/performance)——怎样渲染上百个角色
+````

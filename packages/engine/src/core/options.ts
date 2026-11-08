@@ -90,7 +90,7 @@ export interface CharacterOptions {
   styleOptions?: Record<string, unknown>;
   /**
    * Face style. `cute` (default) paints small round eyes, a small mouth and
-   * blush in a face colour; `eyes` draws two large eyes alone; `line`
+   * blush in the features' colour; `eyes` draws two large eyes alone; `line`
    * adds a stroked nose and a parametric mouth at the eyes' line weight. The
    * drawn faces (`DRAWN_FACE_STYLES`: `capsule`, `brow`, `glossy`, `sparkle`,
    * `button`, `shades`, `droopy`, `bigmouth`, `pie`, `screen`, `symbol`,

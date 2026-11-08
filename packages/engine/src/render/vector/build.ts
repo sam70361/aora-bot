@@ -45,7 +45,7 @@ import {
   faceInkOf,
   mediumTreatment,
   monochromeEffects,
-  wearsDarkFace,
+  wearsDeepBlush,
   type Medium,
   type MediumPaint,
   type MediumRole,
@@ -99,9 +99,7 @@ export const FACE_SHIFT_TOKEN = `light-dark(${FACE_SHIFT.light}, ${FACE_SHIFT.da
 
 /** A face's paints by role (`facePalette`), and what the faces without pupils paint their eyes in. */
 interface FacePalette extends DrawnPalette {
-  /** The cute face. */
-  cute: string;
-  /** The `eyes` and `line` faces' eyes, nose and mouth. */
+  /** The cute, `eyes` and `line` faces' eyes, nose and mouth. */
   features: string;
 }
 
@@ -153,9 +151,9 @@ const OUTLINE_FILL = 0.08;
  */
 const GLASS = { tint: 0.34, rim: 0.42, rimOpacity: 0.9, sheen: 0.3, edgeLight: 0.9 };
 
-/** Cheek colours: pink on a body, the ink itself on an outline. Faint: a flush, not a sticker. */
+/** Cheek colours: pink on a body, deeper on a painted one, the ink itself on an outline. Faint: a flush, not a sticker. */
 const BLUSH = { color: '#FFB3C7', opacity: 0.6 };
-const BLUSH_SOFT = { color: '#FF7E9D', opacity: 0.45 };
+const BLUSH_DEEP = { color: '#FF7E9D', opacity: 0.45 };
 const BLUSH_HOLLOW_OPACITY = 0.16;
 
 /** The riso variant's misregistration, as a fixed direction (3.4 : 2.6) scaled by `risoOffset`. */
@@ -1046,15 +1044,15 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
     });
   }
 
-  /** The cute face: cheeks, then eyes, then the mouth, painted in the variant's face colour. */
+  /** The cute face: cheeks, then eyes, then the mouth, painted in the features' colour. */
   function cuteFace(f: FaceFrame, variant: string, solid: string, palette: FacePalette): SceneNode[] {
     const g = f.geometry;
     const hollow = isHollow(variant);
-    const paint = palette.cute;
+    const paint = palette.features;
     const blush = hollow
       ? { color: solid, opacity: BLUSH_HOLLOW_OPACITY }
-      : wearsDarkFace(variant)
-        ? BLUSH_SOFT
+      : wearsDeepBlush(variant)
+        ? BLUSH_DEEP
         : BLUSH;
 
     const children: SceneNode[] = [];
@@ -1093,32 +1091,29 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
 
   /**
    * Every face's paints in this variant, by role (`faceInks`). On a filled
-   * body the face colour (`face`) is the cute face and a drawn face's whites,
-   * and the features' colour (`feature`) everything drawn straight on the
-   * body: the `eyes` and `line` faces, a drawn face's brows, lids and eyes; a
-   * pupil reads on the face colour and a glint on the features'. A face
-   * without pupils uses the first two, a drawn face all four. The painted
-   * variants paint the cute face in the features' colour, and a sticker its
-   * face in its paper. On a body that is a line every role is the line or the
-   * page, and the plates get a rim. Accents keep their colour unless the
-   * variant throws its effects in one colour.
+   * body the features' colour (`feature`) is everything drawn straight on
+   * the body: the cute, `eyes` and `line` faces, a drawn face's brows, lids
+   * and eyes; the face colour (`face`) is a drawn face's whites, its paper on
+   * a sticker. A pupil reads on the face colour and a glint on the features'.
+   * A face without pupils uses only the features' colour, a drawn face all
+   * four. On a body that is a line every role is the line or the page, and
+   * the plates get a rim. Accents keep their colour unless the variant throws
+   * its effects in one colour.
    */
   function facePalette(variant: string, solid: string): FacePalette {
     const hollow = isHollow(variant);
-    const sticker = variant === 'sticker';
     const line = hollowFace(solid, variant);
     const page = PAGE_TOKEN;
     const mono = hollow && monochromeEffects(variant);
-    const featureInk = hollow ? line : (ctx.featureFill ?? FEATURE_TOKEN);
+    const featureInk = hollow ? line : faceInkOf(variant, ctx.featureFill ?? FEATURE_TOKEN, solid);
     const faceInk = hollow
       ? page
-      : faceInkOf(variant, sticker ? stickerFace : (ctx.faceFill ?? FACE_TOKEN), solid);
+      : faceInkOf(variant, variant === 'sticker' ? stickerFace : (ctx.faceFill ?? FACE_TOKEN), solid);
     const pupil = hollow ? line : (ctx.pupilFill ?? PUPIL_TOKEN);
     const glint = hollow ? page : (ctx.glintFill ?? GLINT_TOKEN);
     // The host's eye colour, where it names one, over the eyes of the faces without pupils.
     const eyed = (paint: string): string =>
-      hollow || sticker ? paint : (ctx.eyeFill ?? (live ? eyeToken(paint) : paint));
-    const cute = hollow ? line : wearsDarkFace(variant) ? faceInkOf(variant, featureInk, solid) : faceInk;
+      hollow ? paint : (ctx.eyeFill ?? (live ? eyeToken(paint) : paint));
     const base = hollow ? line : solid;
     const iris = base.startsWith('url(')
       ? base
@@ -1129,7 +1124,6 @@ export function createVectorScene(ctx: VectorSceneContext): VectorScene {
       return share >= 100 ? line : share <= 0 ? page : `color-mix(in oklab, ${line} ${share}%, ${page})`;
     };
     return {
-      cute: eyed(cute),
       features: eyed(featureInk),
       paint(role, light) {
         switch (role) {

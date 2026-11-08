@@ -27,7 +27,7 @@ export default function Demo() {
 
 ## Fewer options on purpose
 
-A handful of inks and shapes rather than the whole catalogue. The shapes are `AUTO_SHAPE_POOL` — the shapes that still read as a character at 16px — and the missing ink is `black`, which is reserved as the default ink and so is not a choice anyone makes (`ASSIGNABLE_COLOR_IDS`). Someone deciding what their first agent looks like wants a handful of obvious options, not the whole catalogue; the full grid belongs in the [editor](/components/avatar-studio) they can open later.
+A handful of inks and shapes rather than the whole catalogue. The shapes are `AUTO_SHAPE_POOL` — the shapes that still read as a character at 16px — and the inks are `ASSIGNABLE_COLOR_IDS`, the eleven bright hues an id is hashed onto: `black`, the default ink, and the near-white and muted colours are left to the full editor. Someone deciding what their first agent looks like wants a handful of obvious options, not the whole catalogue; the full grid belongs in the [editor](/components/avatar-studio) they can open later.
 
 The component is controlled, like the plain picker, and lays both groups out on one row.
 

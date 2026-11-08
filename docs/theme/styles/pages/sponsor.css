@@ -97,14 +97,6 @@
     color: light-dark(oklch(0.64 0.19 5), oklch(0.74 0.15 5));
   }
 
-  .site-sponsor__icon--chat {
-    color: var(--aora-status-online);
-  }
-
-  .site-sponsor__icon--group {
-    color: light-dark(oklch(0.62 0.14 230), oklch(0.75 0.12 230));
-  }
-
   .site-sponsor__text {
     display: grid;
     gap: var(--aora-space-3);

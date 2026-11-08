@@ -24,24 +24,24 @@ export default function Demo() {
 }
 ```
 
-| Variant      | Body                                                                     | Colour of the `cute` face       | Parameters                                   |
-| ------------ | ------------------------------------------------------------------------ | ------------------------------- | -------------------------------------------- |
-| `solid`      | Flat fill of the ink                                                     | White (`--aora-face`)           | —                                            |
-| `outline`    | Stroked, with an 8% ink fill                                             | The ink                         | `strokeWidth`                                |
-| `glass`      | A tinted body with a fine rim, lit at the top and the rim                | The ink                         | `strokeWidth`                                |
-| `sticker`    | Filled, inside a white border and a shadow                               | The paper (`--aora-paper`)      | `stickerWidth`, `stickerShadow`              |
-| `paper`      | Filled, over a darker copy of itself                                     | White                           | `paperOffset`, `paperAngle`, `paperTilt`     |
-| `soft`       | Radial wash, a shadow on the ground, an optional gloss                   | Dark brown (`--aora-face-soft`) | `softShadow`, `softGloss`                    |
-| `riso`       | Two inks printed out of register, multiplied, with halftone              | White                           | `risoOffset`, `risoHalftone`                 |
-| `pencil`     | A double graphite line, hatching on the shadow side, paper grain         | Graphite: the ink, greyed       | `strokeWidth`, `wobble`, `grain`, `hatching` |
-| `marker`     | A scribbled fill over a pale offset pass, a dark double outline          | White, outlined in dark marker  | `strokeWidth`, `wobble`                      |
-| `crayon`     | A waxy fill with the paper's tooth showing, a ragged edge, a heavier rim | Dark brown (`--aora-face-soft`) | `wobble`, `grain`                            |
-| `watercolor` | A light wash, pooled pigment, a bloom, granulation, a dried edge         | Dark brown (`--aora-face-soft`) | `wobble`, `grain`                            |
-| `neon`       | A glowing tube with a core, a faint glow inside                          | The tube's core                 | `strokeWidth`, `neonGlow`                    |
-| `chalk`      | A crumbling chalk line, diagonal strokes, dust along the line            | Chalk: the ink, paler or deeper | `strokeWidth`, `wobble`, `grain`, `hatching` |
-| `origami`    | Crumpled sheets pressed flat, many soft facets, each on its own shadow   | As `solid`                      | —                                            |
-| `relief`     | A thick card pressed up from behind: a lit rim and a shaded rim          | As `solid`                      | —                                            |
-| `gothic`     | Darkened edge, ink hatching in shadow, a brushed ink line, paper grain   | As `solid`                      | `grain`, `hatching`                          |
+| Variant      | Body                                                                     | Colour of the `cute` face                | Parameters                                   |
+| ------------ | ------------------------------------------------------------------------ | ---------------------------------------- | -------------------------------------------- |
+| `solid`      | Flat fill of the ink                                                     | The features colour (`--aora-face-soft`) | —                                            |
+| `outline`    | Stroked, with an 8% ink fill                                             | The ink                                  | `strokeWidth`                                |
+| `glass`      | A tinted body with a fine rim, lit at the top and the rim                | The ink                                  | `strokeWidth`                                |
+| `sticker`    | Filled, inside a white border and a shadow                               | As `solid`                               | `stickerWidth`, `stickerShadow`              |
+| `paper`      | Filled, over a darker copy of itself                                     | As `solid`                               | `paperOffset`, `paperAngle`, `paperTilt`     |
+| `soft`       | Radial wash, a shadow on the ground, an optional gloss                   | As `solid`, a deeper blush               | `softShadow`, `softGloss`                    |
+| `riso`       | Two inks printed out of register, multiplied, with halftone              | As `solid`                               | `risoOffset`, `risoHalftone`                 |
+| `pencil`     | A double graphite line, hatching on the shadow side, paper grain         | Graphite: the ink, greyed                | `strokeWidth`, `wobble`, `grain`, `hatching` |
+| `marker`     | A scribbled fill over a pale offset pass, a dark double outline          | As `solid`, outlined in dark marker      | `strokeWidth`, `wobble`                      |
+| `crayon`     | A waxy fill with the paper's tooth showing, a ragged edge, a heavier rim | As `solid`, a deeper blush               | `wobble`, `grain`                            |
+| `watercolor` | A light wash, pooled pigment, a bloom, granulation, a dried edge         | As `solid`, a deeper blush               | `wobble`, `grain`                            |
+| `neon`       | A glowing tube with a core, a faint glow inside                          | The tube's core                          | `strokeWidth`, `neonGlow`                    |
+| `chalk`      | A crumbling chalk line, diagonal strokes, dust along the line            | Chalk: the ink, paler or deeper          | `strokeWidth`, `wobble`, `grain`, `hatching` |
+| `origami`    | Crumpled sheets pressed flat, many soft facets, each on its own shadow   | As `solid`                               | —                                            |
+| `relief`     | A thick card pressed up from behind: a lit rim and a shaded rim          | As `solid`                               | —                                            |
+| `gothic`     | Darkened edge, ink hatching in shadow, a brushed ink line, paper grain   | As `solid`                               | `grain`, `hatching`                          |
 
 `solid`, `outline` and `glass` are described with the [`CharacterMark`](/components/character-mark) props. This page covers the other variants, the drawing media, and the one-colour line look that `outline` gives.
 
@@ -74,7 +74,7 @@ export default function Demo() {
 }
 ```
 
-The paper does not follow the page. A sticker is a thing with its own edge, so on a dark page it stays light — that contrast is what lifts it off the surface. For the same reason its eyes are paper too, rather than holes that would show the page through. A host that wants a cream or a tinted edge sets `--aora-paper` on any ancestor:
+The paper does not follow the page. A sticker is a thing with its own edge, so on a dark page it stays light — that contrast is what lifts it off the surface. For the same reason a drawn face's whites are paper too, rather than the page. A host that wants a cream or a tinted edge sets `--aora-paper` on any ancestor:
 
 ```css
 .card {
@@ -168,7 +168,7 @@ The figure itself stays upright. A slight tilt would be a pose, and poses belong
 
 ## Soft
 
-`soft` is a rounded toy: the flat body under a radial wash (light at the top left, dark at the bottom right) and a shadow on the ground that stays put when the body hops. The face is dark brown and the blush leans pink. A small gloss at the top left is off by default (`softGloss`), because on a shape whose face sits high it lands on an eye. The wash and the gloss are overlays on the body rather than a gradient computed from the ink, so they work on a token, a colour or a gradient ink. Parts such as ears take the wash too, so their shading matches where they sit on the figure.
+`soft` is a rounded toy: the flat body under a radial wash (light at the top left, dark at the bottom right) and a shadow on the ground that stays put when the body hops. The blush is deeper and leans pink, so it shows through the wash. A small gloss at the top left is off by default (`softGloss`), because on a shape whose face sits high it lands on an eye. The wash and the gloss are overlays on the body rather than a gradient computed from the ink, so they work on a token, a colour or a gradient ink. Parts such as ears take the wash too, so their shading matches where they sit on the figure.
 
 ```tsx preview
 import { renderStaticSvgDataUrl } from '@aora-bot/react';
@@ -281,7 +281,7 @@ export default function Demo() {
 ```
 
 - **Lines follow the page.** `pencil`, `neon` and `chalk` are line drawings, so, like `outline`, their face and lines take the ink shifted towards the page's contrast: graphite darkens on a light page and turns silver on a dark one, chalk deepens on a light page and goes pale on a dark one, and a neon tube's core is white-hot on a dark page and deep on a light one.
-- **Painted media wear a dark face.** `crayon` and `watercolor` paint the face in a darker pigment, the dark brown of `soft` (`--aora-face-soft`), which `getInkVars('black')` turns white while a black body is dark. `marker` keeps the white face and outlines it in its dark marker.
+- **Painted media blush deeper.** `crayon` and `watercolor` paint the face in the features colour, as every filled variant does, and take the deeper blush of `soft` so the cheeks show through the pigment. `marker` outlines the face in its dark marker.
 - **Pieces keep their colours.** A leaf is green and the inside of an ear lighter in the filled media; the line media draw every piece in the line, and leave the inside of an ear out, as `outline` does.
 
 Every texture is seeded, so a static render is the same every time, and every stroke is worked out once per outline and kept. The grain is carried by the paint — a small image of specks in a pattern, or a mask per group — rather than recalculated each frame, and the glow is a single blur, so a page of twenty animated characters in any medium stays near 60 fps.
@@ -529,7 +529,7 @@ export default function Demo() {
 
 ### Gothic
 
-A dark storybook drawing in ink. Each piece is darkened from the edge in, hatched and then cross-hatched on the side away from the light, and ringed by a brushed ink line in a warm black that swells on the shadow side and thins where the brush lifts. The fill carries a fine paper grain. The face is the white face of `solid`, so it stays bright against the shading. `hatching` switches the hatching and `grain` sets the paper; a piece smaller than an ear is left unhatched.
+A dark storybook drawing in ink. Each piece is darkened from the edge in, hatched and then cross-hatched on the side away from the light, and ringed by a brushed ink line in a warm black that swells on the shadow side and thins where the brush lifts. The fill carries a fine paper grain. The face is painted as on `solid`, over the shading. `hatching` switches the hatching and `grain` sets the paper; a piece smaller than an ear is left unhatched.
 
 ```tsx preview
 import { renderStaticSvgDataUrl } from '@aora-bot/react';
@@ -695,6 +695,10 @@ const svg = renderStaticSvg({ variant: 'outline', ink: { flat: 'currentColor' } 
 
 Inline that markup in the page. Loaded through an `<img>`, an SVG has no surrounding text colour to inherit and `currentColor` becomes black.
 
+## A medium of your own
+
+`defineVectorMedium(id, definition, reads)` adds a variant to the series: it is drawn and accepted as `variant` everywhere, and stays out of `variants` (and so out of pickers) until a host lists it; `acceptsVariant` and `allVariants` see it. The definition's `paint(piece, ctx)` draws the body and each part from its outline, with the core's own geometry in `ctx.kit`, so a medium needs nothing else from the engine. Optional fields add defs, an underlay, paper grain, the deeper blush (`deepBlush`) or a face ink of its own (`faceInk`). `reads` names the series' parameters it reads. The built-in variants cannot be replaced. `VECTOR_VARIANTS` lists the built-in ones.
+
 ## Parameters
 
 Parameters belong to the series and every variant reads only its own. Out-of-range numbers are clamped and snapped to the step; a value of the wrong type falls back to the default; unknown keys are dropped.
@@ -733,7 +737,7 @@ character.update({ variant: 'paper', styleOptions: { paperOffset: 12, paperAngle
 
 ## Next
 
-- [CharacterMark](/components/character-mark) — the component, and the first three variants
+- [CharacterMark](/components/character-mark) — the component, and every variant side by side
 - [Kaomoji style](/design/styles/kaomoji) — the character written as one line of text
 - [Faces](/design/face) — the faces every variant can wear
 - [Theming](/guide/theming) — the variables that paint a character

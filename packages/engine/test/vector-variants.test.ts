@@ -104,10 +104,9 @@ describe('sticker', () => {
     expect(attrs(svg, 'path', 'stroke')).toContain('var(--aora-paper, #fff)');
   });
 
-  it('keeps its eyes in paper, whatever eye colour the page asks for', () => {
+  it('paints its eyes in the colour the page asks for, as every filled body does', () => {
     const svg = staticSvg('sticker', { eyeColor: '#123456' });
-    expect(svg).not.toContain('#123456');
-    expect(svg).toContain('fill="var(--aora-paper, #fff)"');
+    expect(svg).toContain('fill="#123456"');
   });
 
   it('casts a soft shadow through a filter, and drops it with the parameter', () => {

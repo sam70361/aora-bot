@@ -2,24 +2,24 @@ import { TokenTable } from '@theme';
 
 # Theming
 
-Two CSS custom properties decide how a character is painted; everything else is a token you can override.
+A handful of CSS custom properties decide how a character is painted, most of them written for you by `getInkVars`; everything else is a token you can override.
 
 ## The variables that draw a character
 
 A character's colours come down to a few CSS custom properties.
 
-| Variable              | Role                                                                                                     |
-| --------------------- | -------------------------------------------------------------------------------------------------------- |
-| `--aora-fg`           | The ink. Set per instance from the `color` prop.                                                         |
-| `--aora-face`         | The face colour: the `cute` face and a drawn face's whites, by the face rule.                            |
-| `--aora-face-soft`    | The features colour: the `eyes` and `line` faces, brows, and the face of `soft`, `crayon`, `watercolor`. |
-| `--aora-face-sticker` | The `sticker` variant's face: dark where the white face does not read on the body.                       |
-| `--aora-hair-shade`   | The shade laid over hair on a filled body, `#000000` by default, white on a nearly black body.           |
-| `--aora-ink2`         | The second ink of the `riso` variant, written for the light inks and the hues of the default ink.        |
-| `--aora-ink-line`     | Lines drawn in the ink, written where the ink is too faint on a page.                                    |
-| `--aora-eye`          | The eyes of the `cute`, `eyes` and `line` faces in a colour of your own, set from `eyeColor`.            |
-| `--aora-rim`          | The hairline edge of a filled body on a page it all but matches, `transparent` elsewhere.                |
-| `--aora-bg`           | The page where a face shows it: a drawn face's whites on a line body. Defaults to `--aora-bg-base`.      |
+| Variable              | Role                                                                                                |
+| --------------------- | --------------------------------------------------------------------------------------------------- |
+| `--aora-fg`           | The ink. Set per instance from the `color` prop.                                                    |
+| `--aora-face`         | The face colour: a drawn face's whites, by the face rule.                                           |
+| `--aora-face-soft`    | The features colour: the `cute`, `eyes` and `line` faces, and brows, lids and eyes on the body.     |
+| `--aora-face-sticker` | The `sticker` variant's face: dark where the white face does not read on the body.                  |
+| `--aora-hair-shade`   | The shade laid over hair on a filled body, `#000000` by default, white on a nearly black body.      |
+| `--aora-ink2`         | The second ink of the `riso` variant, written for the light inks and the hues of the default ink.   |
+| `--aora-ink-line`     | Lines drawn in the ink, written where the ink is too faint on a page.                               |
+| `--aora-eye`          | The eyes of the `cute`, `eyes` and `line` faces in a colour of your own, set from `eyeColor`.       |
+| `--aora-rim`          | The hairline edge of a filled body on a page it all but matches, `transparent` elsewhere.           |
+| `--aora-bg`           | The page where a face shows it: a drawn face's whites on a line body. Defaults to `--aora-bg-base`. |
 
 The component sets the first few for you, from the engine's `getInkVars(color)`. `--aora-bg-base` is the one you may need to change.
 

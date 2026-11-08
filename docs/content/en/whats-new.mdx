@@ -15,7 +15,7 @@ This release has breaking changes; read "Breaking changes" below before upgradin
 ### Characters and faces
 
 - 25 new characters, each with a cast member, including a `treat` family, an `object` family and a `coal` family; `ghost` is redrawn rounder. The coal family is three black lumps with uneven edges: Cinder (`chunk`), all blunt corners, Sooty (`lump`), round and bumpy all the way round, and Ashy (`fluff`), a tuft of soot bristling all the way round.
-- 13 new drawn faces. `capsule` now comes first in the face list and pickers. `teardrop` is now a tall dark drop with one highlight, and `specs` small, bold round glasses with a flat bridge and one dark eye with a highlight in each lens. Each drawn face covers all 44 states and works in every vector variant, in pixel and in kaomoji. `defineFace` registers a face of your own.
+- 13 new drawn faces. `capsule` now comes first in the face list and pickers. Among them, `teardrop` is a tall dark drop with one highlight, and `specs` small, bold round glasses with a flat bridge and one dark eye with a highlight in each lens. Each drawn face covers all 44 states and works in every vector variant, in pixel and in kaomoji. `defineFace` registers a face of your own.
 - Dot (`dot`, 球球) is a cream-white ball wearing `capsule` and now comes first in the cast.
 
 ### Styles
@@ -29,10 +29,17 @@ This release has breaking changes; read "Breaking changes" below before upgradin
 ### Colours
 
 - Cream (`cream`) is listed and comes first in the colour list: it is Dot's colour. Ivory (`ivory`), the palette's white, follows it. Both take a one-pixel edge on a light page, so they never melt into it.
-- Four muted colours: `sage`, `clay`, `navy` and `mauve`, each tuned for a light and a dark page.
+- Four muted colours: `sage`, `clay`, `navy` and `mauve`, each tuned for a light and a dark page. `night`, a near-black that stays dark on a dark page, is accepted by id but not listed.
 - Avatars keep the colour they had: an id is hashed onto a fixed list of colours (`ASSIGNABLE_COLOR_IDS`), so new colours never move an existing avatar.
-- The face is coloured by one contrast rule: every paint of it is measured against the body, on each page, and changes only where the other colour reads better. Light bodies (cream, yellow) wear the dark face; dark ones (navy, cocoa) keep the white face and turn brows and eyes white too, in every style and face. Every face draws on the same few colours, so the `eyes` and `line` faces follow the body as the cute face does and keep one colour in light and dark mode.
+- The face is coloured by one contrast rule: every paint of it is measured against the body, on each page, and changes only where the other colour reads better. Every face draws its eyes and mouth in the same features colour, so on one body they all match: dark on a mid hue such as blue or red, white on a dark one such as navy or cocoa, in every style and face. The cute face, which used to be white on every hue, now follows it too. A drawn face's whites stay white, turning dark only on a light body (cream, yellow). Faces keep one colour in light and dark mode wherever the body does.
 - Light and very dark colours read on either page: outlines, kaomoji and the line face are deepened on a light page, keeping their hue, and lifted on a dark one; in riso cream is no longer covered by pink, and red, pink and magenta print over gold; on the LED panel black lights white. Picker chips show the colour on the current page, so black is white in dark mode, and a chip that all but matches the page gets a hairline edge.
+
+### Avatars and components
+
+- The avatar endpoint keeps every avatar it has handed out as the cast grows: an id picks its character by a consistent hash, and `pool=46` pins the original 46. `theme=<id>` picks from a theme's cast and fills in its skin, face and colour.
+- Avatar sizes are `xs` 16, `sm` 24, `md` 32, `lg` 40 and `xl` 80 px. An activity badge is 32 px; a group badge is 24 px and moves on to the next member every 2.4 s.
+- A `CharacterMark` or `<aora-bot>` that names a theme's character, skin or colour holds its box, loads the theme and then draws.
+- A static document's class names carry the style, variant and parameters, so two looks of one character inlined on one page no longer overwrite each other.
 
 ### Website
 
@@ -53,7 +60,8 @@ This release has breaking changes; read "Breaking changes" below before upgradin
 - `FaceTune` fields are ratios of the fitted face: 1 means as fitted.
 - React and surfaces components have new names: for example, `CharacterPicker` is now `CharacterSelector`, `AvatarStack` is `AvatarGroup`, `AgentAvatar` is `AgentPortrait` and `CastStage` is `CastLineup`. The changelog lists every rename.
 - Characters default to 32 px in React and in `<aora-bot>`.
-- Confetti and ribbons are redesigned, with a new palette.
+- Confetti and ribbons are redesigned, with a new palette. `Trail` carries `squash` and `reel` in place of `tilt` and `retract`.
+- `eyeColor` (and `eye-color` on the element) sets `--aora-eye` and no longer re-themes `--aora-bg`. Set `--aora-bg-base` yourself where a hollow character sits on a surface other than the page.
 
 ## 0.1.3
 

@@ -91,7 +91,7 @@ export default function Demo() {
 
 ## The state picks the face and the tail
 
-The face inside the brackets keeps the grammar of the `cute` face: dot eyes for attention, arcs for contentment, crosses for refusal. The tail after the brackets is the state's mood effect written as a mark: `zZ`, `♪`, `✎`, `!`. Every state has a face (`STATE_FACES`) and a tail (`STATE_TAILS`, which may be empty).
+The face inside the brackets keeps the grammar of the `cute` face: dot eyes for attention, arcs for contentment, crosses for refusal. A drawn face writes its own glyphs for each state, so `capsule` or `specs` reads as itself in text too. The tail after the brackets is the state's mood effect written as a mark: `zZ`, `♪`, `✎`, `!`. Every state has a face (`STATE_FACES`) and a tail (`STATE_TAILS`, which may be empty).
 
 ```tsx preview
 import { CHARACTER_STATES } from '@aora-bot/react';
@@ -115,13 +115,14 @@ export default function Demo() {
 
 ## As plain text
 
-`kaomoji(shape, state)` returns the very line the series draws, so chat messages, terminal output and logs can use the same characters:
+`kaomoji(shape, state, face?)` returns the very line the series draws, so chat messages, terminal output and logs can use the same characters. `faceText(state, face?)` returns the face alone, without brackets or tail; both default to `cute`:
 
 ```ts
 import { kaomoji } from '@aora-bot/engine';
 
 kaomoji('cat', 'happy'); // ฅ(^▽^)ฅ ♪
 kaomoji('mochi', 'thinking'); // (・_・)?
+kaomoji('mochi', 'happy', 'capsule'); // (/ω\) ♪
 ```
 
 ## Parameters
@@ -147,6 +148,6 @@ The line of text is the whole character. It rides the body's transform, so a hop
 
 ## Next
 
-- [Vector styles](/design/styles/vector) — the default series and its seven variants
+- [Vector styles](/design/styles/vector) — the default series and its sixteen variants
 - [Pixel style](/design/styles/pixel) — the same character on a grid
 - [Shapes](/design/shapes) — where each shape's brackets come from

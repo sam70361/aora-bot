@@ -246,9 +246,9 @@ export const PAGE_TOKEN = 'var(--aora-bg, var(--aora-bg-base, #fcfcfc))';
  * a hue in the middle of the range wears, so a host writes only those its
  * colour changes (`getInkVars`).
  */
-/** The face colour: the cute face, a drawn face's whites. */
+/** The face colour: a drawn face's whites. */
 export const FACE_TOKEN = `var(--aora-face, ${FACE_INK})`;
-/** The features' colour: everything drawn straight on the body, and the painted variants' face. */
+/** The features' colour: everything a face draws straight on the body. */
 export const FEATURE_TOKEN = `var(--aora-face-soft, ${FEATURE_INK})`;
 /** A drawn face's pupils: what reads on the face colour. */
 export const PUPIL_TOKEN = `var(--aora-face-pupil, ${FEATURE_INK})`;
@@ -293,7 +293,7 @@ const contrastOf = (a: string, b: string): number => contrast(luminance(a), lumi
  * list of colours.
  */
 const READS = {
-  /** A cute face, a drawn face's whites, a sticker's face: large shapes, white wherever white holds. */
+  /** A drawn face's whites, a sticker's face: large shapes, white wherever white holds. */
   face: 2.4,
   /** Eyes, brows, lids and lines drawn on the body: small and thin, so dark needs more to hold. */
   feature: 3,
@@ -316,9 +316,9 @@ export const isLightInk = (hex: string): boolean =>
 
 /** The face's paints on one body ink. */
 export interface FaceInks {
-  /** The cute face, and a drawn face's whites. */
+  /** A drawn face's whites. */
   face: string;
-  /** The features drawn on the body: the `eyes` and `line` faces, a drawn face's brows, lids and eyes, and the painted variants' face. */
+  /** The features drawn on the body: the cute, `eyes` and `line` faces, a drawn face's brows, lids and eyes. */
   feature: string;
   /** The sticker's face. */
   sticker: string;

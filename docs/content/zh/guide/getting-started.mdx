@@ -61,7 +61,7 @@ export default function Demo() {
 
 ## 背景 token
 
-默认的 `cute` 脸是画上去的白色，在任何背景上都成立。`eyes` 和 `line` 脸的眼睛是挖出来的孔，用页面背景色填充并裁剪在身体内，默认的 `black` 也是这样。这时角色所在的表面如果不是页面背景，就要告诉它，方法是设置 `--aora-bg-base`：
+每种脸都画在身体上，颜色按身体自己的墨色选，所以实心身体在任何背景上看起来都一样。空心身体（`outline`、`glass`）大部分是页面，那里手绘脸的眼白和徽标外圈用的是页面色。这样的角色所在的表面如果不是页面背景，就要告诉它，方法是设置 `--aora-bg-base`：
 
 ```tsx preview
 import { CharacterMark } from '@aora-bot/react';
@@ -70,7 +70,7 @@ export default function Demo() {
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24 }}>
       <div style={{ padding: 20, borderRadius: 12, background: '#101828' }}>
-        <CharacterMark shape="blob" color="cyan" face="eyes" sizePx={80} />
+        <CharacterMark shape="blob" color="cyan" variant="outline" face="capsule" sizePx={80} />
       </div>
       <div
         style={{
@@ -80,14 +80,14 @@ export default function Demo() {
           ['--aora-bg-base' as string]: '#101828',
         }}
       >
-        <CharacterMark shape="blob" color="cyan" face="eyes" sizePx={80} />
+        <CharacterMark shape="blob" color="cyan" variant="outline" face="capsule" sizePx={80} />
       </div>
     </div>
   );
 }
 ```
 
-左边那个把眼睛挖成了页面色，露出两个浅色的洞；右边那个与容器一致。样式表把 token 放在 `@layer` 里，所以你自己写的规则无需 `!important` 就能覆盖它。
+左边那个的眼白用的是页面色，露出两块浅色；右边那个与容器一致。样式表把 token 放在 `@layer` 里，所以你自己写的规则无需 `!important` 就能覆盖它。
 
 ## 命令式动作
 

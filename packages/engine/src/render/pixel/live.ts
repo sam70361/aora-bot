@@ -81,7 +81,7 @@ export function createPixelRenderer(host: Element, context: LiveRendererContext)
     const ink = frame.ink;
     const gradient = ink && 'from' in ink ? (ink.angle ?? DEFAULT_ANGLE) : null;
     const eye: Tint = { kind: 'css', value: variant === 'dot' ? LED_EYE_TOKEN : eyeToken(FEATURE_TOKEN) };
-    const face: Tint = { kind: 'css', value: variant === 'dot' ? LED_EYE_TOKEN : eyeToken(FACE_TOKEN) };
+    const face: Tint = { kind: 'css', value: variant === 'dot' ? LED_EYE_TOKEN : FACE_TOKEN };
     const inkKey = !ink ? '' : 'flat' in ink ? `f${ink.flat}` : `g${ink.from}|${ink.to}`;
     const next = `${variant}|${inkKey}|${gradient}`;
     if (next !== signature) {

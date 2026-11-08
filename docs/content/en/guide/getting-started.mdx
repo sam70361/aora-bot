@@ -61,7 +61,7 @@ Each style has a page: [Vector](/design/styles/vector), [Pixel](/design/styles/p
 
 ## The background token
 
-The default `cute` face is painted white and reads on any background. The eyes of the `eyes` and `line` faces are holes, filled with the page background colour and clipped to the body, and so is the face of the default `black` ink. If the character sits on something other than the page background, tell it so by setting `--aora-bg-base`:
+Every face is painted on the body in colours chosen from the body's own ink, so on a filled body it reads the same on any background. A hollow body (`outline`, `glass`) is mostly the page, and there the whites of a drawn face, and the ring round a badge, are the page colour. If such a character sits on something other than the page background, tell it so by setting `--aora-bg-base`:
 
 ```tsx preview
 import { CharacterMark } from '@aora-bot/react';
@@ -70,7 +70,7 @@ export default function Demo() {
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24 }}>
       <div style={{ padding: 20, borderRadius: 12, background: '#101828' }}>
-        <CharacterMark shape="blob" color="cyan" face="eyes" sizePx={80} />
+        <CharacterMark shape="blob" color="cyan" variant="outline" face="capsule" sizePx={80} />
       </div>
       <div
         style={{
@@ -81,14 +81,14 @@ export default function Demo() {
           ['--aora-bg-base' as string]: '#101828',
         }}
       >
-        <CharacterMark shape="blob" color="cyan" face="eyes" sizePx={80} />
+        <CharacterMark shape="blob" color="cyan" variant="outline" face="capsule" sizePx={80} />
       </div>
     </div>
   );
 }
 ```
 
-The first character punches its eyes to the page colour and shows two pale holes. The second matches its container. The stylesheet puts its tokens inside a `@layer`, so your own rules win over it without needing `!important`.
+The first character fills its eye whites with the page colour and shows two pale patches. The second matches its container. The stylesheet puts its tokens inside a `@layer`, so your own rules win over it without needing `!important`.
 
 ## Imperative actions
 

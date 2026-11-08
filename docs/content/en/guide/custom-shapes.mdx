@@ -62,7 +62,7 @@ Cusps on organic outlines (the tip of a drop, the point of a leaf) should be sof
 
 ## Ears, leaves and antennae
 
-The ears, leaves and antennae of the built-in characters are `ShapeDef.parts`: they ride the body and deform with its pose, and apart from `hair`, which the face steers clear of, they take no part in fitting the face. `defineShape` takes them in its options, each a `tone` and an outline in the same coordinates as the body (see [Shapes](/design/shapes#parts) for what the four tones paint). They are normalised together with the body, so a part never has to be placed in the 228-unit box by hand.
+The ears, leaves and antennae of the built-in characters are `ShapeDef.parts`: they ride the body and deform with its pose, and apart from `hair`, which the face steers clear of, they take no part in fitting the face. `defineShape` takes them in its options, each a `tone` and an outline in the same coordinates as the body (see [Shapes](/design/shapes#parts) for what the four tones paint). They are normalised together with the body, so a part never has to be placed in the 240-unit shape space by hand.
 
 ```tsx preview
 import { useEffect, useState } from 'react';
@@ -103,6 +103,16 @@ export default function Demo() {
 
 Parts do not morph: when a character changes shape, the old ones fade out and the new ones fade in.
 
+### Colours and props
+
+A part takes its colour from its tone and the character's ink unless it names one: `color` is a palette id or any CSS colour (`PartColor`), kept in every variant. `props` in the same options are drawn like parts but in front of them, and the face keeps off any prop that lies over the body, as it keeps off hair. `defineShapeWithProps` dresses an existing character instead: the `base` keeps its body, parts and face, scaled by `scale` about `at`, and `props` are drawn over it in a 100 × 100 box; `drop` leaves out base parts a prop replaces and `tint` colours base parts, both by index.
+
+````ts
+defineShapeWithProps('mochi-hat', {
+  base: 'mochi',
+  props: [{ tone: 'inner', color: 'red', outline: [[30, 22], [50, 2], [70, 22]] }],
+});
+```
 ## Rules for a good outline
 
 **Return points, not a path string.** The registry needs to measure the outline, and measuring a path means parsing and flattening it.
@@ -165,3 +175,4 @@ If you have a character you think belongs in the set, open an issue with the gen
 - [Shape derivation](/internals/shape-derivation) — from an outline to a face box
 - [Shapes](/design/shapes) — every built-in character
 - [Performance](/guide/performance) — how to render hundreds of characters
+````

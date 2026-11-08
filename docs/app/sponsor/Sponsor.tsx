@@ -7,16 +7,16 @@ import {
   ArrowIcon,
   BoardIcon,
   CapIcon,
-  ChatIcon,
   CloudIcon,
   CoffeeIcon,
   CrmIcon,
-  GroupIcon,
   HeartIcon,
   HubIcon,
   PenIcon,
   PlusIcon,
+  QQIcon,
   TerminalIcon,
+  WeChatIcon,
   WeChatPayIcon,
 } from './icons.js';
 
@@ -54,7 +54,7 @@ const CONTACTS = [
     title: 'sponsor.contactTitle',
     note: 'sponsor.contactNote',
     alt: 'sponsor.contactAlt',
-    Icon: ChatIcon,
+    Icon: WeChatIcon,
   },
   {
     file: 'qq-group.jpg',
@@ -63,7 +63,7 @@ const CONTACTS = [
     title: 'sponsor.qqTitle',
     note: 'sponsor.qqNote',
     alt: 'sponsor.qqAlt',
-    Icon: GroupIcon,
+    Icon: QQIcon,
   },
 ] as const;
 

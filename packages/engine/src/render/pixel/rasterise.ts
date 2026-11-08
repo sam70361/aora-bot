@@ -49,9 +49,9 @@ export interface RasterSettings {
   variant: PixelVariant;
   /** Direction of a gradient ink in degrees, or null when the ink is one colour. */
   gradient: number | null;
-  /** What the `eyes` and `line` faces are drawn in: the features' colour. */
+  /** What the cute, `eyes` and `line` faces are drawn in: the features' colour. */
   eye: Tint;
-  /** What the cute face and a drawn face's whites are drawn in: the face colour. Absent: `eye`. */
+  /** What a drawn face's whites are drawn in: the face colour. Absent: `eye`. */
   face?: Tint;
 }
 
@@ -513,8 +513,8 @@ function drawBody(
     };
 
     if (face.cute >= 0.5) {
-      // The cute face is white on the body: its own paint, eyes first, then the mouth, then cheeks in what is left.
-      const features = table.id(settings.face ?? settings.eye, 1);
+      // The cute face in the features' colour: eyes first, then the mouth, then cheeks in what is left.
+      const features = eyePaint;
       const writeCute =
         (kind: number, clear: number, id: number): Put =>
         (col, row) => {

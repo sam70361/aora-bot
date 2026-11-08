@@ -250,7 +250,7 @@ const lantern: ThemeVariant = {
   medium: {
     followsMood: true,
     moodAccent: { chroma: 0.15 },
-    darkFace: true,
+    deepBlush: true,
 
     hairShade: (paint) => hairShadeOf(paint.solid),
 

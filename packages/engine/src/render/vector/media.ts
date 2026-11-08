@@ -78,16 +78,15 @@ export const isLineVariant = (variant: string): boolean =>
   variant === 'chalk';
 
 /**
- * The variants that wear the soft variant's dark face and pink-leaning blush.
- * A crayon or watercolour body is a painted surface, and a face painted on it
- * in a darker pigment is what reads; the host's `--aora-face-soft` turns it
- * white on a black body exactly as it does for `soft`.
+ * The variants that wear the deeper, pink-leaning blush. A soft, crayon or
+ * watercolour body is a painted surface, and a pale flush is lost in its
+ * shading or its pigment.
  */
-export const wearsDarkFace = (variant: string): boolean =>
+export const wearsDeepBlush = (variant: string): boolean =>
   variant === 'soft' ||
   variant === 'crayon' ||
   variant === 'watercolor' ||
-  DEFINED.get(variant)?.darkFace === true;
+  DEFINED.get(variant)?.deepBlush === true;
 
 /**
  * The variants that throw their effects in the line's colour rather than the
@@ -1530,8 +1529,8 @@ export interface MediumDefinition {
   grainedFills?: boolean;
   /** Whether darker specks of pooled pigment are laid over the grained fills. */
   pigment?: boolean;
-  /** Whether the face is the painted variants' dark face (`wearsDarkFace`). */
-  darkFace?: boolean;
+  /** Whether the cute face's cheeks take the painted variants' deeper blush (`wearsDeepBlush`). */
+  deepBlush?: boolean;
   /**
    * Whether its accent follows the state's mood (`moodOf`): `ctx.accent` then leans the colour it is given
    * into the mood, and a live scene eases it there.
@@ -1568,8 +1567,8 @@ export interface MediumDefinition {
   /** What uncoloured leaf parts are painted, as a CSS colour of `paint.leaf`; the grained leaf fill follows it. */
   leaf?: (paint: MediumPaint) => string;
   /**
-   * The face's ink, opted into (`FaceInk`): the cute face and a drawn face's
-   * whites. Absent, the face rule is untouched.
+   * The face's ink, opted into (`FaceInk`): everything a face paints on the
+   * body, and a drawn face's whites. Absent, the face rule is untouched.
    */
   faceInk?: FaceInk;
 }
