@@ -117,7 +117,7 @@ export default function Demo() {
 
 ## 为什么平底形状几乎不倾斜
 
-平底形状一旦倾斜就会显得不对——底面翘起来，重量感也跟着消失。所以 `tiltScale` 是从轮廓量出来的，不是配出来的：`tofu`、`cloud`、`star`、`bell` 和 `bot` 算出 0.15，于是它们是摇晃而不是倾倒；`onigiri` 略高一点，`mochi` 和 `blob` 算出 1，可以自由倾斜；没有任何形状带着手写的倾斜系数。具体怎么量，见[形状推导](/internals/shape-derivation)。
+平底形状一旦倾斜就会显得不对——底面翘起来，重量感也跟着消失。所以 `tiltScale` 是从轮廓量出来的，不是配出来的：`tofu`、`cloud`、`star`、`bell` 和 `bot` 算出 0.15，于是它们是摇晃而不是倾倒；`onigiri` 略高一点，`mochi` 和 `blob` 算出 1，可以自由倾斜；没有任何形状带着手写的倾斜系数。
 
 ## 添加自己的角色
 
@@ -125,6 +125,5 @@ export default function Demo() {
 
 ## 接下来
 
-- [形状推导](/internals/shape-derivation)——从轮廓到脸的位置
 - [自定义形状](/guide/custom-shapes)——注册自己的轮廓
 - [角色阵容](/design/cast)——给每个形状起了名字的角色

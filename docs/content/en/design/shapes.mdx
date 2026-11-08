@@ -117,7 +117,7 @@ export default function Demo() {
 
 ## Why flat-bottomed shapes barely tilt
 
-A flat-bottomed shape looks wrong when it tips — the base lifts and the sense of weight goes with it. So `tiltScale` is measured from the outline, not configured: `tofu`, `cloud`, `star`, `bell` and `bot` come out at 0.15 and rock rather than topple; `onigiri` lands just above, and `mochi` and `blob` come out at 1 and tilt freely; no shape carries a hand-set tilt coefficient. How it is measured: [Shape derivation](/internals/shape-derivation).
+A flat-bottomed shape looks wrong when it tips — the base lifts and the sense of weight goes with it. So `tiltScale` is measured from the outline, not configured: `tofu`, `cloud`, `star`, `bell` and `bot` come out at 0.15 and rock rather than topple; `onigiri` lands just above, and `mochi` and `blob` come out at 1 and tilt freely; no shape carries a hand-set tilt coefficient.
 
 ## Adding your own
 
@@ -125,6 +125,5 @@ Register a function that returns points with `defineShape`, and everything in th
 
 ## Next
 
-- [Shape derivation](/internals/shape-derivation) — from outline to face position
 - [Custom shapes](/guide/custom-shapes) — register your own outline
 - [Cast](/design/cast) — the named character for every shape

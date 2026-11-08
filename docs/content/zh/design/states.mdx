@@ -86,7 +86,7 @@ impulse(70); // 加到 y 弹簧的速度上
 
 ## 腰带
 
-`eyes` 和 `line` 脸用腰带画这些状态：身体被收成核心，腰带接管。过渡如何发生、每条腰带如何绘制，见[腰带与粒子](/internals/belts)。下面的演示用 `face="eyes"` 让腰带本身可见。
+`eyes` 和 `line` 脸用腰带画这些状态：身体被收成核心，腰带接管。下面的演示用 `face="eyes"` 让腰带本身可见。
 
 ```tsx preview
 import { CharacterStageProvider, StagedMark, STATE_BELT } from '@aora-bot/react';
@@ -170,5 +170,5 @@ export default function Demo() {
 
 ## 接下来
 
-- [弹簧与状态机](/internals/springs)——通道、脉冲与收敛
-- [腰带与粒子](/internals/belts)——`eyes` / `line` 脸下身体交给腰带的过程
+- [表情](/design/expressions)——每个状态的眼睛、嘴和腮红
+- [情绪协议](/design/protocol)——智能体怎样请求一个状态

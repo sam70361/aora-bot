@@ -93,7 +93,6 @@ arbiter, adapters, the state channel, and sprite-manifest helpers.
 
 - [Getting started](https://aora-bot.vercel.app/en/guide/getting-started)
 - [Shapes](https://aora-bot.vercel.app/en/design/shapes) | [States](https://aora-bot.vercel.app/en/design/states) | [Palette](https://aora-bot.vercel.app/en/design/palette)
-- [How the engine works](https://aora-bot.vercel.app/en/internals/rendering)
 
 ## License
 

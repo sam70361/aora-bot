@@ -86,7 +86,7 @@ Like the mood effects these are pure functions of time, carried on the snapshot 
 
 ## Belts
 
-The `eyes` and `line` faces draw these states with a belt: the body collapses to a core and the belt takes over. See [belts and particles](/internals/belts) for how the transition works and how each belt is drawn. The demo below uses `face="eyes"` so the belts themselves are visible.
+The `eyes` and `line` faces draw these states with a belt: the body collapses to a core and the belt takes over. The demo below uses `face="eyes"` so the belts themselves are visible.
 
 ```tsx preview
 import { CharacterStageProvider, StagedMark, STATE_BELT } from '@aora-bot/react';
@@ -170,5 +170,5 @@ export default function Demo() {
 
 ## Next
 
-- [Springs and states](/internals/springs) — channels, impulses and settling
-- [Belts and particles](/internals/belts) — how the `eyes` and `line` faces hand the body to a belt
+- [Expressions](/design/expressions) — the eyes, mouth and blush of every state
+- [Emotion protocol](/design/protocol) — how an agent asks for a state

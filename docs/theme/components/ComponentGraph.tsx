@@ -22,7 +22,7 @@ const TIERS: Tier[] = [
     id: 'engine',
     titleKey: 'graph.engine',
     noteKey: 'graph.engine.note',
-    nodes: [{ name: '@aora-bot/engine', link: '/internals/rendering' }],
+    nodes: [{ name: '@aora-bot/engine', link: '/guide/without-react' }],
   },
   {
     id: 'core',

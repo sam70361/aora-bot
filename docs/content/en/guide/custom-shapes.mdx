@@ -56,7 +56,7 @@ Note what you did _not_ have to supply: where the eyes go, how big they are, whe
 | `spanAt(y)`  | Lookup table of left and right edges, used to clamp the eyes |
 | `ring`       | 96-point polar resample, used to morph between shapes        |
 
-Derivation is lazy — a shape is built the first time it is used, not at import, because face fitting is expensive. [Shape derivation](/internals/shape-derivation) has the measurements.
+Derivation is lazy — a shape is built the first time it is used, not at import, because face fitting is expensive.
 
 Cusps on organic outlines (the tip of a drop, the point of a leaf) should be softened with `shapeGenerators.fourierSmooth` rather than a corner radius.
 
@@ -172,7 +172,6 @@ If you have a character you think belongs in the set, open an issue with the gen
 
 ## Next
 
-- [Shape derivation](/internals/shape-derivation) — from an outline to a face box
 - [Shapes](/design/shapes) — every built-in character
 - [Performance](/guide/performance) — how to render hundreds of characters
 ````

@@ -180,25 +180,6 @@ const SECTIONS: Section[] = [
       { link: '/guide/browser-support', en: 'Browser support', zh: '浏览器支持' },
     ],
   },
-  {
-    en: 'Internals',
-    zh: '深入原理',
-    items: [
-      { link: '/internals/rendering', en: 'Rendering structure', zh: '渲染结构' },
-      { link: '/internals/shape-derivation', en: 'Shape derivation', zh: '形状推导' },
-      {
-        link: '/internals/face-and-pose',
-        en: 'Face and pose',
-        zh: '面部与姿态投影',
-      },
-      {
-        link: '/internals/springs',
-        en: 'Springs and states',
-        zh: '弹簧与状态机',
-      },
-      { link: '/internals/belts', en: 'Belts and particles', zh: '腰带与粒子' },
-    ],
-  },
 ];
 
 type Lang = 'en' | 'zh';
@@ -238,7 +219,7 @@ export const navFor = (lang: Lang): Nav => {
     {
       text: t('Docs', '文档'),
       link: '/guide/getting-started',
-      activeMatch: '/(guide|components|design|internals)/',
+      activeMatch: '/(guide|components|design)/',
     },
     { text: t('Scenarios', '场景'), link: '/scenarios/', activeMatch: '/scenarios/' },
     { text: t("What's New", '更新日志'), link: '/whats-new', activeMatch: '/whats-new' },

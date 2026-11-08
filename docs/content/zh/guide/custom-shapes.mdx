@@ -56,7 +56,7 @@ export default function Demo() {
 | `spanAt(y)`  | 左右边缘查找表，用来夹住眼睛      |
 | `ring`       | 96 点极坐标重采样，用于形状间形变 |
 
-推导是惰性的——形状在第一次使用时才构建，而不是在导入时，因为面部拟合很贵。具体的量法见[形状推导](/internals/shape-derivation)。
+推导是惰性的——形状在第一次使用时才构建，而不是在导入时，因为面部拟合很贵。
 
 有机轮廓上的尖端（水滴的顶、叶子的尖）应该用 `shapeGenerators.fourierSmooth` 软化，而不是切圆角。
 
@@ -172,7 +172,6 @@ defineShape('triangle', triangle, { leftDX: -6 });
 
 ## 接下来
 
-- [形状推导](/internals/shape-derivation)——从轮廓到面部盒
 - [形状](/design/shapes)——全部内置角色
 - [性能](/guide/performance)——怎样渲染上百个角色
 ````
