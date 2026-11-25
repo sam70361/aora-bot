@@ -94,14 +94,17 @@
     isolation: isolate;
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
-    /* The strip's row is its height, not `auto`: the strip comes last in the page, and a row that waited for it would move the centre when it arrived. */
-    grid-template-rows: minmax(0, 1fr) var(--site-dock-h);
+    /*
+     * The strip's row is its height, not `auto`: the strip comes last in the page, and a row that waited for it would move the centre when it arrived.
+     * The top row is at least the centre column's own height (the rails scroll, so they ask for none): on a screen too short for it the page grows and scrolls rather than slide the column under the navbar and the strip.
+     */
+    grid-template-rows: minmax(auto, 1fr) var(--site-dock-h);
     grid-template-areas:
       'style centre color'
       'bottom bottom bottom';
     gap: var(--site-capsule-gap);
     box-sizing: border-box;
-    height: max(38rem, 100dvh);
+    min-height: max(38rem, 100dvh);
     padding: calc(var(--site-nav-offset) + var(--site-capsule-gap))
       max(var(--site-capsule-gap), (100% - var(--site-shell-max)) / 2) var(--site-capsule-gap);
   }
@@ -276,14 +279,17 @@
    * and not to the pill: a scroll box clips at its padding edge, and the
    * selected option's ring and the focus ring need that padding to draw in.
    */
+  /* A rail takes the height of its row and never asks for any: its lists scroll inside it, and only the centre column may make the row taller. */
   .site-home__rail {
     display: flex;
     flex-direction: column;
     align-self: center;
     box-sizing: border-box;
+    height: 100%;
     max-height: 100%;
     min-height: 0;
     padding-block: var(--aora-space-4);
+    contain: size;
   }
 
   .site-home__rail--style {
@@ -574,7 +580,6 @@
     justify-content: center;
     gap: var(--aora-space-4);
     min-width: 0;
-    min-height: 0;
     text-align: center;
   }
 
@@ -1085,6 +1090,49 @@
     }
   }
 
+  /* ---- short: the column tightens ------------------------------------------- */
+
+  /*
+   * A laptop screen is wide enough for the side capsules but too short for the
+   * column at its full size. The gaps, the title and the state row tighten,
+   * and the character gets whatever height is left: the viewport less the
+   * navbar and strip rows and the rest of the column, which at these sizes is
+   * `--_column`. Below 700px the tagline goes too. The top row still grows if
+   * the column does not fit, so the worst case is a scroll, never an overlap.
+   */
+  @media (width >= 900px) and (height < 840px) {
+    .site-home {
+      --_column: 32.25rem;
+      --site-hero-mark: clamp(7rem, 100dvh - var(--_column), 30dvh);
+    }
+
+    .site-home__centre {
+      gap: var(--aora-space-3);
+    }
+
+    .site-home__head {
+      gap: var(--aora-space-1);
+    }
+
+    .site-home__title {
+      font-size: clamp(1.75rem, min(4.6vw, 6.5dvh), 3.75rem);
+    }
+
+    .site-home__states {
+      height: 3rem;
+    }
+  }
+
+  @media (width >= 900px) and (height < 700px) {
+    .site-home {
+      --_column: 30.5rem;
+    }
+
+    .site-home__tagline {
+      display: none;
+    }
+  }
+
   /* ---- narrow: the capsules lie down ----------------------------------------- */
 
   /*
@@ -1172,6 +1220,7 @@
       gap: var(--aora-space-2);
       width: auto;
       max-height: none;
+      contain: none;
       padding: var(--aora-space-1) var(--aora-space-5);
     }
 
