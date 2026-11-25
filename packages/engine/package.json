@@ -69,7 +69,7 @@
     "generate:faces": "vitest run --config scripts/vitest.config.ts"
   },
   "devDependencies": {
-    "@rslib/core": "^0.18.0",
+    "@rslib/core": "^1.0.7",
     "happy-dom": "^20.14.5",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"

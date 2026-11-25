@@ -65,7 +65,7 @@
   "devDependencies": {
     "@aora-bot/engine": "workspace:*",
     "@aora-bot/react": "workspace:*",
-    "@rslib/core": "^0.18.0",
+    "@rslib/core": "^1.0.7",
     "@types/react": "^19.1.9",
     "@types/react-dom": "^19.1.7",
     "happy-dom": "^20.14.5",
