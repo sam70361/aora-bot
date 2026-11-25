@@ -2,7 +2,7 @@ import { API } from '@theme';
 
 # AvatarGroup
 
-交叠的群组成员簇。
+成员头像相互重叠的群组头像。
 
 ```tsx preview
 import { AvatarGroup } from '@aora-bot/react';
@@ -25,9 +25,9 @@ export default function Demo() {
 
 ## 缝隙跟着形状走，不是圆
 
-每个圆盘用邻居**自己的剪影**作为蒙版从后方抠洞，而不是一个圆。
+每个圆盘用相邻圆盘**自身的轮廓**作为蒙版，在后面那个圆盘上挖出缺口，而不是用圆形去挖。
 
-圆形挖孔只有当前方形状也是圆时才看起来对。对着六边形它会咬进一边、在另一边留下楔形，绕着边缘看缝隙宽度还会变。用真实轮廓能让每一种形状的间隔都均匀。
+圆形缺口只有在前方形状也是圆时才好看。遇到六边形，它会咬进一侧，又在另一侧留下楔形空隙，沿着边缘看缝隙的宽度也不一致。用真实轮廓挖缺口，任何形状的间隔都是均匀的。
 
 ```tsx preview
 import { AvatarGroup } from '@aora-bot/react';
@@ -50,7 +50,7 @@ export default function Demo() {
 
 ## 溢出
 
-超过 `maxVisible` 的成员收成 `+N` 芯片。
+超过 `maxVisible` 的成员会合并成一个 `+N` 标记。
 
 ```tsx preview
 import { AvatarGroup } from '@aora-bot/react';
@@ -70,11 +70,11 @@ export default function Demo() {
 
 ## 不用组件，只要算术
 
-三个辅助函数把头像组的数字带到那些并不在渲染它的地方：必须对齐第三张脸的弹出层、布局前就需要宽度的一行、不想碰 DOM 只想验算的测试。
+这三个辅助函数可以在不渲染头像组的地方使用它的数值，例如：需要与第三张脸对齐的弹出层、布局前就要知道宽度的一行，以及不想碰 DOM、只验证计算结果的测试。
 
-- `layoutAvatarGroup(count, sizePx, { overlap, withOverflow })` 返回每个圆盘按绘制顺序的左侧 `offsets`、实际使用的 `overlap`，以及总 `width`（预留时包含溢出芯片的位置）。最后一个圆盘贡献整个宽度，前面每个只贡献没被邻居遮住的那部分。
-- `groupMetrics(size)` 给出每个头像尺寸合理的比例——`sizePx`、`overlap`、`maxVisible`。小的组重叠更狠、露的脸更少：在 `xs` 下，三个圆盘按常规重叠是一团糊，两个更紧地叠在一起仍然读得出「一群人」，这已经是这个尺寸能承载的全部。
-- `participantsFromMembers(members, max)` 把成员列表拆成要画的 `visible` 脸和给芯片用的 `hidden` 数量。`max` 默认是 `GROUP_MAX_VISIBLE`（3）；默认重叠是 `STACK_OVERLAP`（0.36）。
+- `layoutAvatarGroup(count, sizePx, { overlap, withOverflow })` 按绘制顺序返回每个圆盘的左侧偏移 `offsets`、实际使用的 `overlap`，以及总宽度 `width`（预留溢出标记时，宽度包含它的位置）。最后一个圆盘计入完整宽度，前面的每个圆盘只计入没有被相邻圆盘遮住的部分。
+- `groupMetrics(size)` 为每个头像尺寸给出合适的比例：`sizePx`、`overlap`、`maxVisible`。小尺寸的群组重叠更多、显示的脸更少：在 `xs` 下，三个圆盘按常规重叠会糊成一团，两个更紧密地叠在一起，仍能看出是「一群人」，这个尺寸也只能做到这样。
+- `participantsFromMembers(members, max)` 把成员列表拆成要绘制的脸 `visible`，以及隐藏成员的数量 `hidden`（供 `+N` 标记使用）。`max` 默认为 `GROUP_MAX_VISIBLE`（3），默认重叠为 `STACK_OVERLAP`（0.36）。
 
 ```tsx preview
 import { AvatarGroup, layoutAvatarGroup, participantsFromMembers, groupMetrics } from '@aora-bot/react';
@@ -111,7 +111,7 @@ export default function Demo() {
 
 ### GroupAvatar
 
-方便包装，从群组记录上读取 `members`。
+便捷封装，从群组记录中读取 `members`。
 
 <API component="GroupAvatar" />
 

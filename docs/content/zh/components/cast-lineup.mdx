@@ -2,9 +2,9 @@ import { API } from '@theme';
 
 # CastLineup
 
-多个角色按脚本编排的一场戏。
+按脚本编排多个角色的一场戏。
 
-> 属于 `@aora-bot/surfaces`，不在 `@aora-bot/react` 里：`pnpm add @aora-bot/surfaces @aora-bot/react`，并在 React 样式之后引入 `@aora-bot/surfaces/styles.css`。
+> 来自 `@aora-bot/surfaces`，不属于 `@aora-bot/react`：`pnpm add @aora-bot/surfaces @aora-bot/react`，并在 React 样式之后引入 `@aora-bot/surfaces/styles.css`。
 
 ```tsx preview
 import { AgentPortrait, CharacterStageProvider } from '@aora-bot/react';
@@ -70,25 +70,25 @@ export default function Demo() {
 
 ## 脚本就是数据
 
-一场戏由一组 `members` 和一组 `steps` 组成。每一步说明每个人站在哪里——`x`、`y` 是相对舞台中心的像素，可选的 `scale`，以及这一步要采用的可选 `state`——以及停留多久。某一步的 `positions` 里没有列出的成员，在这一步就是下场：缩小并淡出，而不是凭空消失。
+一场戏由一组 `members` 和一组 `steps` 组成。每一步指定每个成员的位置，以及这一步停留多久。位置包括相对舞台中心的像素坐标 `x`、`y`，可选的 `scale`，以及这一步要采用的可选 `state`。某一步的 `positions` 中没有列出的成员，在这一步就是下场：会缩小并淡出，而不是直接消失。
 
-因为两半都是普通数据，宿主自己写编排，这个组件永远不知道这场戏讲的是什么。引导流程可以重排它的场次，而任何移动逻辑都不必知情。
+成员和步骤都是普通数据，编排由宿主自己编写，组件本身并不知道这场戏的内容。引导流程可以重新排列场次，而不需要改动任何移动逻辑。
 
 ## 没有帧循环的弹簧
 
-移动是 CSS transition，但缓动曲线是从引擎自己的弹簧采样成 `linear()` 函数得到的。真正的弹簧需要一个帧循环，而给四个只是在滑行的成员开帧循环，会和它们各自已经在为脸跑的动画抢资源。对解析解采样能得到同一条曲线——包括过冲——代价只是一个字符串。`spring` 调节刚度（`omega`）和阻尼（`zeta`）；`moveMs` 是过渡时长。
+移动用的是 CSS transition，缓动曲线则由引擎自带的弹簧采样，生成 `linear()` 函数。真正的弹簧需要帧循环，而为四个只是在滑行的成员单独开一个帧循环，会和它们各自已在为脸运行的动画争抢资源。对解析解采样可以得到同一条曲线（包括过冲），代价只是一个字符串。`spring` 调节刚度（`omega`）和阻尼（`zeta`），`moveMs` 是过渡时长。
 
-`onArrive(memberId, stepIndex)` 在某个成员的 transform 结束时触发，每个成员每一步一次，所以宿主可以恰好在角色落地时触发下一件事，而不是靠一个只能猜的定时器。
+某个成员的 transform 结束时会触发 `onArrive(memberId, stepIndex)`，每个成员每一步触发一次。宿主可以在角色落地的那一刻触发下一件事，不必靠估算时间的定时器。
 
 ## useCastScene
 
-这个 hook 只决定*何时*，从不决定*何处*。它持有当前的 `stepIndex`，在 `playing` 时于每一步的 `durationMs` 之后前进，并在最后一步停下，除非设置了 `loop`。`next`、`prev`、`play`、`pause`、`goTo` 是播放控制；`onStep` 报告每次变化。`autoplay` 让它在挂载时就开始跑。
+这个 Hook 只决定*何时*切换，不决定*在哪里*。它保存当前的 `stepIndex`，`playing` 时在每一步的 `durationMs` 之后前进，到最后一步停下，设置了 `loop` 时则循环。`next`、`prev`、`play`、`pause`、`goTo` 用于控制播放；`onStep` 在每次切换时报告。`autoplay` 让它在挂载时就开始播放。
 
 ## CastFigure 与 PortraitSlot
 
-`CastFigure` 是嵌套在两个盒子里的一个角色：外层盒子负责旅程——位置、缩放、透明度在同一个 transition 里——内层盒子负责原地起伏（`bobPx`、`bobMs`），所以一个成员可以在滑过舞台的同时原地漂浮。请给每个成员不同的 `bobMs`，让这群人不要同步呼吸。成员都是 [`StagedMark`](/components/character-stage)，所以舞台上方要有 `CharacterStageProvider`。
+`CastFigure` 是嵌套在两层容器里的一个角色：外层负责移动（位置、缩放、透明度共用同一个 transition），内层负责原地起伏（`bobPx`、`bobMs`），所以成员可以一边滑过舞台，一边原地漂浮。请为每个成员设置不同的 `bobMs`，避免整群角色同步起伏。成员都是 [`StagedMark`](/components/character-stage)，所以上层需要有 `CharacterStageProvider`。
 
-`PortraitSlot` 是角色最后飞进去的那个空圆：一圈虚线轮廓在戏还在演时说「这里该有个东西」，`arrived` 置真后交叉淡入到 `children`——两层结构，中间的盒子永远不会空着。它不知道自己在哪里；用普通 CSS 去定位，放在舞台里或旁边的表单里都行。
+`PortraitSlot` 是角色最后飞入的那个空圆：场景播放期间显示一圈虚线轮廓，提示「这里应该放点什么」；`arrived` 为 `true` 后，交叉淡入到 `children`。它由两层构成，所以过渡期间不会出现空白。它不关心自己的位置，用普通 CSS 定位即可，放在舞台里或旁边的表单里都行。
 
 ## API
 

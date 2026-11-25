@@ -2,7 +2,7 @@ import { StyleParamsDemo } from '@theme';
 
 # Pixel style
 
-The same character, drawn on a grid. Every state, shape and face — the default `cute` face and the effects beside it included — is available in it, because the pixel series reads the same frame the vector one does and only decides which cells to fill.
+The same character, drawn on a grid. Every state, shape and face is available, including the default `cute` face and the effects around it, because the pixel series reads the same frame as the vector series and only decides which cells to fill.
 
 ```tsx preview
 import { CharacterMark } from '@aora-bot/react';
@@ -59,20 +59,20 @@ export default function Demo() {
 | `dot`   | An LED panel: dim unlit dots on a dark plate, bright dots where the character is, a slight glow.   |
 | `block` | Squares with a seam between them, so the grid shows even where the colour is flat.                 |
 
-The plate behind `dot` is part of the picture and does not follow the theme: an LED panel is dark in a light page too, so the character is lit in its dark-page ink on either page: `black` lights white, and a near-black like `night` is lifted until it shows. Its eyes are white LEDs unless `eyeColor` says otherwise; on a body that lights pale they are unlit dots in the plate's colour.
+The plate behind `dot` is part of the picture and does not follow the theme: an LED panel is dark on a light page too, so the character is lit in its dark-page ink on either page. `black` lights white, and a near-black such as `night` is lifted until it shows. Its eyes are white LEDs unless `eyeColor` says otherwise; on a body that lights pale they are unlit dots in the plate's colour.
 
 ## Parameters
 
 Parameters go in `styleOptions`. The engine merges them over the defaults, clamps numbers to their range and snaps them to the step, so a slider and a typed value agree. Unknown keys are dropped.
 
-| Parameter | Default | Range     | Meaning                                                                 |
-| --------- | ------- | --------- | ----------------------------------------------------------------------- |
-| `grid`    | `24`    | 8 to 64   | Cells across the character. Relative to shape space, not to pixels.     |
-| `gap`     | `0.16`  | 0 to 0.5  | Seam between cells, as a fraction of a cell. Read by `block` and `dot`. |
-| `shades`  | `3`     | 1 to 5    | Tones in the ladder. `1` is flat.                                       |
-| `fps`     | `12`    | 0 to 60   | Motion is sampled on this clock. `0` follows every frame.               |
-| `outline` | `true`  | on or off | Darken the cells on the edge of the body.                               |
-| `glow`    | `true`  | on or off | The blur behind lit dots. Read by `dot`.                                |
+| Parameter | Default | Range     | Meaning                                                                       |
+| --------- | ------- | --------- | ----------------------------------------------------------------------------- |
+| `grid`    | `24`    | 8 to 64   | Cells across the width of the character, relative to shape space, not pixels. |
+| `gap`     | `0.16`  | 0 to 0.5  | Seam between cells, as a fraction of a cell. Read by `block` and `dot`.       |
+| `shades`  | `3`     | 1 to 5    | Number of tones in the ladder. `1` is flat.                                   |
+| `fps`     | `12`    | 0 to 60   | Motion is sampled at this frame rate. `0` follows every frame.                |
+| `outline` | `true`  | on or off | Whether the cells on the edge of the body are darkened.                       |
+| `glow`    | `true`  | on or off | The blur behind lit dots. Read by `dot`.                                      |
 
 Pick a variant and the panel lists only the parameters that variant reads. It is built from the registry, so it stays in step with the table above.
 
@@ -121,9 +121,9 @@ Colour is not stored in the buffer. A paint id stands for a tint and an opacity,
 
 ### Eyes at low resolution
 
-Eyes are the part that suffers most when a picture is a few dozen cells wide, so they are not sampled like the body.
+Eyes suffer most when a picture is only a few dozen cells wide, so they are not sampled like the body.
 
-- Both eyes are measured with sub-cell coverage, then averaged with the mirror of the other into a single glyph that is stamped on both sides. They are symmetric by construction.
+- Both eyes are measured by sub-cell coverage, then each is averaged with the mirror of the other into a single glyph, which is stamped on both sides. They are symmetric by construction.
 - The threshold adapts to the best coverage of the glyph, and a thin stroke such as a closed eye falls back to one cell per column, so it never disappears and never becomes two rows.
 - An eye is never empty, and there is always at least one cell between the two.
 - The nose and the mouth of the line face keep a cell clear of the eyes and of each other.

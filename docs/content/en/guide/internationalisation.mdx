@@ -19,7 +19,7 @@ export default function Demo() {
 }
 ```
 
-Language is not a prop on each component. A per-component prop has to be threaded through every level by hand and gets applied inconsistently — some components accept it, some ignore it, and nothing prevents two components in the same dialog from disagreeing.
+Language is not a prop on each component. A per-component prop has to be threaded through every level by hand and gets applied inconsistently: some components accept it, some ignore it, and two components in the same dialog can end up in different languages.
 
 ## Built-in locales
 
@@ -35,7 +35,7 @@ Language is not a prop on each component. A per-component prop has to be threade
 
 ## Copy for the product surfaces
 
-`@aora-bot/surfaces` keeps its own table (`template.*`, `walkthrough.*`, `restricted.*` and so on); those keys are not part of `@aora-bot/react`. The language still comes from the one `LocaleProvider`, so a surface and the primitives inside it cannot disagree. Only overrides go through `SurfaceLocaleProvider`, because the React provider's `overrides` are typed to its own keys.
+`@aora-bot/surfaces` keeps its own table (`template.*`, `walkthrough.*`, `restricted.*` and so on); those keys are not part of `@aora-bot/react`. The language still comes from the one `LocaleProvider`, so a surface and the primitives inside it always use the same language. Only overrides go through `SurfaceLocaleProvider`, because the React provider's `overrides` are typed to its own keys.
 
 ```tsx
 import { SurfaceLocaleProvider } from '@aora-bot/surfaces';

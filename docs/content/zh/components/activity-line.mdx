@@ -2,7 +2,7 @@ import { API } from '@theme';
 
 # ActivityLine
 
-交叉淡入的单行文字。
+单行文字，切换时交叉淡入淡出。
 
 ```tsx preview
 import { useEffect, useState } from 'react';
@@ -27,9 +27,9 @@ export default function Demo() {
 
 ## 为什么不直接换文字
 
-过渡期间出站和进站两行都在 DOM 里，叠在同一个网格格里。因此整行始终和两者中较高的那一行一样高，也和它需要的宽度一样宽。
+过渡期间，淡出和淡入的两行文字都在 DOM 中，叠放在同一个网格单元里。因此在整个淡入淡出过程中，整行的高度始终等于两者中较高的一行，宽度则按内容所需。
 
-就地替换文字会让活动行每隔几秒因为字数变化而抖动——小事，但好几行同时动时非常显眼。
+如果直接替换文字，活动行会因为字数变化而每隔几秒抖动一下。单行时不太明显，多行同时变化时就很显眼。
 
 ## API
 
@@ -38,4 +38,4 @@ export default function Demo() {
 ## 接下来
 
 - [ActivityBadge](/components/activity-badge)——一次工具调用长什么样
-- [对话流](/scenarios/chat-stream)——一行带脸的状态
+- [对话流](/scenarios/chat-stream)——带脸的状态行

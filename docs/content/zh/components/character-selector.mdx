@@ -28,7 +28,7 @@ export default function Demo() {
 
 ## 选中环跟随形状
 
-高亮用被选形状自己的轮廓画，而不是一个通用圆——六边形得到六边形环。它是由画出身体的同一函数生成的 CSS 蒙版，所以用 `defineShape` 注册的形状不需要额外工作就能得到正确的环。
+高亮环沿所选形状自己的轮廓绘制，而不是通用的圆，所以六边形的环也是六边形。这个环是 CSS 蒙版，由绘制身体的同一个函数生成，因此用 `defineShape` 注册的形状无需额外处理，也能得到正确的环。
 
 ## 布局
 
@@ -51,7 +51,7 @@ export default function Demo() {
 
 ## 脸型与鼻子
 
-传入 `face` 会加上一个 `cute | eyes | line` 切换。选中线条脸时会跟着出现一行六种鼻子，而且每个形状预览都按所选脸型绘制，读者看到的就是将得到的。
+传入 `face` 会增加一个 `cute | eyes | line` 切换。选中线条脸时，下方会多出一行六种鼻子。每个形状的预览都按所选脸型绘制，所见即所得。
 
 ```tsx preview
 import { useState } from 'react';
@@ -83,7 +83,7 @@ export default function Demo() {
 }
 ```
 
-省略 `face`，选择器就仍然只是形状与墨色选择器。
+省略 `face` 时，选择器仍然只有形状和墨色两组选项。
 
 ## 限制选项
 
@@ -104,7 +104,7 @@ export default function Demo() {
 
 ## 预览尺寸
 
-`sizePx` 设定每个形状预览的大小；脸型和鼻子预览随之缩放。默认是 `SELECTOR_MARK_PX`（36）。`lineWeight` 会传给预览，让选择器与它所编辑的角色一致。
+`sizePx` 设置每个形状预览的大小，脸型和鼻子的预览随之缩放。默认值是 `SELECTOR_MARK_PX`（36）。`lineWeight` 会传给各个预览，使选择器的线宽与正在编辑的角色一致。
 
 ```tsx preview
 import { CharacterSelector } from '@aora-bot/react';
@@ -125,19 +125,19 @@ export default function Demo() {
 
 ## 颜色色块
 
-每个颜色色块显示身体在当前页面上的颜色（`getInkColorCss`），所以 `black` 的色块在深色模式下是白色；几乎和页面同色的色块带上和身体一样的细边（`--aora-rim`）。见[配色](/design/palette)。
+每个色块显示身体在当前页面上的实际颜色（`getInkColorCss`），所以 `black` 的色块在深色模式下是白色。与页面背景几乎同色的色块，会带上与身体相同的细边（`--aora-rim`）。参见[配色](/design/palette)。
 
 ## `onSelectColor`
 
-墨色回调是 `onSelectColor`，拼写与 `color` prop 和它交回的 `ColorId` 类型一致。
+墨色的回调叫 `onSelectColor`，与 `color` prop 及回调返回的 `ColorId` 类型使用同一个拼写。
 
 ## 另外两个选择器
 
-[`AgentCharacterSelector`](/components/agent-character-selector) 把修改暂存到确认时才生效，给点击只是提议、取消必须有意义的对话框用。[`CompactCharacterSelector`](/components/compact-character-selector) 只留一小撮形状和墨色，放在注册表单旁边。
+[`AgentCharacterSelector`](/components/agent-character-selector) 会暂存修改，确认后才生效，适合点击只是提议、取消必须真正放弃修改的对话框。[`CompactCharacterSelector`](/components/compact-character-selector) 只提供少量形状和墨色，适合放在注册表单旁边。
 
 ## 键盘与辅助技术
 
-每一行一个单选组——形状、墨色，以及启用时的脸型和鼻子——各有可访问名称。每个选项都有 `role="radio"` 和 `aria-checked`，焦点可见。`Tab` 在组之间移动，方向键在组内移动，这正是单选组应有的行为。
+每一行是一个单选组（形状、墨色，启用时还有脸型和鼻子），都有可访问名称。每个选项都带 `role="radio"` 和 `aria-checked`，焦点可见。`Tab` 在组之间切换，方向键在组内移动，与常规单选组的行为一致。
 
 ## API
 
@@ -145,6 +145,6 @@ export default function Demo() {
 
 ## 接下来
 
-- [AgentCharacterSelector](/components/agent-character-selector)——修改暂存到确认才生效
+- [AgentCharacterSelector](/components/agent-character-selector)——暂存修改，确认后才生效
 - [AvatarStudio](/components/avatar-studio)——角色、生成、上传三个标签页
-- [角色设置](/scenarios/character-setup)——挑选智能体的外观
+- [角色设置](/scenarios/character-setup)——为智能体选择外观

@@ -39,7 +39,7 @@ stateForEmotion(3); //    'curious'   — numbers and single digits are normalis
 
 An id keeps its number and meaning for good, because scripts in the wild already send it. The gaps in each decade hold `03` curious, `09` dragging, `26` bouncing, `27` humming, `38` refusing and `42`–`49`, the finer-grained tool states — so the two-digit budget is never exceeded and no number changes meaning. `09` is a lifecycle id because being picked up and moved is something that happens _to_ the character, not a mood; `27` is a feeling, the small contentment of something working away on its own.
 
-Several ids share a state: `15` _Tired_ and `06` _Dormant_ both drowse, `30` _Thinking_ is the agent-work counterpart of nothing in particular. That is intentional. The id records what the sender meant; the state is how Aora Bot chooses to show it. `emotionIdForState` returns the lowest id for a state, which is the one a host built on Aora Bot should emit.
+Several ids share a state: `15` _Tired_ and `06` _Dormant_ both drowse, and `16` _Focused_ and `32` _Busy_ both work. That is intentional. The id records what the sender meant; the state is how Aora Bot chooses to show it. `emotionIdForState` returns the lowest id for a state, which is the one a host built on Aora Bot should emit.
 
 ## Events and conditions
 

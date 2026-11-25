@@ -2,7 +2,7 @@ import { API } from '@theme';
 
 # CharacterMark
 
-单个动画角色。库里其余一切都建立在它之上。
+单个动画角色，库中的其他组件都建立在它之上。
 
 ```tsx preview
 import { CharacterMark } from '@aora-bot/react';
@@ -14,7 +14,7 @@ export default function Demo() {
 
 ## 绘制风格
 
-`styleId` 选画风，`variant` 选这个画风里的变体。几何、动画和脸在它们之间完全相同——只有颜料变了，所以新状态或新角色会同时出现在每一种风格里。每个画风有一页：[Vector](/design/styles/vector)、[Pixel](/design/styles/pixel)、[Kaomoji](/design/styles/kaomoji)、[ASCII](/design/styles/ascii)。下面是 vector 的全部变体：
+`styleId` 选画风，`variant` 选该画风下的变体。各画风的几何、动画和脸完全相同，只有绘制方式不同，所以新增的状态或角色会同时出现在所有画风里。每种画风都有单独的页面：[Vector](/design/styles/vector)、[Pixel](/design/styles/pixel)、[Kaomoji](/design/styles/kaomoji)、[ASCII](/design/styles/ascii)。下面是 vector 的全部变体：
 
 ```tsx preview
 import { getStyle } from '@aora-bot/engine';
@@ -36,9 +36,9 @@ export default function Demo() {
 }
 ```
 
-`solid` 是默认：身体是平涂的填色块，脸画在上面。
+默认的 `solid` 是平涂的实心身体，脸画在上面。
 
-`outline` 和 `glass` 把这种关系反过来。身体不再填满时，按身体配的脸色会看不见，所以这两种变体的脸改用墨色画——同一剪影从另一面读。
+`outline` 和 `glass` 正好相反。身体不再填满，按实心身体配的脸色会看不清，所以这两种变体改用墨色画脸。剪影不变，只是脸与身体的深浅对调。
 
 ```tsx preview
 import { CharacterMark, SHAPE_IDS } from '@aora-bot/react';
@@ -54,11 +54,11 @@ export default function Demo() {
 }
 ```
 
-描边宽度在形状空间里是常量，而不是像素，所以它随角色缩放。钉在设备像素上的描边在大角色上会细得像线，在小角色上又会把它淹没。
+描边宽度以形状空间为单位，而不是像素，所以会随角色缩放。如果固定为设备像素，描边在大角色上显得太细，在小角色上又会盖住整个角色。
 
 ## 脸
 
-`face` 在 `FACE_STYLES` 的十六种脸里选：默认的 `cute`、`eyes`、[线条脸](/design/face) `line`（用同一线宽的笔画加上鼻子和嘴），以及 `capsule` 等十三种手绘脸。`nose` 只对 `line` 有效，从六种里挑一种；省略则由 `seed` 推导，传 `null` 则不画。
+`face` 可选 `FACE_STYLES` 中的十六种脸：默认的 `cute`、`eyes`、[线条脸](/design/face) `line`（用同一线宽的笔画画出鼻子和嘴），以及 `capsule` 等十三种手绘脸。`nose` 只对 `line` 有效，可从六种鼻子里选一种；省略时由 `seed` 推导，传 `null` 则不画鼻子。
 
 ```tsx preview
 import { CharacterMark, NOSE_IDS } from '@aora-bot/react';
@@ -89,11 +89,11 @@ export default function Demo() {
 }
 ```
 
-两个 prop 都可以在已挂载的角色上改变：脸在样式间缓动，鼻子交叉淡入。根元素带有 `data-face` 供样式使用。
+这两个 prop 在角色挂载后仍可修改：脸在不同样式之间缓动过渡，鼻子则交叉淡入淡出。根元素带有 `data-face` 属性，可用于样式。
 
 ## 什么时候用它
 
-角色独自出现时用 `CharacterMark`——英雄区、空状态、页头里的单个头像。一次要好几个角色时，优先用 [`CharacterStageProvider`](/components/character-stage)，它让长得一样的角色共享一份动画。
+角色单独出现时用 `CharacterMark`，例如首屏横幅、空状态，或页头里的单个头像。需要同时显示多个角色时，优先用 [`CharacterStageProvider`](/components/character-stage)，外观相同的角色会共享同一份动画。
 
 ## 跟随指针
 
@@ -110,7 +110,7 @@ export default function Demo() {
 }
 ```
 
-映射不是线性的。距离经过平方根，这样靠近角色的小动作仍然灵敏，远处也能到达极限——线性映射会让近处的运动显得迟钝。
+映射不是线性的。距离先取平方根，这样指针在角色附近的小幅移动仍然灵敏，距离很远时眼睛也能转到极限位置。线性映射会让近处的移动显得迟钝。
 
 ## 强调
 
@@ -135,7 +135,7 @@ export default function Demo() {
 
 ## 暂停
 
-`paused` 取消角色对共享 ticker 的订阅，并**冻结当前帧**。它不会重置到中性姿态，所以滚出视口再滚回来的角色看起来像是一直在等，而不是重新开始。
+`paused` 会取消角色对共享 ticker 的订阅，并**冻结当前帧**，不会重置为中性姿态。所以角色滚出视口再滚回来时，看起来像是一直在原地等待，而不是重新开始。
 
 ```tsx preview
 import { useState } from 'react';
@@ -184,11 +184,11 @@ export default function Demo() {
 }
 ```
 
-`burst()` 在 `prefers-reduced-motion` 下会被抑制，因为从中心向外辐射的粒子是前庭刺激。
+在 `prefers-reduced-motion` 下，`burst()` 不会生效，因为从中心向外扩散的粒子会引起前庭不适。
 
 ## 跟随宿主已知的一个点
 
-`followPointer` 自己监听指针。`followTarget` 则接受一个视口像素坐标——另一个元素的中心，或者宿主出于自己的原因已经在跟踪的指针位置——引擎每帧用同一套平方根映射去换算。两者都设时 `gazeTarget` 优先。
+`followPointer` 由角色自己监听指针。`followTarget` 则接收一个以视口像素为单位的坐标，例如另一个元素的中心，或宿主因其他需要已在跟踪的指针位置。引擎每帧用同样的平方根映射换算它。`followTarget` 与 `gazeTarget` 同时设置时，以 `gazeTarget` 为准。
 
 ```tsx preview
 import { useState } from 'react';
@@ -212,7 +212,7 @@ export default function Demo() {
 
 ## 墨色、眼睛与线宽
 
-`ink` 用一个纯色或两段渐变覆盖身体的颜料，给必须匹配品牌色而不是调色板的角色用；`null` 交还给主题 token。`eyeScale` 是眼睛大小的静态倍数，叠在强调弹簧之上。`lineWeight` 把鼻子、嘴和 HUD 表盘一起缩放，范围是 `LINE_WEIGHT_RANGE`（0.8–1.25）——一个角色一支笔，于是[脸和 HUD](/design/face) 始终是同一笔画。
+`ink` 用纯色或两段渐变覆盖身体的颜色，适合必须匹配品牌色、不能用调色板的角色；传 `null` 则交还给主题 token。`eyeScale` 是眼睛大小的静态倍数，叠加在强调弹簧之上。`lineWeight` 同时缩放鼻子、嘴和 HUD 表盘，范围为 `LINE_WEIGHT_RANGE`（0.8–1.25）。每个角色只用一支笔，所以[脸和 HUD](/design/face) 的笔画粗细始终一致。
 
 ```tsx preview
 import { CharacterMark } from '@aora-bot/react';
@@ -269,7 +269,7 @@ export default function Demo() {
 
 ## HUD
 
-`hud` 在身体外的环上画一个表盘；`null` 移除它。HUD 开着时五官会收掉——身体留成剪影，读数在环上。规格就是[协议](/design/protocol)携带、[`HudPlate`](/components/hud-plate) 校验的那个 `HudSpec`，表盘按角色的 `lineWeight` 描边。
+`hud` 在身体外圈画一个表盘，传 `null` 则移除。显示 HUD 时五官会隐藏：身体只剩剪影，读数画在外圈上。规格是同一个 `HudSpec`，[协议](/design/protocol)传递它，[`HudPlate`](/components/hud-plate) 校验它。表盘按角色的 `lineWeight` 描边。
 
 ```tsx preview
 import { CharacterMark } from '@aora-bot/react';
@@ -303,11 +303,11 @@ export default function Demo() {
 }
 ```
 
-规格按值比较而不是按引用，所以内联写 `hud={{ kind: 'progress', value }}` 不会每次渲染都重启表盘。
+规格按值比较，而不是按引用比较，所以直接内联写 `hud={{ kind: 'progress', value }}` 不会在每次渲染时重启表盘。
 
 ## 知道状态何时落定
 
-有限状态——`spawning`、`waking`（见 `STATE_SETTLE_TO`）——走完自己的流程后，引擎会自行前进。`onSettle(from, to)` 在那一刻触发，宿主对状态的认知可以跟着走，而不必再维护一份重复的计时器。
+有限状态（`spawning`、`waking`，见 `STATE_SETTLE_TO`）播放完毕后，引擎会自动切换到下一个状态。`onSettle(from, to)` 在这一刻触发，宿主可以据此同步自己记录的状态，不必再维护一份重复的计时器。
 
 ```tsx preview
 import { useState } from 'react';
@@ -339,11 +339,11 @@ export default function Demo() {
 }
 ```
 
-相反的问题——输入变化得比角色能跟上的速度还快——由 [`useMarkSettle`](/components/mark-commands) 处理。
+反过来，如果输入变化得比角色跟得上的速度还快，则用 [`useMarkSettle`](/components/mark-commands) 处理。
 
 ## 为什么它从不重渲染
 
-React 挂载一个空的宿主元素，然后引擎接管。prop 变化被命令式地推进控制器，而不是重渲染：
+React 只挂载一个空的宿主元素，之后由引擎接管。prop 变化时不重新渲染，而是以命令式方式推给控制器：
 
 ```tsx
 useEffect(() => {
@@ -351,7 +351,7 @@ useEffect(() => {
 }, [shape, state, paused, emphasis]);
 ```
 
-每秒六十次走 reconciler 去设十几个属性，代价远高于动画本身。挂载 effect 故意没有依赖——在 prop 变化时重建控制器会重启动画。
+每秒六十次经过 reconciler 去设置十几个属性，开销远高于动画本身。挂载 effect 刻意不设依赖：prop 变化时重建控制器会让动画重新开始。
 
 ## API
 

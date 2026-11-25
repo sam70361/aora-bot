@@ -1,10 +1,9 @@
 # @aora-bot/react
 
 React components for [Aora Bot](https://aora-bot.vercel.app), a procedural character engine
-for the web. A roster of generated characters and a named cast, ink colours, animation
-states, three faces, vector, pixel, kaomoji and ASCII styles and an SVG HUD, drawn entirely by
-code and animated from one shared frame loop. Try them in the
-[console](https://aora-bot.vercel.app/en/).
+for the web: a roster of generated characters and a named cast, ink colours, animation states,
+sixteen faces, vector, pixel, kaomoji and ASCII styles and an SVG HUD, all drawn by code and
+animated from one shared frame loop. Try them in the [console](https://aora-bot.vercel.app/en/).
 
 ## Install
 
@@ -50,7 +49,7 @@ your own rules win without `!important`.
 | `CelebrationLayer`                                                        | Celebration without a character attached                                    |
 | `LocaleProvider`, `useLabel`                                              | Component copy and catalogue labels in `en-US` or `zh-CN`                   |
 
-Onboarding walkthroughs, scenes, the template dialog, the occupancy list and the cast stage
+Onboarding walkthroughs, scenes, the template dialog, the occupancy list and the cast lineup
 live in [`@aora-bot/surfaces`](https://github.com/sam70361/aora-bot/tree/main/packages/surfaces),
 which builds on this package.
 

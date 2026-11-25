@@ -188,7 +188,7 @@ export default function Demo() {
 
 ## Following a point the host already knows
 
-`followPointer` listens for the pointer itself. `followTarget` takes a point in viewport pixels instead — another element's centre, or a pointer position the host is already tracking for its own reasons — and the engine converts it with the same square-root mapping every frame. `gazeTarget` wins when both are set.
+`followPointer` listens for the pointer itself. `followTarget` takes a point in viewport pixels instead — another element's centre, or a pointer position the host is already tracking for its own reasons — and the engine converts it with the same square-root mapping every frame. `gazeTarget` wins over `followTarget` when both are set.
 
 ```tsx preview
 import { useState } from 'react';
@@ -212,7 +212,7 @@ export default function Demo() {
 
 ## Ink, eyes and line weight
 
-`ink` overrides the body paint with a flat colour or a two-stop gradient, for a character that has to match a brand swatch rather than the palette; `null` hands it back to the theme token. `eyeScale` is a static multiplier on eye size, applied on top of the emphasis spring. `lineWeight` scales the nose, the mouth and the HUD dials together, within `LINE_WEIGHT_RANGE` (0.8–1.25) — one pen per character, so the [face and the HUD](/design/face) stay one stroke.
+`ink` overrides the body paint with a flat colour or a two-stop gradient, for a character that has to match a brand swatch rather than the palette; `null` hands it back to the theme token. `eyeScale` is a static multiplier on eye size, applied on top of the emphasis spring. `lineWeight` scales the nose, the mouth and the HUD dials together, within `LINE_WEIGHT_RANGE` (0.8–1.25) — one pen per character, so the [face and the HUD](/design/face) always share one stroke weight.
 
 ```tsx preview
 import { CharacterMark } from '@aora-bot/react';

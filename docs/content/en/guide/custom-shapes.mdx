@@ -41,7 +41,7 @@ export default function Demo() {
 Note what you did _not_ have to supply: where the eyes go, how big they are, whether the shape is allowed to tip, or what path data to ship.
 
 :::tip Use a new id
-`defineShape` with an existing id replaces that built-in character, for the whole page. Avoid every id in [`SHAPE_IDS`](/design/shapes).
+Calling `defineShape` with an existing id replaces that built-in character for the whole page. Do not use any id in [`SHAPE_IDS`](/design/shapes).
 :::
 
 ## What gets derived
@@ -107,12 +107,23 @@ Parts do not morph: when a character changes shape, the old ones fade out and th
 
 A part takes its colour from its tone and the character's ink unless it names one: `color` is a palette id or any CSS colour (`PartColor`), kept in every variant. `props` in the same options are drawn like parts but in front of them, and the face keeps off any prop that lies over the body, as it keeps off hair. `defineShapeWithProps` dresses an existing character instead: the `base` keeps its body, parts and face, scaled by `scale` about `at`, and `props` are drawn over it in a 100 × 100 box; `drop` leaves out base parts a prop replaces and `tint` colours base parts, both by index.
 
-````ts
+```ts
 defineShapeWithProps('mochi-hat', {
   base: 'mochi',
-  props: [{ tone: 'inner', color: 'red', outline: [[30, 22], [50, 2], [70, 22]] }],
+  props: [
+    {
+      tone: 'inner',
+      color: 'red',
+      outline: [
+        [30, 22],
+        [50, 2],
+        [70, 22],
+      ],
+    },
+  ],
 });
 ```
+
 ## Rules for a good outline
 
 **Return points, not a path string.** The registry needs to measure the outline, and measuring a path means parsing and flattening it.
@@ -127,7 +138,7 @@ defineShapeWithProps('mochi-hat', {
 
 ## Rounded polygons
 
-For faceted shapes, use the same helper. It clips each corner radius to what the adjacent edges can accommodate, so an over-large radius degrades into a circle instead of producing self-intersecting geometry.
+For faceted shapes, use `shapeGenerators.roundedPolygon`. It clips each corner radius to what the adjacent edges can accommodate, so an over-large radius degrades into a circle instead of producing self-intersecting geometry.
 
 ```tsx preview
 import { useEffect, useState } from 'react';
@@ -174,4 +185,3 @@ If you have a character you think belongs in the set, open an issue with the gen
 
 - [Shapes](/design/shapes) — every built-in character
 - [Performance](/guide/performance) — how to render hundreds of characters
-````

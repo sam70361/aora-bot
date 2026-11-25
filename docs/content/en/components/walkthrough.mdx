@@ -37,11 +37,11 @@ export default function Demo() {
 
 ## DemoDesktop
 
-A window frame. Onboarding has to show software without being the software, and a plain card does not read as an application — the window bar is what tells someone "this is a picture of a thing happening elsewhere" in no words at all. The frame is presentational: `aria-hidden` chrome around whatever the host puts in it, so the content keeps its own semantics. `toolbar` takes small chrome below the title bar — tabs, a fake URL.
+A window frame. Onboarding has to show software without being the software, and a plain card does not look like an application. The window bar tells someone "this is a picture of something happening elsewhere" without a single word. The frame is presentational: `aria-hidden` chrome around whatever the host puts in it, so the content keeps its own semantics. `toolbar` takes small chrome below the title bar, such as tabs or a fake URL.
 
 ## JobBubbles
 
-Work in flight, as words around a character. Bubbles rather than a list, because the claim is "several things at once" and a list reads as a queue. Each bubble drifts on its own period with a negative delay so they are never in phase — a ring of labels bobbing in unison looks like one object rotating. The ring uses real angles rather than a rotating container: a container that turns takes its text with it, and labels passing upside-down are unreadable. `jobs` defaults to four from the locale; `radiusPx` sets the ring.
+Work in flight, as words around a character. It uses bubbles rather than a list, because the message is "several things at once" and a list reads as a queue. Each bubble drifts on its own period with a negative delay so they are never in phase — a ring of labels bobbing in unison looks like one object rotating. The ring uses real angles rather than a rotating container: a container that turns takes its text with it, and labels passing upside-down are unreadable. `jobs` defaults to four from the locale; `radiusPx` sets the ring.
 
 ## SuggestionCards
 

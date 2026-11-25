@@ -2,9 +2,9 @@ import { API } from '@theme';
 
 # BootLoop
 
-有东西正在启动，而没人知道要多久。
+有东西正在启动，没人知道要等多久。
 
-> 属于 `@aora-bot/surfaces`，不在 `@aora-bot/react` 里：`pnpm add @aora-bot/surfaces @aora-bot/react`，并在 React 样式之后引入 `@aora-bot/surfaces/styles.css`。
+> 来自 `@aora-bot/surfaces`，不属于 `@aora-bot/react`：`pnpm add @aora-bot/surfaces @aora-bot/react`，并在 React 样式之后引入 `@aora-bot/surfaces/styles.css`。
 
 ```tsx preview
 import { useState } from 'react';
@@ -28,15 +28,15 @@ export default function Demo() {
 
 ## 展示活动，而不是进度
 
-不确定的等待是进度条唯一会说谎的场合，所以这个场景改为展示活动：角色在 `working` 和 `thinking` 之间交替——底层是一条旋涡腰带换成三颗游走的珠子——同时一条扫描线从屏幕后方划过。`durationMs` 是每个状态停留的时间；一对状态是一个循环。
+无法确定时长的等待，是进度条唯一会误导用户的场合，所以这个场景改为展示活动：角色在 `working` 和 `thinking` 之间交替（腰带随之从旋涡换成三颗游走的珠子），同时一条扫描线从屏幕后方划过。`durationMs` 是每个状态停留的时间，两个状态各播放一次算一个循环。
 
-`onCycle` 的存在是为了让宿主能升级提示。两个循环只是启动慢；十二个循环就是值得说点什么的问题，而只有宿主知道该说哪句话。上面的示例在三次之后换了文案。
+`onCycle` 用于让宿主逐步升级提示。循环两次只是启动慢；循环十二次就是需要告知用户的问题了，而该说什么只有宿主知道。上面的示例在三个循环之后换了文案。
 
-`inFront` 让角色站在屏幕前面而不是后面，适合边框只是布景、而不是正在启动的东西本身的布局。
+`inFront` 让角色显示在屏幕前面而不是后面，适合边框只是装饰、而不是启动对象本身的布局。
 
 ## LoadingCharacter
 
-即将到来的那个角色形状的占位符。
+与即将出现的角色形状相同的占位符。
 
 ```tsx preview
 import { useEffect, useState } from 'react';
@@ -62,9 +62,9 @@ export default function Demo() {
 }
 ```
 
-六边形将要落下的地方放一个灰色圆形，就是一次待发生的布局抖动；头像槽里放一个转圈，则是在页面已有的动作之外再添一种动作。这里用的是轮廓本身——同一个形状生成器，做成 CSS mask——上面加一层闪光，于是占位符和角色占据完全相同的轮廓，`ready` 时的切换是交叉淡入而不是替换。
+在将要显示六边形的位置放一个灰色圆形，之后必然会发生布局偏移；在头像位置放一个转圈，则会在页面已有的动效之外再增加一种动效。这里直接使用角色轮廓（同一个形状生成器，做成 CSS mask），再叠加一层闪光。占位符和角色的轮廓完全一致，所以 `ready` 时是交叉淡入淡出，而不是直接替换。
 
-淡入过程中两层都保持挂载。在 `ready` 时卸载占位符，会让角色的第一帧对着空白显示一帧，而那正是这个组件要避免的闪烁。
+淡入淡出期间，两层都保持挂载。如果在 `ready` 时就卸载占位符，角色的第一帧会显示在空白背景上，造成闪烁，而这正是这个组件要避免的。
 
 ## API
 

@@ -13,7 +13,10 @@ guidelines describe.
 
 ---
 
-Aora Bot 采用[《贡献者公约》2.1 版](https://www.contributor-covenant.org/version/2/1/code_of_conduct/)
-作为行为准则，适用于本仓库（Issue、Pull Request、讨论与评审）以及项目的交流群。友善、
-耐心，欢迎新人，对事不对人。如遇不当行为，请发送邮件至 1251579308@qq.com，所有举报都会
-被认真对待并保密。
+# 行为准则
+
+Aora Bot 采用[《贡献者公约》2.1 版](https://www.contributor-covenant.org/version/2/1/code_of_conduct/)作为行为准则，适用于本仓库（Issue、Pull Request、讨论和代码评审）以及项目的交流群。
+
+简单来说：友善、耐心，欢迎新人，对事不对人，不骚扰、不辱骂，不做人身攻击。
+
+如遇不当行为，请发邮件至 1251579308@qq.com。每一份举报都会被认真阅读并严格保密，维护者会按照公约的执行指南处理。

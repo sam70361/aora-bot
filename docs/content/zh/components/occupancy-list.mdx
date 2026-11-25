@@ -4,7 +4,7 @@ import { API } from '@theme';
 
 哪些智能体正在占用哪些资源。
 
-> 属于 `@aora-bot/surfaces`，不在 `@aora-bot/react` 里：`pnpm add @aora-bot/surfaces @aora-bot/react`，并在 React 样式之后引入 `@aora-bot/surfaces/styles.css`。
+> 属于 `@aora-bot/surfaces`，不在 `@aora-bot/react` 中：`pnpm add @aora-bot/surfaces @aora-bot/react`，并在 React 样式之后引入 `@aora-bot/surfaces/styles.css`。
 
 ```tsx preview
 import { useState } from 'react';
@@ -50,17 +50,17 @@ export default function Demo() {
 
 ## 用脸，不用名字
 
-这个列表回答的问题是「现在有没有人在碰那个东西」，一排角色一眼就能回答，一列名字却得逐个读。名字仍然在——悬停时显示，屏幕阅读器也能读到——所以角色是摘要，不是替代。空行渲染为「未使用」而不是留白，因为留白看起来像加载失败。
+这个列表要回答的问题是「现在有没有人在占用这个资源」。看一排角色就能立刻得出答案，而一列名字则要逐个去读。名字仍然保留：悬停时会显示，屏幕阅读器也能读到，所以角色是摘要，而不是替代。空行显示为「未使用」，而不是留空，因为留空看起来像加载失败。
 
-溢出用计数而不是滚动。四张脸加「+7」是对一个繁忙资源的真实陈述；随占用者增长的行会让列表在每次有人到来时跳动。`maxVisible` 决定在哪里截断。
+占用者过多时，列表显示计数，而不是出现滚动条。四张脸加「+7」如实反映了一个繁忙的资源；如果行随占用者增加而变长，每有一个新占用者出现，列表就会跳动一次。`maxVisible` 决定显示多少张脸后截断。
 
 ## 四十行共用一个引擎
 
-每个 `OccupancyMark` 都是 [`StagedMark`](/components/character-stage)，所以列表上方需要一个 `CharacterStageProvider`。资源列表恰恰是那种放着四十个角色、其中大多数同时处于同一状态的页面，而这正是舞台能压缩成一份动画的场合。`lineWeight` 是唯一会让角色退出共享的 prop：线条粗细烙在源几何里，镜像无法各自不同。
+每个 `OccupancyMark` 都是 [`StagedMark`](/components/character-stage)，所以列表上层需要一个 `CharacterStageProvider`。资源列表正是那种页面：同时有四十个角色，其中大多数处于相同状态，舞台恰好能把它们合并成一份动画。`lineWeight` 是唯一会让角色退出共享的 prop：线宽已写入源的几何数据，镜像无法各自不同。
 
 ## 每一行的状态
 
-行上的 `state` 作用于它的角色——宿主没有更好的信息时就是 `working`。浏览器会话是 `searching`；语音通道是 `dictating`。行级默认值让一列本来相同的资源读起来是同一种活动。
+行上的 `state` 作用于该行的角色，宿主没有更具体的信息时默认为 `working`。浏览器会话用 `searching`，语音通道用 `dictating`。在行一级设置默认值，可以让同类资源呈现出一致的活动状态。
 
 ## API
 
@@ -72,5 +72,5 @@ export default function Demo() {
 
 ## 接下来
 
-- [语音](/scenarios/voice)——麦克风开着的证据
+- [语音](/scenarios/voice)——表明麦克风正开着
 - [HudPlate](/components/hud-plate)——表盘旁边的一个数字

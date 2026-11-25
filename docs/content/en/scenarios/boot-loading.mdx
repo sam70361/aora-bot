@@ -6,7 +6,7 @@ Two waits: a record that is about to arrive, and a start-up with no known durati
 
 ## See it
 
-Left: three avatar slots that load and arrive. `LoadingCharacter` holds the silhouette until `ready`; the live mark underneath is mounted the whole time, paused, so the swap is a cross-fade and not a first frame against nothing. Right: a boot that has been going on long enough to say so.
+Left: three avatar slots that load and arrive. `LoadingCharacter` holds the silhouette until `ready`; the live mark underneath is mounted the whole time, paused, so the swap is a cross-fade rather than a first frame against nothing. Right: a boot that has run long enough to say so.
 
 ```tsx preview
 import { useEffect, useState } from 'react';
@@ -72,8 +72,8 @@ Two different waits. The first is the agent's own record arriving — a few hund
 - [`LoadingCharacter`](/components/boot-loop) — the character's own silhouette as a shimmering mask, cross-fading to the live mark on `ready`.
 - [`BootLoop`](/components/boot-loop) — an indeterminate wait inside a device bezel; `onCycle` lets the host escalate.
 - [`CharacterMark`](/components/character-mark) — `loading`, `spawning`, `onSettle`.
-- [`CharacterStageProvider`](/components/character-stage) — a page of placeholders that all flip at once should share one engine when they do.
-- [`HudPlate`](/components/hud-plate) — the `sync` dial is the one for a boot: a lifecycle rather than a fraction. `idle` until the connection is attempted, `syncing` while it is, `done` or `error` when it lands. Use `progress` only if the host has a real fraction; a ring that fills at a made-up rate is a progress bar that lies with extra steps.
+- [`CharacterStageProvider`](/components/character-stage) — a page of placeholders that flip together should share one engine.
+- [`HudPlate`](/components/hud-plate) — the `sync` dial is the one for a boot: a lifecycle rather than a fraction. `idle` until the connection is attempted, `syncing` while it is, `done` or `error` when it lands. Use `progress` only if the host has a real fraction; a ring that fills at a made-up rate is just a progress bar that lies, drawn as a circle.
 
 ## How the states move
 

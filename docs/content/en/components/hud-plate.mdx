@@ -36,13 +36,13 @@ export default function Demo() {
 
 ## Why a plate
 
-A dial drawn in the ring outside the character is a shape: a ring four-fifths full, a needle two-thirds round. It cannot say _83%_ or _four minutes_, and it should not try — text at that size inside an SVG is unreadable. So the character keeps the geometry and the plate carries the words: a title, a figure, a unit, and any supporting lines underneath.
+A dial drawn in the ring outside the character is only geometry: a ring four-fifths full, a needle two-thirds of the way round. It cannot say _83%_ or _four minutes_, and it should not try, because SVG text at that size is unreadable. So the character keeps the geometry and the plate carries the words: a title, a figure, a unit, and any supporting lines underneath.
 
 The plate does no rounding or formatting. `value` is shown as given, so the host decides what precision is honest for the figure.
 
 ## Placement and level
 
-`placement` puts the text below, above or to the right of the character. `level` colours the plate — `info`, `ok`, `warn`, `alert` — and is meant to be rare: a plate that changes tone on every state flickers through four colours in a single turn.
+`placement` puts the text below, above or to the right of the character. `level` colours the plate (`info`, `ok`, `warn` or `alert`) and should be used sparingly: a plate that changes colour on every state flickers through four colours in a single turn.
 
 ```tsx preview
 import { CharacterMark, HudPlate } from '@aora-bot/react';
@@ -76,7 +76,7 @@ export default function Demo() {
 
 ## useHudSpec
 
-Hosts assemble a dial out of whatever they have: a fraction that is still `undefined` on the first render, a token count that arrives as a string. Handing that straight to `hud` would either draw a wrong dial or throw. `useHudSpec` takes the kind and the raw values, runs them through the protocol's `isHudSpec` check, and returns a spec or `null` — and `null` simply means no dial, which is the right thing to draw while data is on its way.
+Hosts build a dial from whatever data they have: a fraction that is still `undefined` on the first render, or a token count that arrives as a string. Passing that straight to `hud` would either draw a wrong dial or throw. `useHudSpec` takes the kind and the raw values, checks them with the protocol's `isHudSpec`, and returns a spec or `null`. `null` means no dial, which is the right result while data is still on its way.
 
 ```ts
 const hud = useHudSpec('progress', { value: fraction }); // null until `fraction` is a number

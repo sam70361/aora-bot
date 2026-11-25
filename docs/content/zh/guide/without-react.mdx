@@ -1,10 +1,10 @@
 # 不用 React
 
-通过 `<aora-bot>` 自定义元素，在纯 HTML 或任何框架里使用 Aora Bot；如果连自定义元素都不想要，也可以直接调用引擎。
+用 `<aora-bot>` 自定义元素，可以在纯 HTML 或任何框架里使用 Aora Bot；如果不想用自定义元素，也可以直接调用引擎。
 
 ## 从 CDN 引入
 
-一个 script 标签就是全部配置。这个文件自带引擎，加载时自动注册 `<aora-bot>`，不需要构建步骤。
+只需要一个 script 标签。这个文件自带引擎，加载时自动注册 `<aora-bot>`，不需要构建步骤。
 
 ```html
 <!doctype html>
@@ -40,48 +40,48 @@ import { defineAoraBot } from '@aora-bot/element';
 defineAoraBot();
 ```
 
-`defineAoraBot(tagName = 'aora-bot')` 返回元素类，重复调用是安全的。导入这个包不会碰 DOM，所以在服务端渲染或构建脚本里导入也没问题，只是那里的 `defineAoraBot` 什么都不会注册。`@aora-bot/engine` 作为依赖会一并安装。想从自己的域名提供打包好的单文件，导入 `@aora-bot/element/cdn`。
+`defineAoraBot(tagName = 'aora-bot')` 返回元素类，可以重复调用。导入这个包不会访问 DOM，所以在服务端渲染或构建脚本里导入也没问题，只是在那里调用 `defineAoraBot` 不会注册任何元素。`@aora-bot/engine` 会作为依赖一并安装。如果想从自己的域名提供打包好的单文件，请导入 `@aora-bot/element/cdn`。
 
 和其他包一样，它只提供 ESM。
 
 ## 属性
 
-所有属性都是可选的。引擎不认识的值会回退到默认值，或回退到角色阵容成员的设定，不会抛错。
+所有属性都是可选的。引擎不认识的值会回退为默认值，或阵容成员自己的设定，不会抛出错误。
 
-| 属性             | 作用                                                                                   |
-| ---------------- | -------------------------------------------------------------------------------------- |
-| `character`      | [角色阵容](/design/cast)里的 id，例如 `mochi`；决定 `shape`、`color`、`face` 和 `nose` |
-| `shape`          | 画哪个[角色](/design/shapes)，默认 `mochi`                                             |
-| `color`          | [配色](/design/palette)里的一个色相，默认 `black`                                      |
-| `face`           | `cute`（默认）或 `FACE_STYLES` 里的其他脸，见[五官](/design/face)                      |
-| `nose`           | 线条脸用的鼻子 id，或 `none`；默认由 `seed` 推出                                       |
-| `state`          | 它正在做什么，[动画状态](/design/states)之一，默认 `idle`                              |
-| `style-id`       | 画风：`vector`（默认）、`pixel`、`kaomoji` 或 `ascii`                                  |
-| `variant`        | 该画风的变体，例如 `outline` 或 `dot`                                                  |
-| `style-options`  | 该画风参数的 JSON 对象，例如 `{"paperOffset":12}`                                      |
-| `seed`           | 任意字符串；种子不同的角色不会同时眨眼                                                 |
-| `size`           | CSS 长度，或像素数；默认 `32px`                                                        |
-| `eye-color`      | `cute`、`eyes`、`line` 脸眼睛的 CSS 颜色                                               |
-| `badge-color`    | `notifying` 状态下角标的 CSS 颜色                                                      |
-| `eye-scale`      | 眼睛大小的正数倍率，默认 `1`                                                           |
-| `line-weight`    | 线条粗细的倍率，范围 0.8 到 1.25，默认 `1`                                             |
-| `reduced-motion` | 布尔。只画静止的一帧，不做动画；不写时跟随系统设置                                     |
-| `paused`         | 布尔。停在当前这一帧                                                                   |
-| `emphasis`       | 布尔。放大眼睛并让它们聚拢                                                             |
-| `antics`         | 布尔。空闲时偶尔自己蹦一下或转一圈                                                     |
-| `auto-pause`     | 布尔。页面隐藏或角色滚出视口时停止动画                                                 |
+| 属性             | 作用                                                                               |
+| ---------------- | ---------------------------------------------------------------------------------- |
+| `character`      | [阵容](/design/cast)里的 id，例如 `mochi`；决定 `shape`、`color`、`face` 和 `nose` |
+| `shape`          | 画哪个[角色](/design/shapes)，默认 `mochi`                                         |
+| `color`          | [配色](/design/palette)里的一个色相，默认 `black`                                  |
+| `face`           | `cute`（默认）或 `FACE_STYLES` 里的其他脸，见[五官](/design/face)                  |
+| `nose`           | 线条脸用的鼻子 id，或 `none`；默认由 `seed` 推出                                   |
+| `state`          | 角色正在做什么，[动画状态](/design/states)之一，默认 `idle`                        |
+| `style-id`       | 画风：`vector`（默认）、`pixel`、`kaomoji` 或 `ascii`                              |
+| `variant`        | 当前画风的变体，例如 `outline` 或 `dot`                                            |
+| `style-options`  | 当前画风参数的 JSON 对象，例如 `{"paperOffset":12}`                                |
+| `seed`           | 任意字符串；种子不同的角色不会同时眨眼                                             |
+| `size`           | CSS 长度，或像素数；默认 `32px`                                                    |
+| `eye-color`      | `cute`、`eyes`、`line` 脸上眼睛的 CSS 颜色                                         |
+| `badge-color`    | `notifying` 状态下角标的 CSS 颜色                                                  |
+| `eye-scale`      | 眼睛大小的正数倍率，默认 `1`                                                       |
+| `line-weight`    | 线条粗细的倍率，范围 0.8 到 1.25，默认 `1`                                         |
+| `reduced-motion` | 布尔。只画静止的一帧，不做动画；不写时跟随系统设置                                 |
+| `paused`         | 布尔。停在当前这一帧                                                               |
+| `emphasis`       | 布尔。放大眼睛并让它们聚拢                                                         |
+| `antics`         | 布尔。空闲时偶尔自己蹦一下或转一圈                                                 |
+| `auto-pause`     | 布尔。页面隐藏或角色滚出视口时停止动画                                             |
 
-画风叫 `style-id`，因为 `style` 已经是内联 CSS 的属性名。修改属性会就地更新正在运行的角色。只有 `seed`、`reduced-motion` 和 `auto-pause` 是创建时读取一次的，修改它们会重新创建角色。
+画风属性叫 `style-id`，因为 `style` 已经是内联 CSS 的属性名。修改属性会就地更新正在运行的角色。只有 `seed`、`reduced-motion` 和 `auto-pause` 仅在创建时读取一次，修改它们会重新创建角色。
 
-`style-options` 接收所选画风的参数，参数列表见各画风页面（[vector](/design/styles/vector)、[pixel](/design/styles/pixel)、[kaomoji](/design/styles/kaomoji)、[ascii](/design/styles/ascii)）。把它们写成 JSON 对象，放进单引号属性里；不是 JSON 对象的值会被忽略，移除这个属性则恢复默认值。
+`style-options` 接收所选画风的参数，参数列表见各画风页面（[vector](/design/styles/vector)、[pixel](/design/styles/pixel)、[kaomoji](/design/styles/kaomoji)、[ascii](/design/styles/ascii)）。把参数写成 JSON 对象，放进用单引号包起来的属性值里；不是 JSON 对象的值会被忽略，移除这个属性则恢复默认值。
 
 ```html
 <aora-bot shape="mochi" color="blue" variant="paper" style-options='{"paperOffset":12}'></aora-bot>
 ```
 
-元素带有 `role="img"`，`aria-label` 是阵容成员的名字；最近的 `lang` 是 `zh` 时用中文名。自己设置了 `aria-label` 或 `role`，它们就不会被改动。
+元素带有 `role="img"`，`aria-label` 是阵容成员的名字；最近的 `lang` 是 `zh` 时用中文名。如果你自己设置了 `aria-label` 或 `role`，元素不会改动它们。
 
-角色画在 shadow root 里，页面的 CSS 够不到里面。宿主是 `display: inline-block`；用 `size` 设置大小，也可以自己写 `width` 和 `height`。墨色跟随页面的 `color-scheme`，任意祖先上的 `--aora-bg-base` 决定脸上露出的页面色，比如线条身体上手绘脸的眼白，详见[主题](/guide/theming)。
+角色画在 shadow root 里，页面的 CSS 无法影响其内部。宿主元素是 `display: inline-block`；用 `size` 设置大小，也可以自己写 `width` 和 `height`。墨色跟随页面的 `color-scheme`；任意祖先上的 `--aora-bg-base` 决定脸上露出的页面色，例如线条身体上手绘脸的眼白，详见[主题](/guide/theming)。
 
 ## 方法
 
@@ -97,7 +97,7 @@ defineAoraBot();
 
 ## 用 JavaScript 切换状态
 
-每个属性同时也是驼峰命名的属性，所以 `el.state = 'happy'` 和 `el.setAttribute('state', 'happy')` 等价。正在运行的角色会被就地更新，弹簧状态也会保留，所以状态切换看起来是一次反应，而不是重新开始。
+每个 HTML 属性都有对应的驼峰命名的 JavaScript 属性，所以 `el.state = 'happy'` 和 `el.setAttribute('state', 'happy')` 等价。正在运行的角色会被就地更新，弹簧状态也会保留，所以状态切换看起来像是一次反应，而不是重新开始。
 
 ```html
 <aora-bot id="bot" character="luna" size="120"></aora-bot>
@@ -115,7 +115,7 @@ defineAoraBot();
 </script>
 ```
 
-没有对应属性的选项，例如 `followTarget` 或 `hud`，调用控制器的 `update`：
+有些选项没有对应的属性，例如 `followTarget` 和 `hud`，这时调用控制器的 `update`：
 
 ```js
 bot.controller.update({ hud: { kind: 'progress', value: 0.4 } });
@@ -123,7 +123,7 @@ bot.controller.update({ hud: { kind: 'progress', value: 0.4 } });
 
 ## 不用自定义元素
 
-如果不想注册自定义元素，`@aora-bot/engine` 以函数的形式提供同一个角色，`@aora-bot/element` 只是它外面薄薄的一层。
+如果不想注册自定义元素，`@aora-bot/engine` 以函数的形式提供同样的角色，`@aora-bot/element` 只是它外面薄薄的一层封装。
 
 ```ts
 import { createCharacter } from '@aora-bot/engine';
@@ -136,10 +136,10 @@ character.spin(2);
 character.destroy();
 ```
 
-`createCharacter` 把一个 SVG 挂进宿主并返回控制器；移除宿主时记得调用 `destroy()`。在宿主上设置 `--aora-fg` 自定义属性，或传入 `ink`，墨色才会生效；否则角色用周围的文字颜色。其余内容见[引擎 README](https://github.com/sam70361/aora-bot/tree/main/packages/engine)。
+`createCharacter` 把一个 SVG 挂载到宿主上并返回控制器；移除宿主时记得调用 `destroy()`。需要在宿主上设置 `--aora-fg` 自定义属性，或传入 `ink`，才会使用你指定的墨色；否则角色使用周围的文字颜色。其余内容见[引擎 README](https://github.com/sam70361/aora-bot/tree/main/packages/engine)。
 
 ## 接下来
 
 - [主题](/guide/theming)——画出角色的变量
-- [角色阵容](/design/cast)——每一个有名字的角色
+- [阵容](/design/cast)——每一个有名字的角色
 - [状态](/design/states)——角色能做的所有事

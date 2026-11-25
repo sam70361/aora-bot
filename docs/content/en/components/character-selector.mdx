@@ -51,7 +51,7 @@ export default function Demo() {
 
 ## Face style and nose
 
-Pass `face` to add a `cute | eyes | line` toggle. While the line face is selected a row of the six noses follows, and every shape preview is drawn in the chosen style so the reader sees what they will get.
+Pass `face` to add a `cute | eyes | line` toggle. While the line face is selected, a row of the six noses appears. Every shape preview is drawn in the chosen style, so what you see is what you get.
 
 ```tsx preview
 import { useState } from 'react';
@@ -125,7 +125,7 @@ export default function Demo() {
 
 ## Colour chips
 
-Each colour chip shows the colour the body takes on the current page (`getInkColorCss`), so `black`'s chip is white in dark mode, and a chip that all but matches the page takes the body's hairline edge (`--aora-rim`). See [Palette](/design/palette).
+Each colour chip shows the colour the body takes on the current page (`getInkColorCss`), so the `black` chip is white in dark mode. A chip that almost matches the page background gets the same hairline edge as the body (`--aora-rim`). See [Palette](/design/palette).
 
 ## `onSelectColor`
 
@@ -133,7 +133,7 @@ The colour callback is `onSelectColor`, spelt like the `color` prop and the `Col
 
 ## Two more pickers
 
-[`AgentCharacterSelector`](/components/agent-character-selector) holds its edits until they are confirmed, for a dialog where a click is a proposal and Cancel has to mean something. [`CompactCharacterSelector`](/components/compact-character-selector) is cut down to a handful of shapes and inks, for the space beside a sign-up form.
+[`AgentCharacterSelector`](/components/agent-character-selector) holds its edits until they are confirmed, for a dialog where a click is only a proposal and Cancel must discard it. [`CompactCharacterSelector`](/components/compact-character-selector) is cut down to a handful of shapes and inks, for the space beside a sign-up form.
 
 ## Keyboard and assistive technology
 

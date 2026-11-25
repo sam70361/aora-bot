@@ -50,13 +50,13 @@ export default function Demo() {
 
 ## Faces, not names
 
-The question this list answers is "is anything touching that right now", and a row of characters answers it at a glance where a column of names has to be read. Names are still there — on hover and to a screen reader — so the marks are a summary, not a replacement. An empty row renders as "not in use" rather than as a gap, because a gap looks like a loading failure.
+The question this list answers is "is anything using that right now". A row of characters answers it at a glance, whereas a column of names has to be read. Names are still available on hover and to screen readers, so the marks are a summary, not a replacement. An empty row renders as "not in use" rather than as a gap, because a gap looks like a loading failure.
 
-Overflow is a count rather than a scroll. Four faces and "+7" is a true statement about a busy resource; a row that grows with its occupants makes the list jump every time one arrives. `maxVisible` sets the cut.
+Overflow is a count rather than a scroll. Four faces and "+7" accurately describes a busy resource, whereas a row that grows with its occupants makes the list jump every time a new one arrives. `maxVisible` sets the cut.
 
 ## One engine for forty rows
 
-Every `OccupancyMark` is a [`StagedMark`](/components/character-stage), so the list needs a `CharacterStageProvider` above it. A resource list is exactly the page that has forty marks on it, most in the same state at the same time, and that is the case the stage collapses to a single animation. `lineWeight` is the one prop that opts a mark out of sharing: the weight is baked into the source geometry, so a mirror cannot vary it.
+Every `OccupancyMark` is a [`StagedMark`](/components/character-stage), so the list needs a `CharacterStageProvider` above it. A resource list is exactly the kind of page that has forty marks on it, most in the same state at the same time, which is the case the stage collapses into a single animation. `lineWeight` is the one prop that opts a mark out of sharing: the weight is baked into the source geometry, so a mirror cannot vary it.
 
 ## Each row's state
 

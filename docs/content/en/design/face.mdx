@@ -70,7 +70,7 @@ Expressions blend field by field, so on a state change a part grows or fades in 
 
 ### Paint roles
 
-Layers carry a paint role, not a colour. `face` is the face colour (the whites), `pupil` what reads on it, `feature` what reads on the body (brows, lashes, eyes drawn straight onto the body, the colour of the cute face), `glint` the light that reads on `feature`, `iris` the body's ink deepened, and the rest fixed accents (a gold star, a tear, a tongue, a heart, an anger mark, a button's thread and face, dark glass) and a display's light. Off the middle of the range `getInkVars` also writes `--aora-face-pupil` and `--aora-face-glint` by the face rule, and static output switches them with its colour scheme where they turn with the page, as on black.
+Layers carry a paint role, not a colour. `face` is the face colour (the whites), `pupil` what reads on it, `feature` what reads on the body (brows, lashes, eyes drawn straight onto the body, the colour of the cute face), `glint` the light that reads on `feature`, `iris` the body's ink deepened, and the rest fixed accents (a gold star, a tear, a tongue, a heart, an anger mark, a button's thread and face, dark glass) and a display's light. For colours off the middle of the range, `getInkVars` also writes `--aora-face-pupil` and `--aora-face-glint` by the face rule; where they turn with the page, as on `black`, static output switches them with its colour scheme.
 
 <DrawnFacePalette />
 
@@ -79,13 +79,13 @@ Layers carry a paint role, not a colour. `face` is the face colour (the whites),
 - Vector: each variant says what every role is painted with. On the filled variants the whites are the face colour; on the line variants — `outline`, `glass`, `pencil`, `neon`, `chalk` — every role is the line or the page, and whites, lenses and screens get a rim; a variant that throws its effects in one colour turns the accents to the line too. Riso's misregistration, the paper shadow and the sticker's edge apply to the body as always.
 - Pixel: each layer is measured by coverage and drawn whole or not at all. Both eyes go through one mirrored projection at anchors snapped symmetric about the axis, so a symmetric expression is symmetric to the cell while a wink, a glance or a one-sided tear keep their difference; a highlight smaller than a cell is left out rather than punching a hole in the pupil.
 - Kaomoji: each face has its own eye glyphs, one per kind of eye (eleven kinds); a state's eyes are the first expression of its cycle, its mouth the state's mouth.
-- ASCII: it reads the pixel rasteriser's layers on a finer sub-grid, so a drawn face keeps its eyes and mouth, and each 2×4 block of sub-cells becomes one glyph.
+- ASCII: reuses the pixel rasteriser's layers on a finer sub-grid, so a drawn face keeps its eyes and mouth, and each 2×4 block of sub-cells becomes one glyph.
 
 <DrawnFaceSeries />
 
 ### Narrow bodies
 
-A design is drawn at its own size. Before it goes onto a body, the outline of every fixed part — brows, frames, visor, symbols, and the mouth's width — is measured and tested where it lands, through the head's projection: every band has to lie inside the body's width at its height and below hair or a leaf capping the head. A face that does not fit walks one path that shrinks it (to 0.45 at most) and lowers it (by up to 1.6 dot radii) together, and bisection finds the point where it just fits; the mouth and the cheeks move with it. Parts that drift free of the face (a falling tear, a rising Z) are not counted. On a body with room, the face keeps its drawn size.
+A design is drawn at its own size. Before it goes onto a body, the outline of every fixed part — brows, frames, visor, symbols, and the mouth's width — is measured and tested where it lands, through the head's projection: every band has to lie inside the body's width at its height and below hair or a leaf capping the head. A face that does not fit is shrunk (to 0.45 at most) and lowered (by up to 1.6 dot radii) together along one path, and bisection finds the point where it just fits; the mouth and the cheeks move with it. Parts that drift free of the face (a falling tear, a rising Z) are not counted. On a body with room, the face keeps its drawn size.
 
 ### A face of your own
 
@@ -155,7 +155,7 @@ When no nose is given, one is derived from the character's key the same way its 
 
 <LineStateGrid />
 
-Two mouths exist for states the other eleven could not say honestly. `hum` is closed and content with a ripple running through it: a smile would say "pleased", but the point of `humming` is that the mouth is shut and something is coming out anyway. It is kept narrow so it does not read as a grin at sixteen pixels. `tight` is pressed shut — short, flat and a shade lower than `flat` — and `suspicious` wears it rather than `smirk`: suspicion is a mouth held shut while the eyes do the doubting, and a smirk reads as amusement next to a narrowed eye. `refusing` keeps its frown; that one is a refusal, not merely a reservation.
+Two mouths exist for states that none of the other eleven expresses accurately. `hum` is closed and content with a ripple running through it: a smile would say "pleased", but the point of `humming` is that the mouth is shut and something is coming out anyway. It is kept narrow so it does not read as a grin at sixteen pixels. `tight` is pressed shut — short, flat and a shade lower than `flat` — and `suspicious` wears it rather than `smirk`: suspicion is a mouth held shut while the eyes do the doubting, and a smirk reads as amusement next to a narrowed eye. `refusing` keeps its frown; that one is a refusal, not merely a reservation.
 
 Six states talk: `composing`, `dictating`, `messaging`, `sending`, `laughing` and `humming`. Their mouth pulses open and shut on two incommensurate sine waves, so it reads as speech rather than as a metronome. The pulse is switched off under `prefers-reduced-motion`.
 

@@ -2,7 +2,7 @@ import { API } from '@theme';
 
 # ActivityBadge
 
-What an agent is doing, as a character and a label.
+A character and a label showing what an agent is doing.
 
 ```tsx preview
 import { CharacterStageProvider, ActivityBadge, TOOL_ACTIVITIES } from '@aora-bot/react';
@@ -55,7 +55,7 @@ export default function Demo() {
 }
 ```
 
-Showing every member at once turns a four-person group into a wall of characters, so the row cycles through them instead — one character wide, while still telling you who is involved. The group badge is `GROUP_BADGE_PX` (24 px) against a single badge's `ACTIVITY_BADGE_PX` (32 px), and moves on every `GROUP_CYCLE_MS` (2.4 s) with a 600 ms transition of the ink; `cycleMs` and `sizePx` change either.
+Showing every member at once turns a four-person group into a wall of characters, so the row cycles through them instead. It stays one character wide and still shows who is involved. The group badge is `GROUP_BADGE_PX` (24 px), against `ACTIVITY_BADGE_PX` (32 px) for a single badge. It moves to the next member every `GROUP_CYCLE_MS` (2.4 s), with a 600 ms ink transition. Use `cycleMs` and `sizePx` to change the interval and the size.
 
 ## Language
 
@@ -78,7 +78,7 @@ export default function Demo() {
 
 ## Facts instead of a tool name
 
-`activityMode="tool"` is the default: the caller names a tool and both halves of the row follow. `activityMode="facts"` reads the shared [mark commands](/components/mark-commands) registry instead, so a row and the roster avatar for the same agent cannot disagree about what it is doing. `facts` publishes `{ running, composing, activity }` for the agent while the row is mounted — compared by value, so an inline object is fine — and `surface` says where the row is being drawn. A conversation row is `chat`, where composing is the whole point; on an `avatar` surface the same facts resolve to idle, because twenty faces flicking between two states every few hundred milliseconds is noise. The resolution is `characterStateForRoster(facts, surface)` from the engine.
+`activityMode="tool"` is the default: the caller names a tool and both halves of the row follow. `activityMode="facts"` reads the shared [mark commands](/components/mark-commands) registry instead, so a row and the roster avatar for the same agent cannot disagree about what it is doing. While the row is mounted, `facts` publishes `{ running, composing, activity }` for the agent. It is compared by value, so an inline object is fine. `surface` says where the row is drawn. A conversation row uses `chat`, where composing is the whole point; on an `avatar` surface the same facts resolve to idle, because twenty faces flicking between two states every few hundred milliseconds is noise. The engine resolves this with `characterStateForRoster(facts, surface)`.
 
 ```tsx preview
 import { useState } from 'react';
@@ -119,7 +119,7 @@ export default function Demo() {
 
 `showLabel` shows the label `always`, only on `hover`, or `never` — and `never` keeps it in the accessibility tree, because the label is the only part of the row a screen reader can use. `bubble` draws the label as a speech bubble rather than bare text, for a row sitting next to the character rather than under it.
 
-`visible={false}` unmounts with the exit animation rather than instantly. Unmounting on the same tick as the flag flips makes the row vanish instead of leave, which reads as a glitch in a conversation that is otherwise continuous.
+`visible={false}` plays the exit animation before unmounting, rather than unmounting at once. Unmounting on the same tick as the flag flips makes the row vanish instead of leave, which looks like a glitch in an otherwise continuous conversation.
 
 ```tsx preview
 import { useState } from 'react';
@@ -144,7 +144,7 @@ export default function Demo() {
 
 ## Poking
 
-`onPoke` is called when the character is clicked, and its presence turns the mark into a real button — without it, a click is nothing, because a tab stop per row of a transcript for a flourish a screen-reader user cannot see is not worth it. A poke also goes through the shared commands, so every other mark for the agent reacts; a mirrored mark that cannot move alone hops its wrapper instead.
+`onPoke` is called when the character is clicked, and its presence turns the mark into a real button — without it, a click does nothing, because adding a tab stop to every row of a transcript for a flourish a screen-reader user cannot see is not worth it. A poke also goes through the shared commands, so every other mark for the agent reacts; a mirrored mark that cannot move alone hops its wrapper instead.
 
 ```tsx preview
 import { useState } from 'react';

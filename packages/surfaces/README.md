@@ -1,10 +1,10 @@
 # @aora-bot/surfaces
 
-Product and demo surfaces for [Aora Bot](https://aora-bot.vercel.app): the onboarding
-walkthrough, restricted and loading scenes, the template dialog with publishing, the
-occupancy list and the cast stage. They are built from the primitives in
-[`@aora-bot/react`](https://www.npmjs.com/package/@aora-bot/react), which stays free of
-anything product-shaped.
+Product components for [Aora Bot](https://aora-bot.vercel.app): the onboarding walkthrough,
+restricted and loading scenes, the template dialog with publishing, the occupancy list and the
+cast lineup. They are built from the primitives in
+[`@aora-bot/react`](https://www.npmjs.com/package/@aora-bot/react), which keeps anything
+product-specific out of its own API.
 
 ## Install
 
@@ -63,7 +63,7 @@ submitted draft with the same function the dialog runs.
 ## Documentation
 
 - [Components](https://aora-bot.vercel.app/en/components/overview)
-- [Walkthrough surfaces](https://aora-bot.vercel.app/en/components/walkthrough)
+- [Walkthrough](https://aora-bot.vercel.app/en/components/walkthrough)
 
 ## License
 

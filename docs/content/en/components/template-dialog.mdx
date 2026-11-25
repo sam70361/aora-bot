@@ -32,11 +32,11 @@ Press Save. The character beside the name works while the promise is out, celebr
 
 ## Appearance is not a field
 
-The form is deliberately short because the appearance is not something anyone has to fill in. `normalizeTemplateDraft` gives an unconfigured template a shape and an ink derived from `seed` — use the stored template's id, which does not change when the template is renamed — so the character beside the name is never a placeholder and a list of ten unconfigured templates is still ten distinguishable rows. Opening the avatar studio from the trigger is an optional flourish, not a step.
+The form is deliberately short because the appearance is not something anyone has to fill in. `normalizeTemplateDraft` gives an unconfigured template a shape and an ink derived from `seed`. Use the stored template's id, which does not change when the template is renamed. The character beside the name is therefore never a placeholder, and a list of ten unconfigured templates is still ten distinguishable rows. Opening the avatar studio from the trigger is an optional flourish, not a step.
 
 ## Saving
 
-`onSave` receives the normalised draft. Return a promise and the dialog's [`usePublishMark`](/components/use-publish-mark) does the rest: `working` while it is out, `celebrate` with confetti when it resolves, back to rest when it rejects — the form is about to show its own failure line, and a sad face next to it would read as the library editorialising.
+`onSave` receives the normalised draft. Return a promise and the dialog's [`usePublishMark`](/components/use-publish-mark) does the rest: `working` while it is out, `celebrate` with confetti when it resolves, back to rest when it rejects. The form is about to show its own failure message, and a sad face next to it would look like the library editorialising.
 
 ## normalizeTemplateDraft
 
@@ -69,7 +69,7 @@ export default function Demo() {
 }
 ```
 
-Visibility is two labelled choices rather than a switch: a switch needs one label that stays true in both positions, and the honest labels here — "only you" and "everyone in your workspace" — are two different sentences. `disabled` turns it into a read-only display for a template someone else owns.
+Visibility is two labelled choices rather than a switch: a switch needs one label that stays true in both positions, and the accurate labels here ("only you" and "everyone in your workspace") are two different sentences. `disabled` turns it into a read-only display for a template someone else owns.
 
 The share card shows the link in full rather than hiding it behind the copy button, so what is about to be handed out is visible before it is copied. `onCopy` fires after a successful copy for a host that wants its own toast.
 

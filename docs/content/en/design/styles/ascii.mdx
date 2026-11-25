@@ -2,7 +2,7 @@ import { StyleParamsDemo } from '@theme';
 
 # ASCII style
 
-The same character, typed out in glyphs. Every state, shape and face — the default `cute` face and the effects beside it included — is available in it, because the ascii series reuses the pixel series' rasteriser and only decides which character each cell is written as. It is the one series whose output is also plain text you can copy.
+The same character, typed out in glyphs. Every state, shape and face is available, including the default `cute` face and the effects around it, because the ascii series reuses the pixel series' rasteriser and only decides which character each cell is written as. It is the only series whose output is also plain text you can copy.
 
 ```tsx preview
 import { CharacterMark } from '@aora-bot/react';
@@ -57,9 +57,9 @@ export default function Demo() {
 | ------- | -------------------------------------------------------------------------------------------------------------------- |
 | `ansi`  | Coloured glyphs, the default. Each cell is written in the colour the pixel series would paint it.                    |
 | `mono`  | One ink. The face is cut out of the body as blank cells, so the picture is pure text that survives a copy and paste. |
-| `crt`   | A dark rounded terminal plate with glowing glyphs and faint scanlines, a slight glow behind the lit characters.      |
+| `crt`   | A dark rounded terminal plate with glowing glyphs, faint scanlines and a slight glow behind the lit characters.      |
 
-The plate behind `crt` is part of the picture and does not follow the theme: a terminal is dark in a light page too, so the character is lit in its dark-page ink on either page, the same rule as the pixel `dot` panel.
+The plate behind `crt` is part of the picture and does not follow the theme: a terminal is dark on a light page too, so the character is lit in its dark-page ink on either page, the same rule as the pixel `dot` panel.
 
 ## Charsets
 
@@ -91,11 +91,11 @@ export default function Demo() {
 }
 ```
 
-| Charset   | Glyphs                                                                                      |
-| --------- | ------------------------------------------------------------------------------------------- |
-| `ascii`   | Classic ASCII: `_-'/\()\|` along the edges and a `.:-=+*#%@` ramp for shading. The default. |
-| `block`   | Quadrant blocks `▘▝▀▖▌▐▄█` along the edges and `░▒▓█` for shading.                          |
-| `braille` | Braille, 2×4 dots per character: the finest set, with the shading dithered.                 |
+| Charset   | Glyphs                                                                                     |
+| --------- | ------------------------------------------------------------------------------------------ |
+| `ascii`   | Classic ASCII: `_-'/\()\|` along the edges and a `;=+xX#%@` ramp for shading. The default. |
+| `block`   | Quadrant blocks `▘▝▀▖▌▐▄█` along the edges and `░▒▓█` for shading.                         |
+| `braille` | Braille, 2×4 dots per character: the finest set, with the shading dithered.                |
 
 ## Fills
 
@@ -166,7 +166,7 @@ export default function Demo() {
 
 | Effect    | What it does                                                                                            |
 | --------- | ------------------------------------------------------------------------------------------------------- |
-| `none`    | Nothing: the glyphs only move with the body.                                                            |
+| `none`    | No effect: the glyphs only move with the body.                                                          |
 | `decode`  | The glyphs scramble and resolve row by row when the state changes or the character mounts. The default. |
 | `shimmer` | A lit diagonal band sweeps across the body every few seconds.                                           |
 | `glitch`  | Rare row offsets and noise glyphs.                                                                      |
@@ -177,16 +177,16 @@ Effects are off in static output and under reduced motion: a static document is 
 
 Parameters go in `styleOptions`. The engine merges them over the defaults, clamps numbers to their range and snaps them to the step, so a slider and a typed value agree. Unknown keys are dropped.
 
-| Parameter | Default  | Range                                 | Meaning                                                                  |
-| --------- | -------- | ------------------------------------- | ------------------------------------------------------------------------ |
-| `cols`    | `28`     | 12 to 64                              | Characters across the character. Relative to shape space, not to pixels. |
-| `charset` | `ascii`  | `ascii`, `block`, `braille`           | The glyph set.                                                           |
-| `fill`    | `shade`  | `shade`, `solid`, `hollow`            | How the inside of the body is written.                                   |
-| `effect`  | `decode` | `none`, `decode`, `shimmer`, `glitch` | Motion applied to the glyphs.                                            |
-| `fps`     | `12`     | 0 to 60                               | Motion is sampled on this clock. `0` follows every frame.                |
-| `glow`    | `true`   | on or off                             | The glow behind lit glyphs. Read by `crt`.                               |
+| Parameter | Default  | Range                                 | Meaning                                                                            |
+| --------- | -------- | ------------------------------------- | ---------------------------------------------------------------------------------- |
+| `cols`    | `28`     | 12 to 64                              | Characters across the width of the character, relative to shape space, not pixels. |
+| `charset` | `ascii`  | `ascii`, `block`, `braille`           | The glyph set.                                                                     |
+| `fill`    | `shade`  | `shade`, `solid`, `hollow`            | How the inside of the body is written.                                             |
+| `effect`  | `decode` | `none`, `decode`, `shimmer`, `glitch` | Motion applied to the glyphs.                                                      |
+| `fps`     | `12`     | 0 to 60                               | Motion is sampled at this frame rate. `0` follows every frame.                     |
+| `glow`    | `true`   | on or off                             | The glow behind lit glyphs. Read by `crt`.                                         |
 
-Pick a variant and the panel lists only the parameters that variant reads. It is built from the registry, so it stays in step with the table above, and its choices are named through the locale.
+Pick a variant and the panel lists only the parameters that variant reads. It is built from the registry, so it stays in step with the table above, and its option names come from the locale.
 
 <StyleParamsDemo style="ascii" />
 
@@ -194,7 +194,7 @@ Because `cols` is measured in shape space, the number of characters does not cha
 
 ## As plain text
 
-`renderAsciiText` returns the character as rows of text, joined by `\n` with trailing spaces trimmed. It takes the same options as `renderStaticSvg`, so a chat message, a terminal, a CLI banner, an agent log or a README can show the very character the series draws.
+`renderAsciiText` returns the character as rows of text, joined by `\n` with trailing spaces trimmed. It takes the same options as `renderStaticSvg`, so a chat message, a terminal, a CLI banner, an agent log or a README can show exactly the character the series draws.
 
 ```tsx preview
 import { renderAsciiText } from '@aora-bot/engine';
@@ -209,7 +209,7 @@ export default function Demo() {
 }
 ```
 
-For a terminal, add `ansi: true` for 24-bit colour escape codes, and print it:
+In a terminal, add `ansi: true` to get 24-bit colour escape codes, then print the result:
 
 ```ts
 import { renderAsciiText } from '@aora-bot/engine/static';
@@ -225,14 +225,14 @@ console.log(renderAsciiText({ shape: 'mochi', state: 'thinking', ansi: true }));
 
 ## How a cell is chosen
 
-The series does not draw its own picture. It rasterises the frame with the pixel series' rasteriser, on a finer sub-grid: `cols * 2` sub-cells across. Then each block of 2×4 sub-cells becomes one character cell, and a glyph is chosen from the charset by the shape of the cell's coverage — which of the eight sub-cells are filled.
+The series does not draw a picture of its own. It rasterises the frame with the pixel series' rasteriser on a finer sub-grid, `cols * 2` sub-cells across. Each block of 2×4 sub-cells then becomes one character cell, and a glyph is chosen from the charset by the shape of the cell's coverage, that is, which of the eight sub-cells are filled.
 
 1. The body is sampled into sub-cells, in the pixel series' painter's order, so every shape, state, face, part, belt and HUD arrives without a drawing of its own.
-2. Marks sit over the body: the face, the belt and the HUD primitives are rasterised after it, so an eye replaces the body glyph beneath it. In `mono` those cells are left blank.
+2. The face, the belt and the HUD primitives sit over the body: they are rasterised after it, so an eye replaces the body glyph beneath it. In `mono` those cells are left blank.
 3. A cell on the edge picks a glyph that follows the contour; a cell inside the body picks one from the shading ramp, lit at the upper left and deepest at the lower right (`fill` decides how much of this is used).
 4. Mood effects (Zz, sparkles, the heart, the tear, the bang, the spinner, the pencil) and confetti are written as literal characters: `z Z * ♥ ' ! . o - | / \`.
 
-The output is still an SVG root: one `<text>` per colour and one `<tspan>` per row, with an explicit `x` for every glyph and a monospace font stack, so each character sits on its own cell whatever the font's advance. That is why `CharacterMark`, `StagedMark`, mirrors and static rendering all work without a fork.
+The output is still an SVG root: one `<text>` per colour and one `<tspan>` per row, with an explicit `x` for every glyph and a monospace font stack, so each character sits on its own cell whatever the font's advance. That is why `CharacterMark`, `StagedMark`, mirrors and static rendering all work without special handling.
 
 ## In the engine
 
@@ -256,7 +256,7 @@ Static output is deterministic and needs no DOM, so it is safe during server ren
 
 `CHARSETS` is the registry of glyph sets, keyed by the `charset` ids above, and is extensible, so a host can add a set of its own.
 
-A variant the series does not have falls back to its default, so switching a `vector` character in `outline` over to `ascii` draws `ansi`.
+A variant the series does not have falls back to its default, so a `vector` character using `outline` is drawn as `ansi` when switched to `ascii`.
 
 ## In React
 
@@ -279,6 +279,6 @@ import { AppearanceProvider, CharacterMark, StagedMark } from '@aora-bot/react';
 
 - Glyph shapes depend on the host's monospace font. Each glyph is placed on its cell by an explicit `x`, but how an edge character such as `/` or `(` looks still changes from one font to the next.
 - `block` and `braille` need a font that has those glyphs. Most systems fall back to one, but the weight and the spacing of the fallback may not match the rest of the line.
-- Printed figures on a HUD dial are not drawn. They are too small to read in glyphs; the dial itself is.
-- Translucency is quantised like the pixel series': to quarters, replacing the cell beneath it rather than blending with it.
+- The numbers printed on a HUD dial are not drawn. They are too small to read as glyphs; the dial itself is drawn.
+- As in the pixel series, translucency is quantised to quarters and replaces the cell beneath it rather than blending with it.
 - Effects are off in static output and under reduced motion.

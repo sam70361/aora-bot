@@ -1,8 +1,8 @@
 # 开始使用
 
-Aora Bot 用代码画出一个卡通角色。没有雪碧图，也没有导出的动画文件：每个角色的身体都是生成出来的轮廓，每个表情都是几个数字描述的笔画，每一帧都直接写进 SVG 属性。
+Aora Bot 完全用代码绘制卡通角色，不使用精灵图，也没有导出的动画文件：每个角色的身体都是生成的轮廓，每个表情都是由几个数字描述的笔画，每一帧都直接写进 SVG 属性。
 
-如果只想挑一个角色、拿到代码，直接去[控制台](/)：左边选画风，右边选颜色和脸型，底部选形状，角色下方选表情；滑杆按钮调画风参数，角色下方的代码条一点就复制对应的代码。
+如果只想挑一个角色并拿到代码，可以直接用[控制台](/)：左侧选画风，右侧选颜色和脸型，底部选形状，角色下方选表情。滑杆按钮用来调整画风参数，角色下方的代码条点一下就能复制对应的代码。
 
 ## 安装
 
@@ -10,14 +10,14 @@ Aora Bot 用代码画出一个卡通角色。没有雪碧图，也没有导出�
 pnpm add @aora-bot/react
 ```
 
-只用组件时，装 `@aora-bot/react` 就够了，它会带上 `@aora-bot/engine`。如果要自己从 `@aora-bot/engine` 导入（例如 `getStyle`、`getInkVars` 或 `@aora-bot/engine/agent`），或者想脱离 React 使用几何与动画，还需要 `pnpm add @aora-bot/engine`。
+只用组件时，安装 `@aora-bot/react` 就够了，它会自动带上 `@aora-bot/engine`。如果要自己从 `@aora-bot/engine` 导入（例如 `getStyle`、`getInkVars` 或 `@aora-bot/engine/agent`），或者想脱离 React 使用几何与动画，还需要再运行 `pnpm add @aora-bot/engine`。
 
 这些包只提供 ESM：`exports` 里只有 `import` 条件，不能用 `require()`。
 
-不用 React？看[不用 React](/guide/without-react)：`<aora-bot>` 自定义元素，外加一行 CDN 脚本。
+不用 React？参见[不用 React](/guide/without-react)：用 `<aora-bot>` 自定义元素，再加一行 CDN 脚本即可。
 
 :::warning 需要 React 19
-组件层把 `ref` 当作普通 prop 使用，并从 ref 回调里返回清理函数——两者都是 React 19 的语义。在 React 18 下清理函数会被忽略，共享动画源永不释放，镜像角色会渲染成空白。
+组件层把 `ref` 当作普通 prop 使用，并在 ref 回调里返回清理函数，这两点都是 React 19 的行为。在 React 18 下，清理函数会被忽略，共享的动画源永远不会释放，镜像角色会渲染成空白。
 :::
 
 ## 第一个角色
@@ -31,7 +31,7 @@ export default function Demo() {
 }
 ```
 
-样式表在应用根部引入一次。三个 prop 承载了绝大部分含义，都有默认值，所以最短的写法就是上面这一行：
+在应用根部引入一次样式表即可。下面三个 prop 决定了角色的大部分表现，并且都有默认值，所以最短的写法就是上面这一行：
 
 | Prop    | 控制什么                                              |
 | ------- | ----------------------------------------------------- |
@@ -41,7 +41,7 @@ export default function Demo() {
 
 ## 换画风、变体和颜色
 
-画风用 `styleId` 选，每个画风有自己的变体，用 `variant` 选。颜色和状态不受影响，换了就是换了。
+用 `styleId` 选画风，每个画风有各自的变体，用 `variant` 选。切换画风和变体时，颜色和状态保持不变。
 
 ```tsx preview
 import { CharacterMark } from '@aora-bot/react';
@@ -57,11 +57,11 @@ export default function Demo() {
 }
 ```
 
-每个画风各有一页：[Vector](/design/styles/vector)、[Pixel](/design/styles/pixel)、[Kaomoji](/design/styles/kaomoji)、[ASCII](/design/styles/ascii)。脸有十六种，默认 `cute`，其他的用 `face` 选，见[五官](/design/face)。
+每个画风各有一页说明：[Vector](/design/styles/vector)、[Pixel](/design/styles/pixel)、[Kaomoji](/design/styles/kaomoji)、[ASCII](/design/styles/ascii)。脸有十六种，默认是 `cute`，其他用 `face` 选择，见[五官](/design/face)。
 
 ## 背景 token
 
-每种脸都画在身体上，颜色按身体自己的墨色选，所以实心身体在任何背景上看起来都一样。空心身体（`outline`、`glass`）大部分是页面，那里手绘脸的眼白和徽标外圈用的是页面色。这样的角色所在的表面如果不是页面背景，就要告诉它，方法是设置 `--aora-bg-base`：
+每张脸都画在身体上，颜色根据身体自己的墨色选取，所以实心身体在任何背景上看起来都一样。空心身体（`outline`、`glass`）大部分区域透出页面，手绘脸的眼白和徽标外圈就用页面色。如果这样的角色放在页面背景以外的表面上，需要设置 `--aora-bg-base` 告诉它实际的背景色：
 
 ```tsx preview
 import { CharacterMark } from '@aora-bot/react';
@@ -87,7 +87,7 @@ export default function Demo() {
 }
 ```
 
-左边那个的眼白用的是页面色，露出两块浅色；右边那个与容器一致。样式表把 token 放在 `@layer` 里，所以你自己写的规则无需 `!important` 就能覆盖它。
+左边的角色眼白用的是页面色，露出两块浅色；右边的角色与容器一致。样式表把 token 放在 `@layer` 里，所以你自己的规则无需 `!important` 就能覆盖它。
 
 ## 命令式动作
 
@@ -121,7 +121,7 @@ export default function Demo() {
 
 ## 给你的用户分配角色
 
-任意字符串都能哈希成稳定的形状与墨色，因此你可以给每个用户展示固定角色，而不需要存储任何数据。
+任意字符串都会哈希成固定的形状和墨色，所以可以为每个用户显示固定的角色，不需要存储任何数据。
 
 ```tsx preview
 import { AgentPortrait } from '@aora-bot/react';

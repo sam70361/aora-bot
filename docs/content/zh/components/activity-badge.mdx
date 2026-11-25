@@ -2,7 +2,7 @@ import { API } from '@theme';
 
 # ActivityBadge
 
-智能体正在做什么，用角色和标签一起表达。
+用角色加标签显示智能体正在做什么。
 
 ```tsx preview
 import { CharacterStageProvider, ActivityBadge, TOOL_ACTIVITIES } from '@aora-bot/react';
@@ -20,16 +20,16 @@ export default function Demo() {
 }
 ```
 
-## 两半来自同一来源
+## 状态和标签出自同一来源
 
-工具名同时选出动画状态**和**标签。状态来自引擎的 `stateForTool()` 表——Claude Code 和 Cursor 适配器也用这张表——所以已经讲[情绪协议](/design/protocol)的宿主，和只知道工具名的宿主，不会对脸上该显示什么各说各话。
+工具名同时决定动画状态**和**标签。状态取自引擎的 `stateForTool()` 映射表，Claude Code 和 Cursor 适配器用的也是这张表。因此，不论宿主是已经接入[情绪协议](/design/protocol)，还是只知道工具名，脸上显示的内容都是一致的。
 
 ```ts
 activityForTool('web_search');
 // → { labelKey: 'activity.searching', state: 'searching' }
 ```
 
-未知工具回退到通用的工作状态，而不是什么都不渲染，所以新工具会优雅降级。
+遇到未知工具时，会回退到通用的工作状态，而不是什么都不渲染，所以新增的工具不会出现空白。
 
 ## 添加工具
 
@@ -55,11 +55,11 @@ export default function Demo() {
 }
 ```
 
-一次展示每个成员会把四人组变成一堵角色墙，所以这一行改为轮播——始终一个角色宽，同时仍然告诉你谁参与了。成组徽标是 `GROUP_BADGE_PX`（24 px），单个徽标是 `ACTIVITY_BADGE_PX`（32 px）；每隔 `GROUP_CYCLE_MS`（2.4 秒）换到下一位成员，墨色用 600 ms 过渡；`cycleMs` 和 `sizePx` 可以改。
+同时显示每个成员，四人的群组就会变成一堵角色墙。所以这一行改为轮播：宽度始终只有一个角色，又能看出有哪些成员参与。群组徽标为 `GROUP_BADGE_PX`（24 px），单个徽标为 `ACTIVITY_BADGE_PX`（32 px）；每隔 `GROUP_CYCLE_MS`（2.4 秒）切换到下一位成员，墨色的过渡时长为 600 ms。轮播间隔和徽标尺寸可以分别用 `cycleMs` 和 `sizePx` 修改。
 
 ## 语言
 
-标签来自[语言 Provider](/components/locale-provider)，所以文字跟随周围语言，不需要再传 prop。
+标签由[语言 Provider](/components/locale-provider)提供，文字会跟随上下文的语言，不需要额外传 prop。
 
 ```tsx preview
 import { LocaleProvider, ActivityBadge } from '@aora-bot/react';
@@ -78,7 +78,7 @@ export default function Demo() {
 
 ## 用事实而不是工具名
 
-`activityMode="tool"` 是默认值：调用方给出工具名，这一行的两半都跟着它走。`activityMode="facts"` 则读取共享的[角色指令](/components/mark-commands)注册表，于是同一个智能体的对话行和名册头像不可能对它在做什么有分歧。`facts` 在这一行挂载期间为该智能体发布 `{ running, composing, activity }`——按值比较，内联对象没问题——`surface` 说明这一行画在哪里。对话行是 `chat`，在那里正在撰写就是重点；同样的事实在 `avatar` 面上解析为 idle，因为二十张脸每几百毫秒在两个状态之间闪是噪音。解析由引擎的 `characterStateForRoster(facts, surface)` 完成。
+`activityMode="tool"` 是默认值：由调用方给出工具名，状态和标签都跟着工具名走。`activityMode="facts"` 则读取共享的[角色指令](/components/mark-commands)注册表，这样同一个智能体的对话行和名册头像，对它在做什么就不会出现分歧。这一行挂载期间，`facts` 会为该智能体发布 `{ running, composing, activity }`（按值比较，所以直接传内联对象也可以）。`surface` 说明这一行画在哪里：对话行用 `chat`，这里“正在撰写”正是要表现的重点；同样的事实在 `avatar` 上会解析为 idle，因为二十张脸每隔几百毫秒就在两个状态之间闪动，只会造成干扰。解析由引擎的 `characterStateForRoster(facts, surface)` 完成。
 
 ```tsx preview
 import { useState } from 'react';
@@ -117,9 +117,9 @@ export default function Demo() {
 
 ## 标签、气泡、可见性
 
-`showLabel` 让标签 `always` 常显、只在 `hover` 时显示、或 `never` 不显示——`never` 仍把它留在无障碍树里，因为标签是屏幕阅读器唯一能用的部分。`bubble` 把标签画成对话气泡而不是裸文字，给紧挨着角色而不是在它下方的行用。
+`showLabel` 控制标签的显示方式：`always` 常显，`hover` 仅在悬停时显示，`never` 不显示。即使是 `never`，标签仍保留在无障碍树中，因为标签是屏幕阅读器唯一能读到的内容。`bubble` 把标签画成对话气泡，而不是纯文字，适合标签在角色旁边而不是下方的布局。
 
-`visible={false}` 播放退场动画后再卸载，而不是立刻消失。在标志翻转的同一刻卸载会让这一行凭空不见而不是离开，在一段本来连续的对话里读起来像故障。
+`visible={false}` 会先播放退场动画再卸载，而不是立刻卸载。如果在标志位翻转的同一时刻卸载，这一行会直接消失而不是退场，在连续的对话中看起来像故障。
 
 ```tsx preview
 import { useState } from 'react';
@@ -144,7 +144,7 @@ export default function Demo() {
 
 ## 戳一下
 
-`onPoke` 在角色被点击时调用，它的存在也让角色变成一个真正的按钮——没有它，点击什么也不做，因为为一个屏幕阅读器用户看不到的小花样给对话记录的每一行加一个 tab 停靠点并不值得。戳也会走共享指令，于是这个智能体的其他角色都会有反应；无法单独动作的镜像角色则由外层容器代为跳一下。
+点击角色时会调用 `onPoke`；传了 `onPoke`，角色才会渲染成真正的按钮。没有它时，点击不会有任何效果：为了一个屏幕阅读器用户看不到的小动画，给对话记录的每一行都加一个 Tab 停靠点，并不值得。戳一下也会通过共享指令发出，所以该智能体的其他角色都会有反应；无法单独动作的镜像角色，则由外层容器代为跳一下。
 
 ```tsx preview
 import { useState } from 'react';
@@ -169,11 +169,11 @@ export default function Demo() {
 
 ## 在场 hook
 
-组件自己用的两个 hook 也导出给自绘对话行的宿主。
+组件内部用到的两个 Hook 也对外导出，供自己绘制对话行的宿主使用。
 
-`useActivityStatus(visible, { exitMs })` 返回 `{ mounted, leaving }`：`mounted` 在退场动画期间保持为真，`leaving` 标出该套用离场类名的那几帧。`exitMs` 默认是 `ACTIVITY_EXIT_MS`（140 ms），在减少动态效果下降为零。切换在渲染期间而不是 effect 里完成，这样退场动画在隐藏该行的那一帧就已经在屏幕上。
+`useActivityStatus(visible, { exitMs })` 返回 `{ mounted, leaving }`：`mounted` 在退场动画期间保持为 `true`，`leaving` 标出应当加上离场类名的那几帧。`exitMs` 默认为 `ACTIVITY_EXIT_MS`（140 ms），在“减少动态效果”模式下为 0。状态切换在渲染期间完成，而不是放在 effect 里，所以隐藏该行的那一帧，退场动画就已经显示在屏幕上。
 
-`useArrival(agentId)` 返回 `{ isFirst, state }`：`state` 在登场播放期间是 `'spawning'`，之后是 `null`，调用方回落到真实状态。哪些智能体已经登场过记在模块级别而不是 context 里——滚过去时卸载、滚回来时重新挂载的行不应该登场两次。`resetSpawnEntrances()` 忘掉所有登场记录，供测试和会话重置使用。
+`useArrival(agentId)` 返回 `{ isFirst, state }`：登场动画播放期间，`state` 为 `'spawning'`，之后为 `null`，调用方此时应改用实际状态。哪些智能体已经登场，记录在模块级别而不是 context 中：滚动离开时卸载、滚回来时重新挂载的行，不应该再登场一次。`resetSpawnEntrances()` 会清除所有登场记录，用于测试和会话重置。
 
 ```tsx preview
 import { useState } from 'react';
@@ -210,7 +210,7 @@ export default function Demo() {
 
 ## 无障碍
 
-标签是真正的文字，所以看不见动画也能读出智能体的状态。角色承载含义时请复制这个模式——见[无障碍](/guide/accessibility)。
+标签是真正的文字，所以即使看不到动画，也能读出智能体的状态。凡是角色要传达信息的地方，都建议照这个做法处理，详见[无障碍](/guide/accessibility)。
 
 ## API
 
@@ -222,5 +222,5 @@ export default function Demo() {
 
 ## 接下来
 
-- [ActivityLine](/components/activity-line)——滚动的活动动词
-- [对话流](/scenarios/chat-stream)——一行带脸的状态
+- [ActivityLine](/components/activity-line)——滚动切换的活动动词
+- [对话流](/scenarios/chat-stream)——带脸的状态行

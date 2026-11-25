@@ -2,11 +2,11 @@ import { StateMatrix } from '@theme';
 
 # 语音
 
-一次语音会话：角色就是麦克风开着的证据。
+语音会话：角色就是麦克风已打开的证据。
 
 ## 先看效果
 
-按住说话。按住按钮打开频道；占用列表显示谁占着它；松开后这句话交给智能体，它先编排再回答。下方的输入框是通往同一个智能体的打字路径。
+按住说话。按住按钮打开频道，占用列表显示谁正在占用；松开后，这句话交给智能体，智能体先撰写回复，再回答。下方的输入框是向同一个智能体输入文字的另一条路径。
 
 ```tsx preview
 import { useEffect, useState } from 'react';
@@ -76,18 +76,18 @@ export default function Demo() {
 }
 ```
 
-占用列表里的每一行都是 `StagedMark`，所以有四十行的页面每种状态只花一个引擎。空行渲染成"未在使用"而不是留白，因为这个列表回答的问题是此刻有没有东西在碰这个资源，而沉默也是一种回答。
+占用列表里的每一行都是 `StagedMark`，所以一个有四十行的页面，每种状态只占用一个引擎。空行显示「未在使用」，而不是留白：这个列表回答的问题是此刻有没有东西在使用这个资源，没有人占用本身也是一个答案。
 
 ## 什么时候用
 
-语音界面有一个文字界面没有的问题：屏幕上没有任何东西证明智能体正在听你说话。角色就是这个证明。麦克风打开时它在听，你说话时它变成一个电平表，转写被回答时它在编排，多个智能体都可能占用频道时它显示谁在占用。
+语音界面有一个文字界面没有的问题：屏幕上没有任何东西能证明智能体正在听你说话。角色就是这个证明。麦克风打开时，它在听；你说话时，它变成电平表；转写内容在被回答时，它在撰写回复；多个智能体都可能占用频道时，它还会显示是谁在占用。
 
 ## 用到的组件
 
-- [`CharacterMark`](/components/character-mark)——`state="dictating"` 加一个带实时电平的 `voice` 表盘。
-- [`HudPlate`](/components/hud-plate)——把转写或模式作为文字显示。
-- [`OccupancyList`](/components/occupancy-list) 与 `OccupancyMark`——哪些智能体占着麦克风、扬声器、频道。
-- [`Composer`](/components/walkthrough)——打字的备用路径；输入框旁的角色在获得焦点时 `listening`，敲下键时 `composing`。
+- [`CharacterMark`](/components/character-mark)——`state="dictating"`，加上显示实时电平的 `voice` 表盘。
+- [`HudPlate`](/components/hud-plate)——以文字显示转写内容或模式。
+- [`OccupancyList`](/components/occupancy-list) 与 `OccupancyMark`——哪些智能体正在占用麦克风、扬声器或频道。
+- [`Composer`](/components/walkthrough)——打字输入的备选方式；输入框旁的角色在输入框获得焦点时进入 `listening`，按键时进入 `composing`。
 
 ## 状态怎么走
 
@@ -96,21 +96,21 @@ export default function Demo() {
 | —           | `idle`      | 麦克风关闭                                        |
 | `idle`      | `listening` | 麦克风打开；角色时不时点头                        |
 | `listening` | `dictating` | 检测到语音；`wave` 腰带就是电平表                 |
-| `dictating` | `composing` | 一句话结束，回复正在写                            |
+| `dictating` | `composing` | 一句话结束，正在撰写回复                          |
 | `composing` | `sending`   | 回复发出——朗读时 `voice` 表盘切到 `speaking` 模式 |
 | `sending`   | `idle`      | 播放结束                                          |
 
-`listening` 是协议编号 `35`，`dictating` 是 `46`。`listening` 的点头靠脉冲而不是曲线——直接给竖直弹簧加速度——正是这一点让它读起来像在注意，而不是一段动画循环。
+`listening` 是协议编号 `35`，`dictating` 是 `46`。`listening` 的点头由脉冲驱动，而不是曲线：直接给竖直方向的弹簧加速度，所以它看上去是在专注，而不是一段动画循环。
 
 ## 每个状态的样子
 
 <StateMatrix states={['idle', 'listening', 'dictating', 'composing', 'sending']} />
 
-`dictating` 把身体交给 `wave`：四根带伪随机包络的柱子，一个画成角色的电平表。线条脸模式下 `dictating`、`composing` 和 `sending` 还会让嘴在两条频率互不相关的正弦波上一张一合，读起来像说话而不是节拍器。
+`dictating` 的身体由 `wave` 取代：四根带伪随机包络的柱子，是一个画成角色的电平表。线条脸模式下，`dictating`、`composing` 和 `sending` 还会让嘴随两条频率互不相关的正弦波一张一合，看上去像在说话，而不是节拍器。
 
 ## 语音表盘
 
-`voice` 就是那个表盘。`level` 是宿主音频表给出的 0–1；`bands` 是柱子的数量；`mode` 区分听和说，说话时的柱子更快更高。每根柱子在自己的一对正弦波上抖动——所有柱子同步运动的电平表读起来像滑块，不像声音。
+`voice` 就是这个表盘。`level` 是宿主音频电平表给出的 0–1 的值；`bands` 是柱子的数量；`mode` 区分听和说，说话时的柱子更快更高。每根柱子在自己的一对正弦波上抖动：所有柱子同步运动的电平表，看上去像滑块，不像声音。
 
 ```tsx preview
 import { useState } from 'react';

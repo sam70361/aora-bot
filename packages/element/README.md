@@ -1,9 +1,9 @@
 # @aora-bot/element
 
 The [Aora Bot](https://aora-bot.vercel.app) character as a Web Component, for pages without React.
-A named cast of generated characters, animation states, thirteen faces, and vector, pixel,
-kaomoji and ASCII styles, drawn entirely by code and animated from one shared frame loop. Pick one in the
-[console](https://aora-bot.vercel.app/en/) and set it with attributes.
+A named cast of generated characters, animation states, sixteen faces, and vector, pixel,
+kaomoji and ASCII styles, all drawn by code and animated from one shared frame loop. Pick a
+character in the [console](https://aora-bot.vercel.app/en/) and set it with attributes.
 
 ## From a CDN
 

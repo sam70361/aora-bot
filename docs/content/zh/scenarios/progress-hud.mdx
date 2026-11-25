@@ -2,11 +2,11 @@ import { StateMatrix } from '@theme';
 
 # 进度 HUD
 
-一个长任务：身体说正在发生什么，外环说进行到哪一步。
+一个长任务：身体表示正在做什么，外环表示进行到哪一步。
 
 ## 先看效果
 
-一个向仲裁器报告比例的会话。`AgentHud` 从同一个结果里读出状态、表盘和提示，三者不可能在描述不同的任务。到达终点时发送 `celebrate`，这是仲裁器永不丢弃的事件。
+一个向仲裁器报告进度比例的会话。`AgentHud` 从同一个结果里读出状态、表盘和提示，所以三者不会描述不同的任务。到达终点时发送 `celebrate`，仲裁器不会丢弃这个事件。
 
 ```tsx preview
 import { useState } from 'react';
@@ -58,42 +58,42 @@ export default function Demo() {
 }
 ```
 
-滑块移动之前仲裁器什么都没听到，所以 `AgentHud` 画的是一个没有表盘的空闲角色——HUD 是页面上的装饰，页面在任何智能体连上之前就得先渲染出来。`useHudSpec('progress', { value })` 给手工组装 spec 的宿主同样的保护：首次渲染时还是 `undefined` 的比例会变成 `null`，而 `hud={null}` 就是一个没有表盘的角色。
+滑块移动之前，仲裁器没有收到任何消息，所以 `AgentHud` 画的是一个没有表盘的空闲角色。HUD 只是页面上的装饰，页面要在任何智能体连上之前就渲染出来。`useHudSpec('progress', { value })` 为手工组装 spec 的宿主提供同样的保护：首次渲染时为 `undefined` 的比例会变成 `null`，而 `hud={null}` 表示不带表盘的角色。
 
 ## 什么时候用
 
-一个长任务——导出、建索引、一批上传——旁边站着一个整段时间都有东西可展示的角色。两层各司其职。身体说明智能体*在做什么*：`working`，或者当任务是可度量的东西时用 `progress`。身体外侧的环说明它*知道什么*：一个比例、一个上限、一个同步状态。两者有意分开，所以一个角色可以一边工作一边显示 83%，而不会为同一块像素争抢。
+长任务，例如导出、建索引、批量上传，旁边的角色在整个过程中都有内容可以显示。角色分两层，各管一件事。身体表示智能体*在做什么*：`working`，任务可度量时则用 `progress`。身体外侧的环表示它*知道什么*：一个比例、一个上限或一个同步状态。两层有意分开，所以角色可以一边工作一边显示 83%，两者不会争用同一块像素。
 
 ## 用到的组件
 
-- [`CharacterMark`](/components/character-mark)——`hud={...}`，一个宿主已经掌握数据的 `HudSpec`。
-- [`HudPlate`](/components/hud-plate)——把数字作为文字放在表盘旁边，在一个 polite 的实时区域里，因为环说不出"83%"。
-- [`AgentHud`](/components/agent-hud)——把仲裁器当前的状态、表盘和说明合成一个组件，一个会话的表盘不可能站在另一个会话的脸旁边。
-- [`useHudSpec`](/components/agent-hud)——用实时数值构造 spec，数值还站不住时得到 `null`。
-- [`AgentStateProvider`](/components/agent-state)——数字到达的地方。
+- [`CharacterMark`](/components/character-mark)——`hud={...}`，传入宿主已有数据的 `HudSpec`。
+- [`HudPlate`](/components/hud-plate)——把数字以文字形式放在表盘旁边，位于 polite 实时区域里，因为环表达不了「83%」。
+- [`AgentHud`](/components/agent-hud)——把仲裁器当前的状态、表盘和说明合成一个组件，这样一个会话的表盘不会出现在另一个会话的脸旁边。
+- [`useHudSpec`](/components/agent-hud)——用实时数值构造 spec；数值还不可靠时得到 `null`。
+- [`AgentStateProvider`](/components/agent-state)——数字送达的地方。
 
 ## 状态怎么走
 
 | 从        | 到          | 时机                               |
 | --------- | ----------- | ---------------------------------- |
 | —         | `working`   | 任务开始，长度未知                 |
-| `working` | `progress`  | 任务报告了一个比例；数值由表盘承载 |
-| `working` | `uploading` | 字节在往外走；与 `sync` 搭配       |
-| `working` | `loading`   | 字节在往里来                       |
-| 任一      | `celebrate` | 任务到达终点——一次性编号 `33`      |
-| 任一      | `alerting`  | 任务失败——一次性编号 `34`          |
+| `working` | `progress`  | 任务报告了进度比例；数值由表盘显示 |
+| `working` | `uploading` | 数据正在上传；搭配 `sync`          |
+| `working` | `loading`   | 数据正在下载                       |
+| 任意状态  | `celebrate` | 任务到达终点——一次性编号 `33`      |
+| 任意状态  | `alerting`  | 任务失败——一次性编号 `34`          |
 
-`progress` 状态的腰带是不定长的：一个以四秒为周期填满再重置的环，意思是"一件可度量的事正在进行"。度量值本身始终放在 HUD 里，HUD 的 `progress` 环才是那个数值。比例重要时用 `working` 的身体配 `progress` 表盘；只能说"它在动"时用 `progress` 的身体。
+`progress` 状态的腰带不表示具体进度：它是一个以四秒为周期填满再重置的环，意思是「有一件可度量的事正在进行」。具体的度量值始终放在 HUD 里，HUD 的 `progress` 环才表示数值。进度比例重要时，用 `working` 的身体配 `progress` 表盘；只能表示「还在进行」时，用 `progress` 的身体。
 
 ## 每个状态的样子
 
 <StateMatrix states={['working', 'progress', 'uploading', 'loading', 'celebrate', 'alerting']} />
 
-在 `eyes` 和 `line` 脸下，其中四个把身体交给了腰带。由于 HUD 画在身体外侧的环里，腰带状态和表盘可以共存：身体收缩成核心，腰带围着它转，表盘在更外面一圈。
+在 `eyes` 和 `line` 脸型下，其中四个状态由腰带取代身体动作。HUD 画在身体外侧的环里，所以腰带状态和表盘可以共存：身体收缩成核心，腰带绕着它转，表盘在更外面一圈。
 
 ## 六种表盘
 
-给可度量事物的六种表盘。`progress` 与 `gauge` 是相对上限的比例；`context` 数格子而不是填弧线，因为最后几个格子才是要紧的；`balance` 只表现量级，数字留给 plate；`kpi` 把一组序列画成折线；`sync` 是一个生命周期。每一种都是 `(spec, time)` 的纯函数，所以暂停的角色、服务端渲染和截图三者一致。
+六种表盘，用于表示可度量的事物。`progress` 与 `gauge` 表示相对上限的比例；`context` 用格子计数而不是填充弧线，因为最后几格才最要紧；`balance` 只表现量级，具体数字留给铭牌；`kpi` 把一组数据画成迷你折线；`sync` 表示一个生命周期。每种表盘都是 `(spec, time)` 的纯函数，所以暂停的角色、服务端渲染和截图的结果一致。
 
 ```tsx preview
 import { CharacterMark, HudPlate, type HudSpec } from '@aora-bot/react';

@@ -2,7 +2,7 @@ import { API } from '@theme';
 
 # CharacterMarkMirror
 
-把已经在运行的角色再画一遍，画到别处。
+把已经在运行的角色在别处再画一份。
 
 ```tsx preview
 import { CharacterMark, CharacterMarkMirror } from '@aora-bot/react';
@@ -25,19 +25,19 @@ export default function Demo() {
 }
 ```
 
-一个引擎，五个角色，五种墨色。镜像是指向源根分组的 `<use href>` 元素。
+一个引擎，五个角色，五种墨色。镜像是 `<use href>` 元素，指向源角色的根分组。
 
 ## 换墨色不必再跑一份动画
 
-墨色是可继承的 CSS 自定义属性，所以它在 `<use>` 所在处解析，而不是在源的定义处。每个镜像设置自己的 `--aora-fg`，共享几何会捡起来。
+墨色是可继承的 CSS 自定义属性，所以在 `<use>` 所在的位置解析，而不是在源定义的位置。每个镜像设置自己的 `--aora-fg`，共享的几何图形会读取它。
 
-尺寸同理——它设在外层，而不是 SVG 内部。
+尺寸的处理方式相同：设置在外层容器上，而不是 SVG 内部。
 
 ## 一页里 id 必须唯一
 
-`sourceId` 会变成 DOM id，`<use href="#id">` 解析到文档里的第一个匹配。同一页上两个相同 id 的源，意味着每个镜像都指向第一个。
+`sourceId` 会成为 DOM id，而 `<use href="#id">` 会解析到文档中第一个匹配的元素。同一页上有两个 id 相同的源时，所有镜像都会指向第一个。
 
-优先使用 [`CharacterStageProvider`](/components/character-stage)，它用 `useId` 推导 id，不会碰撞——即使一页上有好几个 Provider，而这正是带多个示例的文档站点会产生的情况。
+建议优先使用 [`CharacterStageProvider`](/components/character-stage)，它用 `useId` 生成 id，不会冲突。即使一页上有多个 Provider 也不会，带多个示例的文档站点就是这种情况。
 
 ## API
 

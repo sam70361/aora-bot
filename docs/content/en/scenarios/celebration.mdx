@@ -60,9 +60,9 @@ The one moment a form is worth animating: something was published, a run finishe
 
 ## Components
 
-- [`CharacterMark`](/components/character-mark) — `celebrate` carries its own entry effect: one turn, with ribbons flung off it, and sixteen pieces of paper, once, on the transition.
-- [`CelebrationLayer`](/components/celebration-layer) — paper without a character, over anything, driven through a ref.
-- `createConfettiController` — the same paper for a plain SVG outside React.
+- [`CharacterMark`](/components/character-mark) — `celebrate` has its own entry effect: one spin, ribbons flung off the character and sixteen pieces of confetti, played once on the transition.
+- [`CelebrationLayer`](/components/celebration-layer) — confetti without a character, over anything, driven through a ref.
+- `createConfettiController` — the same confetti for a plain SVG outside React.
 - [`usePublishMark`](/components/use-publish-mark) — the three phases and the timing, so the host never has to notice the moment itself.
 - `ShareCard` and [`TemplateDialog`](/components/template-dialog) — what a finished publish hands over.
 - [`HudPlate`](/components/hud-plate) — a `kpi` dial goes with good news: a figure, a change, and a history to spark-line. The number lands on the plate; the ring shows how it got there.
@@ -83,10 +83,10 @@ Failure returns to rest rather than to `sad` — see [`usePublishMark`](/compone
 
 <StateMatrix states={['working', 'celebrate', 'proud', 'idle']} />
 
-`celebrate` is the one state with a spin and a burst in `STATE_ENTRY_EFFECTS`. It applies once per transition, never on mount, and is skipped under reduced motion — confetti on every frame would be noise, one burst as the state arrives is the punctuation the transition needs. The eyes cycle through `joyful`, `excited`, `wink` and `happy`, faster than any other state.
+`celebrate` is the one state with a spin and a burst in `STATE_ENTRY_EFFECTS`. It applies once per transition, never on mount, and is skipped under reduced motion: confetti on every frame would be noise, while one burst as the state arrives is the punctuation the transition needs. The eyes cycle through `joyful`, `excited`, `wink` and `happy`, faster than in any other state.
 
 ## Next
 
 - [usePublishMark](/components/use-publish-mark) — work, celebrate, settle
-- [CelebrationLayer](/components/celebration-layer) — paper over anything
+- [CelebrationLayer](/components/celebration-layer) — confetti over anything
 - [TemplateDialog](/components/template-dialog) — name, instructions, visibility

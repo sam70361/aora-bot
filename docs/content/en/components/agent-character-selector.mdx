@@ -37,13 +37,13 @@ export default function Demo() {
 
 The plain picker is controlled: every click is the host's to apply. That is right inside a settings form, and wrong inside a dialog, where a click is a proposal and Cancel has to mean something. This component keeps the proposal locally and hands over one value on confirm, so the host writes to its store once per dialog rather than once per click — and the avatar in the header does not flicker through five shapes while someone makes up their mind.
 
-`onCommit` receives the staged `CharacterChoice` when it is confirmed; `onCancel` fires when it is discarded, and the staged edits reset to `value`. `immediate` turns the staging off and commits on every pick, for the settings form case, without the host having to switch components.
+`onCommit` receives the staged `CharacterChoice` when it is confirmed; `onCancel` fires when it is discarded, and the staged edits reset to `value`. `immediate` turns the staging off and commits on every pick, for settings forms, without the host having to switch components.
 
 ## Pictures and actions
 
-`hasPicture` says the agent has a photo of its own. The grid then shows no selection ring, because the character underneath is not what is on screen — highlighting a hexagon nobody can see would be a lie. The selection is still announced to assistive technology.
+`hasPicture` says the agent has a photo of its own. The grid then shows no selection ring, because the character underneath is not what is on screen — highlighting a hexagon nobody can see would be misleading. The selection is still announced to assistive technology.
 
-`actions={false}` hides the confirm and discard buttons for a host that puts its own in a dialog footer; call the commit through your own button by keeping `immediate` off and rendering the picker inside a form whose submit you control.
+`actions={false}` hides the confirm and discard buttons for a host that puts its own in a dialog footer. To commit from your own button, keep `immediate` off and render the picker inside a form whose submit you control.
 
 ## API
 

@@ -2,13 +2,13 @@ import { ComponentOverview, ComponentGraph } from '@theme';
 
 # Components
 
-The React layer is deliberately small. Most of the work happens in the engine; these components decide when to animate, when to share an animation, and when not to animate at all.
+The React layer is thin. The engine does most of the work; these components decide when to animate, when to share an animation, and when not to animate at all.
 
 <ComponentOverview />
 
 ## How they relate
 
-Four tiers. The engine knows nothing about React; the core wraps it in components and decides when to share an animation; the agent layer feeds protocol ids into that core; everything else is composed from the two.
+There are four tiers. The engine does not depend on React; the core wraps it in components and decides when to share an animation; the agent layer feeds protocol ids into the core; everything else is composed from these two layers.
 
 <ComponentGraph />
 
@@ -28,7 +28,7 @@ Four tiers. The engine knows nothing about React; the core wraps it in component
 
 **Letting someone choose or edit an appearance.** `CharacterSelector` in a settings form; [`AgentCharacterSelector`](/components/agent-character-selector) in a dialog; [`CompactCharacterSelector`](/components/compact-character-selector) beside a sign-up form; [`AvatarStudio`](/components/avatar-studio) when a picture is also allowed; [`TemplateDialog`](/components/template-dialog) when the appearance belongs to a template being created.
 
-**A whole scene.** [`RestrictedScene`](/components/restricted-scene) for a dead end, [`BootLoop`](/components/boot-loop) for an indeterminate wait, [`CastLineup`](/components/cast-lineup) for a scripted piece, the [walkthrough](/components/walkthrough) parts for an onboarding flow.
+**A whole scene.** [`RestrictedScene`](/components/restricted-scene) for a page the user is refused access to, [`BootLoop`](/components/boot-loop) for an indeterminate wait, [`CastLineup`](/components/cast-lineup) for a scripted piece, the [walkthrough](/components/walkthrough) parts for an onboarding flow.
 
 **A painted mascot instead of a generated one.** `SpriteMark`, keyed by the same protocol ids.
 
@@ -36,7 +36,7 @@ Four tiers. The engine knows nothing about React; the core wraps it in component
 
 ## Every export
 
-Reachable in one page: the [API index](/components/api-index).
+Every export is listed on one page: the [API index](/components/api-index).
 
 ## Next
 

@@ -2,7 +2,7 @@ import { API } from '@theme';
 
 # AgentPortrait
 
-真正丢进列表里的那个头像。
+放进列表里直接使用的头像。
 
 ```tsx preview
 import { CharacterStageProvider, AgentPortrait } from '@aora-bot/react';
@@ -30,19 +30,19 @@ export default function Demo() {
 }
 ```
 
-## 它在什么之间选择
+## 头像的选择顺序
 
-按顺序：
+按以下顺序选择：
 
-1. **照片**，如果设置了 `pictureUrl`
-2. **群组簇**，如果 `members` 非空
-3. **角色**，从 `id` 推导
+1. **照片**：设置了 `pictureUrl` 时
+2. **群组头像**：`members` 非空时
+3. **角色**：由 `id` 推导
 
-也就是说应用可以把手里有的东西传进去，得到一个说得通的结果，而不必在每个调用点分支。
+因此应用可以把手头有的数据直接传进来，得到合理的结果，不必在每个调用处写分支。
 
-## 不必存储的身份
+## 无需存储的身份
 
-未显式给出时，形状和墨色从 `id` 哈希而来，所以每个用户都有固定角色，而你不存储任何东西。两个客户端、两次会话和一次服务端渲染都会达成一致。
+未显式指定时，形状和墨色由 `id` 哈希得出，所以每个用户都对应一个固定的角色，无需存储任何数据。不同的客户端、不同的会话以及服务端渲染，得到的结果都一致。
 
 ```tsx preview
 import { AgentPortrait } from '@aora-bot/react';
@@ -58,11 +58,11 @@ export default function Demo() {
 }
 ```
 
-在 agent 上传入 `shape` 或 `color` 可以分别覆盖其中一项。
+在 agent 上传入 `shape` 或 `color` 可以单独覆盖形状或颜色。
 
 ## 脸型
 
-在 agent 上加 `face: 'line'` 即可使用[线条脸](/design/face)。鼻子和形状、墨色一样从 `id` 哈希而来，所以同样稳定；设置 `nose` 可以指定一种，`null` 则不画。
+在 agent 上加 `face: 'line'` 即可使用[线条脸](/design/face)。鼻子和形状、墨色一样从 `id` 哈希而来，所以同样稳定；设置 `nose` 可以指定鼻子，设为 `null` 则不画。
 
 ```tsx preview
 import { AgentPortrait } from '@aora-bot/react';
@@ -103,7 +103,7 @@ export default function Demo() {
 
 ## 静止与光晕
 
-`still` 渲染图片而不是动画——长列表里的正确选择。`halo` 加上一层从角色自身色相推导的柔软色洗。
+`still` 渲染静态图片而不是动画，适合长列表。`halo` 会加一层柔和的底色，颜色由角色自身的色相推导而来。
 
 ```tsx preview
 import { AgentPortrait } from '@aora-bot/react';
@@ -121,7 +121,7 @@ export default function Demo() {
 
 ## 填充
 
-`fillPx` 设定圆内角色的大小。圆保持自己的尺寸，变的只是里面画的东西：比圆小就留出边距，比圆大就被裁掉。默认正好填满圆。它是一个自定义属性而不是子元素的宽度，因为三个分支里有两个的子元素是 `img`，样式表已经给它们定了尺寸。
+`fillPx` 设定圆内角色的大小。圆本身的尺寸不变，变的只是里面绘制的内容：比圆小会留出边距，比圆大则会被裁掉。默认正好填满圆。它通过自定义属性设置，而不是设置子元素的宽度，因为三种渲染方式中有两种的子元素是 `img`，样式表已经为它们设定了尺寸。
 
 ```tsx preview
 import { AgentPortrait } from '@aora-bot/react';
@@ -142,11 +142,11 @@ export default function Demo() {
 
 ## 形状正在改变时
 
-`isMorphingShape` 表示形状此刻正在角色底下被换掉——编辑器开着，有人在网格里一格格点。它为真时，头像在落定窗口（`SETTLE_MS`，经由 [`useMarkSettle`](/components/mark-commands)）内保持上一次落定的状态，于是一次变形是一次变化而不是两次。同一帧里同时换形状和表情的身体，读起来不是同一个角色换了轮廓，而是另一个角色出现了。
+`isMorphingShape` 表示形状此刻正在被替换，例如编辑器打开着，用户正在网格里逐个点选。为 `true` 时，头像在落定窗口（`SETTLE_MS`，通过 [`useMarkSettle`](/components/mark-commands)）内保持上一次落定的状态，这样一次变形只算一次变化，而不是两次。如果角色在同一帧里同时改变形状和表情，看起来不像同一个角色换了轮廓，而像换成了另一个角色。
 
 ## 无障碍
 
-头像是 `aria-hidden` 的，除非它有带名字的照片。当头像单独站着、旁边没有文字时，请自己给它一个名字——见[无障碍](/guide/accessibility)。
+头像默认是 `aria-hidden`，只有带名称的照片除外。如果头像单独出现、旁边没有文字，请自行为它设置名称，详见[无障碍](/guide/accessibility)。
 
 ## API
 

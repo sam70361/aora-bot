@@ -2,7 +2,7 @@ import { StyleParamsDemo } from '@theme';
 
 # Vector styles
 
-The `vector` series draws a character as smooth SVG paths. It has sixteen variants that differ in paint only: the geometry, the animation and the face are the same in all of them, so a new state or a new shape arrives in every variant at once. Seven are drawing media, the same character drawn by hand, and two are paper media, origami and relief.
+The `vector` series draws a character as smooth SVG paths. It has sixteen variants that differ in paint only: the geometry, the animation and the face are the same in all of them, so a new state or a new shape arrives in every variant at once. Seven are drawing media, which draw the same character by hand, and two are paper media: origami and relief.
 
 ```tsx preview
 import { getStyle } from '@aora-bot/engine';
@@ -47,7 +47,7 @@ export default function Demo() {
 
 ## Sticker
 
-A sticker is a figure with a white border cut round it and a small soft shadow under it, as if it had been stuck onto the page. The border wraps the body and the notification badge as one silhouette, and it is drawn inside the body's transform, so it squashes, turns and fades with the body — through a bounce, a spin or a belt.
+A sticker is a figure with a white border cut round it and a small soft shadow under it, as if it had been stuck onto the page. The border wraps the body and the notification badge as one silhouette, and it is drawn inside the body's transform, so it squashes, turns and fades with the body during a bounce, a spin or a belt change.
 
 ```tsx preview
 import { CharacterMark } from '@aora-bot/react';
@@ -74,7 +74,7 @@ export default function Demo() {
 }
 ```
 
-The paper does not follow the page. A sticker is a thing with its own edge, so on a dark page it stays light — that contrast is what lifts it off the surface. For the same reason a drawn face's whites are paper too, rather than the page. A host that wants a cream or a tinted edge sets `--aora-paper` on any ancestor:
+The paper does not follow the page. A sticker has an edge of its own, so on a dark page it stays light, and that contrast lifts it off the surface. For the same reason a drawn face's whites are paper too, rather than the page. A host that wants a cream or a tinted edge sets `--aora-paper` on any ancestor:
 
 ```css
 .card {
@@ -159,9 +159,9 @@ export default function Demo() {
 }
 ```
 
-Two decisions are worth knowing.
+Two design decisions are worth knowing.
 
-- **The shade comes from the ink, not from a second colour.** The shadow is a copy of the body in the same paint with black laid over it at 32%, so it is the ink, darkened. That works whatever the ink is — the `--aora-fg` token, a flat colour, a gradient — which `color-mix()` on a computed colour would not do for the last.
+- **The shade comes from the ink, not from a second colour.** The shadow is a copy of the body in the same paint with black laid over it at 32%, so it is the ink, darkened. That works whatever the ink is (the `--aora-fg` token, a flat colour or a gradient), whereas `color-mix()` on a computed colour could not handle a gradient.
 - **The direction does not turn with the body.** The offset is applied outside the body's transform. When the character spins the shadow squashes and rotates with it but keeps falling the same way, like a light that stays where it is.
 
 The figure itself stays upright. A slight tilt would be a pose, and poses belong to the simulation (`poseHome`), not to paint, so `paper` never changes where the face or the belt is.
@@ -206,7 +206,7 @@ export default function Demo() {
 
 ## Riso
 
-`riso` imitates two-colour stencil printing: the body is printed in its own ink in place, multiplied over a copy in the second ink (`--aora-ink2`, pink by default, gold on a body of its own hue (red, pink, magenta), and the ink itself for a light ink, so cream stays cream) shifted a little to one side, with a halftone screen over the top. The edge where the two passes miss each other is the look of this variant. `risoOffset` is the misregistration in shape-space units, and `risoHalftone` switches the screen.
+`riso` imitates two-colour stencil printing: the body is printed in its own ink in place, multiplied over a copy in a second ink shifted a little to one side, with a halftone screen over the top. The second ink is `--aora-ink2`: pink by default, gold on a body of a similar hue (red, pink, magenta), and the ink itself for a light ink, so cream stays cream. The edge where the two passes miss each other is the look of this variant. `risoOffset` is the misregistration in shape-space units, and `risoHalftone` switches the screen.
 
 ```tsx preview
 import { renderStaticSvgDataUrl } from '@aora-bot/react';
@@ -245,7 +245,7 @@ export default function Demo() {
 
 ## Drawing media
 
-`pencil`, `marker`, `crayon`, `watercolor`, `neon`, `chalk` and `gothic` draw the same snapshot by hand. The body and its pieces — ears, leaves, hair — are redrawn from their outlines: a wobbling double line, hatching, a scribble, a ragged waxy edge, a dried edge, a glowing tube, a brushed ink line. The face, in any face style, and the effects, the HUD dials, the belt and the confetti are only known as groups, so they take the medium as a group: pencil and chalk grain them, neon glows them, marker outlines the face. Pencil's effects are graphite; the other media keep the effects' own colours, as coloured tubes or coloured chalk. `origami` and `relief` are made of paper rather than drawn: the body and each of its pieces is a sheet of its own, crumpled or pressed up, and the face and the effects sit on it as usual.
+`pencil`, `marker`, `crayon`, `watercolor`, `neon`, `chalk` and `gothic` draw the same snapshot by hand. The body and its pieces — ears, leaves, hair — are redrawn from their outlines: a wobbling double line, hatching, a scribble, a ragged waxy edge, a dried edge, a glowing tube, a brushed ink line. The face (in any face style), the effects, the HUD dials, the belt and the confetti are only available as groups, so the medium is applied to them as a group: pencil and chalk grain them, neon glows them, marker outlines the face. Pencil's effects are graphite; the other media keep the effects' own colours, as coloured tubes or coloured chalk. `origami` and `relief` are made of paper rather than drawn: the body and each of its pieces is a sheet of its own, crumpled or pressed up, and the face and the effects sit on it as usual.
 
 None of them paints a background. They read on the page they are put on, light or dark, through the same ink tokens as the other variants:
 
@@ -286,7 +286,7 @@ export default function Demo() {
 
 Every texture is seeded, so a static render is the same every time, and every stroke is worked out once per outline and kept. The grain is carried by the paint — a small image of specks in a pattern, or a mask per group — rather than recalculated each frame, and the glow is a single blur, so a page of twenty animated characters in any medium stays near 60 fps.
 
-A medium also knows how large it is shown. Between 80 and 40 pixels wide the grain and the hatching fade out — on a small character a speck is a fraction of a pixel and only thins the face — and a medium's line never gets thinner than about a pixel, so at 24 px pencil and chalk read as clearly as `outline`. A live character measures itself; a static render goes by `sizePx`, and without one draws full detail.
+A medium also adapts to the size it is shown at. Between 80 and 40 pixels wide the grain and the hatching fade out — on a small character a speck is a fraction of a pixel and only thins the face — and a medium's line never gets thinner than about a pixel, so at 24 px pencil and chalk read as clearly as `outline`. A live character measures itself; a static render goes by `sizePx`, and without one draws full detail.
 
 ### Pencil
 
@@ -330,7 +330,7 @@ export default function Demo() {
 
 ### Marker
 
-A pale pass printed slightly off, a scribble that fills the shape without lifting, and a dark double outline. The gaps in the scribble show the pale pass. The face and the effects are outlined in the same dark marker. `strokeWidth` sets the marker's width, and with it the scribble's.
+A pale pass drawn slightly off-register, a scribble that fills the shape without lifting, and a dark double outline. The gaps in the scribble show the pale pass. The face and the effects are outlined in the same dark marker. `strokeWidth` sets the marker's width, and with it the scribble's.
 
 ```tsx preview
 import { renderStaticSvgDataUrl } from '@aora-bot/react';
@@ -645,7 +645,7 @@ export default function Demo() {
 
 ## A single line
 
-The `outline` variant already is the single-line look. What decides whether it is one colour is its ink. With no `ink` the stroke, the eyes and the features use `--aora-fg`, and `CharacterMark` sets that to the palette colour — so the outline is blue, violet, whatever `color` says. To draw in the text colour instead, give it `currentColor`:
+The `outline` variant is already the single-line look. Whether it is one colour depends on its ink. With no `ink` the stroke, the eyes and the features use `--aora-fg`, and `CharacterMark` sets that to the palette colour — so the outline is blue, violet, whatever `color` says. To draw in the text colour instead, give it `currentColor`:
 
 ```tsx preview
 import { CharacterMark } from '@aora-bot/react';
@@ -693,11 +693,11 @@ A static render takes the same `ink`:
 const svg = renderStaticSvg({ variant: 'outline', ink: { flat: 'currentColor' } });
 ```
 
-Inline that markup in the page. Loaded through an `<img>`, an SVG has no surrounding text colour to inherit and `currentColor` becomes black.
+Inline the SVG markup in the page. Loaded through an `<img>`, an SVG has no surrounding text colour to inherit and `currentColor` becomes black.
 
 ## A medium of your own
 
-`defineVectorMedium(id, definition, reads)` adds a variant to the series: it is drawn and accepted as `variant` everywhere, and stays out of `variants` (and so out of pickers) until a host lists it; `acceptsVariant` and `allVariants` see it. The definition's `paint(piece, ctx)` draws the body and each part from its outline, with the core's own geometry in `ctx.kit`, so a medium needs nothing else from the engine. Optional fields add defs, an underlay, paper grain, the deeper blush (`deepBlush`) or a face ink of its own (`faceInk`). `reads` names the series' parameters it reads. The built-in variants cannot be replaced. `VECTOR_VARIANTS` lists the built-in ones.
+`defineVectorMedium(id, definition, reads)` adds a variant to the series: it is drawn and accepted as `variant` everywhere, and stays out of `variants` (and so out of pickers) until a host lists it; `acceptsVariant` and `allVariants` see it. The definition's `paint(piece, ctx)` draws the body and each part from its outline, with the core's own geometry in `ctx.kit`, so a medium needs nothing else from the engine. Optional fields add defs, an underlay, paper grain, the deeper blush (`deepBlush`) or a face ink of its own (`faceInk`). `reads` names the series' parameters it reads. The built-in variants, listed in `VECTOR_VARIANTS`, cannot be replaced.
 
 ## Parameters
 
@@ -709,7 +709,7 @@ Parameters belong to the series and every variant reads only its own. Out-of-ran
 | `stickerWidth`  | sticker                                     | 12      | 4–20, by 1  | How far the border reaches beyond the body                               |
 | `stickerShadow` | sticker                                     | `true`  | —           | Whether the sticker casts its soft shadow                                |
 | `paperOffset`   | paper                                       | 9       | 0–20, by 1  | Distance of the hard shadow                                              |
-| `paperAngle`    | paper                                       | 55      | 0–360, by 5 | Direction of the hard shadow, clockwise from →                           |
+| `paperAngle`    | paper                                       | 55      | 0–360, by 5 | Direction of the hard shadow, clockwise from the right                   |
 | `paperTilt`     | paper                                       | −3      | −8–8, by 1  | Tilt of the whole cut-out, in degrees                                    |
 | `softShadow`    | soft                                        | `true`  | —           | Whether a shadow lies on the ground                                      |
 | `softGloss`     | soft                                        | `false` | —           | Whether a small gloss is drawn                                           |

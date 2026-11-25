@@ -1,6 +1,6 @@
 # 国际化
 
-组件画出的每一句文案都来自一张语言表，由一个 provider 整体替换。
+组件显示的所有文案都来自同一张语言表，由一个 provider 统一切换。
 
 ## 一个 Provider，而不是每个组件一个 prop
 
@@ -19,11 +19,11 @@ export default function Demo() {
 }
 ```
 
-语言不是每个组件上的 prop。逐个组件传 prop 必须手工贯穿每一层，而且会应用得不一致——有的组件接受它，有的忽略它，同一对话框里的两个组件完全可能各说各话。
+语言不是每个组件各自的 prop。给每个组件单独传 prop，要手动一层层往下传，还容易不一致：有的组件支持，有的组件忽略，同一个对话框里的两个组件就可能语言不同。
 
 ## 内置语言
 
-`en-US` 与 `zh-CN`。英语是默认值也是回退：另一个语言里缺的键会落到英文文案，而不是把原始 key 渲染出来。
+内置 `en-US` 和 `zh-CN` 两种语言。英语既是默认语言，也是回退语言：其他语言里缺少的键会使用英文文案，而不会直接显示原始 key。
 
 ## 覆盖单条文案
 
@@ -33,9 +33,9 @@ export default function Demo() {
 </LocaleProvider>
 ```
 
-## 产品面的文案
+## 产品界面的文案
 
-`@aora-bot/surfaces` 有自己的文案表（`template.*`、`walkthrough.*`、`restricted.*` 等），这些键不在 `@aora-bot/react` 里。语言仍由唯一的 `LocaleProvider` 决定，所以一个产品面和它里面的原语不会各说各话。只有覆盖文案走 `SurfaceLocaleProvider`，因为 React 的 `overrides` 只认它自己的键。
+`@aora-bot/surfaces` 有自己的文案表（`template.*`、`walkthrough.*`、`restricted.*` 等），这些键不属于 `@aora-bot/react`。语言仍然由唯一的 `LocaleProvider` 决定，所以产品界面和其中的基础组件不会语言不一致。只有覆盖文案要通过 `SurfaceLocaleProvider`，因为 React 侧 provider 的 `overrides` 只接受它自己的键。
 
 ```tsx
 import { SurfaceLocaleProvider } from '@aora-bot/surfaces';
@@ -45,7 +45,7 @@ import { SurfaceLocaleProvider } from '@aora-bot/surfaces';
 
 ## 新增一种语言
 
-英文表是键集合的唯一来源，所以新语言就是同一组键上的一份 `Record`。TypeScript 会强制补全。
+键的集合以英文表为准，所以新语言就是基于同一组键的一份 `Record`，TypeScript 会强制要求补全所有键。
 
 ```ts
 import { enUS, type Locale } from '@aora-bot/react';
@@ -71,13 +71,13 @@ function Label() {
 }
 ```
 
-`useLocale` 在没有 Provider 时也能工作，并回退到英语，所以使用它的组件从不需要空值检查。
+没有 Provider 时 `useLocale` 也能工作，并回退为英语，所以用到它的组件不需要做空值检查。
 
 ## 什么不会被翻译
 
-形状、墨色与状态标识符是稳定的英文字符串，属于 API 的一部分——`'blob'`、`'blue'`、`'thinking'`。它们是标识符，不是文案；翻译标识符会让每个应用保存的数据都变成语言相关的。
+形状、墨色和状态的标识符是固定的英文字符串，属于 API 的一部分，例如 `'blob'`、`'blue'`、`'thinking'`。它们是标识符，不是文案；如果翻译标识符，每个应用保存的数据就会依赖具体语言。
 
-真要在界面上展示时，用 `useLabel()` 取当前语言的显示名——`label.shape('blob')`、`label.state('thinking')`、`label.hud('progress')`——标识符留在数据里，词留在语言表里。见 [LocaleProvider](/components/locale-provider)。
+需要在界面上显示时，用 `useLabel()` 取当前语言的显示名，例如 `label.shape('blob')`、`label.state('thinking')`、`label.hud('progress')`。这样标识符留在数据里，文字留在语言表里。参见 [LocaleProvider](/components/locale-provider)。
 
 ## 接下来
 

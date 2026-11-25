@@ -8,18 +8,20 @@ pnpm run build:lib   # the docs site imports the packages by source, but build o
 pnpm run dev         # documentation site with live reload
 ```
 
-Node 22+ for development (see `.nvmrc`); the published packages run on Node
-20+. pnpm 10+ as well. The pnpm version is pinned in
+Development needs Node 22.12 or later (see `.nvmrc`) and pnpm 10 or later; the
+published packages run on Node 20 and later. The pnpm version is pinned in
 `package.json` via `packageManager`, so `corepack enable` is enough to get the
 right one.
 
 ## Layout
 
 ```
-packages/engine/   the character engine — geometry, motion, rendering
+packages/engine/   the character engine: geometry, motion, rendering
+packages/element/  the <aora-bot> Web Component and its CDN build
 packages/react/    React primitives
-packages/surfaces/ product and demo surfaces built on the React package
+packages/surfaces/ product components built on the React package
 docs/              Rspress documentation site
+api/               the avatar endpoint (a Vercel Function)
 examples/          runnable integration samples, not part of the workspace build
 ```
 
@@ -57,12 +59,12 @@ output is correct. The runtime renderer has lifecycle tests under `happy-dom`
 with fake timers, so blinks, belt entry and cleanup are covered without a
 browser.
 
-The React layer has two kinds of tests. Server-rendering smoke tests: every
-exported component must render through `renderToString` without a DOM, because
-the documentation site is statically generated and a component that touches
-`window` at render time breaks the build. And client tests under `happy-dom`
-for behaviour that only exists after mount — the stage's `maxSources`
-fallback, the ticker's crossfade cleanup, the confetti layer's subscription.
+The React layer has two kinds of tests. Server-rendering smoke tests check that
+every exported component renders through `renderToString` without a DOM: the
+documentation site is statically generated, so a component that touches `window`
+while rendering breaks the build. Client tests under `happy-dom` cover behaviour
+that only exists after mount, such as the stage's `maxSources` fallback, the
+ticker's crossfade cleanup and the confetti layer's subscription.
 
 ## Adding a shape
 
@@ -181,8 +183,9 @@ git tag v0.3.0
 git push origin v0.3.0
 ```
 
-The `Release` workflow runs `pnpm run check`, checks that the tag matches every
-package's version, publishes with npm provenance and opens a GitHub release.
+The `Release` workflow checks that the tag matches every package's version, runs
+`pnpm run check`, publishes with npm provenance and opens a GitHub release with
+that version's `CHANGELOG.md` section.
 `pnpm publish` turns the `workspace:` ranges into the released version, so the
 packages depend on each other by version once they are on the registry.
 

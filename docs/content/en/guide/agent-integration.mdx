@@ -86,7 +86,7 @@ normalize({ aoraBotId: '32' });
 One character, several sources: a coding agent with three sub-agents, or a chat window and a background build. Each reports its own state; the arbiter decides what the character shows. Four rules:
 
 1. **Priority.** Among visible sessions the highest-priority state wins. One session erroring while three work shows the error. Errors and refusals beat everything because they need a human; completion beats ongoing work because it is the result; work beats idling.
-2. **Minimum dwell.** A state holds the screen for `minDisplayMs` (900 ms by default) before it can be replaced. Without this a burst of tool events makes the face flicker; with it each expression lands and is read.
+2. **Minimum dwell.** A state holds the screen for `minDisplayMs` (900 ms by default) before it can be replaced. Without this a burst of tool events makes the face flicker; with it each expression stays long enough to be read.
 3. **Events and conditions.** A one-shot id — done, error, surprised — is an event and is never dropped: arriving during a dwell it is queued and played when the dwell ends. A continuous state is a condition: when its dwell ends the arbiter re-resolves, because the situation may have moved on.
 4. **Expiry.** A session silent for `sessionTtlMs` (two minutes) is forgotten, so a tool with no end-of-session hook cannot pin the character forever.
 
@@ -119,7 +119,7 @@ arbiter.resolve().hud; // { kind: 'progress', value: 0.2 }: the winner's dial, b
 
 The clock and timers are injectable, so the whole thing runs deterministically in a test.
 
-In React, [`useArbiter`](/components/agent-state) runs one for the lifetime of a component and `AgentStateProvider` shares it with a subtree; `hud` is on the value beside `tips`, and [`AgentHud`](/components/agent-hud) renders the character, the dial and the caption from the provider with no wiring.
+In React, [`useArbiter`](/components/agent-state) runs an arbiter for the lifetime of a component and `AgentStateProvider` shares it with a subtree. `hud` is on the provider's value beside `tips`, and [`AgentHud`](/components/agent-hud) renders the character, the dial and the caption from the provider without extra setup.
 
 ## Adapters
 
@@ -205,7 +205,7 @@ node examples/agent-relay/relay.mjs            # http://127.0.0.1:27182
 my-agent --emit-json | node examples/agent-relay/relay.mjs --stdin
 ```
 
-The whole of it is `normalize`, `readLineStream` and a `Set` of response streams. Adapt it rather than depending on it.
+It consists only of `normalize`, `readLineStream` and a `Set` of response streams. Copy and adapt it rather than depending on it.
 
 A message may carry a `hud` block. The relay validates it like the rest of the payload — an invalid `hud` is dropped, the message still applies — and it rides along with the winning session's state, so `/events` and the relay's `/preview.svg` both show it:
 
@@ -272,7 +272,7 @@ curl -s -o /dev/null -X POST http://127.0.0.1:27182/state \
   -d "{\"session_id\":\"$SESSION\",\"agent_id\":\"claude-code\",\"event\":\"$1\"}"
 ```
 
-Sub-agents report under their own `session_id`, so three of them working while the parent waits is three working sessions and the face works.
+Sub-agents report under their own `session_id`, so three sub-agents working while the parent waits count as three working sessions, and the face shows work.
 
 ### Cursor hooks
 

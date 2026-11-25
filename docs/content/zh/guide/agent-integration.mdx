@@ -1,8 +1,8 @@
 # 智能体集成
 
-把 AI 智能体正在做的事，变成一张脸。
+用一张脸展示 AI 智能体正在做什么。
 
-几个部件：任何脚本都能发出的[数字协议](/design/protocol)；把多个嘈杂来源合成一个平稳状态的**仲裁器**；通过 HTTP、stdin、`postMessage` 或服务端事件承载消息的**通道**；以及把结果接进角色的 React hooks。
+整体由四部分组成：任何脚本都能发出的[数字协议](/design/protocol)；把多个来源的嘈杂状态合成为一个平稳状态的**仲裁器**；经 HTTP、stdin、`postMessage` 或服务端事件传递消息的**通道**；以及把结果接到角色上的 React Hook。
 
 ```tsx preview
 import { AgentStateProvider, useAgentState, CharacterMark, ActivityLine } from '@aora-bot/react';
@@ -45,11 +45,11 @@ export default function Demo() {
 }
 ```
 
-在 _a_ 检索时按下 _b: 34 出错_：出错胜出。在 _a: 30_ 之后立刻按 _a: 33 完成_：完成被排在停留时间之后，但一定会播放，因为它是事件。结束两个会话，脸回到待机。
+在 _a_ 检索时按下 _b: 34 出错_，出错的状态胜出。紧接着 _a: 30_ 按下 _a: 33 完成_，完成会排在停留时间之后，但仍然会播放，因为它是事件。结束两个会话后，脸回到待机。
 
 ## 线上格式
 
-一种消息形状，所有传输方式通用：
+所有传输方式使用同一种消息格式：
 
 ```json
 { "session_id": "s1", "aoraBotId": "32", "tips": "Editing src/app.ts" }
@@ -59,12 +59,12 @@ export default function Demo() {
 ```
 
 - `session_id` 必填。同一 id 的后续消息更新同一个会话。
-- 然后是**其中之一**：协议编号（`aoraBotId` 或 `emotionId`）、状态名（`state`），或 `agent_id` 加工具自己的 `event` 名，经[适配器](#适配器)翻译。
-- `tips` 是可选说明文字，宿主可以显示在角色旁边。
-- `hud` 是可选的表盘——画在身体外那圈环上的 [`HudSpec`](/design/protocol#hud)。它用 `isHudSpec` 校验；畸形的会被丢弃，消息本身照常生效。
-- `headless: true` 标记一个只记录、从不显示的会话——不该霸占脸的后台任务。
+- 此外还需要**三选一**：协议编号（`aoraBotId` 或 `emotionId`）、状态名（`state`），或 `agent_id` 加上工具自己的 `event` 名，后者由[适配器](#适配器)翻译。
+- `tips` 是可选的说明文字，宿主可以显示在角色旁边。
+- `hud` 是可选的表盘，即画在身体外圈环上的 [`HudSpec`](/design/protocol#hud)，用 `isHudSpec` 校验。格式不合法的会被丢弃，消息本身照常生效。
+- `headless: true` 标记只记录、从不显示的会话，用于不该占用脸的后台任务。
 
-`normalize(message)` 把以上任一形式变成仲裁器更新，或一条错误字符串。它永不抛出。
+`normalize(message)` 把上述任一形式转换成仲裁器更新，或返回一条错误字符串，不会抛出异常。
 
 ```ts
 import { normalize } from '@aora-bot/engine/agent';
@@ -79,16 +79,16 @@ normalize({ aoraBotId: '32' });
 // { ok: false, error: 'missing session_id' }
 ```
 
-`@aora-bot/engine/agent` 是一个独立入口，不含 DOM 和动画代码，所以在 Node 中继里和在浏览器里一样能加载。
+`@aora-bot/engine/agent` 是独立的入口，不含 DOM 和动画代码，因此在 Node 中继里和在浏览器里都能加载。
 
 ## 仲裁
 
-一个角色，多个来源：带三个子代理的编码智能体，或者一个聊天窗口加一个后台构建。每个来源报告自己的状态；仲裁器决定角色显示什么。四条规则：
+一个角色可能对应多个来源：比如带三个子智能体的编码智能体，或者一个聊天窗口加一个后台构建。每个来源各自报告状态，由仲裁器决定角色显示什么。规则有四条：
 
-1. **优先级。** 可见会话中优先级最高的状态胜出。三个在工作、一个在报错，显示报错。出错和拒绝压倒一切，因为它们需要人介入；完成压倒进行中的工作，因为它是结果；工作压倒待机。
-2. **最短停留。** 一个状态至少占据屏幕 `minDisplayMs`（默认 900 ms）才能被替换。没有它，一连串工具事件会让脸闪烁；有了它，每个表情都能落定、被读到。
-3. **事件与条件。** 一次性编号——完成、出错、惊讶——是事件，从不丢弃：在停留期间到达就排队，停留结束时播放。持续状态是条件：停留结束时仲裁器重新解析，因为局面可能已经变了。
-4. **过期。** 沉默超过 `sessionTtlMs`（两分钟）的会话被遗忘，所以没有会话结束钩子的工具不能永远钉住角色。
+1. **优先级。** 在可见会话中，优先级最高的状态胜出。三个会话在工作、一个在报错时，显示报错。出错和拒绝的优先级最高，因为需要人来处理；完成高于进行中的工作，因为它是结果；工作高于待机。
+2. **最短停留。** 一个状态显示满 `minDisplayMs`（默认 900 ms）后才能被替换。没有这条规则，连续的工具事件会让脸不停闪烁；有了它，每个表情都能稳定显示，让人看清。
+3. **事件与条件。** 一次性编号（完成、出错、惊讶）是事件，从不丢弃：在停留期间到达的会排队，停留结束后播放。持续状态是条件：停留结束时仲裁器会重新解析，因为情况可能已经变了。
+4. **过期。** 超过 `sessionTtlMs`（两分钟）没有消息的会话会被清除，这样没有会话结束钩子的工具也不会让角色永远停在某个状态。
 
 ```ts
 import { createArbiter } from '@aora-bot/engine/agent';
@@ -113,17 +113,17 @@ arbiter.update({
 arbiter.resolve().hud; // { kind: 'progress', value: 0.2 }：胜者的表盘，与它的 tips 并排
 ```
 
-`resolve()` 不考虑停留，返回按优先级胜出的会话；`current()` 返回角色正在显示的内容，停留结束后它会跟上来（通过 `onApply`）。
+`resolve()` 不考虑停留，直接返回按优先级胜出的会话；`current()` 返回角色当前显示的内容，停留结束后会更新到最新结果（通过 `onApply` 通知）。
 
-`tips` 和 `hud` 属于会话，跟会话一起走：结果携带的是胜出会话的说明和表盘，落败会话的什么都不带。后台任务不能把自己的进度环画在前台智能体的脸外面。
+`tips` 和 `hud` 属于会话本身，随会话一起传递：结果里只有胜出会话的说明和表盘，落败会话的都不会带上。因此后台任务不能把自己的进度环画到前台智能体的脸上。
 
-时钟和定时器可以注入，所以整套逻辑可以在测试里确定性地运行。
+时钟和定时器可以注入，因此整套逻辑在测试中可以确定地重复运行。
 
-在 React 里，[`useArbiter`](/components/agent-state) 在组件生命周期内运行一个仲裁器，`AgentStateProvider` 把它共享给一棵子树；`hud` 在 value 上与 `tips` 并排，[`AgentHud`](/components/agent-hud) 不需要任何接线就能从 provider 渲染角色、表盘和说明。
+在 React 里，[`useArbiter`](/components/agent-state) 在组件的整个生命周期内运行一个仲裁器，`AgentStateProvider` 把它共享给整棵子树。`hud` 与 `tips` 一样出现在 provider 的值上，[`AgentHud`](/components/agent-hud) 无需额外配置，就能从 provider 渲染角色、表盘和说明。
 
 ## 适配器
 
-适配器把一个工具的事件词汇映射到协议上。它是纯数据：支持另一个智能体是新增一个对象，而不是新增逻辑。
+适配器把某个工具的事件名映射到协议编号上。它是纯数据：要支持另一个智能体，只需新增一个对象，不用写新的逻辑。
 
 ```tsx preview
 import { AGENT_ADAPTERS, stateForEmotion } from '@aora-bot/react';
@@ -160,11 +160,11 @@ export default function Demo() {
 }
 ```
 
-对于知道正在运行哪个*工具*、而不是触发了哪个生命周期事件的宿主，`stateForTool('grep')` 读另一张表 `TOOL_STATES`，也就是 [`ActivityBadge`](/components/activity-badge) 用的那张。
+如果宿主知道的是正在运行哪个*工具*，而不是触发了哪个生命周期事件，可以用 `stateForTool('grep')`。它查的是另一张表 `TOOL_STATES`，[`ActivityBadge`](/components/activity-badge) 用的也是这张表。
 
 ### 活动动词与名册事实
 
-第三张表回答第三个问题。`TOOL_STATES` 回答「哪个工具在跑」；`ACTIVITY_VERBS` 回答「你会告诉用户它在做什么」——也就是屏幕上已经写在角色旁边的那句话。`stateForActivity('coding')` 把动词解析为状态，不认识的一律是泛化的工作，于是只有那句话——「Running commands…」——的宿主也能驱动角色。查表用 `Object.hasOwn`，因为动词来自线上，`"constructor"` 不能在原型链上找到东西。
+第三张表回答第三个问题。`TOOL_STATES` 回答「哪个工具在运行」；`ACTIVITY_VERBS` 回答「该告诉用户它在做什么」，也就是角色旁边已经显示的那句话。`stateForActivity('coding')` 把动词解析为状态，不认识的动词一律按通用的工作状态处理，所以宿主只有「Running commands…」这样一句话时，也能驱动角色。查表时使用 `Object.hasOwn`：动词来自传输的消息，不能让 `"constructor"` 之类的名字命中原型链上的属性。
 
 ```tsx preview
 import { ACTIVITY_VERB_IDS, CharacterStageProvider, StagedMark, stateForActivity } from '@aora-bot/react';
@@ -185,7 +185,7 @@ export default function Demo() {
 }
 ```
 
-名册里的一行通常比一个动词知道得多一点：智能体是否 `running`、是否在 `composing` 回复、它报的 `activity` 是什么。`characterStateForRoster(facts, surface)` 把这些 `RosterFacts` 解析为状态，答案取决于角色画在哪里。在 `chat` 行里，撰写状态就是重点——回复正在你眼前被写出来。在 `avatar` 面上，撰写每几百毫秒来来去去，二十张脸在两个状态之间闪是噪音，所以头像保持待机，直到有值得展示的东西。`activityMode="facts"` 的 `ActivityBadge` 和[角色指令](/components/mark-commands)注册表都经过这个函数，于是同一个智能体的每个面都一致。
+名册中的一行通常比一个动词包含更多信息：智能体是否 `running`、是否正在 `composing` 回复，以及它报告的 `activity`。`characterStateForRoster(facts, surface)` 把这些 `RosterFacts` 解析为状态，结果取决于角色画在哪个位置。在 `chat` 行里，撰写状态正是重点，因为回复正在用户眼前生成。在 `avatar` 场景下，撰写状态每几百毫秒就切换一次，二十张脸在两个状态间来回闪动只是干扰，所以头像保持待机，直到有值得展示的内容。`activityMode="facts"` 的 `ActivityBadge` 和[角色指令](/components/mark-commands)注册表都通过这个函数解析，因此同一个智能体在各处显示的状态一致。
 
 ```ts
 characterStateForRoster({ running: true, composing: true }, 'chat'); // 'composing'
@@ -198,16 +198,16 @@ characterStateForRoster({}, 'list'); // 'idle'
 
 ### 一个中继
 
-智能体在终端里跑；角色在页面里跑。得有东西在它们之间传递消息。仓库在 `examples/agent-relay` 里带了一个：零依赖的 Node 脚本，接受 `POST /state` 和 stdin 上的按行 JSON，两者都归一化，再通过服务端事件广播给浏览器。
+智能体在终端里运行，角色在页面里运行，两者之间需要有程序传递消息。仓库的 `examples/agent-relay` 里提供了一个：零依赖的 Node 脚本，接受 `POST /state` 和 stdin 上按行分隔的 JSON，对两者做归一化后，通过服务端事件广播给浏览器。
 
 ```bash
 node examples/agent-relay/relay.mjs            # http://127.0.0.1:27182
 my-agent --emit-json | node examples/agent-relay/relay.mjs --stdin
 ```
 
-它的全部就是 `normalize`、`readLineStream` 和一个响应流的 `Set`。改造它，而不是依赖它。
+它只由 `normalize`、`readLineStream` 和一个存放响应流的 `Set` 组成。建议改写成自己的版本，不要直接依赖它。
 
-消息可以带一个 `hud` 块。中继像校验其余载荷一样校验它——无效的 `hud` 被丢弃，消息照常生效——它随胜出会话的状态一起传播，所以 `/events` 和中继的 `/preview.svg` 都会显示它：
+消息可以带 `hud` 字段。中继会像校验其余内容一样校验它，无效的 `hud` 会被丢弃，消息照常生效。`hud` 随胜出会话的状态一起传播，所以 `/events` 和中继的 `/preview.svg` 都会显示它：
 
 ```bash
 curl -X POST http://127.0.0.1:27182/state \
@@ -247,7 +247,7 @@ function Panel() {
 
 ### Claude Code 钩子
 
-Claude Code 在生命周期事件上触发 shell 钩子。每个钩子带着适配器 id 和事件名 POST 到中继；翻译由适配器完成。把它们写进 `~/.claude/settings.json`：
+Claude Code 会在生命周期事件上触发 shell 钩子。每个钩子带着适配器 id 和事件名，向中继发送 POST 请求，翻译由适配器完成。把它们写进 `~/.claude/settings.json`：
 
 ```json
 {
@@ -272,11 +272,11 @@ curl -s -o /dev/null -X POST http://127.0.0.1:27182/state \
   -d "{\"session_id\":\"$SESSION\",\"agent_id\":\"claude-code\",\"event\":\"$1\"}"
 ```
 
-子代理用自己的 `session_id` 报告，所以父代理等待、三个子代理工作，就是三个工作中的会话，脸显示为工作。
+子智能体用各自的 `session_id` 报告，所以父智能体在等待、三个子智能体在工作时，共有三个工作中的会话，脸显示为工作状态。
 
 ### Cursor 钩子
 
-同样的形状，`agent_id: "cursor"` 加 Cursor 的事件名——`toolCall`、`fileEdit`、`shellCommand`、`webSearch`、`awaitingApproval`、`responding`、`taskComplete`、`error`。适配器没列出的，直接发编号：
+格式相同，用 `agent_id: "cursor"` 加上 Cursor 的事件名：`toolCall`、`fileEdit`、`shellCommand`、`webSearch`、`awaitingApproval`、`responding`、`taskComplete`、`error`。适配器没有列出的事件，可以直接发送编号：
 
 ```bash
 curl -X POST http://127.0.0.1:27182/state -H 'Content-Type: application/json' \
@@ -285,7 +285,7 @@ curl -X POST http://127.0.0.1:27182/state -H 'Content-Type: application/json' \
 
 ### iframe 或扩展面板
 
-智能体在另一个文档里时，向 frame 发消息：
+智能体在另一个文档里时，向 frame 发送消息：
 
 ```ts
 // 宿主文档
@@ -304,11 +304,11 @@ function Widget() {
 }
 ```
 
-`useStateChannel` 只接受来自允许来源（默认是页面自身来源）、类型为 `aora:state` 的消息，并喂给最近的 `AgentStateProvider`。
+`useStateChannel` 只接受来自允许的来源（默认是页面自身的来源）、类型为 `aora:state` 的消息，并把它们交给最近的 `AgentStateProvider`。
 
 ## 访客走神时一起打盹
 
-侧边栏里的角色不该盯着看一个小时。`useIdleSleep` 跟踪文档上的输入，先给出 `drowsy`，再 `sleeping`，输入恢复时短暂给出 `waking`。访客活跃时它返回 `null`，所以可以用回退的方式和智能体状态组合：
+侧边栏里的角色不该一直睁着眼睛看一个小时。`useIdleSleep` 监听文档上的输入，先返回 `drowsy`，再返回 `sleeping`，输入恢复时短暂返回 `waking`。访客活跃时它返回 `null`，因此可以写成回退的形式，与智能体状态组合：
 
 ```tsx
 const idle = useIdleSleep({ drowsyAfterMs: 45_000, sleepAfterMs: 120_000 });
@@ -320,7 +320,7 @@ const { state } = useAgentState();
 
 ## 精灵图
 
-手绘吉祥物可以替代程序化角色，而以上一切不变：[`SpriteMark`](/components/sprite-mark) 接受同样的 `state` 或 `emotionId`，通过同一套协议解析帧。
+手绘的吉祥物可以代替程序生成的角色，上面介绍的内容都不用改：[`SpriteMark`](/components/sprite-mark) 接受同样的 `state` 或 `emotionId`，并通过同一套协议解析出对应的帧。
 
 ## 接下来
 

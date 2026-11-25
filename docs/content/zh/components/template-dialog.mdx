@@ -2,9 +2,9 @@ import { API } from '@theme';
 
 # TemplateDialog
 
-创建或编辑一个智能体模板：名字、它该做什么、谁可以用。
+创建或编辑智能体模板：名称、要做什么，以及谁可以使用。
 
-> 属于 `@aora-bot/surfaces`，不在 `@aora-bot/react` 里：`pnpm add @aora-bot/surfaces @aora-bot/react`，并在 React 样式之后引入 `@aora-bot/surfaces/styles.css`。
+> 属于 `@aora-bot/surfaces`，不在 `@aora-bot/react` 中：`pnpm add @aora-bot/surfaces @aora-bot/react`，并在 React 样式之后引入 `@aora-bot/surfaces/styles.css`。
 
 ```tsx preview
 import { useState } from 'react';
@@ -28,29 +28,29 @@ export default function Demo() {
 }
 ```
 
-点保存。名字旁边的角色在 promise 未返回时忙碌，返回时庆祝；给了 `shareUrl` 之后会出现分享卡片。
+点击保存。promise 未返回时，名称旁边的角色处于忙碌状态；promise 返回后，角色会庆祝。传入 `shareUrl` 后会出现分享卡片。
 
 ## 外观不是一个字段
 
-表单刻意很短，因为外观不需要任何人去填。`normalizeTemplateDraft` 会给没配置外观的模板一个由 `seed` 推导出的形状和墨色——请用存储的模板 id，它不会因为改名而变——所以名字旁边的角色从来不是占位符，十个没配置的模板列成一排，仍然是十行能分辨的东西。从触发按钮打开头像编辑器只是可选的点缀，不是必经步骤。
+表单特意做得很短，因为外观不需要任何人填写。没有配置外观的模板，`normalizeTemplateDraft` 会根据 `seed` 推导出形状和墨色。`seed` 请使用已存储的模板 id，它不会因为模板改名而变化。因此名称旁边的角色不会是占位图，十个未配置外观的模板排成一列，也仍然是十行可以区分的内容。从触发按钮打开头像编辑器是可选的，不是必经步骤。
 
 ## 保存
 
-`onSave` 收到规范化后的草稿。返回一个 promise，对话框内部的 [`usePublishMark`](/components/use-publish-mark) 负责其余部分：未返回时 `working`，resolve 时 `celebrate` 并撒彩纸，reject 时回到静息——表单马上要显示自己的错误提示，旁边再来一张难过的脸，就像是这个库在替你发表意见。
+`onSave` 接收规范化后的草稿。返回一个 promise，其余由对话框内部的 [`usePublishMark`](/components/use-publish-mark) 处理：promise 未返回时是 `working`，resolve 时是 `celebrate` 并撒彩纸，reject 时回到静息。reject 时表单马上会显示自己的错误提示，如果旁边再出现一张难过的脸，就像这个库在替你表态。
 
 ## normalizeTemplateDraft
 
-纯函数，所以服务端 action 校验提交时，和对话框每次按键时调用的是同一个函数。它返回三样东西：
+它是纯函数，所以服务端 action 校验提交内容，与对话框在每次按键时校验，用的是同一个函数。它返回三项内容：
 
 ```ts
 const { draft, errors, valid } = normalizeTemplateDraft(input, { seed: template.id });
 ```
 
-- `draft`——去空白、按 `TEMPLATE_LIMITS` 截断（名字 80 字符，指令 4000 字符）、补上外观。实时预览应当渲染的就是它，字段超限时角色和行依然正常。
-- `errors`——`name-required`、`name-too-long`、`instructions-too-long`。保存按钮应当尊重的是它。`TEMPLATE_ERROR_KEYS` 把每一项映射到本地化键。
-- `valid`——`errors.length === 0`。
+- `draft`：去掉多余空白，按 `TEMPLATE_LIMITS` 截断（名称 80 字符，指令 4000 字符），并补上外观。实时预览应当渲染它，这样字段超出限制时，角色和列表行仍能正常显示。
+- `errors`：可能的值有 `name-required`、`name-too-long`、`instructions-too-long`。保存按钮应当以它为准。`TEMPLATE_ERROR_KEYS` 把每一项映射到本地化键。
+- `valid`：即 `errors.length === 0`。
 
-名字会折叠空白，因为从文档里粘过来的名字常带着换行；指令只去掉尾部空白，因为粘贴的列表里，行首缩进是含义的一部分。
+名称中的空白会被折叠，因为从文档里粘贴来的名称常带换行。指令只去掉末尾的空白，因为在粘贴的列表中，行首缩进也有意义。
 
 ## VisibilityControls 与 ShareCard
 
@@ -69,9 +69,9 @@ export default function Demo() {
 }
 ```
 
-可见性是两个带标签的选项，而不是一个开关：开关需要一个在两种位置都为真的标签，而这里诚实的标签——「只有你」和「工作区里的所有人」——是两句不同的话。`disabled` 让它变成只读展示，用于别人拥有的模板。
+可见性用两个带标签的选项表示，而不是一个开关。开关需要一个在开和关两种位置下都成立的标签，而这里准确的标签是「只有你」和「工作区里的所有人」，是两句不同的话。`disabled` 会让它变成只读展示，用于别人拥有的模板。
 
-分享卡片完整显示链接，而不是把它藏在复制按钮后面，这样即将递出去的东西在复制之前就看得见。复制成功后触发 `onCopy`，宿主想弹自己的提示就用它。
+分享卡片会完整显示链接，而不是把它藏在复制按钮后面，这样要分享出去的内容在复制之前就能看到。复制成功后会触发 `onCopy`，宿主想显示自己的提示时可以用它。
 
 ## API
 
@@ -87,5 +87,5 @@ export default function Demo() {
 
 ## 接下来
 
-- [usePublishMark](/components/use-publish-mark)——干活、庆祝、收敛
-- [角色设置](/scenarios/character-setup)——挑选智能体的外观
+- [usePublishMark](/components/use-publish-mark)——工作、庆祝、回落
+- [角色设置](/scenarios/character-setup)——为智能体选择外观

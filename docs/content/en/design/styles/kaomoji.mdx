@@ -1,6 +1,6 @@
 # Kaomoji style
 
-The `kaomoji` series writes a character as one line of text: `(・ω・)`, `☁(^▽^) ♪`, `ฅ(・ω・)ฅ`. The shape chooses the brackets, the state chooses the face and the tail. It has no body, which makes it the lightest series — and one you can still tell apart inside a line of prose.
+The `kaomoji` series writes a character as one line of text: `(・ω・)`, `☁(^▽^) ♪`, `ฅ(・ω・)ฅ`. The shape chooses the brackets, the state chooses the face and the tail. It has no body, so it is the lightest series, and it still reads as a particular character inside a line of prose.
 
 ```tsx preview
 import { CharacterMark } from '@aora-bot/react';
@@ -65,7 +65,7 @@ export default function Demo() {
 
 ## The shape picks the brackets
 
-Which brackets a shape wears is decided by `SHAPE_WRAPPERS` in the engine: a cat is `ฅ( )ฅ`, a bunny `૮( )ა`, a cloud `☁( )`, and a shape without brackets of its own gets a plain pair of parentheses.
+Each shape's brackets come from `SHAPE_WRAPPERS` in the engine: a cat is `ฅ( )ฅ`, a bunny `૮( )ა`, a cloud `☁( )`, and a shape without brackets of its own gets a plain pair of parentheses.
 
 ```tsx preview
 import { SHAPE_IDS } from '@aora-bot/react';
@@ -91,7 +91,7 @@ export default function Demo() {
 
 ## The state picks the face and the tail
 
-The face inside the brackets keeps the grammar of the `cute` face: dot eyes for attention, arcs for contentment, crosses for refusal. A drawn face writes its own glyphs for each state, so `capsule` or `specs` reads as itself in text too. The tail after the brackets is the state's mood effect written as a mark: `zZ`, `♪`, `✎`, `!`. Every state has a face (`STATE_FACES`) and a tail (`STATE_TAILS`, which may be empty).
+The face inside the brackets keeps the grammar of the `cute` face: dot eyes for attention, arcs for contentment, crosses for refusal. A drawn face writes its own glyphs for each state, so `capsule` or `specs` reads as itself in text too. The tail after the brackets is the state's mood effect written as a symbol: `zZ`, `♪`, `✎`, `!`. Every state has a face (`STATE_FACES`) and a tail (`STATE_TAILS`, which may be empty).
 
 ```tsx preview
 import { CHARACTER_STATES } from '@aora-bot/react';
@@ -111,11 +111,11 @@ export default function Demo() {
 }
 ```
 
-`styleOptions.tail` switches the tail off and leaves the brackets and the face.
+`styleOptions.tail` turns the tail off, leaving only the brackets and the face.
 
 ## As plain text
 
-`kaomoji(shape, state, face?)` returns the very line the series draws, so chat messages, terminal output and logs can use the same characters. `faceText(state, face?)` returns the face alone, without brackets or tail; both default to `cute`:
+`kaomoji(shape, state, face?)` returns exactly the line the series draws, so chat messages, terminal output and logs can use the same characters. `faceText(state, face?)` returns the face alone, without brackets or tail; both default to `cute`:
 
 ```ts
 import { kaomoji } from '@aora-bot/engine';
@@ -140,7 +140,7 @@ As in the other series, the engine clamps values into range and drops unknown ke
 
 ## What it draws, and what it does not
 
-The line of text is the whole character. It rides the body's transform, so a hop, a squash or a tilt carries the text with it. The belt, the HUD dial and the particles have no counterpart here — mood is told by the tail, and activity by the tail and the face.
+The line of text is the whole character. It follows the body's transform, so a hop, a squash or a tilt moves the text with it. The belt, the HUD dial and the particles have no counterpart here. Mood is shown by the tail, and activity by the tail and the face.
 
 - The text is rendered in the host's font (falling back through `ui-sans-serif`, `PingFang SC` and `Microsoft YaHei`), so glyphs differ a little between systems. Width is estimated, and the font size is scaled so the whole line fits the character's box.
 - The colour is the character's ink, so it follows the light and dark theme like every other series.

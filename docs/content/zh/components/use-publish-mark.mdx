@@ -1,8 +1,8 @@
 # usePublishMark
 
-表单里唯一值得做动画的那一刻，用三个状态表达。
+用三个状态表现表单里唯一值得做动画的时刻。
 
-> 属于 `@aora-bot/surfaces`，不在 `@aora-bot/react` 里：`pnpm add @aora-bot/surfaces @aora-bot/react`，并在 React 样式之后引入 `@aora-bot/surfaces/styles.css`。
+> 属于 `@aora-bot/surfaces`，不在 `@aora-bot/react` 中：`pnpm add @aora-bot/surfaces @aora-bot/react`，并在 React 样式之后引入 `@aora-bot/surfaces/styles.css`。
 
 ```tsx preview
 import { useRef } from 'react';
@@ -42,9 +42,9 @@ export default function Demo() {
 
 ## 为什么只在这里
 
-发布是角色难得能证明自己价值的交互：有一段真实的等待、一个真实的结果，而且结果是好消息。所以角色在请求未返回时*工作*，落地时*庆祝*，然后自己收场——需要人手动关掉的庆祝就不再是庆祝了。
+发布是角色少有的、确实能体现价值的交互：有一段真实的等待，有明确的结果，而且结果是好消息。所以角色在请求未返回时*工作*，请求完成时*庆祝*，然后自行收场。需要人手动关掉的庆祝，就不再是庆祝了。
 
-失败直接回到静息，而不是换一张难过的脸。表单马上要显示出错信息，旁边再有个角色摆表情，看起来就像这个库在替你发表意见。
+失败时直接回到静息，而不是换成难过的脸。表单马上会显示出错信息，旁边的角色再做表情，就像这个库在替你表态。
 
 ## 约定
 
@@ -54,19 +54,19 @@ export default function Demo() {
 | ---------------- | ------------------------------------------------ |
 | `state`          | `idle`、`publishing` 或 `celebrate`。            |
 | `characterState` | 对应的引擎状态：`idle`、`working`、`celebrate`。 |
-| `begin()`        | 请求发出去了。                                   |
-| `succeed()`      | 落地了。撒彩纸并启动庆祝计时。                   |
-| `fail()`         | 没成。立刻回到 `idle`。                          |
+| `begin()`        | 请求已发出。                                     |
+| `succeed()`      | 请求成功。撒彩纸并启动庆祝计时。                 |
+| `fail()`         | 请求失败。立刻回到 `idle`。                      |
 
 选项：
 
-- `confetti`——指向 [`CelebrationLayer`](/components/celebration-layer) 的 ref。成功时 hook 会触发 `burst`（默认 20 片），宿主不必自己盯着那一刻。它由调用方提供而不是由 hook 返回：ref 属于它挂着的那个元素，hook 往外递 ref 会诱使人在渲染期间读 `.current`。
-- `celebrateMs`——庆祝持续多久（默认 1600 毫秒）。
-- `onSettled`——庆祝结束时调用。适合在这里关闭对话框。
+- `confetti`：指向 [`CelebrationLayer`](/components/celebration-layer) 的 ref。成功时 hook 会触发 `burst`（默认 20 片），宿主不必自己判断时机。ref 由调用方传入，而不是由 hook 返回：ref 属于它所挂载的元素，如果由 hook 往外返回，容易让人在渲染期间读取 `.current`。
+- `celebrateMs`：庆祝持续的时间（默认 1600 毫秒）。
+- `onSettled`：庆祝结束时调用，适合在这里关闭对话框。
 
-组件卸载时进行中的庆祝会被取消，不会向已经不存在的组件发状态更新。[`TemplateDialog`](/components/template-dialog) 的保存按钮用的就是这个 hook。
+组件卸载时，正在进行的庆祝会被取消，不会再对已卸载的组件更新状态。[`TemplateDialog`](/components/template-dialog) 的保存按钮用的就是这个 hook。
 
 ## 接下来
 
 - [CelebrationLayer](/components/celebration-layer)——盖在任何东西上的纸屑
-- [庆祝](/scenarios/celebration)——干活、庆祝、收起来
+- [庆祝](/scenarios/celebration)——工作、庆祝、收场

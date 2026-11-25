@@ -2,11 +2,11 @@ import { StateMatrix } from '@theme';
 
 # 庆祝
 
-表单拿到好消息的那一刻该做什么。
+表单收到好消息的那一刻，该怎么做。
 
 ## 先看效果
 
-一个发布按钮，旁边的角色先干活、再庆祝、然后交出一张分享卡。纸屑图层盖在角色上，成功时由 hook 触发。
+一个发布按钮，旁边的角色先工作，再庆祝，最后交出一张分享卡。纸屑图层盖在角色上方，发布成功时由 hook 触发。
 
 ```tsx preview
 import { useRef, useState } from 'react';
@@ -52,20 +52,20 @@ export default function Demo() {
 }
 ```
 
-`usePublishMark` 接收纸屑的 ref 而不是返回一个：ref 属于它挂着的那个元素，由 hook 发出去的 ref 会诱使人在渲染期间读 `.current`。图层搭在共享的 ticker 上，只在有纸屑飞着的时候订阅，所以一个闲着的庆祝不会让页面多跑一个帧循环。
+`usePublishMark` 接收纸屑的 ref，而不是返回一个 ref：ref 属于它所挂载的元素，由 hook 发出 ref 容易让人在渲染期间读取 `.current`。图层使用共享的 ticker，只在有纸屑飞行时才订阅，所以闲置的庆祝不会给页面增加帧循环。
 
 ## 什么时候用
 
-表单唯一值得做动画的时刻：发布成功了、一次运行结束了、上传落地了。有真实的等待、真实的结果，而且结果是好消息。请求在路上时角色在干活，落地时庆祝一次，然后自己收起来——需要人手动关掉的庆祝就不再是庆祝了。
+表单里唯一值得做动画的时刻：发布成功、一次运行结束、上传完成。这时有真实的等待，有真实的结果，而且结果是好消息。请求进行时角色在工作，完成时庆祝一次，然后自己收起来——需要手动关掉的庆祝，就不算庆祝了。
 
 ## 用到的组件
 
-- [`CharacterMark`](/components/character-mark)——`celebrate` 自带入场效果：原地转身一圈、甩出彩带，再加十六片纸屑，在转移那一刻只放一次。
-- [`CelebrationLayer`](/components/celebration-layer)——没有角色的纸屑，可以盖在任何东西上，通过 ref 驱动。
-- `createConfettiController`——同样的纸屑，给 React 之外的一个普通 SVG 用。
-- [`usePublishMark`](/components/use-publish-mark)——三个阶段和时序，宿主不必自己盯着那一刻。
-- `ShareCard` 与 [`TemplateDialog`](/components/template-dialog)——发布完成后交出去的东西。
-- [`HudPlate`](/components/hud-plate)——好消息配 `kpi` 表盘：一个数字、一个变化量、一段可以画成迷你折线的历史。数字落在铭牌上；环显示它是怎么来的。
+- [`CharacterMark`](/components/character-mark)——`celebrate` 自带入场效果：原地转一圈，甩出彩带，再撒十六片纸屑，只在状态转移的那一刻播放一次。
+- [`CelebrationLayer`](/components/celebration-layer)——不带角色的纸屑，可盖在任何内容上，通过 ref 驱动。
+- `createConfettiController`——同样的纸屑，用于 React 之外的普通 SVG。
+- [`usePublishMark`](/components/use-publish-mark)——管理三个阶段和时序，宿主不必自己判断时机。
+- `ShareCard` 与 [`TemplateDialog`](/components/template-dialog)——发布完成后交出的内容。
+- [`HudPlate`](/components/hud-plate)——好消息适合 `kpi` 表盘：一个数字、一个变化量，以及一段可画成迷你折线的历史。数字显示在铭牌上，环则表示它是怎么来的。
 
 ## 状态怎么走
 
@@ -74,19 +74,19 @@ export default function Demo() {
 | `idle`      | `working`   | `begin()`——请求发出                                            |
 | `working`   | `celebrate` | `succeed()`——入场效果触发，图层喷出纸屑，编号 `33`             |
 | `celebrate` | `idle`      | `celebrateMs` 之后（1.6 秒）；`onSettled` 是关闭对话框的好时机 |
-| `working`   | `idle`      | `fail()`——直接回到静止，不做难过的脸                           |
-| `celebrate` | `proud`     | 结果卡片；`ShareCard` 上的脸用的是 `proud`                     |
+| `working`   | `idle`      | `fail()`——直接回到静止，不显示难过的脸                         |
+| `celebrate` | `proud`     | 结果卡片；`ShareCard` 上的脸使用 `proud`                       |
 
-失败回到静止而不是 `sad`——角色为什么不插嘴，见 [`usePublishMark`](/components/use-publish-mark)。
+失败时回到静止，而不是 `sad`；角色为什么不表态，见 [`usePublishMark`](/components/use-publish-mark)。
 
 ## 每个状态的样子
 
 <StateMatrix states={['working', 'celebrate', 'proud', 'idle']} />
 
-`celebrate` 是 `STATE_ENTRY_EFFECTS` 里唯一既转圈又喷纸屑的状态。它每次转移只放一次、挂载时不放、减少动态效果下跳过——每一帧都喷纸屑是噪音，状态到来时的一次爆发才是这个转移需要的标点。眼睛在 `joyful`、`excited`、`wink` 和 `happy` 之间轮换，比任何别的状态都快。
+`celebrate` 是 `STATE_ENTRY_EFFECTS` 中唯一既转圈又喷纸屑的状态。入场效果每次转移只播放一次，挂载时不播放，启用减少动态效果时跳过：每一帧都喷纸屑只是干扰，状态到来时爆发一次，才是这次转移需要的收尾。眼睛在 `joyful`、`excited`、`wink` 和 `happy` 之间轮换，比其他任何状态都快。
 
 ## 接下来
 
-- [usePublishMark](/components/use-publish-mark)——干活、庆祝、收敛
-- [CelebrationLayer](/components/celebration-layer)——盖在任何东西上的纸屑
+- [usePublishMark](/components/use-publish-mark)——工作、庆祝、收尾
+- [CelebrationLayer](/components/celebration-layer)——可盖在任何内容上的纸屑
 - [TemplateDialog](/components/template-dialog)——名称、说明与可见性

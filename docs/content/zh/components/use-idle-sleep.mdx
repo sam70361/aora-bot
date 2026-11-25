@@ -1,6 +1,6 @@
 # useIdleSleep
 
-访客走神时一起打盹的角色。
+访客没有操作时，跟着一起打盹的角色。
 
 ```tsx preview
 import { useIdleSleep, CharacterMark } from '@aora-bot/react';
@@ -21,11 +21,11 @@ export default function Demo() {
 }
 ```
 
-停下指针。三秒后角色开始垂头；六秒后睡着。碰任何东西它就跳起来醒来，然后把状态交回给你。
+停止移动指针。三秒后角色开始垂头，六秒后睡着。一有任何操作，角色就会跳起来醒来，随后把状态交还给你。
 
 ## 契约
 
-访客活跃时 hook 返回 `state: null`。这就是全部设计：它不知道你的角色该做什么，所以在没有东西可补充之前什么都不说，并以回退的方式组合。
+访客活跃时，hook 返回 `state: null`。设计就是这么简单：hook 不知道角色该做什么，所以没有可补充的内容时就不给出状态，并通过回退与你自己的状态组合。
 
 ```tsx
 const idle = useIdleSleep();
@@ -34,7 +34,7 @@ const { state } = useAgentState();
 <CharacterMark state={idle.state ?? state} />;
 ```
 
-阶段和各自给出的值：
+各阶段及其对应的值：
 
 | 阶段     | 时机                                                    | `state`    |
 | -------- | ------------------------------------------------------- | ---------- |
@@ -43,17 +43,17 @@ const { state } = useAgentState();
 | `asleep` | 无输入超过 `sleepAfterMs`（120 秒）                     | `sleeping` |
 | `waking` | drowsy/asleep 之后的第一次输入，持续 `wakeMs`（1.2 秒） | `waking`   |
 
-`waking` 的存在是为了让醒来的一跳有时间落定，再让宿主自己的状态接管；没有它，角色会从睡着直接跳到「检索中」，没有过渡。
+设置 `waking` 阶段，是为了让醒来时的那一跳有时间播完，再由宿主自己的状态接管。没有这个阶段，角色会从睡着直接切到「检索中」，没有任何过渡。
 
 ## 什么算活动
 
-文档上的 `pointerdown`、`pointermove`、`keydown`、`wheel` 和 `touchstart`，全部 passive。传 `events` 可以改列表——自助终端可能只听 `click`。
+监听 document 上的 `pointerdown`、`pointermove`、`keydown`、`wheel` 和 `touchstart`，均为 passive 监听。可以通过 `events` 修改监听列表，例如自助终端可以只监听 `click`。
 
-隐藏的标签页算作不活跃：在 `visibilitychange` 时角色直接被送去睡觉，标签页回来时醒来。因此留在后台标签页的角色在访客回来时是睡着的，读起来像是一直在等，而不是被冻住了。
+隐藏的标签页视为不活跃：触发 `visibilitychange` 时，角色直接进入睡眠，标签页重新可见时醒来。因此留在后台标签页的角色，在访客回来时是睡着的，看起来像是一直在等待，而不是被冻结了。
 
 ## 主动唤醒
 
-`wake()` 在没有任何输入的情况下强制走醒来序列——消息到达时调用它，这样在显示回复之前角色已经起来了。
+`wake()` 不需要任何输入，直接触发醒来序列。可以在消息到达时调用它，让角色在回复显示之前就已经醒来。
 
 ```tsx
 useEffect(() => {
@@ -63,9 +63,9 @@ useEffect(() => {
 
 ## 什么时候不用
 
-二十个智能体列表里的头像不该各自打盹；列表不是关于访客的。把它用在那一个面向眼前这个人代表产品的角色上——侧边栏伙伴、浮动助手——被忽视时睡着是礼貌的做法。
+在二十个智能体的列表里，每个头像不应该各自打盹，因为列表展示的内容与访客无关。这个 hook 适合用在代表产品、面对眼前这个人的那一个角色上，例如侧边栏伙伴或浮动助手；没人理会它时去睡觉，是一种礼貌的做法。
 
-在 `prefers-reduced-motion` 下状态照样变化；只是渲染为各自的减少动效姿态。
+在 `prefers-reduced-motion` 下，状态仍会变化，只是显示为各自的减少动效姿态。
 
 ## 选项
 
@@ -87,5 +87,5 @@ interface IdleSleep {
 
 ## 接下来
 
-- [桌面伙伴](/scenarios/desktop-companion)——活几个小时又不吵
+- [桌面伙伴](/scenarios/desktop-companion)——常驻数小时也不打扰用户
 - [useMarkCommands](/components/mark-commands)——hold / release / poke / spin

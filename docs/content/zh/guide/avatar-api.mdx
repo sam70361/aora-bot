@@ -1,9 +1,9 @@
 # 头像接口
 
-一个免费的接口，能把任意字符串变成一个角色。把地址放进 `<img>`，就得到一个确定的 Aora Bot 头像：同一个 id 永远返回同一个角色，不用安装、不用存储、也不用注册。
+这是一个免费接口，可以把任意字符串变成一个角色。把地址放进 `<img>`，就能得到一个固定的 Aora Bot 头像：同一个 id 永远返回同一个角色，无需安装、存储或注册。
 
 :::warning 中国大陆暂不可用
-接口部署在 `aora-bot.vercel.app`，这个域名在中国大陆通常无法访问，大陆用户看到的头像可能显示不出来。面向大陆用户的访问方案已在计划中。
+接口部署在 `aora-bot.vercel.app`，这个域名在中国大陆通常无法访问，大陆用户可能看不到头像。面向大陆用户的访问方案已在计划中。
 :::
 
 ## 使用
@@ -26,14 +26,14 @@ id 可以是任意不超过 128 个字符的 URL 安全字符串：用户名、�
 
 | 参数      | 取值                                                            | 默认       | 作用                                             |
 | --------- | --------------------------------------------------------------- | ---------- | ------------------------------------------------ |
-| `style`   | `vector`、`pixel`、`kaomoji`、`ascii`                           | `vector`   | 角色使用的[画风系列](/design/styles/vector)      |
+| `style`   | `vector`、`pixel`、`kaomoji`、`ascii`                           | `vector`   | 角色使用的[画风](/design/styles/vector)          |
 | `variant` | 所选画风的变体，见下方列表                                      | 画风自带   | 画风内的上色变体                                 |
 | `state`   | 任意[状态](/design/states)，如 `happy`、`thinking`、`sleeping`  | 静息表情   | 角色的表情与姿态                                 |
 | `shape`   | 任意[形状](/design/shapes) id，如 `mochi`、`hex`                | 由 id 决定 | 替换角色的身体                                   |
 | `color`   | [配色](/design/palette)里的任意颜色，如 `blue`、`pink`、`night` | 由 id 决定 | 替换角色的颜色                                   |
 | `face`    | `FACE_STYLES` 里的一种脸，见[五官](/design/face)                | `cute`     | 脸的样式                                         |
 | `size`    | `16` 到 `1024` 的整数                                           | `128`      | SVG 的宽高，单位像素；超出范围会被限制在区间内   |
-| `pool`    | `46` 到阵容人数之间的整数                                       | 全部阵容   | 其他 id 可落到的成员数，按加入阵容的先后计       |
+| `pool`    | `46` 到阵容人数之间的整数                                       | 全部阵容   | id 可落到的阵容成员数，按加入阵容的先后顺序计    |
 | `theme`   | 主题 id，见下方列表                                             | 无         | 从主题的阵容里挑角色，未指定的参数取主题的默认值 |
 
 主题：`halloween`、`christmas`、`spring-festival`、`mid-autumn`、`easter`、`summer`、`valentine`。
@@ -47,7 +47,7 @@ id 可以是任意不超过 128 个字符的 URL 安全字符串：用户名、�
 
 主题带来自己的皮肤，接口按名字接受：万圣节主题为 `vector` 加了 `doodle` 和 `grainy`。配色里的 `night`（在深色页面上也不反转的近黑色）同样按名字接受，只是控制台不列出它。
 
-所选画风的每个参数也都可以作为查询参数，例如 `vector` 的 `strokeWidth` 或 `paperOffset`，`pixel` 的 `grid` 或 `outline`，`kaomoji` 的 `weight` 或 `tail`，`ascii` 的 `cols` 或 `charset`。数字直接写数字，布尔值写 `true` 或 `false`（也接受 `1` 和 `0`）。取值范围见各画风页面：[vector](/design/styles/vector)、[pixel](/design/styles/pixel)、[kaomoji](/design/styles/kaomoji)、[ascii](/design/styles/ascii)。
+所选画风的每个参数也都可以作为查询参数，例如 `vector` 的 `strokeWidth` 或 `paperOffset`，`pixel` 的 `grid` 或 `outline`，`kaomoji` 的 `weight` 或 `tail`，`ascii` 的 `cols` 或 `charset`。数值直接写数字，布尔值写 `true` 或 `false`（也接受 `1` 和 `0`）。取值范围见各画风页面：[vector](/design/styles/vector)、[pixel](/design/styles/pixel)、[kaomoji](/design/styles/kaomoji)、[ascii](/design/styles/ascii)。
 
 ```text
 https://aora-bot.vercel.app/avatar/alice.svg?style=pixel&variant=block&size=96
@@ -56,34 +56,34 @@ https://aora-bot.vercel.app/avatar/mochi-blue.svg?shape=mochi&color=blue&state=h
 https://aora-bot.vercel.app/avatar/alice.svg?variant=paper&paperOffset=12
 ```
 
-首页的[控制台](/)可以替你生成这样的地址：在代码条上选择头像格式，就能复制你搭好的角色的链接。
+首页的[控制台](/)可以生成这样的地址：在代码条上选择头像格式，就能复制自己搭配好的角色的链接。
 
 取值不在上述范围内，例如 `style=oil`、`color=plaid`、`size=big`，或超出范围的画风参数，会返回 HTTP 400 和一行纯文本原因。接口不认识的查询参数会被忽略。背景是透明的。
 
 ## 你会得到哪个角色
 
-如果 id 恰好是[阵容](/design/cast)里的角色 id，就得到那个角色：`/avatar/luna.svg` 就是露娜。其他 id 会被哈希到阵容成员中的一位，结果稳定，分布也均匀。这一哈希是一致性哈希：阵容从 n 位增加到 m 位时，只有约 (m − n) / m 的 id 会换角色，而且只会换成新加入的成员，已经在用的头像很少变化。如果希望头像完全不受日后新增角色的影响，可以用 `pool` 固定成员数，例如 `pool=46` 只在最早的 46 位成员中选。`shape`、`color` 和 `face` 会替换由 id 选出的内容，所以三者都写上时，id 只是一个文件名。阵容人数有限，所以不同的 id 可能落到同一个角色上；请把它当作一个友好的默认头像，而不是唯一的身份标识。
+如果 id 恰好是[阵容](/design/cast)里的角色 id，就得到那个角色：`/avatar/luna.svg` 就是露娜。其他 id 会被哈希到阵容成员中的一位，结果稳定，分布也均匀。这一哈希是一致性哈希：阵容从 n 位增加到 m 位时，只有约 (m − n) / m 的 id 会换角色，而且只会换成新加入的成员，已经在用的头像很少变化。如果希望头像完全不受日后新增角色的影响，可以用 `pool` 固定成员数，例如 `pool=46` 只在最早的 46 位成员中选。`shape`、`color` 和 `face` 会替换由 id 选出的内容，所以三者都写上时，id 只是一个文件名。阵容人数有限，不同的 id 可能落到同一个角色上，所以请把它当作默认头像，而不是唯一的身份标识。
 
 ## 主题
 
-`theme=halloween` 改从主题的阵容里挑角色，哈希方式不变，并且请求没写的参数都取自主题：第一套皮肤（`doodle`）、第一种脸、第一个状态（`happy`；每个主题都开放引擎的全部状态），颜色先用主题给这个成员的，再用成员自己的（主题提供这个颜色时），都没有就按 id 从主题的颜色里挑一个。主题固定的维度取固定值。你写明的参数总是优先：`theme=halloween&variant=solid&state=angry` 保留主题挑出的角色，但不用它的皮肤和状态。换成主题以外的 `style` 也会去掉主题的皮肤。`pool` 只作用于默认候选池，与 `theme` 同时出现会被拒绝。
+`theme=halloween` 会改从主题的阵容里挑角色，哈希方式不变。请求中没有写的参数都取自主题：第一套皮肤（`doodle`）、第一种脸、第一个状态（`happy`；每个主题都开放引擎的全部状态）。颜色依次这样取：主题给这个成员指定的颜色；成员自己的颜色（主题提供该颜色时）；都没有就按 id 从主题的颜色里挑一个。主题固定的维度取固定值。你写明的参数始终优先：`theme=halloween&variant=solid&state=angry` 保留主题挑出的角色，但不用主题的皮肤和状态。`style` 换成主题以外的画风时，主题的皮肤同样不再使用。`pool` 只作用于默认候选池，与 `theme` 同时出现会被拒绝。
 
 ```text
 https://aora-bot.vercel.app/avatar/alice.svg?theme=halloween
 https://aora-bot.vercel.app/avatar/alice.svg?theme=halloween&variant=grainy&color=cream
 ```
 
-对同一个引擎版本，结果是固定的。如果某次发布重画了角色或调整了阵容，同一个 id 的样子可能随之改变。
+同一个引擎版本下，结果是固定的。如果某次发布重画了角色或调整了阵容，同一个 id 的头像可能随之改变。
 
 ## 缓存与嵌入
 
-响应的类型是 `image/svg+xml`，`Cache-Control` 为 `public, max-age=86400, s-maxage=31536000, stale-while-revalidate=604800`：浏览器缓存一天，边缘节点缓存一年。接口带有 `Access-Control-Allow-Origin: *`，所以也可以在任意来源下用 `fetch` 获取。SVG 是独立的：没有脚本，也没有外部引用。
+响应的类型是 `image/svg+xml`，`Cache-Control` 为 `public, max-age=86400, s-maxage=31536000, stale-while-revalidate=604800`：浏览器缓存一天，边缘节点缓存一年。接口带有 `Access-Control-Allow-Origin: *`，所以也可以在任意来源下用 `fetch` 获取。SVG 自成一体，不含脚本，也没有外部引用。
 
 放在 `<img>` 里时，SVG 看不到你的页面，因此部分角色的墨色会跟随访客的系统浅色或深色设置，而不是你网站的主题。
 
 ## 在应用里，请在本地渲染
 
-做产品时，建议自己渲染头像，而不是每次浏览页面都请求一次接口。服务端安全的入口不需要 DOM，也不需要网络：
+在正式产品里，建议自己渲染头像，不要每次浏览页面都请求接口。可在服务端使用的入口不需要 DOM，也不需要网络：
 
 ```ts
 import { castMember, renderStaticSvg } from '@aora-bot/engine/static';
@@ -92,7 +92,7 @@ const luna = castMember('luna')!;
 const svg = renderStaticSvg({ shape: luna.shape, color: luna.color, state: 'happy', sizePx: 64 });
 ```
 
-主题的角色、皮肤和颜色放在主题自己的入口里。渲染它们之前先加载主题，否则渲染会抛出 `ThemeNotInstalledError`：
+主题的角色、皮肤和颜色放在主题自己的入口里。渲染前要先加载主题，否则会抛出 `ThemeNotInstalledError`：
 
 ```ts
 import { loadTheme, renderStaticSvg } from '@aora-bot/engine/static';
@@ -101,10 +101,10 @@ await loadTheme('halloween');
 const svg = renderStaticSvg({ shape: 'pumpkin', color: 'orange', variant: 'doodle', sizePx: 64 });
 ```
 
-`loadTheme` 通过引擎的主题清单（`THEME_MANIFEST`）取主题入口。想把主题提前打进包里，就导入它的入口再安装：`installTheme(HALLOWEEN)`，`HALLOWEEN` 来自 `@aora-bot/engine/themes/halloween`（React 应用里是 `@aora-bot/react/themes/halloween`）。重复安装不会有任何效果。`themesNeeded({ shape, preset, variant, style, color })` 列出一组 id 需要哪些主题，宿主可以先加载再绘制；`getTheme(id)` 和 `listThemes()` 读取已安装的主题定义，`themeLabel(kind, id)` 给出主题为自己的角色、皮肤和颜色起的名字。`CharacterMark` 和 `<aora-bot>` 会自己加载：遇到主题的角色、皮肤或颜色，先占住尺寸，加载主题后再绘制。
+`loadTheme` 通过引擎的主题清单（`THEME_MANIFEST`）获取主题入口。如果想把主题直接打进包里，就导入它的入口再安装：`installTheme(HALLOWEEN)`，`HALLOWEEN` 来自 `@aora-bot/engine/themes/halloween`（React 应用里是 `@aora-bot/react/themes/halloween`）。重复安装不会产生任何效果。`themesNeeded({ shape, preset, variant, style, color })` 列出一组 id 依赖哪些主题，宿主可据此先加载再绘制；`getTheme(id)` 和 `listThemes()` 读取已安装的主题定义，`themeLabel(kind, id)` 给出主题为自己的角色、皮肤和颜色起的名字。`CharacterMark` 和 `<aora-bot>` 会自行加载：遇到主题的角色、皮肤或颜色时，先占住尺寸，加载完主题再绘制。
 
-主题的 id 在任何地方都能绘制、都被接受，但不进默认列表。`SHAPE_IDS`、`CAST`、`COLOR_IDS` 是列出的 id；`ALL_SHAPE_IDS`、`ALL_CAST_IDS`、`ALL_COLOR_IDS` 是引擎认识的全部 id，`CORE_SHAPE_IDS` 是核心自带的角色。
-想和这个接口画得一模一样，就用 `themeLook` 取主题成员的外观，接口用的也是这条规则：
+主题的 id 在任何地方都能绘制，也都会被接受，只是不在默认列表里。`SHAPE_IDS`、`CAST`、`COLOR_IDS` 是默认列出的 id；`ALL_SHAPE_IDS`、`ALL_CAST_IDS`、`ALL_COLOR_IDS` 是引擎认识的全部 id，`CORE_SHAPE_IDS` 是核心自带的角色。
+要画得和这个接口完全一致，用 `themeLook` 取主题成员的外观，接口用的也是这条规则：
 
 ```ts
 import { loadTheme, renderStaticSvg, themeLook } from '@aora-bot/engine/static';
@@ -114,4 +114,4 @@ const look = themeLook('halloween', 'floaty')!;
 const svg = renderStaticSvg({ ...look, sizePx: 64 });
 ```
 
-`renderAvatarDataUrl(key)` 能用一行代码为任意 key 做同样的事。它从引擎自己的候选池里挑选，所以同一个 id 得到的角色与这个接口挑出的并不相同。更多细节见[服务端渲染](/guide/server-rendering)。
+`renderAvatarDataUrl(key)` 用一行代码就能为任意 key 做同样的事。它从引擎自己的候选池里挑选，所以同一个 id 得到的角色与这个接口选出的不同。详见[服务端渲染](/guide/server-rendering)。

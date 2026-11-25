@@ -35,7 +35,7 @@ Two sprite sets and one procedural character, all answering the same [protocol i
 
 ## When to reach for this
 
-The vector characters are the point of Aora Bot: they are procedural, themeable, and weightless. `SpriteMark` is the escape hatch for the one thing they cannot be — a specific illustration. A brand mascot, a pet drawn by hand, a photograph-derived creature: things with a look that cannot be generated.
+The vector characters are the point of Aora Bot: they are procedural, themeable, and weightless. `SpriteMark` is the escape hatch for the one thing they cannot be: a specific illustration, such as a brand mascot, a hand-drawn pet or a creature derived from a photograph. These looks cannot be generated.
 
 The cost is real. A sheet is tens of PNG files instead of a few kilobytes of maths; it does not recolour with the theme; it has exactly the states someone drew. Treat it as an asset, not a component you configure.
 
@@ -99,7 +99,7 @@ Frames are shown with a single `<img>` whose `src` swaps on a timer. There is no
 
 ## The bundled sheets
 
-The docs ship two sets under `/sprites/` for demonstration, both project original and under the MIT License: `bao`, 32 ids with two frames each, rendered from the procedural `bao` character (the `bun` shape), and `tapkin`, 12 ids with one frame each, of a prompt-designed hamster. Their `provenance` blocks record how each was made.
+The docs ship two sets under `/sprites/` for demonstration, both original to the project and licensed under the MIT License: `bao`, 32 ids with two frames each, rendered from the procedural `bao` character (the `bun` shape), and `tapkin`, 12 ids with one frame each, of a prompt-designed hamster. Their `provenance` blocks record how each was made.
 
 ## API
 

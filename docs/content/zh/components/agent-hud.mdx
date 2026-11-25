@@ -2,7 +2,7 @@ import { API } from '@theme';
 
 # AgentHud
 
-仲裁器当前的读数，用一个角色加一块底盘表达。
+用角色加底盘显示仲裁器当前的读数。
 
 ```tsx preview
 import { useEffect } from 'react';
@@ -41,13 +41,13 @@ export default function Demo() {
 
 ## 只有一个数据源
 
-屏幕上的一切都来自最近的 [`AgentStateProvider`](/components/agent-state)。状态决定脸，`tips` 变成底盘的补充文字，`hud` 跟着当前胜出的会话走——所以一个会话发来的倒计时，绝不会留在另一个会话的脸上。底盘等级随状态而定：`alerting` 和 `refusing` 是 `alert`，`waiting` 和 `suspicious` 是 `warn`，`happy`、`proud`、`celebrate` 是 `ok`，其余是 `info`。传 `level` 可以覆盖。
+显示的所有内容都来自最近的 [`AgentStateProvider`](/components/agent-state)。状态决定脸，`tips` 成为底盘上的补充文字，`hud` 跟随当前胜出的会话，所以某个会话发来的倒计时，不会留在另一个会话的脸上。底盘等级由状态决定：`alerting` 和 `refusing` 对应 `alert`，`waiting` 和 `suspicious` 对应 `warn`，`happy`、`proud`、`celebrate` 对应 `ok`，其余为 `info`。传 `level` 可以覆盖。
 
-没有 Provider 时组件照样渲染——一个空闲角色、智能体名字、没有表盘——所以页头可以在智能体通道接通之前就先挂载。
+没有 Provider 时，组件仍会渲染，只是显示一个空闲角色和智能体名字，没有表盘。所以页头可以在智能体通道接通之前先挂载。
 
 ## useAgentHud
 
-它背后的 hook。从 Provider 读出胜出结果的 `hud`，没有 Provider 或没有表盘时返回 `null`，于是想自己排版的宿主可以把同一份 spec 直接放到 [`CharacterMark`](/components/character-mark) 上。
+组件背后用的 Hook。它从 Provider 读取胜出结果的 `hud`；没有 Provider 或没有表盘时返回 `null`。想自己排版的宿主，可以把同一份 spec 直接传给 [`CharacterMark`](/components/character-mark)。
 
 ```tsx
 const hud = useAgentHud();
@@ -56,7 +56,7 @@ const hud = useAgentHud();
 
 ## 外观
 
-`agent` 提供形状、墨色、脸型和鼻子，解析方式与 [`AgentPortrait`](/components/agent-portrait) 相同：先看显式字段，再看 `preset`，最后由 `id` 确定性推导。`face`、`nose`、`lineWeight` 会覆盖智能体自己的设定，所以要一个笔画更重的线条脸 HUD，只差一个 prop。线条粗细由鼻子、嘴和表盘共用——见[线条脸在各个面上](/design/face#线条脸在各个面上)。
+`agent` 提供形状、墨色、脸型和鼻子，解析顺序与 [`AgentPortrait`](/components/agent-portrait) 相同：先取显式字段，再取 `preset`，最后由 `id` 确定性推导。`face`、`nose`、`lineWeight` 会覆盖智能体自己的设置，所以想要笔画更粗的线条脸 HUD，只需再加一个 prop。线条粗细由鼻子、嘴和表盘共用，详见[线条脸在各个面上](/design/face#线条脸在各个面上)。
 
 ## API
 
@@ -65,4 +65,4 @@ const hud = useAgentHud();
 ## 接下来
 
 - [HudPlate](/components/hud-plate)——表盘旁边的一个数字
-- [进度 HUD](/scenarios/progress-hud)——身体在干活，外环在计数
+- [进度 HUD](/scenarios/progress-hud)——角色在工作，外环在计数

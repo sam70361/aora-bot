@@ -2,11 +2,11 @@ import { StateMatrix } from '@theme';
 
 # 对话流
 
-把角色用作对话的状态行。
+用角色作为对话的状态行。
 
 ## 先看效果
 
-一条由事实驱动的对话行：这一行通过 `facts` 发布自己知道的东西，一轮结束是一次带存活时间的显式持有，点击角色会戳它一下。下方是一条群组行，轮播它的成员。
+一条由事实驱动的对话行：这一行通过 `facts` 发布自己掌握的信息，一轮结束时显式持有一个带存活时间的状态，点击角色会戳它一下。下方是一条群组行，依次轮播各个成员。
 
 ```tsx preview
 import { useState } from 'react';
@@ -81,43 +81,43 @@ export default function Demo() {
 }
 ```
 
-`ActivityBadge` 的 `surface` 默认是 `chat`，所以第四步显示 `composing`：同样的事实在 `avatar` 表面上读出来仍是 `idle`——二十个头像每几百毫秒在两张脸之间闪动，是噪音而不是信息。
+`ActivityBadge` 的 `surface` 默认是 `chat`，所以第四步显示 `composing`；同样的事实在 `avatar` 界面上读出来仍是 `idle`，因为二十个头像每隔几百毫秒就在两张脸之间闪动，只会是干扰，不是信息。
 
 ## 什么时候用
 
-最后一条消息下面那一行，告诉用户智能体此刻在做什么。角色取代了"思考中…"加一个转圈：搜索和书写看起来不一样，动词和动画出自同一张表，所以文字和脸不可能各说各话。
+最后一条消息下面的一行，告诉用户智能体此刻在做什么。角色取代了「思考中…」加转圈图标：搜索和书写的样子不同，动词和动画出自同一张表，所以文字和脸不会互相矛盾。
 
 ## 用到的组件
 
-- [`ActivityBadge`](/components/activity-badge)——一个智能体、一行：角色加动词。`activityMode="facts"` 读取共享注册表而不是工具名。
-- [`GroupActivityBadge`](/components/activity-badge#群组)——多个智能体轮流占据一个位置，群组不会变成一堵角色墙。
-- [`ActivityLine`](/components/activity-line)——动词以替换而非改写的方式切换，行高保持不变。
-- [`CharacterStageProvider`](/components/character-stage)——每种外观一个引擎，也是命令注册表的所在。
-- [`useMarkCommands`](/components/mark-commands)——`holdFacts`、`holdState` 与 `poke`，让名册和对话谈的是同一个智能体。
-- [`HudPlate`](/components/hud-plate)——一轮的长度已知时（比如五次工具调用里的第三次），把数字放在角色旁边，可读也可被朗读。
+- [`ActivityBadge`](/components/activity-badge)——一个智能体一行：角色加动词。`activityMode="facts"` 读取共享注册表，而不是工具名。
+- [`GroupActivityBadge`](/components/activity-badge#群组)——多个智能体轮流占用同一个位置，群组不会变成一整面角色墙。
+- [`ActivityLine`](/components/activity-line)——动词整体替换，而不是逐字改写，所以行高保持不变。
+- [`CharacterStageProvider`](/components/character-stage)——每种外观对应一个引擎，命令注册表也在这里。
+- [`useMarkCommands`](/components/mark-commands)——提供 `holdFacts`、`holdState` 与 `poke`，让名册和对话指向同一个智能体。
+- [`HudPlate`](/components/hud-plate)——一轮的长度已知时（例如五次工具调用中的第三次），在角色旁显示数字，既能看，也能被读屏软件朗读。
 
 ## 状态怎么走
 
 | 从          | 到          | 时机                        |
 | ----------- | ----------- | --------------------------- |
 | —           | `spawning`  | 本次会话首次出现            |
-| `spawning`  | `thinking`  | 2 秒后自动收敛              |
+| `spawning`  | `thinking`  | 2 秒后自动回落              |
 | `thinking`  | `searching` | 工具调用开始                |
 | `searching` | `working`   | `run`、`shell`              |
 | `working`   | `composing` | 回复流式输出                |
 | `composing` | `celebrate` | 本轮结束（用 `ttlMs` 持有） |
 | `working`   | `alerting`  | 工具失败（用 `ttlMs` 持有） |
-| 任一        | 整行离场    | 持有到期                    |
+| 二者之一    | 整行离场    | 持有到期                    |
 
-`spawning` 由 `useArrival` 在智能体本次会话首次出现时播放一次，此后不再播放——滚出视野再滚回来的那一行并没有"到达两次"。引擎会在 `STATE_SETTLE_TO.spawning.afterMs`（2 秒）后把它收敛到 `idle`，宿主不需要自己计时。
+`useArrival` 只在智能体本次会话首次出现时播放一次 `spawning`，之后不再播放：一行滚出视野再滚回来，并不算到达了两次。引擎会在 `STATE_SETTLE_TO.spawning.afterMs`（2 秒）后把它转到 `idle`，宿主不需要自己计时。
 
-`celebrate` 和 `alerting` 是事件而不是条件：协议编号 `33` 和 `34` 都是一次性的。用 `ttlMs` 持有它们，回复落地之后这一行就不会一直庆祝下去。
+`celebrate` 和 `alerting` 是事件，不是持续的状况：协议编号 `33` 和 `34` 都是一次性的。持有它们时要带上 `ttlMs`，这样回复落地之后，这一行就不会一直庆祝下去。
 
 ## 每个状态的样子
 
 <StateMatrix states={['thinking', 'searching', 'working', 'composing', 'celebrate', 'alerting']} />
 
-其中两个状态把身体交给了腰带：`thinking` 交给 `dots` 的三颗游走小球，`alerting` 交给 `bang` 字形。其余状态以整个身体运动，`composing` 在线条脸模式下还会让嘴一张一合。
+其中两个状态由腰带取代身体动作：`thinking` 用 `dots` 的三颗游走小球，`alerting` 用 `bang` 字形。其余状态用整个身体运动；`composing` 在线条脸模式下，嘴还会一张一合。
 
 ## 接下来
 

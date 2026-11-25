@@ -12,7 +12,7 @@ The endpoint runs on `aora-bot.vercel.app`, which is usually unreachable from ma
 <img src="https://aora-bot.vercel.app/avatar/alice.svg" width="64" height="64" alt="alice" />
 ```
 
-In Markdown, which works in a README, an issue or a comment on any host that allows remote images:
+The same works in Markdown, for example in a README, an issue or a comment on any host that allows remote images:
 
 ```md
 ![alice](https://aora-bot.vercel.app/avatar/alice.svg)
@@ -66,7 +66,7 @@ If the id is exactly a [cast](/design/cast) id, you get that character: `/avatar
 
 ## Themes
 
-`theme=halloween` picks the character from the theme's cast instead of the default pool, with the same consistent hash, and fills every parameter the request leaves out from the theme: its first skin (`doodle`), its first face, its first state (`happy`; every theme opens all the engine's states), and the member's colour: the one the theme gives it, else its own when the theme offers it, else one of the theme's colours picked by the id. A dimension the theme fixes takes its fixed value. Any parameter you set wins: `theme=halloween&variant=solid&state=angry` keeps the theme's character and drops its skin and state. A `style` other than the theme's drops its skin too. `pool` applies to the default pool only and is refused with `theme`.
+`theme=halloween` picks the character from the theme's cast instead of the default pool, with the same consistent hash, and fills every parameter the request leaves out from the theme: its first skin (`doodle`), its first face, its first state (`happy`; every theme allows all the engine's states), and the member's colour: the one the theme gives it, otherwise its own when the theme offers it, otherwise one of the theme's colours picked by the id. A dimension the theme fixes takes its fixed value. Any parameter you set wins: `theme=halloween&variant=solid&state=angry` keeps the theme's character and drops its skin and state. A `style` other than the theme's drops its skin too. `pool` applies to the default pool only and is refused with `theme`.
 
 ```text
 https://aora-bot.vercel.app/avatar/alice.svg?theme=halloween
@@ -77,7 +77,7 @@ The result is fixed for a given engine version. A release that redraws a charact
 
 ## Caching and embedding
 
-Responses are `image/svg+xml` with `Cache-Control: public, max-age=86400, s-maxage=31536000, stale-while-revalidate=604800`, so a browser keeps an avatar for a day and the edge for a year. The endpoint sends `Access-Control-Allow-Origin: *`, so you can also `fetch` it from any origin. The SVG is standalone: no script, no external references.
+Responses are `image/svg+xml` with `Cache-Control: public, max-age=86400, s-maxage=31536000, stale-while-revalidate=604800`, so browsers cache an avatar for a day and edge nodes for a year. The endpoint sends `Access-Control-Allow-Origin: *`, so you can also `fetch` it from any origin. The SVG is standalone: no script, no external references.
 
 Inside an `<img>` the SVG cannot see your page, so the ink of some characters follows the viewer's system light or dark setting rather than your site's theme.
 
@@ -103,8 +103,8 @@ const svg = renderStaticSvg({ shape: 'pumpkin', color: 'orange', variant: 'doodl
 
 `loadTheme` fetches the entry through the engine's manifest (`THEME_MANIFEST`). To bundle a theme up front instead, import its entry and install it: `installTheme(HALLOWEEN)`, with `HALLOWEEN` from `@aora-bot/engine/themes/halloween` (`@aora-bot/react/themes/halloween` in a React app). Installing twice does nothing. `themesNeeded({ shape, preset, variant, style, color })` lists the themes a set of ids needs, so a host can load them before drawing; `getTheme(id)` and `listThemes()` read the installed definitions, and `themeLabel(kind, id)` gives the name a theme puts on its characters, skins and colours. `CharacterMark` and `<aora-bot>` do the loading themselves: given a theme's character, skin or colour, they hold their box, load the theme, then draw.
 
-A theme's ids are drawn and accepted everywhere but stay out of the default lists. `SHAPE_IDS`, `CAST` and `COLOR_IDS` hold the listed ids; `ALL_SHAPE_IDS`, `ALL_CAST_IDS` and `ALL_COLOR_IDS` hold every id the engine knows, and `CORE_SHAPE_IDS` the core's own characters.
-To draw a theme's member exactly as this endpoint does, take its look from `themeLook`, the one rule the endpoint uses too:
+A theme's ids can be drawn and are accepted everywhere, but they stay out of the default lists. `SHAPE_IDS`, `CAST` and `COLOR_IDS` hold the listed ids; `ALL_SHAPE_IDS`, `ALL_CAST_IDS` and `ALL_COLOR_IDS` hold every id the engine knows, and `CORE_SHAPE_IDS` the core's own characters.
+To draw a theme's member exactly as this endpoint does, take its look from `themeLook`, which is the rule the endpoint uses too:
 
 ```ts
 import { loadTheme, renderStaticSvg, themeLook } from '@aora-bot/engine/static';

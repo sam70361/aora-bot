@@ -2,11 +2,11 @@ import { StateMatrix } from '@theme';
 
 # 新手引导
 
-一次介绍产品、并让用户最后拿到自己智能体的首次运行。
+介绍产品、并让用户最终得到自己智能体的首次运行。
 
 ## 先看效果
 
-一段三步的场景：两个角色登场，一个把工作交给另一个，接收方落进头像槽位。手动切换会暂停自动播放——伸手去按按钮的人是在自己驾驶。
+一段三步的场景：两个角色登场，其中一个把工作交给另一个，接收方落进头像槽位。手动切换会暂停自动播放，因为用户已经在自己操作了。
 
 ```tsx preview
 import { useState } from 'react';
@@ -89,32 +89,32 @@ export default function Demo() {
 }
 ```
 
-移动是 CSS 过渡，缓动函数是从引擎自己的弹簧采样出来的 `linear()`，所以滑行会像脸一样过冲，却不需要第二个帧循环。槽位用普通 CSS 定位：它不知道自己在哪里，正因如此宿主可以把它放在场景旁边的表单里，而不是场景之内。
+移动用的是 CSS 过渡，缓动函数是从引擎自己的弹簧曲线采样出的 `linear()`，所以滑行会像脸一样过冲，又不需要第二个帧循环。槽位用普通 CSS 定位，并不知道自己在场景的哪个位置，因此宿主可以把它放在场景旁边的表单里，而不必放进场景内部。
 
 ## 什么时候用
 
-第一次运行。什么都还没发生，产品得在没被使用的情况下展示自己能做什么，而用户最后要得到一个属于自己的智能体。角色随产品一起醒来，走完一段简短的剧本，最后落进那个将成为用户头像的槽位——刚才看着的东西，现在就是自己的东西。
+首次运行。此时什么都还没发生，产品要在用户还没开始使用时就展示自己能做什么，最后用户还要得到一个属于自己的智能体。角色随产品一起醒来，走完一小段预设的剧情，最后落进将成为用户头像的槽位：刚才看到的角色，就成了用户自己的角色。
 
 ## 用到的组件
 
-- [`CastLineup`](/components/cast-lineup) 与 `useCastScene`——多个角色按剧本移动，`PortraitSlot` 是其中一个最终落脚的位置。
-- [`DemoDesktop`](/components/walkthrough)、`JobBubbles`、`SuggestionCards`、`LandingWait`、`HandOff` 与 `Composer`——引导流程的零件：放演示的窗口、进行中的工作、三个起点、空白屏幕、一个智能体交接给另一个，以及一个角色会留意的输入框。
-- [`CharacterMark`](/components/character-mark)——`onSettle` 告诉宿主 `spawning` 或 `waking` 什么时候走完了。
+- [`CastLineup`](/components/cast-lineup) 与 `useCastScene`——多个角色按剧本移动，`PortraitSlot` 是其中一个角色最终落脚的位置。
+- [`DemoDesktop`](/components/walkthrough)、`JobBubbles`、`SuggestionCards`、`LandingWait`、`HandOff` 与 `Composer`——引导流程的组成部分：承载演示的窗口、进行中的工作、三张起步卡片、空白屏幕、智能体之间的交接，以及角色会留意的输入框。
+- [`CharacterMark`](/components/character-mark)——`onSettle` 通知宿主 `spawning` 或 `waking` 何时结束。
 
 ## 状态怎么走
 
-| 从          | 到          | 时机                                |
-| ----------- | ----------- | ----------------------------------- |
-| —           | `spawning`  | 场景开始；`gather` 腰带把自己画出来 |
-| `spawning`  | `idle`      | 2 秒后自动收敛（`STATE_SETTLE_TO`） |
-| `idle`      | `waking`    | 用户的第一次输入                    |
-| `waking`    | `idle`      | 1.6 秒后自动收敛                    |
-| `idle`      | `curious`   | 递上一张建议卡片                    |
-| `idle`      | `working`   | 工作气泡展示进行中的任务            |
-| `sending`   | `receiving` | 一个智能体把工作交给另一个          |
-| `listening` | `composing` | 输入框获得焦点，然后敲下第一个键    |
+| 从          | 到          | 时机                                    |
+| ----------- | ----------- | --------------------------------------- |
+| —           | `spawning`  | 场景开始；`gather` 腰带把身体逐步画出来 |
+| `spawning`  | `idle`      | 2 秒后自动回落（`STATE_SETTLE_TO`）     |
+| `idle`      | `waking`    | 用户的第一次输入                        |
+| `waking`    | `idle`      | 1.6 秒后自动回落                        |
+| `idle`      | `curious`   | 出现一张建议卡片                        |
+| `idle`      | `working`   | 工作气泡展示进行中的任务                |
+| `sending`   | `receiving` | 一个智能体把工作交给另一个              |
+| `listening` | `composing` | 输入框获得焦点，之后按下第一个键        |
 
-`spawning` 和 `waking` 是瞬间，不是条件。它们的时钟由引擎持有，通过 `onSettle` 上报，宿主自己的状态可以跟着走，不必再写一个重复的计时器。减弱动态效果时收敛照样触发，只是省掉那一下花活。
+`spawning` 和 `waking` 是瞬间，不是持续的状况。它们的时钟由引擎掌管，并通过 `onSettle` 上报，宿主自己的状态可以据此跟进，不必再写重复的计时器。启用减少动态效果时，回落照样触发，只是省掉动画花样。
 
 ## 每个状态的样子
 
@@ -122,7 +122,7 @@ export default function Demo() {
   states={['spawning', 'waking', 'idle', 'curious', 'sending', 'receiving', 'listening', 'composing']}
 />
 
-`spawning` 是这里唯一的腰带：五颗粒子用两秒螺旋向内，之后腰带表现得像 `progress`。`waking` 进入时弹一下，眼睛分三步睁开。`sending` 与 `receiving` 是一对——一个探身送出，另一个接住——所以 `HandOff` 不需要在两者之间画任何飞行的东西。
+这里只有 `spawning` 使用腰带：五颗粒子用两秒螺旋向内聚拢，之后腰带的表现与 `progress` 相同。`waking` 进入时会弹一下，眼睛分三步睁开。`sending` 与 `receiving` 是一对：一个探身送出，另一个接住，所以 `HandOff` 不必在两者之间再画任何飞行的东西。
 
 ## 接下来
 

@@ -2,13 +2,13 @@ import { ComponentOverview, ComponentGraph } from '@theme';
 
 # 组件
 
-React 层刻意很小。大部分工作发生在引擎里；这些组件决定何时动画、何时共享动画，以及何时干脆不动。
+React 层刻意保持精简。动画的实际工作由引擎完成，这些组件负责决定何时播放动画、何时共享动画，以及何时不播放。
 
 <ComponentOverview />
 
 ## 它们如何关联
 
-四层。引擎对 React 一无所知；核心把它包成组件，并决定何时共享动画；智能体层把协议编号喂给核心；其余一切由这两层组合而来。
+共四层。引擎本身不依赖 React；核心层把引擎封装成组件，并决定何时共享动画；智能体层把协议编号传给核心层；其余组件都由这两层组合而成。
 
 <ComponentGraph />
 
@@ -16,30 +16,30 @@ React 层刻意很小。大部分工作发生在引擎里；这些组件决定�
 
 **单独一个角色。** `CharacterMark`。
 
-**很多角色，其中大多数长得一样。** `CharacterStageProvider` 加 `StagedMark`。每种不同的形状-状态组合一个引擎，其余用镜像。
+**很多角色，其中大多数长得一样。** `CharacterStageProvider` 加 `StagedMark`。每种形状与状态的组合只运行一个引擎，其余角色用镜像。
 
-**用户或智能体的头像。** `AgentPortrait`。它在照片、群组簇和角色之间替你选择，并从 id 推导稳定外观，所以你不必存储一份。
+**用户或智能体的头像。** `AgentPortrait`。它会在照片、群组头像和角色之间自动选择，并根据 id 推导出固定的外观，因此不需要另行保存。
 
-**会报告自己在做什么的智能体。** `AgentStateProvider` 加 `CharacterMark`。钩子和中继讲的是[情绪协议](/design/protocol)；仲裁器决定脸上显示哪一个会话。
+**会报告自己在做什么的智能体。** `AgentStateProvider` 加 `CharacterMark`。Hook 和中继使用[情绪协议](/design/protocol)通信；仲裁器决定脸上显示哪一个会话。
 
-**脸旁边要有一个数字。** 任何角色都有 `hud`，规格由[协议](/design/protocol#hud)携带；需要标题和数值并排时用 [`HudPlate`](/components/hud-plate)，两者都该由 provider 提供时用 [`AgentHud`](/components/agent-hud)。
+**脸旁边要有一个数字。** 任何角色都支持 `hud`，其规格由[协议](/design/protocol#hud)提供。需要标题和数值并排显示时用 [`HudPlate`](/components/hud-plate)；标题和数值都由 provider 提供时用 [`AgentHud`](/components/agent-hud)。
 
-**同一个智能体同时画在几个地方。** [角色指令](/components/mark-commands)——事实只发布一次，这个智能体的每一个名册行、头像和活动行都跟着走。
+**同一个智能体同时画在几个地方。** 用[角色指令](/components/mark-commands)。事实只需发布一次，该智能体的所有名册行、头像和活动行都会同步更新。
 
-**让人选择或编辑外观。** 设置表单里用 `CharacterSelector`；对话框里用 [`AgentCharacterSelector`](/components/agent-character-selector)；注册表单旁用 [`CompactCharacterSelector`](/components/compact-character-selector)；还允许上传图片时用 [`AvatarStudio`](/components/avatar-studio)；外观属于一个正在创建的模板时用 [`TemplateDialog`](/components/template-dialog)。
+**让用户选择或编辑外观。** 设置表单中用 `CharacterSelector`；对话框中用 [`AgentCharacterSelector`](/components/agent-character-selector)；注册表单旁边用 [`CompactCharacterSelector`](/components/compact-character-selector)；同时允许上传图片时用 [`AvatarStudio`](/components/avatar-studio)；外观属于正在创建的模板时用 [`TemplateDialog`](/components/template-dialog)。
 
-**一整个场景。** 死胡同用 [`RestrictedScene`](/components/restricted-scene)，不确定时长的等待用 [`BootLoop`](/components/boot-loop)，有脚本的表演用 [`CastLineup`](/components/cast-lineup)，引导流程用[引导页组件](/components/walkthrough)。
+**一整个场景。** 无权访问的页面用 [`RestrictedScene`](/components/restricted-scene)，时长不确定的等待用 [`BootLoop`](/components/boot-loop)，按脚本演出的场景用 [`CastLineup`](/components/cast-lineup)，引导流程用[引导页组件](/components/walkthrough)。
 
-**用手绘吉祥物代替程序化角色。** `SpriteMark`，用同一套协议编号索引帧。
+**用手绘吉祥物代替程序生成的角色。** `SpriteMark`，用同一套协议编号选取帧。
 
-**虚拟列表里的几百个。** 都不用——用 `renderAvatarDataUrl` 渲染图片。
+**虚拟列表中的几百个角色。** 以上都不适合，改用 `renderAvatarDataUrl` 渲染成图片。
 
 ## 全部导出
 
-一页看完：[API 索引](/components/api-index)。
+所有导出见 [API 索引](/components/api-index)。
 
 ## 接下来
 
-- [CharacterMark](/components/character-mark)——一个会动的角色
-- [API 索引](/components/api-index)——所有导出集中一处
-- [对话流](/scenarios/chat-stream)——一行带脸的状态
+- [CharacterMark](/components/character-mark)——单个会动的角色
+- [API 索引](/components/api-index)——所有导出集中在一页
+- [对话流](/scenarios/chat-stream)——带脸的状态行

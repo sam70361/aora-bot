@@ -2,7 +2,7 @@ import { API } from '@theme';
 
 # LocaleProvider
 
-为下方所有组件提供语言。
+为其内部的所有组件提供语言。
 
 ```tsx preview
 import { LocaleProvider, CharacterSelector, ActivityBadge } from '@aora-bot/react';
@@ -19,13 +19,13 @@ export default function Demo() {
 }
 ```
 
-添加语言与覆盖单条文案见[国际化](/guide/internationalisation)。
+添加语言和覆盖单条文案的方法见[国际化](/guide/internationalisation)。
 
 ## 标识符的显示名
 
-形状、墨色、状态的标识符是 API——`'blob'`、`'blue'`、`'thinking'`——永远不翻译。翻译的是它们的**显示名**，语言表把这些显示名按 id 驱动的族存放：`shape.*`、`color.*`、`state.*`、`stateDesc.*`（每个状态的一句话描述）、`belt.*`、`hud.*`、`mouth.*`、`expression.*`，加上线条脸用的 `face.*`、`nose.*`，以及四个状态分组的 `state.group.*`。
+形状、墨色和状态的标识符属于 API，如 `'blob'`、`'blue'`、`'thinking'`，不会被翻译。翻译的是它们的**显示名**。语言表按 id 把这些显示名分成几个族：`shape.*`、`color.*`、`state.*`、`stateDesc.*`（每个状态的一句话描述）、`belt.*`、`hud.*`、`mouth.*`、`expression.*`，线条脸使用的 `face.*` 和 `nose.*`，以及状态四个分组的 `state.group.*`。
 
-`useLabel()` 把这些族包成函数，于是遍历 `SHAPE_IDS` 的组件不必拼 `'shape.' + id` 再强转成键：
+`useLabel()` 把这些族封装成函数，所以遍历 `SHAPE_IDS` 的组件不必再拼出 `'shape.' + id` 并强制转换成键：
 
 ```tsx preview
 import { LocaleProvider, SHAPE_IDS, useLabel, type ShapeId } from '@aora-bot/react';
@@ -55,11 +55,11 @@ export default function Demo() {
 }
 ```
 
-HUD 的名字来自引擎自己的 `HUD_KIND_LABELS`，那里已经带了两种语言；语言表直接转出，而不是再存一份。
+HUD 的名字来自引擎自带的 `HUD_KIND_LABELS`，其中已经包含两种语言。语言表直接转出这些名字，没有另存一份。
 
 ## 键的族
 
-标识符族之外，表按读取它的界面分组：`picker.*`、`editor.*`、`activity.*`、`template.*`、`avatar.*`、`occupancy.*`、`restricted.*`、`boot.*` 与 `loading.label`、`cast.*`、`walkthrough.*`、`sprite.*`。`LocaleKey` 是覆盖所有键的封闭联合类型，所以拼错键的覆盖是类型错误，而不是悄无声息地不起作用。
+除标识符的族之外，语言表还按使用它的界面分组：`picker.*`、`editor.*`、`activity.*`、`template.*`、`avatar.*`、`occupancy.*`、`restricted.*`、`boot.*` 与 `loading.label`、`cast.*`、`walkthrough.*`、`sprite.*`。`LocaleKey` 是涵盖所有键的封闭联合类型，所以覆盖时拼错键会报类型错误，而不是悄悄失效。
 
 ## API
 
@@ -67,5 +67,5 @@ HUD 的名字来自引擎自己的 `HUD_KIND_LABELS`，那里已经带了两种�
 
 ## 接下来
 
-- [国际化](/guide/internationalisation)——一个 provider 管所有文案
-- [API 索引](/components/api-index)——所有导出集中一处
+- [国际化](/guide/internationalisation)——用一个 provider 管理所有文案
+- [API 索引](/components/api-index)——所有导出的汇总

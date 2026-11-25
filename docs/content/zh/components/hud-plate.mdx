@@ -36,13 +36,13 @@ export default function Demo() {
 
 ## 为什么要有底盘
 
-画在角色身体外圈的表盘是一段几何：五分之四满的环、转了三分之二的指针。它说不出「83%」或「还剩四分钟」，也不该去说——那个尺寸的 SVG 文字根本读不清。所以角色只管几何，底盘负责文字：标题、数值、单位，以及下方的补充行。
+画在角色身体外圈的表盘只是几何图形：一个五分之四满的环，或一根转了三分之二圈的指针。它表达不了「83%」或「还剩四分钟」，也不应该表达，因为这么小的 SVG 文字根本看不清。所以角色只负责几何图形，文字交给底盘：标题、数值、单位，以及下方的补充行。
 
-底盘不做任何四舍五入或格式化。`value` 原样显示，由宿主决定这个数字用什么精度才诚实。
+底盘不做任何四舍五入或格式化，`value` 按传入的值原样显示，用什么精度才算如实，由宿主决定。
 
 ## 位置与等级
 
-`placement` 把文字放在角色下方、上方或右侧。`level` 给底盘着色——`info`、`ok`、`warn`、`alert`——并且应当少用：每个状态都变色的底盘，一轮对话就会闪过四种颜色。
+`placement` 决定文字显示在角色的下方、上方还是右侧。`level` 给底盘着色，可选 `info`、`ok`、`warn`、`alert`，应当少用：如果每次状态变化都换颜色，一轮对话里底盘就会在四种颜色之间闪烁。
 
 ```tsx preview
 import { CharacterMark, HudPlate } from '@aora-bot/react';
@@ -76,18 +76,18 @@ export default function Demo() {
 
 ## useHudSpec
 
-宿主手里的数据往往参差不齐：首次渲染时还是 `undefined` 的比例、从接口拿到的字符串型 token 数。直接塞给 `hud`，要么画错表盘，要么抛错。`useHudSpec` 接收种类和原始值，用协议的 `isHudSpec` 检查一遍，返回合法的 spec 或 `null`——`null` 就是不画表盘，这正是数据还在路上时该有的样子。
+宿主拿到的数据往往不规整，例如首次渲染时还是 `undefined` 的比例，或接口返回的字符串型 token 数。把这些直接传给 `hud`，要么画错表盘，要么抛出错误。`useHudSpec` 接收种类和原始值，用协议的 `isHudSpec` 检查，返回合法的 spec 或 `null`。`null` 表示不画表盘，数据尚未到达时正该如此。
 
 ```ts
 const hud = useHudSpec('progress', { value: fraction }); // fraction 变成数字之前都是 null
 const clock = useHudSpec('clock'); // 没有必填字段的种类不需要 values
 ```
 
-全部种类见 `HUD_KINDS`；每种的字段形状是 `HudSpec` 联合类型，在[协议页](/design/protocol#hud)有说明。
+全部种类见 `HUD_KINDS`；每种的字段结构由 `HudSpec` 联合类型定义，详见[协议页](/design/protocol#hud)。
 
 ## 无障碍
 
-底盘是一个 polite 的 `role="status"` 区域，屏幕阅读器能听到数字变化，又不会被它打断。表盘本身是装饰，不进入无障碍树。
+底盘是 `role="status"` 区域，播报方式为 polite，屏幕阅读器会读出数字的变化，但不会打断当前朗读。表盘本身只是装饰，不会出现在无障碍树中。
 
 ## API
 

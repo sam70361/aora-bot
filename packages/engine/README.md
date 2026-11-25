@@ -1,10 +1,10 @@
 # @aora-bot/engine
 
-The character engine behind [Aora Bot](https://aora-bot.vercel.app) — pick a
-character in its [console](https://aora-bot.vercel.app/en/): shapes and a named cast, animation
-states, three faces, vector, pixel, kaomoji and ASCII style series, face fitting, pose projection, a
-damped-spring state machine, effects and belts, HUD dials, particles, and a numeric
-emotion protocol. No React and, on the `/static` and `/agent` entries, no DOM.
+The character engine behind [Aora Bot](https://aora-bot.vercel.app): shapes and a named cast,
+animation states, sixteen faces, the vector, pixel, kaomoji and ASCII style series, face fitting,
+pose projection, a damped-spring state machine, effects and belts, HUD dials, particles and a
+numeric emotion protocol. It needs no React, and the `/static` and `/agent` entries need no DOM.
+Pick a character in the [console](https://aora-bot.vercel.app/en/).
 
 Most applications want [`@aora-bot/react`](https://www.npmjs.com/package/@aora-bot/react)
 instead, which wraps this engine in components. Install the engine directly when you need

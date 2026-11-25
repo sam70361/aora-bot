@@ -2,11 +2,11 @@ import { StateMatrix } from '@theme';
 
 # 启动与加载
 
-两种等待：即将到达的记录，和时长未知的启动。
+两种等待：一条即将到达的记录，和一次时长未知的启动。
 
 ## 先看效果
 
-左边：三个先加载再登场的头像槽。`LoadingCharacter` 在 `ready` 之前一直显示轮廓；下面真正的角色始终挂载着、处于暂停，所以切换是交叉淡入，而不是第一帧对着一片空白。右边：一个已经持续到该说点什么的启动。
+左边：三个先加载、再登场的头像槽。`LoadingCharacter` 在 `ready` 之前一直显示轮廓；下面的真实角色始终已挂载并处于暂停，所以切换是交叉淡入，不会让第一帧面对一片空白。右边：一次已经持续得足够久、该给出提示的启动。
 
 ```tsx preview
 import { useEffect, useState } from 'react';
@@ -61,38 +61,38 @@ export default function Demo() {
 }
 ```
 
-槽只拿到 `state="spawning"`，别的什么都没给：真正的角色在 `ready` 之前处于暂停，所以它的状态时钟从交叉淡入那一刻开始走，`gather` 腰带播放，两秒后渲染器自己转到 `idle`。`LoadingCharacter` 不转发 `onSettle`；需要知道这一刻的宿主，在记录到手之后直接用 `CharacterMark`。`BootLoop` 从 effect 而不是从计时器里上报周期数，这样在回调里重渲染的宿主也不会让计时器在周期中途重启。
+这些槽只传了 `state="spawning"`，没有别的属性。真实角色在 `ready` 之前处于暂停，所以它的状态时钟从交叉淡入时才开始走：`gather` 腰带播放，两秒后渲染器自行转到 `idle`。`LoadingCharacter` 不转发 `onSettle`；需要这个时机的宿主，在记录到手后直接使用 `CharacterMark`。`BootLoop` 在 effect 中而不是在计时器里上报周期数，所以宿主即使在回调里重新渲染，也不会让计时器在周期中途重启。
 
 ## 什么时候用
 
-两种不同的等待。第一种是智能体自己的记录正在到达——几百毫秒里头像槽是空的，版面即将跳动。第二种是某个东西在启动，时长未知，进度条在这里只会撒谎。角色两种都能接：先是一个即将到来的脸的轮廓，然后是一次登场；或者是一种诚实地不知道何时结束的持续活动。
+这里有两种不同的等待。第一种是智能体自己的记录正在到达：头像槽会空几百毫秒，版面随后会跳动。第二种是某个东西正在启动，时长未知，这时进度条只会误导人。角色两种都能胜任：前者先显示即将出现的脸的轮廓，再登场；后者是持续的活动，如实表示不知道何时结束。
 
 ## 用到的组件
 
-- [`LoadingCharacter`](/components/boot-loop)——角色自己的轮廓做成闪动的遮罩，`ready` 时交叉淡入真正的角色。
-- [`BootLoop`](/components/boot-loop)——设备边框里的不定时长等待；`onCycle` 让宿主逐步升级提示。
+- [`LoadingCharacter`](/components/boot-loop)——用角色自己的轮廓做成闪烁的遮罩，`ready` 时交叉淡入真实角色。
+- [`BootLoop`](/components/boot-loop)——放在设备边框里的不定时长等待；`onCycle` 让宿主可以逐步升级提示。
 - [`CharacterMark`](/components/character-mark)——`loading`、`spawning`、`onSettle`。
-- [`CharacterStageProvider`](/components/character-stage)——一页占位符一起翻转时应该共用一个引擎。
-- [`HudPlate`](/components/hud-plate)——启动用 `sync` 表盘，它表达的是一个生命周期而不是一个分数：尝试连接前是 `idle`，连接中是 `syncing`，落地时是 `done` 或 `error`。只有宿主手里有真实分数时才用 `progress`；按编造速率填满的环，只是绕了一圈的撒谎进度条。
+- [`CharacterStageProvider`](/components/character-stage)——一页占位符同时翻转时，应共用一个引擎。
+- [`HudPlate`](/components/hud-plate)——启动用 `sync` 表盘：它表示的是生命周期，而不是进度比例。尝试连接前是 `idle`，连接中是 `syncing`，结束时是 `done` 或 `error`。只有宿主有真实的进度比例时才用 `progress`；按编造的速度填满的环，不过是换了个形状的假进度条。
 
 ## 状态怎么走
 
-| 从         | 到         | 时机                                       |
-| ---------- | ---------- | ------------------------------------------ |
-| —          | `loading`  | 请求已发出；`whirl` 让身体漂移，编号 `12`  |
-| `loading`  | `spawning` | 记录到了；`gather` 腰带把身体聚拢出来      |
-| `spawning` | `idle`     | 2 秒后自行收束——`STATE_SETTLE_TO.spawning` |
-| —          | `working`  | `BootLoop` 打开                            |
-| `working`  | `thinking` | 每过 `durationMs`；一对就是一个周期        |
-| `thinking` | `working`  | ……再回来；每转满一圈触发一次 `onCycle(n)`  |
+| 从         | 到         | 时机                                          |
+| ---------- | ---------- | --------------------------------------------- |
+| —          | `loading`  | 请求已发出；`whirl` 让身体漂移，编号 `12`     |
+| `loading`  | `spawning` | 记录已到；`gather` 腰带把身体聚拢出来         |
+| `spawning` | `idle`     | 2 秒后自动回落——`STATE_SETTLE_TO.spawning`    |
+| —          | `working`  | `BootLoop` 开始                               |
+| `working`  | `thinking` | 每隔 `durationMs`；一来一回为一个周期         |
+| `thinking` | `working`  | ……再切回；每完成一个周期触发一次 `onCycle(n)` |
 
-`spawning` 是一个瞬间，不是一种状况。宿主否则都要写同一个离开它的超时，所以由渲染器掌握时钟，并通过 `onSettle(from, to)` 通报这次转移。减少动态效果会跳过花活，但收束照样触发。
+`spawning` 是一个瞬间，不是一段持续的状况。否则每个宿主都得写同样的超时来离开它，所以由渲染器掌管时钟，并通过 `onSettle(from, to)` 通报这次转移。启用减少动态效果时会跳过动画花样，但仍会触发回落。
 
 ## 每个状态的样子
 
 <StateMatrix states={['loading', 'spawning', 'working', 'thinking', 'idle']} />
 
-`whirl` 在每个轴上叠两条频率互不相关的正弦波，所以在任何人等待的时间内漂移都不会重复。`gather` 用两秒把五个粒子螺旋收进来，然后表现得像 `progress`。`working` 完全没有腰带——它只是眯眼、身体前倾——这正是 `BootLoop` 把它和 `thinking` 配对的原因：有腰带和没腰带之间的交替本身就是活动。
+`whirl` 在每个轴上叠加两条频率互不相关的正弦波，所以在用户等待的时间内，漂移不会重复。`gather` 用两秒把五个粒子螺旋收拢，之后的表现与 `progress` 相同。`working` 完全没有腰带，只有眯眼和身体前倾，所以 `BootLoop` 把它和 `thinking` 配成一对：有腰带与没腰带的交替，本身就是活动的表现。
 
 ## 接下来
 

@@ -83,7 +83,7 @@ export default function Demo() {
 
 ## Two registries, one provider
 
-[`CharacterStageProvider`](/components/character-stage) already keeps an appearance-keyed registry: how many engines run, and which marks mirror which. The command registry is its agent-keyed half. It records what each agent is _doing_ — the thing an application actually has an opinion about — and every mark subscribed to that agent follows. A roster row, a chat header and a hover card can all talk about the same agent from different corners of the tree without lifting anything into shared React state, and without the re-render storm that would come with it.
+[`CharacterStageProvider`](/components/character-stage) already keeps an appearance-keyed registry: how many engines run, and which marks mirror which. The command registry is its agent-keyed half. It records what each agent is _doing_, which is what an application actually cares about, and every mark subscribed to that agent follows. A roster row, a chat header and a hover card can show the same agent from different parts of the tree without lifting anything into shared React state, and without the re-render storm that would cause.
 
 `useMarkCommands()` returns the write side. It works without a provider too: the fallback registry simply has no subscribers other than the marks in the same tree.
 
@@ -155,8 +155,8 @@ export default function Demo() {
 }
 ```
 
-- `useMarkSettle(state, { settleMs })` holds the last state until the input has stopped changing for `settleMs` (`SETTLE_MS`, 1400 ms by default; `0` disables). Facts churn — a tool starts, returns in 80 ms, another starts — and rendering each one is a roster of faces flicking, which reads as a fault.
-- `useTapCycle(ref)` returns a function that runs the next flourish on the handle each call: spin, hop, confetti, spin again. Always spinning stops being fun on the second click. Pokes inside `POKE_COOLDOWN_MS` (340 ms) are ignored, and the function returns `false` when the ref has no engine — a mirrored [`StagedMark`](/components/character-stage) shares its animation and cannot move alone, so the caller can hop the wrapper instead.
+- `useMarkSettle(state, { settleMs })` holds the last state until the input has stopped changing for `settleMs` (`SETTLE_MS`, 1400 ms by default; `0` disables). Facts churn — a tool starts, returns in 80 ms, another starts — and rendering each one makes a roster of faces flicker, which looks like a fault.
+- `useTapCycle(ref)` returns a function that runs the next flourish on the handle each call: spin, hop, confetti, spin again. Spinning every time gets dull by the second click. Pokes inside `POKE_COOLDOWN_MS` (340 ms) are ignored, and the function returns `false` when the ref has no engine — a mirrored [`StagedMark`](/components/character-stage) shares its animation and cannot move alone, so the caller can hop the wrapper instead.
 - `useDeadline(ms, deps)` is `false` until `ms` has passed since the dependencies last changed, then `true`. It saves an arrival animation its own `setTimeout` and ref.
 
 ## API

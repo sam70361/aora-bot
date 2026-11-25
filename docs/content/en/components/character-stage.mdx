@@ -34,7 +34,7 @@ The provider keeps a hidden character for each distinct **appearance** and every
 
 ## Appearance is shape, state, face and pen
 
-The key is shape, state, face style, nose, line weight, emphasis and pause. Colour and size are excluded, deliberately. A mark with a `hud` leaves the stage altogether and runs its own engine: a dial is a live readout, and keying on its value would mint a new source every tick.
+The key is shape, state, face style, nose, line weight, emphasis and pause. Ink and size are deliberately excluded. A mark with a `hud` leaves the stage altogether and runs its own engine: a dial is a live readout, and keying on its value would mint a new source every tick.
 
 Face style and nose are included, because a mirror shows exactly what its source draws: a line-face mark cannot borrow a source with another face. Two line-face blobs with different noses are two sources. A nose on the default face is moot, so it is dropped from the key and does not split the stage.
 
@@ -44,7 +44,7 @@ This is the whole design, and it is easy to get wrong. Keying the stage by agent
 
 ## Capping
 
-`maxSources` limits concurrent engines, defaulting to 36. Past the cap, claims are still honoured but no new source is hosted, so the page degrades by leaving some characters still rather than by slowing all of them down.
+`maxSources` limits concurrent engines, defaulting to 36. Past the cap, claims are still honoured but no new source is hosted, so the page degrades by freezing some characters rather than slowing all of them down.
 
 ## Claims are coalesced
 
@@ -62,7 +62,7 @@ Hidden sources render at 96 pixels rather than collapsing to nothing. Anything t
 
 `style` is applied last, so a `--aora-fg` set there overrides the ink derived from `color`. That is the only way to hand a mark an animatable custom property instead of a fixed ink — the group activity ink transition relies on it.
 
-`ref` exposes the same `CharacterHandle` as `CharacterMark`, but only when the mark owns an engine — which, for a `StagedMark`, means outside a provider. Inside one every mark is a mirror of the stage's hidden source; it shares its animation with every other mark of the same appearance and so cannot move alone. The handle is simply never attached in that case, and [`useTapCycle`](/components/mark-commands) reports back that there was nothing to poke.
+`ref` exposes the same `CharacterHandle` as `CharacterMark`, but only when the mark owns an engine — which, for a `StagedMark`, means outside a provider. Inside one, every mark is a mirror of the stage's hidden source. It shares its animation with every other mark of the same appearance, so it cannot move alone. The handle is never attached in that case, and [`useTapCycle`](/components/mark-commands) reports that there was nothing to poke.
 
 ```tsx preview
 import { useRef, type CSSProperties } from 'react';
