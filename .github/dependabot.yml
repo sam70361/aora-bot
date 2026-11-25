@@ -9,6 +9,13 @@ updates:
       dev-dependencies:
         dependency-type: development
         update-types: [minor, patch]
+    ignore:
+      # rslib 1 splits the bundles into chunks, so the element's CDN build is no longer one file.
+      - dependency-name: '@rslib/core'
+        update-types: [version-update:semver-major]
+      # TypeScript 7 drops the compiler API that the declaration build and the docs API extraction use.
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
   - package-ecosystem: github-actions
     directory: /
     schedule:
