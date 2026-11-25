@@ -23,6 +23,6 @@
     "@types/react": "^19.1.9",
     "@types/react-dom": "^19.1.7",
     "tsx": "^4.20.3",
-    "typescript": "^5.9.2"
+    "typescript": "^7.0.2"
   }
 }

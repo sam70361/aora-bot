@@ -71,7 +71,7 @@
   "devDependencies": {
     "@rslib/core": "^0.18.0",
     "happy-dom": "^20.14.5",
-    "typescript": "^5.9.2",
+    "typescript": "^7.0.2",
     "vitest": "^3.2.4"
   }
 }

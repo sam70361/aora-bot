@@ -71,7 +71,7 @@
     "happy-dom": "^20.14.5",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "typescript": "^5.9.2",
+    "typescript": "^7.0.2",
     "vitest": "^3.2.4"
   }
 }
