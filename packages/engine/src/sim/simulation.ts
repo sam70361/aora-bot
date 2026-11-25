@@ -69,6 +69,7 @@ import {
   faceTuneForState,
   gazeForState,
   IDLE_STATE,
+  isCharacterState,
   mouthForState,
   STATE_BLINK_MS,
   STATE_BLUSH,
@@ -259,6 +260,12 @@ type Resolved = Required<
   Omit<CharacterOptions, 'shape'> & { shape: ShapeId };
 
 /**
+ * A state the engine knows, or idle. Every per-state table is indexed by this,
+ * and a string from a host's JavaScript is not checked by the types.
+ */
+const knownState = (state: string): CharacterState => (isCharacterState(state) ? state : IDLE_STATE);
+
+/**
  * Build the part of a character that is not drawing.
  *
  * Everything that decides what the character is doing — the state machine,
@@ -286,7 +293,7 @@ export function createSimulation(options: SimulationOptions = {}): Simulation {
     reducedMotion: options.reducedMotion,
     nose: options.nose,
     shape: options.shape ?? DEFAULT_SHAPE,
-    state: options.state ?? IDLE_STATE,
+    state: knownState(options.state ?? IDLE_STATE),
     variant: options.variant ?? 'solid',
     face: options.face ?? DEFAULT_FACE,
     emphasis: options.emphasis ?? false,
@@ -1011,8 +1018,14 @@ ull leaves the paint alone.
       const prevState = opts.state;
       const prevShape = opts.shape;
       const prevFace = opts.face;
-      const { shape: nextShape, ...rest } = next;
-      opts = { ...opts, ...withoutUndefined(rest), shape: nextShape ?? prevShape };
+      const { shape: nextShape, state: rawState, ...rest } = next;
+      const nextState = rawState === undefined ? undefined : knownState(rawState);
+      opts = {
+        ...opts,
+        ...withoutUndefined(rest),
+        shape: nextShape ?? prevShape,
+        state: nextState ?? prevState,
+      };
 
       // Each face has its own eye and mouth tables, so a live switch has to
       // pick the new face's pair for the state and morph to it.
@@ -1048,7 +1061,7 @@ ull leaves the paint alone.
       }
       if (next.faceTune || next.eyeScale !== undefined) fittedEyeRadius = 0;
 
-      if (next.state && next.state !== prevState) enterState(next.state);
+      if (nextState && nextState !== prevState) enterState(nextState);
 
       if (next.hud !== undefined) {
         hudSpec = next.hud;

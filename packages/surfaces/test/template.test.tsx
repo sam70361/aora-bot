@@ -40,6 +40,14 @@ describe('normalizeTemplateDraft', () => {
     expect(draft.instructions).toBe('  - one\n  - two');
   });
 
+  it('trims a long run of whitespace that ends in text in linear time', () => {
+    // A backtracking `/\s+$/` takes tens of seconds on this and the test times out.
+    const pasted = `${' '.repeat(200_000)}x \n`;
+    const { draft, errors } = normalizeTemplateDraft({ name: 'ok', instructions: pasted });
+    expect(draft.instructions).toBe(' '.repeat(TEMPLATE_LIMITS.instructions));
+    expect(errors).toContain('instructions-too-long');
+  });
+
   it('falls back to private for anything that is not a known visibility', () => {
     expect(normalizeTemplateDraft({ name: 'a' }).draft.visibility).toBe('private');
     expect(normalizeTemplateDraft({ name: 'a', visibility: 'team' }).draft.visibility).toBe('team');

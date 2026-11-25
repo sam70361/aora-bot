@@ -383,7 +383,9 @@ export function createImpulseBehaviour(state: CharacterState): ((ctx: BehaviourC
 }
 
 export function behaviourFor(state: CharacterState): Behaviour {
-  return BEHAVIOURS[state] ?? angryOrDefault(state);
+  // Own keys only: a string such as `__proto__` or `toString` reaching here from
+  // a host's JavaScript would otherwise call something off `Object.prototype`.
+  return (Object.hasOwn(BEHAVIOURS, state) ? BEHAVIOURS[state] : undefined) ?? angryOrDefault(state);
 }
 
 function angryOrDefault(state: CharacterState): Behaviour {

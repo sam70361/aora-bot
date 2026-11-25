@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+### `@aora-bot/engine`
+
+- **States.** A state the engine does not know is drawn as `idle`, on creation and in `update`, as the `<aora-bot>` element already did. Before, a name off `Object.prototype` such as `__proto__` or `hasOwnProperty`, passed from untyped JavaScript, made the next frame throw.
+
+### `@aora-bot/surfaces`
+
+- **Templates.** `normalizeTemplateDraft` trims trailing whitespace from instructions in linear time. The regular expression it used took quadratic time on a long run of spaces ending in text, so a pasted wall of whitespace could stall a server action for seconds.
+
+### Docs
+
+- The docs build fails on a page whose frontmatter Rspress cannot parse, or whose `pageType` it does not know, instead of quietly building the page without it.
+
 ## 0.3.0
 
 ### License

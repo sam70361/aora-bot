@@ -25,6 +25,19 @@ describe('createSimulation', () => {
     expect(() => run({ shape: 'tofu', state: 'thinking' })).not.toThrow();
   });
 
+  it('treats a state it does not know as idle, including names off Object.prototype', () => {
+    for (const name of ['__proto__', 'constructor', 'toString', 'hasOwnProperty', 'nope']) {
+      const state = name as SimulationOptions['state'];
+      expect(run({ state }).state, name).toBe('idle');
+
+      const sim = createSimulation({ state: 'happy' });
+      sim.update({ state });
+      for (let i = 0; i < 30; i++) sim.step(1 / 60);
+      expect(sim.snapshot().state, name).toBe('idle');
+      sim.dispose();
+    }
+  });
+
   it('is a pure function of its options: same seed, same frames', () => {
     const options: SimulationOptions = { shape: 'clover', state: 'thinking', seed: 'repeat', antics: true };
     expect(JSON.stringify(run(options, 240))).toBe(JSON.stringify(run(options, 240)));

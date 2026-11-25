@@ -77,7 +77,9 @@ export function normalizeTemplateDraft(
 
   // Only the trailing whitespace goes: leading indentation in instructions is
   // often deliberate, and the shape of a pasted list is part of its meaning.
-  const rawInstructions = (input.instructions ?? '').replace(/\s+$/, '');
+  // `trimEnd`, not `/\s+$/`: the regex retries from every space in a long run
+  // that ends in text, so a pasted wall of whitespace costs quadratic time.
+  const rawInstructions = (input.instructions ?? '').trimEnd();
   if (rawInstructions.length > TEMPLATE_LIMITS.instructions) errors.push('instructions-too-long');
 
   const name = rawName.slice(0, TEMPLATE_LIMITS.name);
