@@ -1,5 +1,23 @@
 # Changelog
 
+## Unreleased
+
+### `@aora-bot/engine`
+
+- **Styles.** `ascii` joins `STYLE_IDS` as the fourth series: the character typed out in glyphs. It reuses the pixel series' rasteriser on a finer sub-grid (`cols * 2` sub-cells across), groups each 2×4 block of sub-cells into one character cell and picks a glyph by the cell's coverage shape, so every shape, state, face, part, belt and HUD reads without a drawing of its own. Three variants: `ansi` (the default; coloured glyphs, each cell in the colour the pixel series would paint it), `mono` (one ink, the face cut out of the body as blank cells, so the output is pure copyable text) and `crt` (a dark rounded terminal plate with glowing glyphs and faint scanlines, lit in the dark-page ink like pixel `dot`).
+- **Styles.** `ascii` reads `cols` (12 to 64, default 28, relative to shape space like pixel `grid`), `charset` (`ascii`, `block` or `braille`), `fill` (`shade`, `solid` or `hollow`), `effect` (`none`, `decode`, `shimmer` or `glitch`; `decode` is the default), `fps` (0 to 60, default 12) and `glow` (read by `crt`). The charsets are classic ASCII edges with a `;=+xX#%@` ramp, quadrant blocks with `░▒▓█` shading, and braille with 2×4 dots per character and dithered shading; the fills are a lit upper-left to deep lower-right ramp, one dense glyph, and outline only. `decode` scrambles the glyphs and resolves them row by row when the state changes or the character mounts, `shimmer` sweeps a lit diagonal band across the body every few seconds, and `glitch` adds rare row offsets and noise glyphs; effects are off in static output and under reduced motion. Mood effects (Zz, sparkles, the heart, the tear, the bang, the spinner, the pencil) and confetti are written as literal characters. Output is still an SVG root, so `CharacterMark`, `StagedMark`, mirrors and static rendering work unchanged, and static output is deterministic.
+- **Text export.** `renderAsciiText(options?: StaticOptions & { ansi?: boolean })` returns the character as plain text rows, joined by `\n` with trailing spaces trimmed, for terminals, CLIs, agent logs and READMEs; `ansi: true` adds 24-bit colour escape codes. Exported from `@aora-bot/engine` and `@aora-bot/engine/static`.
+- **Charsets.** `CHARSETS` is the registry of glyph sets the `ascii` series draws from, and is extensible.
+
+### `@aora-bot/react`
+
+- **Labels.** `option.<style>.<param>.<option>` locale keys name the choices of an enum style parameter, and `useLabel().option(style, key, option, fallback?)` reads them, falling back to the option id. The `ascii` series, its variants (`ansi`, `mono`, `crt`) and its parameters are labelled in both locales.
+- Enum style parameters are labelled in the console and in the docs parameter panel, instead of showing the raw option id.
+
+### Docs
+
+- A page for the ASCII style, with the plain-text export.
+
 ## 0.2.0
 
 ### `@aora-bot/engine`

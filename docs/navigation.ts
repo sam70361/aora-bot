@@ -76,6 +76,7 @@ const SECTIONS: Section[] = [
       { link: '/design/styles/vector', en: 'Vector styles', zh: '矢量风格' },
       { link: '/design/styles/pixel', en: 'Pixel style', zh: '像素风格' },
       { link: '/design/styles/kaomoji', en: 'Kaomoji style', zh: '颜文字风格' },
+      { link: '/design/styles/ascii', en: 'ASCII style', zh: '字符画风格' },
       { link: '/design/cast', en: 'Cast', zh: '角色阵容' },
     ],
   },

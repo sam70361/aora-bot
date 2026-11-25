@@ -64,17 +64,17 @@ export interface CharacterMarkProps {
   emotionId?: EmotionId;
   /**
    * Paint variant within the style series, such as `outline` for `vector`,
-   * `dot` for `pixel` or `bubble` for `kaomoji`. Falls back to the
+   * `dot` for `pixel`, `bubble` for `kaomoji` or `crt` for `ascii`. Falls back to the
    * surrounding `AppearanceProvider`, then to the series' own default.
    */
   variant?: CharacterVariant | StyleVariant;
   /**
-   * The style series: `vector` (default), `pixel` or `kaomoji`. Named `styleId` because
+   * The style series: `vector` (default), `pixel`, `kaomoji` or `ascii`. Named `styleId` because
    * `style` is already the inline CSS. Switching it at runtime replaces the
    * renderer and keeps the character's state and motion.
    */
   styleId?: StyleId;
-  /** Parameters of the series, such as `{ grid: 32 }` for `pixel`. Clamped by the engine. */
+  /** Parameters of the series, such as `{ grid: 32 }` for `pixel` or `{ cols: 40 }` for `ascii`. Clamped by the engine. */
   styleOptions?: Record<string, unknown>;
   /** Face style: `cute` (the default), the plain `eyes`, or `line` — eyes plus a stroked nose and mouth. */
   face?: FaceStyle;

@@ -1,0 +1,284 @@
+import { StyleParamsDemo } from '@theme';
+
+# ASCII style
+
+The same character, typed out in glyphs. Every state, shape and face — the default `cute` face and the effects beside it included — is available in it, because the ascii series reuses the pixel series' rasteriser and only decides which character each cell is written as. It is the one series whose output is also plain text you can copy.
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {['blob', 'cloud', 'bunny', 'star'].map((shape) => (
+        <CharacterMark key={shape} styleId="ascii" shape={shape} color="green" state="happy" sizePx={130} />
+      ))}
+    </div>
+  );
+}
+```
+
+```tsx
+<CharacterMark styleId="ascii" shape="bunny" />
+<CharacterMark styleId="ascii" variant="crt" styleOptions={{ charset: 'braille', cols: 40 }} />
+```
+
+The default series is `vector`; a character that does not name a style is drawn in it.
+
+## Variants
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+const variants = ['ansi', 'mono', 'crt'] as const;
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {variants.map((variant) => (
+        <div className="site-demo__cell" key={variant}>
+          <CharacterMark
+            styleId="ascii"
+            variant={variant}
+            shape="blob"
+            color="orange"
+            state="curious"
+            sizePx={140}
+          />
+          <span className="site-demo__label">{variant}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+| Variant | What it draws                                                                                                        |
+| ------- | -------------------------------------------------------------------------------------------------------------------- |
+| `ansi`  | Coloured glyphs, the default. Each cell is written in the colour the pixel series would paint it.                    |
+| `mono`  | One ink. The face is cut out of the body as blank cells, so the picture is pure text that survives a copy and paste. |
+| `crt`   | A dark rounded terminal plate with glowing glyphs and faint scanlines, a slight glow behind the lit characters.      |
+
+The plate behind `crt` is part of the picture and does not follow the theme: a terminal is dark in a light page too, so the character is lit in its dark-page ink on either page, the same rule as the pixel `dot` panel.
+
+## Charsets
+
+`charset` chooses the glyph set the cells are written from.
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+const charsets = ['ascii', 'block', 'braille'] as const;
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {charsets.map((charset) => (
+        <div className="site-demo__cell" key={charset}>
+          <CharacterMark
+            styleId="ascii"
+            shape="cloud"
+            color="blue"
+            state="idle"
+            sizePx={140}
+            styleOptions={{ charset }}
+          />
+          <span className="site-demo__label">{charset}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+| Charset   | Glyphs                                                                                      |
+| --------- | ------------------------------------------------------------------------------------------- |
+| `ascii`   | Classic ASCII: `_-'/\()\|` along the edges and a `.:-=+*#%@` ramp for shading. The default. |
+| `block`   | Quadrant blocks `▘▝▀▖▌▐▄█` along the edges and `░▒▓█` for shading.                          |
+| `braille` | Braille, 2×4 dots per character: the finest set, with the shading dithered.                 |
+
+## Fills
+
+`fill` chooses how the inside of the body is written.
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+const fills = ['shade', 'solid', 'hollow'] as const;
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {fills.map((fill) => (
+        <div className="site-demo__cell" key={fill}>
+          <CharacterMark
+            styleId="ascii"
+            shape="bunny"
+            color="violet"
+            state="happy"
+            sizePx={140}
+            styleOptions={{ fill }}
+          />
+          <span className="site-demo__label">{fill}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+| Fill     | What it draws                                                                      |
+| -------- | ---------------------------------------------------------------------------------- |
+| `shade`  | A density ramp, lit at the upper left and deepest at the lower right. The default. |
+| `solid`  | One dense glyph for the whole body.                                                |
+| `hollow` | The outline only, as in classic line ASCII art.                                    |
+
+## Effects
+
+`effect` adds motion to the glyphs themselves.
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+const effects = ['none', 'decode', 'shimmer', 'glitch'] as const;
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {effects.map((effect) => (
+        <div className="site-demo__cell" key={effect}>
+          <CharacterMark
+            styleId="ascii"
+            variant="crt"
+            shape="ghost"
+            color="green"
+            state="thinking"
+            sizePx={140}
+            styleOptions={{ effect }}
+          />
+          <span className="site-demo__label">{effect}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+| Effect    | What it does                                                                                            |
+| --------- | ------------------------------------------------------------------------------------------------------- |
+| `none`    | Nothing: the glyphs only move with the body.                                                            |
+| `decode`  | The glyphs scramble and resolve row by row when the state changes or the character mounts. The default. |
+| `shimmer` | A lit diagonal band sweeps across the body every few seconds.                                           |
+| `glitch`  | Rare row offsets and noise glyphs.                                                                      |
+
+Effects are off in static output and under reduced motion: a static document is the settled picture, byte for byte the same every time.
+
+## Parameters
+
+Parameters go in `styleOptions`. The engine merges them over the defaults, clamps numbers to their range and snaps them to the step, so a slider and a typed value agree. Unknown keys are dropped.
+
+| Parameter | Default  | Range                                 | Meaning                                                                  |
+| --------- | -------- | ------------------------------------- | ------------------------------------------------------------------------ |
+| `cols`    | `28`     | 12 to 64                              | Characters across the character. Relative to shape space, not to pixels. |
+| `charset` | `ascii`  | `ascii`, `block`, `braille`           | The glyph set.                                                           |
+| `fill`    | `shade`  | `shade`, `solid`, `hollow`            | How the inside of the body is written.                                   |
+| `effect`  | `decode` | `none`, `decode`, `shimmer`, `glitch` | Motion applied to the glyphs.                                            |
+| `fps`     | `12`     | 0 to 60                               | Motion is sampled on this clock. `0` follows every frame.                |
+| `glow`    | `true`   | on or off                             | The glow behind lit glyphs. Read by `crt`.                               |
+
+Pick a variant and the panel lists only the parameters that variant reads. It is built from the registry, so it stays in step with the table above, and its choices are named through the locale.
+
+<StyleParamsDemo style="ascii" />
+
+Because `cols` is measured in shape space, the number of characters does not change with `sizePx`. A 16px mark and a 120px mark are the same character at two sizes, not two different drawings. Style parameters never reach the simulation: the same `seed` blinks at the same moments in every series.
+
+## As plain text
+
+`renderAsciiText` returns the character as rows of text, joined by `\n` with trailing spaces trimmed. It takes the same options as `renderStaticSvg`, so a chat message, a terminal, a CLI banner, an agent log or a README can show the very character the series draws.
+
+```tsx preview
+import { renderAsciiText } from '@aora-bot/engine';
+
+export default function Demo() {
+  const text = renderAsciiText({ shape: 'mochi', state: 'happy' });
+  return (
+    <div className="site-demo site-demo--center">
+      <pre style={{ margin: 0, fontSize: 12, lineHeight: 1.15 }}>{text}</pre>
+    </div>
+  );
+}
+```
+
+For a terminal, add `ansi: true` for 24-bit colour escape codes, and print it:
+
+```ts
+import { renderAsciiText } from '@aora-bot/engine/static';
+
+// Plain text: safe to copy, log or paste into a README.
+console.log(renderAsciiText({ shape: 'mochi', state: 'happy' }));
+
+// With 24-bit colour, for a terminal that understands it.
+console.log(renderAsciiText({ shape: 'mochi', state: 'thinking', ansi: true }));
+```
+
+`renderAsciiText` is exported from `@aora-bot/engine` and from `@aora-bot/engine/static`, so it runs in Node, a worker or a CLI without a DOM.
+
+## How a cell is chosen
+
+The series does not draw its own picture. It rasterises the frame with the pixel series' rasteriser, on a finer sub-grid: `cols * 2` sub-cells across. Then each block of 2×4 sub-cells becomes one character cell, and a glyph is chosen from the charset by the shape of the cell's coverage — which of the eight sub-cells are filled.
+
+1. The body is sampled into sub-cells, in the pixel series' painter's order, so every shape, state, face, part, belt and HUD arrives without a drawing of its own.
+2. Marks sit over the body: the face, the belt and the HUD primitives are rasterised after it, so an eye replaces the body glyph beneath it. In `mono` those cells are left blank.
+3. A cell on the edge picks a glyph that follows the contour; a cell inside the body picks one from the shading ramp, lit at the upper left and deepest at the lower right (`fill` decides how much of this is used).
+4. Mood effects (Zz, sparkles, the heart, the tear, the bang, the spinner, the pencil) and confetti are written as literal characters: `z Z * ♥ ' ! . o - | / \`.
+
+The output is still an SVG root: one `<text>` per colour and one `<tspan>` per row, with an explicit `x` for every glyph and a monospace font stack, so each character sits on its own cell whatever the font's advance. That is why `CharacterMark`, `StagedMark`, mirrors and static rendering all work without a fork.
+
+## In the engine
+
+```ts
+import { createCharacter, renderAsciiText, renderStaticSvg } from '@aora-bot/engine';
+
+const mark = createCharacter(host, {
+  style: 'ascii',
+  variant: 'crt',
+  styleOptions: { charset: 'braille', cols: 40 },
+});
+
+// Switch the series later. The renderer is replaced; the simulation is not.
+mark.update({ style: 'vector' });
+
+const svg = renderStaticSvg({ style: 'ascii', shape: 'star', state: 'thinking' });
+const text = renderAsciiText({ shape: 'star', state: 'thinking' });
+```
+
+Static output is deterministic and needs no DOM, so it is safe during server rendering.
+
+`CHARSETS` is the registry of glyph sets, keyed by the `charset` ids above, and is extensible, so a host can add a set of its own.
+
+A variant the series does not have falls back to its default, so switching a `vector` character in `outline` over to `ascii` draws `ansi`.
+
+## In React
+
+`CharacterMark`, `CharacterMarkMirror` and `StagedMark` take `styleId`, `variant` and `styleOptions`, and put `data-style` and `data-variant` on the root. The prop is `styleId` because `style` on a mark is already inline CSS.
+
+`AppearanceProvider` sets them for a subtree. A prop on the mark wins over it, and nested providers merge field by field.
+
+```tsx
+import { AppearanceProvider, CharacterMark, StagedMark } from '@aora-bot/react';
+
+<AppearanceProvider styleId="ascii" variant="mono" styleOptions={{ cols: 20 }}>
+  <CharacterMark shape="blob" />
+  <StagedMark shape="star" />
+</AppearanceProvider>;
+```
+
+`StagedMark` shares one running engine between every mark of the same appearance. The style, the variant and the parameters that differ from the defaults are part of that appearance, so an ascii source is never mirrored by a pixel mark, and `{}` and `{ cols: 28 }` share a source.
+
+## Limits
+
+- Glyph shapes depend on the host's monospace font. Each glyph is placed on its cell by an explicit `x`, but how an edge character such as `/` or `(` looks still changes from one font to the next.
+- `block` and `braille` need a font that has those glyphs. Most systems fall back to one, but the weight and the spacing of the fallback may not match the rest of the line.
+- Printed figures on a HUD dial are not drawn. They are too small to read in glyphs; the dial itself is.
+- Translucency is quantised like the pixel series': to quarters, replacing the cell beneath it rather than blending with it.
+- Effects are off in static output and under reduced motion.

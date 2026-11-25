@@ -10,8 +10,10 @@ import {
 } from '../motion/states.js';
 import { getShape, getShapeScale } from '../shapes/registry.js';
 import { createSimulation } from '../sim/simulation.js';
+import type { FrameSnapshot } from '../sim/snapshot.js';
 import { requireTheme } from '../themes/state.js';
-import { DEFAULT_STYLE_ID, getStyle, resolveStyleOptions } from '../styles/index.js';
+import { DEFAULT_STYLE_ID, getStyle, resolveStyleOptions, type StyleDefinition } from '../styles/index.js';
+import type { StaticRenderContext } from './renderer.js';
 import { getFaceDesign } from '../face/drawn/index.js';
 import {
   DEFAULT_FACE,
@@ -51,19 +53,19 @@ function resolveExpression(options: StaticOptions, face: FaceStyle): string {
  */
 const BELT_SAMPLE_TIME = 0.62;
 
+/** A still character ready for its style's static renderer. */
+export interface StillFrame {
+  style: StyleDefinition;
+  frame: FrameSnapshot;
+  context: StaticRenderContext;
+}
+
 /**
- * Render a character to an SVG string.
- *
- * A still simulation, settled, handed to the chosen style's static renderer —
- * the live character's own pipeline with the time taken out. No DOM, no
- * timers, so it is safe during server rendering and static site generation,
- * and the output is deterministic.
- *
- * A theme's character, skin or colour draws once its theme is installed:
- * `await loadTheme(id)` (or `installTheme`) first, or this throws
- * `ThemeNotInstalledError`. `themesNeeded` says which themes a set of ids needs.
+ * The frame and context a static render draws: a still simulation, settled.
+ * Shared by every output form of a static character (`renderStaticSvg`,
+ * `renderAsciiText`), so they cannot disagree about the picture.
  */
-export function renderStaticSvg(options: StaticOptions = {}): string {
+export function buildStillFrame(options: StaticOptions = {}): StillFrame {
   const shapeId = options.shape ?? DEFAULT_SHAPE;
   const colorId = options.color ?? 'black';
   const style = getStyle(options.style ?? DEFAULT_STYLE_ID);
@@ -136,15 +138,36 @@ export function renderStaticSvg(options: StaticOptions = {}): string {
   }`;
   const uid = `a${hashString(`${shapeId}${colorId}${expressionId}${faceKey}${inkKey}${schemeKey}${lookKey}`)}`;
 
-  return style.renderStatic(frame, {
-    color: colorId,
-    uid,
-    flat: options.flat,
-    colorScheme,
-    eyeColor: options.eyeColor,
-    sizePx: options.sizePx,
-    styleOptions: resolveStyleOptions(style, options.styleOptions),
-  });
+  return {
+    style,
+    frame,
+    context: {
+      color: colorId,
+      uid,
+      flat: options.flat,
+      colorScheme,
+      eyeColor: options.eyeColor,
+      sizePx: options.sizePx,
+      styleOptions: resolveStyleOptions(style, options.styleOptions),
+    },
+  };
+}
+
+/**
+ * Render a character to an SVG string.
+ *
+ * A still simulation, settled, handed to the chosen style's static renderer —
+ * the live character's own pipeline with the time taken out. No DOM, no
+ * timers, so it is safe during server rendering and static site generation,
+ * and the output is deterministic.
+ *
+ * A theme's character, skin or colour draws once its theme is installed:
+ * `await loadTheme(id)` (or `installTheme`) first, or this throws
+ * `ThemeNotInstalledError`. `themesNeeded` says which themes a set of ids needs.
+ */
+export function renderStaticSvg(options: StaticOptions = {}): string {
+  const { style, frame, context } = buildStillFrame(options);
+  return style.renderStatic(frame, context);
 }
 /** Percent-encoded data URL. Smaller and more readable than base64 for SVG. */
 export function renderStaticSvgDataUrl(options: StaticOptions = {}): string {

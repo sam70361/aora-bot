@@ -56,7 +56,7 @@ Every attribute is optional. A value the engine does not know falls back to the 
 | `face`           | `cute` (default), or any other face in `FACE_STYLES`, see [Faces](/design/face)        |
 | `nose`           | A nose id for the line face, or `none`; derived from `seed` by default                 |
 | `state`          | What it is doing, one of the [animation states](/design/states), `idle` by default     |
-| `style-id`       | The style series: `vector` (default), `pixel` or `kaomoji`                             |
+| `style-id`       | The style series: `vector` (default), `pixel`, `kaomoji` or `ascii`                    |
 | `variant`        | A variant of that style, such as `outline` or `dot`                                    |
 | `style-options`  | A JSON object of that style's parameters, such as `{"paperOffset":12}`                 |
 | `seed`           | Any string; two characters with different seeds do not blink in unison                 |
@@ -73,7 +73,7 @@ Every attribute is optional. A value the engine does not know falls back to the 
 
 The style series is `style-id` because `style` is already the inline CSS attribute. Changing an attribute updates the running character. Only `seed`, `reduced-motion` and `auto-pause` are read once, so changing one of them builds a new character.
 
-`style-options` takes the parameters of the chosen style, which are listed on the style pages ([vector](/design/styles/vector), [pixel](/design/styles/pixel), [kaomoji](/design/styles/kaomoji)). Write them as a JSON object in a single-quoted attribute; a value that is not a JSON object is ignored, and removing the attribute restores the defaults.
+`style-options` takes the parameters of the chosen style, which are listed on the style pages ([vector](/design/styles/vector), [pixel](/design/styles/pixel), [kaomoji](/design/styles/kaomoji), [ascii](/design/styles/ascii)). Write them as a JSON object in a single-quoted attribute; a value that is not a JSON object is ignored, and removing the attribute restores the defaults.
 
 ```html
 <aora-bot shape="mochi" color="blue" variant="paper" style-options='{"paperOffset":12}'></aora-bot>

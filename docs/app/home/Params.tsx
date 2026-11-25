@@ -41,6 +41,8 @@ export function ParamFields({
     <Control
       key={`${preset.style}:${key}`}
       name={label.param(series.id, key, spec.label ?? key)}
+      series={series.id}
+      param={key}
       spec={spec}
       value={valueOf(key)}
       onChange={(value) => set(key, value)}
@@ -50,15 +52,21 @@ export function ParamFields({
 
 function Control({
   name,
+  series,
+  param,
   spec,
   value,
   onChange,
 }: {
   name: string;
+  /** The series and key the parameter belongs to, which name its options in the locale. */
+  series: string;
+  param: string;
   spec: StyleParam;
   value: ParamValue;
   onChange: (value: ParamValue) => void;
 }) {
+  const label = useLabel();
   if (spec.type === 'number') {
     return (
       <label className="site-home__tuneRow">
@@ -102,7 +110,7 @@ function Control({
             className="site-home__tuneOption"
             onClick={() => onChange(option)}
           >
-            {option}
+            {label.option(series, param, option)}
           </button>
         ))}
       </div>

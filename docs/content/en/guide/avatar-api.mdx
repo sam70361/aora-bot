@@ -26,7 +26,7 @@ Every parameter is optional and goes in the query string.
 
 | Parameter | Accepts                                                                         | Default      | Effect                                                                |
 | --------- | ------------------------------------------------------------------------------- | ------------ | --------------------------------------------------------------------- |
-| `style`   | `vector`, `pixel`, `kaomoji`                                                    | `vector`     | The [style series](/design/styles/vector) the character is drawn in   |
+| `style`   | `vector`, `pixel`, `kaomoji`, `ascii`                                           | `vector`     | The [style series](/design/styles/vector) the character is drawn in   |
 | `variant` | A variant of the chosen style, listed below                                     | style's own  | Paint variant within the style                                        |
 | `state`   | Any [state](/design/states), such as `happy`, `thinking` or `sleeping`          | resting face | The face and pose the character holds                                 |
 | `shape`   | Any [shape](/design/shapes) id, such as `mochi` or `hex`                        | from the id  | Replaces the character's body                                         |
@@ -43,10 +43,11 @@ Variants by style:
 - `vector`: `solid` (default), `outline`, `glass`, `sticker`, `paper`, `soft`, `riso`, `pencil`, `marker`, `crayon`, `watercolor`, `neon`, `chalk`, `origami`, `relief`, `gothic`
 - `pixel`: `crisp` (default), `dot`, `block`
 - `kaomoji`: `plain` (default), `bubble`
+- `ascii`: `ansi` (default), `mono`, `crt`
 
 Themes add skins of their own, which the endpoint accepts by name: `doodle` and `grainy` for `vector`, from the Halloween theme. The palette's `night` (a near-black that stays dark on a dark page) is accepted the same way, though the console does not list it.
 
-Every parameter of the chosen style is also a query key, for example `strokeWidth` or `paperOffset` for `vector`, `grid` or `outline` for `pixel`, `weight` or `tail` for `kaomoji`. Numbers are written as numbers and booleans as `true` or `false` (`1` and `0` also work). The ranges are listed on the style pages: [vector](/design/styles/vector), [pixel](/design/styles/pixel) and [kaomoji](/design/styles/kaomoji).
+Every parameter of the chosen style is also a query key, for example `strokeWidth` or `paperOffset` for `vector`, `grid` or `outline` for `pixel`, `weight` or `tail` for `kaomoji`, `cols` or `charset` for `ascii`. Numbers are written as numbers and booleans as `true` or `false` (`1` and `0` also work). The ranges are listed on the style pages: [vector](/design/styles/vector), [pixel](/design/styles/pixel), [kaomoji](/design/styles/kaomoji) and [ascii](/design/styles/ascii).
 
 ```text
 https://aora-bot.vercel.app/avatar/alice.svg?style=pixel&variant=block&size=96

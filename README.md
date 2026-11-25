@@ -2,7 +2,7 @@
 
 # Aora Bot
 
-**面向 Web 的程序化角色引擎 —— 一整套生成式角色、动画状态、十六种脸、三种画风、SVG HUD，以及建立在其上的 UI 组件。**
+**面向 Web 的程序化角色引擎 —— 一整套生成式角色、动画状态、十六种脸、四种画风、SVG HUD，以及建立在其上的 UI 组件。**
 
 [控制台](https://aora-bot.vercel.app) | [文档](https://aora-bot.vercel.app/guide/getting-started) | [场景](https://aora-bot.vercel.app/scenarios/chat-stream) | [表情馆](https://sam70361.github.io/aora-bot/) | [English](./README.en.md)
 
@@ -32,7 +32,7 @@
   <img src=".github/media/themes.png" width="760" alt="7 个主题各一行，每行 6 个主题角色，个个笑着，下方标注角色 id">
 </p>
 
-一个角色由几项互相独立的选择组成，都可以在[控制台](https://aora-bot.vercel.app)里直接试：角色本身、画风（`vector`、`pixel` 或 `kaomoji`）及其变体、墨色、脸和动画状态。
+一个角色由几项互相独立的选择组成，都可以在[控制台](https://aora-bot.vercel.app)里直接试：角色本身、画风（`vector`、`pixel`、`kaomoji` 或 `ascii`）及其变体、墨色、脸和动画状态。
 
 <p align="center">
   <img src=".github/media/styles.gif" width="860" alt="球球的所有画风：十六种 vector 变体、三种 pixel 变体和两种 kaomoji 变体，同步动起来">

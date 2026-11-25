@@ -9,6 +9,7 @@
  * drop a module-level `defineStyle(...)` call whose result nothing reads,
  * which leaves a consumer of the `/static` entry with an empty registry.
  */
+import { asciiStyle } from './ascii.js';
 import { kaomojiStyle } from './kaomoji.js';
 import { pixelStyle } from './pixel.js';
 import * as registry from './registry.js';
@@ -30,9 +31,10 @@ export { vectorStyle };
 export { defineVectorMedium } from './vector.js';
 export { pixelStyle };
 export { kaomojiStyle };
+export { asciiStyle };
 
 /** The series that ship with the engine, in the order of `STYLE_IDS`. */
-const BUILTIN_STYLES: readonly StyleDefinition[] = [vectorStyle, pixelStyle, kaomojiStyle];
+const BUILTIN_STYLES: readonly StyleDefinition[] = [vectorStyle, pixelStyle, kaomojiStyle, asciiStyle];
 
 /** A caller's own definition of a built-in id wins: it is only installed if the id is free. */
 function installBuiltins(): void {

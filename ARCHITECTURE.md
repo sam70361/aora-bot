@@ -70,6 +70,7 @@ CharacterOptions ──► Simulation ──step(dt)──► FrameSnapshot ─�
 | `vector`  | 平滑 SVG 路径                                                                                                                                                    | `solid`（纯色，玻璃之外都是平涂） / `outline` / `glass`（半透明着色、细边，剪影内一层光泽与高光） / `sticker` / `paper` / `soft`（径向渐变、高光、地面投影） / `riso`（错位第二色、半调网点、正片叠底） / 画材 `pencil` / `marker` / `crayon` / `watercolor` / `neon` / `chalk` / 折纸 `origami`（见下） | 线宽、贴纸边宽与投影、剪纸阴影偏移/角度/倾斜、软萌投影与高光、孔版错位与半调、手抖、纸纹、排线、辉光 |
 | `pixel`   | 把快照栅格化到网格，输出合并后的 `<path>` + `crispEdges`                                                                                                         | `crisp`（实心方块） / `dot`（圆点 LED） / `block`（带缝方块）                                                                                                                                                                                                                                            | 网格分辨率、缝宽、明暗阶数、运动量化帧率、外框、辉光                                                 |
 | `kaomoji` | 不画身体，用 SVG `<text>` 写颜文字：形状决定括号（`render/kaomoji/table.ts` 的 `SHAPE_WRAPPERS`，没有条目的形状用 `DEFAULT_WRAPPER` 圆括号），状态决定表情和尾巴 | `plain`（纯文字） / `bubble`（衬一块淡墨色胶囊）                                                                                                                                                                                                                                                         | 字重、是否带情绪符号                                                                                 |
+| `ascii`   | 复用像素栅格器，2×4 子格合成一个字符格，按覆盖形状选字形，SVG `<text>` 输出                                                                                      | `ansi` / `mono` / `crt`                                                                                                                                                                                                                                                                                  | 列数、字符集、填充、动效、帧率、发光                                                                 |
 
 注册方式（`src/styles/`）：
 
@@ -97,7 +98,7 @@ defineStyle({
 
 `FACE_STYLES` 是三种基础脸 `cute`、`eyes`、`line` 加上十种手绘脸（`DRAWN_FACE_STYLES`），默认 `cute`。脸是模拟的一部分，不属于某个系列，每种脸在每个系列里都有画法：
 
-- `cute`：脸涂在身体上（圆点眼、小嘴、粉色腮红），44 个状态各有一组眼型 / 嘴型 / 腮红（`STATE_CUTE_EYES`、`STATE_CUTE_MOUTH`、`STATE_BLUSH`），单位是点半径；部分状态带情绪特效（`STATE_FX`：Zz、金色闪光、红色感叹号、三道线、粉心、泪滴、右上角转圈的小弧），特效是 `motion/fx.ts` 里时间的纯函数，随快照的 `fx` 字段交给渲染器，各变体用同一组颜色。belt 状态（16 个）在 `cute` 脸下**不把身体缩成小圆点**：整个角色连同脸都留着，belt 说的事改由 `motion/fx-activity.ts` 的活动特效在身体旁边说（见下表），同样走快照的 `fx`，向量、像素、颜文字三个系列自动一致。特效一律不绕着身体画：贴着轮廓的环读起来像选中框而不像角色在做事，小尺寸下还是整个角色上最抢眼的东西；加载轮、进度条、雷达波、小轨道这些「仪表」都放在右上角（`CORNER_X` / `CORNER_Y`，`motion/fx-units.ts`），和思考的三个点、Zz 同一个位置。
+- `cute`：脸涂在身体上（圆点眼、小嘴、粉色腮红），44 个状态各有一组眼型 / 嘴型 / 腮红（`STATE_CUTE_EYES`、`STATE_CUTE_MOUTH`、`STATE_BLUSH`），单位是点半径；部分状态带情绪特效（`STATE_FX`：Zz、金色闪光、红色感叹号、三道线、粉心、泪滴、右上角转圈的小弧），特效是 `motion/fx.ts` 里时间的纯函数，随快照的 `fx` 字段交给渲染器，各变体用同一组颜色。belt 状态（16 个）在 `cute` 脸下**不把身体缩成小圆点**：整个角色连同脸都留着，belt 说的事改由 `motion/fx-activity.ts` 的活动特效在身体旁边说（见下表），同样走快照的 `fx`，向量、像素、颜文字、字符画四个系列自动一致。特效一律不绕着身体画：贴着轮廓的环读起来像选中框而不像角色在做事，小尺寸下还是整个角色上最抢眼的东西；加载轮、进度条、雷达波、小轨道这些「仪表」都放在右上角（`CORNER_X` / `CORNER_Y`，`motion/fx-units.ts`），和思考的三个点、Zz 同一个位置。
 
   | 状态          | `cute` 脸下的表达                                                                    | `eyes` / `line` 脸下的 belt |
   | ------------- | ------------------------------------------------------------------------------------ | --------------------------- |
@@ -173,7 +174,7 @@ defineStyle({
   这套表面只在 `site-tokens.css` 的 `--site-capsule-*` 里写一次，`.site-capsule`（`shell.css`）与 `.rp-nav`（`rspress-overrides.css`）都读它们，不要在页面里另写一份。
 - **站点定制库组件**：在容器上设自定义属性（如 `--aora-mark-filter`、`--aora-hud-value-size`、`--aora-bg-base`），不写 `.site-x .aora-mark {…}` 这类后代覆盖。
 - **构建要求**：rslib 与 rspress 都必须设 `overrideBrowserslist` 指向支持 `light-dark()` / oklch / 嵌套的浏览器，否则 lightningcss 会把它们降级，破坏 `color-scheme` 切换。
-- **静态 SVG 的明暗**：静态 SVG 自己带墨水深浅色，由 `StaticOptions.colorScheme` 选机制（共用 `render/scheme.ts`，三个系列都走它）。
+- **静态 SVG 的明暗**：静态 SVG 自己带墨水深浅色，由 `StaticOptions.colorScheme` 选机制（共用 `render/scheme.ts`，四个系列都走它）。
   `system`（默认）写 `@media (prefers-color-scheme: dark)`，跟系统走，适合 `<img>`、data URL 和导出文件，因为 SVG 文档在这些场合看不到宿主页面。
   `page` 写 `light-dark()`，跟内联处最近的 `color-scheme` 走，适合直接内联进有自己主题开关的页面。内联进页面的调用点一律用 `page`，否则站点是浅色、系统是深色时，黑色角色会画成白色落在浅色底上。
   `page` 会进 uid 哈希，同一个角色两种方案同时出现在一页里也不会共用样式。注意 `<img>` 里的 SVG 无论如何只能跟系统走。
@@ -207,9 +208,9 @@ packages/engine/src/
   hud/           spec、dials（输出图元）、format
   agent/         情绪协议、仲裁、适配器、通道、精灵清单
   sim/           simulation（createSimulation）、snapshot（FrameSnapshot）、particle-frames
-  styles/        ids（STYLE_IDS、DEFAULT_STYLE_ID）、types、registry（defineStyle 等）、各系列定义（vector / pixel / kaomoji）
+  styles/        ids（STYLE_IDS、DEFAULT_STYLE_ID）、types、registry（defineStyle 等）、各系列定义（vector / pixel / kaomoji / ascii，如 `styles/ascii.ts`）
   render/        renderer（LiveRenderer / StaticRenderer 接口）、scene（SceneNode 与序列化）、
-                 scheme（静态 SVG 的深浅色）、dom（对账）、vector/、pixel/、kaomoji/、
+                 scheme（静态 SVG 的深浅色）、dom（对账）、vector/、pixel/、kaomoji/、ascii/（复用 pixel/ 的栅格器）、
                  static-svg.ts、character.ts（装配）
   effects/       confetti
 packages/react/src/

@@ -1,31 +1,17 @@
-import {
-  eyeToken,
-  FACE_TOKEN,
-  FEATURE_TOKEN,
-  FX_TOKEN,
-  HAIR_SHADE_TOKEN,
-  INK_TOKEN,
-  LINE_TOKEN,
-} from '../../core/palette.js';
 import { VIEWBOX_STR } from '../../core/types.js';
 import { fnv1a32 } from '../../math/hash.js';
 import type { FrameSnapshot } from '../../sim/snapshot.js';
 import { createSvgElement, syncElement } from '../dom.js';
-import { partColorCss, partRimCss } from '../part-color.js';
 import type { LiveRenderer, LiveRendererContext } from '../renderer.js';
+import { liveLook, liveLookKey } from './colours.js';
 import { emit } from './emit.js';
 import { pixelGrid, type PixelGrid } from './grid.js';
-import { LED_EYE_TOKEN, readOptions, variantOf } from './options.js';
-import { createPaintTable, type PaintDef, type Tint } from './paints.js';
-import { HAIR_MIX } from './parts.js';
+import { readOptions, variantOf } from './options.js';
+import { createPaintTable } from './paints.js';
 import { createScratch, rasterise, type RasterSettings, type Scratch } from './rasterise.js';
-import { blendCss, shadeCss } from './shade.js';
 
 /** Keeps ids unique across characters that share a seed. */
 let idSerial = 0;
-
-/** Ink angle used when a gradient does not say. */
-const DEFAULT_ANGLE = 135;
 
 /**
  * Mount a pixel character into `host`.
@@ -78,12 +64,8 @@ export function createPixelRenderer(host: Element, context: LiveRendererContext)
   function draw(frame: FrameSnapshot): void {
     last = frame;
     const variant = variantOf(frame.variant);
-    const ink = frame.ink;
-    const gradient = ink && 'from' in ink ? (ink.angle ?? DEFAULT_ANGLE) : null;
-    const eye: Tint = { kind: 'css', value: variant === 'dot' ? LED_EYE_TOKEN : eyeToken(FEATURE_TOKEN) };
-    const face: Tint = { kind: 'css', value: variant === 'dot' ? LED_EYE_TOKEN : FACE_TOKEN };
-    const inkKey = !ink ? '' : 'flat' in ink ? `f${ink.flat}` : `g${ink.from}|${ink.to}`;
-    const next = `${variant}|${inkKey}|${gradient}`;
+    const look = liveLook(frame.ink, variant, options.shades);
+    const next = liveLookKey(frame.ink, variant);
     if (next !== signature) {
       signature = next;
       table.clear();
@@ -106,9 +88,9 @@ export function createPixelRenderer(host: Element, context: LiveRendererContext)
       shades: options.shades,
       outline: options.outline,
       variant,
-      gradient,
-      eye,
-      face,
+      gradient: look.gradient,
+      eye: look.eye,
+      face: look.face,
     };
     rasterise(frame, settings, table, scratch, paint);
 
@@ -125,34 +107,12 @@ export function createPixelRenderer(host: Element, context: LiveRendererContext)
     previous.set(paint);
     dirty = false;
 
-    const bands = gradient === null ? 1 : Math.max(1, Math.round(options.shades));
-    const base = (band: number): string => {
-      if (!ink) return variant === 'dot' ? LINE_TOKEN : INK_TOKEN;
-      if ('flat' in ink) return ink.flat;
-      return blendCss(ink.from, ink.to, (band + 0.5) / bands);
-    };
-    const colour = (def: PaintDef): { value: string } => {
-      const tint = def.tint;
-      switch (tint.kind) {
-        case 'css':
-          return { value: tint.value };
-        case 'hair':
-          return { value: `color-mix(in oklab, ${base(tint.band)}, ${HAIR_SHADE_TOKEN} ${HAIR_MIX * 100}%)` };
-        case 'fx':
-          return { value: ink ? base(tint.band) : FX_TOKEN };
-        case 'part':
-          return { value: shadeCss(tint.rim ? partRimCss(tint.color) : partColorCss(tint.color), tint.tone) };
-        default:
-          return { value: shadeCss(base(tint.band), tint.tone) };
-      }
-    };
-
     const { scene } = emit(paint, table, {
       grid,
       variant,
       gap: options.gap,
       glow: options.glow,
-      colour,
+      colour: look.colour,
       ids,
     });
     syncElement(root, {

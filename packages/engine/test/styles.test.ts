@@ -14,8 +14,8 @@ import {
 } from '../src/styles/index.js';
 
 describe('style registry', () => {
-  it('ships the vector, pixel and kaomoji series, registered', () => {
-    expect(STYLE_IDS).toEqual(['vector', 'pixel', 'kaomoji']);
+  it('ships the vector, pixel, kaomoji and ascii series, registered', () => {
+    expect(STYLE_IDS).toEqual(['vector', 'pixel', 'kaomoji', 'ascii']);
     expect(hasStyle('vector')).toBe(true);
     expect(getStyle('vector')).toBe(vectorStyle);
     expect(listStyles().map((s) => s.id)).toContain('vector');
@@ -131,6 +131,9 @@ describe('parameters by variant', () => {
     expect(keys('vector', 'neon')).toEqual(['strokeWidth', 'neonGlow']);
     expect(keys('vector', 'chalk')).toEqual(['strokeWidth', 'wobble', 'grain', 'hatching']);
     expect(keys('pixel', 'dot')).toEqual(['grid', 'gap', 'shades', 'fps', 'glow']);
+    expect(keys('ascii', 'ansi')).toEqual(['cols', 'charset', 'fill', 'effect', 'fps']);
+    expect(keys('ascii', 'mono')).toEqual(['cols', 'charset', 'fill', 'effect', 'fps']);
+    expect(keys('ascii', 'crt')).toEqual(['cols', 'charset', 'fill', 'effect', 'fps', 'glow']);
   });
 
   it('treats a parameter with no variants as read by every variant', () => {

@@ -1,0 +1,284 @@
+import { StyleParamsDemo } from '@theme';
+
+# 字符画风格
+
+同一个角色，用字符敲出来。每个状态、形状和脸（包括默认的 `cute` 脸和身旁的特效）在这个系列里都有，因为字符画系列复用像素系列的栅格器，只负责决定每个格子写成哪个字符。它也是唯一一个输出同时就是纯文本、可以直接复制的系列。
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {['blob', 'cloud', 'bunny', 'star'].map((shape) => (
+        <CharacterMark key={shape} styleId="ascii" shape={shape} color="green" state="happy" sizePx={130} />
+      ))}
+    </div>
+  );
+}
+```
+
+```tsx
+<CharacterMark styleId="ascii" shape="bunny" />
+<CharacterMark styleId="ascii" variant="crt" styleOptions={{ charset: 'braille', cols: 40 }} />
+```
+
+默认系列是 `vector`；没有指定风格的角色用它来画。
+
+## 变体
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+const variants = ['ansi', 'mono', 'crt'] as const;
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {variants.map((variant) => (
+        <div className="site-demo__cell" key={variant}>
+          <CharacterMark
+            styleId="ascii"
+            variant={variant}
+            shape="blob"
+            color="orange"
+            state="curious"
+            sizePx={140}
+          />
+          <span className="site-demo__label">{variant}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+| 变体   | 画法                                                                   |
+| ------ | ---------------------------------------------------------------------- |
+| `ansi` | 彩色字符，默认值。每个格子的颜色就是像素系列会给它涂的颜色。           |
+| `mono` | 单一墨色。脸从身体里挖成空白格子，所以画面是纯文本，复制粘贴也不会丢。 |
+| `crt`  | 深色圆角终端底板，发光的字符和淡淡的扫描线，亮起的字符背后有一点辉光。 |
+
+`crt` 背后的底板是画面的一部分，不跟随主题：终端在浅色页面上也是深色的，所以无论哪种页面，角色都按深色页面的墨色点亮，规则和像素系列的 `dot` 面板一样。
+
+## 字符集
+
+`charset` 选格子用哪一套字符来写。
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+const charsets = ['ascii', 'block', 'braille'] as const;
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {charsets.map((charset) => (
+        <div className="site-demo__cell" key={charset}>
+          <CharacterMark
+            styleId="ascii"
+            shape="cloud"
+            color="blue"
+            state="idle"
+            sizePx={140}
+            styleOptions={{ charset }}
+          />
+          <span className="site-demo__label">{charset}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+| 字符集    | 字符                                                                    |
+| --------- | ----------------------------------------------------------------------- |
+| `ascii`   | 经典 ASCII：边缘用 `_-'/\()\|`，明暗用 `.:-=+*#%@` 一档档加深。默认值。 |
+| `block`   | 边缘用四分之一方块 `▘▝▀▖▌▐▄█`，明暗用 `░▒▓█`。                          |
+| `braille` | 盲文点阵，每个字符 2×4 个点：最细的一套，明暗用抖动表现。               |
+
+## 填充
+
+`fill` 选身体内部怎么写。
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+const fills = ['shade', 'solid', 'hollow'] as const;
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {fills.map((fill) => (
+        <div className="site-demo__cell" key={fill}>
+          <CharacterMark
+            styleId="ascii"
+            shape="bunny"
+            color="violet"
+            state="happy"
+            sizePx={140}
+            styleOptions={{ fill }}
+          />
+          <span className="site-demo__label">{fill}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+| 填充     | 画法                                       |
+| -------- | ------------------------------------------ |
+| `shade`  | 一段密度阶梯，左上最亮、右下最深。默认值。 |
+| `solid`  | 整个身体用同一个稠密字符。                 |
+| `hollow` | 只画轮廓，就是经典的线条 ASCII 画。        |
+
+## 动效
+
+`effect` 给字符本身加上动作。
+
+```tsx preview
+import { CharacterMark } from '@aora-bot/react';
+
+const effects = ['none', 'decode', 'shimmer', 'glitch'] as const;
+
+export default function Demo() {
+  return (
+    <div className="site-demo">
+      {effects.map((effect) => (
+        <div className="site-demo__cell" key={effect}>
+          <CharacterMark
+            styleId="ascii"
+            variant="crt"
+            shape="ghost"
+            color="green"
+            state="thinking"
+            sizePx={140}
+            styleOptions={{ effect }}
+          />
+          <span className="site-demo__label">{effect}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+| 动效      | 效果                                                           |
+| --------- | -------------------------------------------------------------- |
+| `none`    | 没有：字符只随身体一起动。                                     |
+| `decode`  | 状态切换或角色挂载时，字符先乱码，再一行一行解码成形。默认值。 |
+| `shimmer` | 每隔几秒，一道亮起的斜带扫过身体。                             |
+| `glitch`  | 偶尔整行错位，夹杂噪点字符。                                   |
+
+静态输出和减弱动效下，动效是关掉的：静态文档是定格后的画面，每次逐字节相同。
+
+## 参数
+
+参数放在 `styleOptions` 里。引擎把它们合并到默认值上，数值夹到范围内并吸附到步长，所以滑块和手输的值一致。未知的键会被丢弃。
+
+| 参数      | 默认值   | 范围                                  | 含义                                           |
+| --------- | -------- | ------------------------------------- | ---------------------------------------------- |
+| `cols`    | `28`     | 12 到 64                              | 角色横跨的字符数。相对 shape space，不是像素。 |
+| `charset` | `ascii`  | `ascii`、`block`、`braille`           | 字符集。                                       |
+| `fill`    | `shade`  | `shade`、`solid`、`hollow`            | 身体内部怎么写。                               |
+| `effect`  | `decode` | `none`、`decode`、`shimmer`、`glitch` | 作用在字符上的动效。                           |
+| `fps`     | `12`     | 0 到 60                               | 运动按这个时钟采样。`0` 表示每一帧都跟。       |
+| `glow`    | `true`   | 开或关                                | 亮起字符背后的辉光。`crt` 读取。               |
+
+选一个变体，面板只列出该变体会读取的参数。它由注册表生成，所以和上面的表保持一致，选项的名字也经由语言包给出。
+
+<StyleParamsDemo style="ascii" />
+
+因为 `cols` 以 shape space 为单位，字符数不随 `sizePx` 变化。16px 的标记和 120px 的标记是同一个角色的两种尺寸，而不是两张不同的画。风格参数从不影响模拟：同一个 `seed` 在每个系列里眨眼的时机相同。
+
+## 当作纯文本用
+
+`renderAsciiText` 把角色返回成一行行文字，用 `\n` 连接，行尾空格会去掉。它接受和 `renderStaticSvg` 相同的选项，所以聊天消息、终端、命令行横幅、智能体日志和 README 里都可以展示系列画出来的同一个角色。
+
+```tsx preview
+import { renderAsciiText } from '@aora-bot/engine';
+
+export default function Demo() {
+  const text = renderAsciiText({ shape: 'mochi', state: 'happy' });
+  return (
+    <div className="site-demo site-demo--center">
+      <pre style={{ margin: 0, fontSize: 12, lineHeight: 1.15 }}>{text}</pre>
+    </div>
+  );
+}
+```
+
+在终端里，加上 `ansi: true` 会输出 24 位颜色的转义码，直接打印即可：
+
+```ts
+import { renderAsciiText } from '@aora-bot/engine/static';
+
+// 纯文本：可以放心复制、写进日志或贴进 README。
+console.log(renderAsciiText({ shape: 'mochi', state: 'happy' }));
+
+// 带 24 位颜色，给支持它的终端。
+console.log(renderAsciiText({ shape: 'mochi', state: 'thinking', ansi: true }));
+```
+
+`renderAsciiText` 同时从 `@aora-bot/engine` 和 `@aora-bot/engine/static` 导出，所以在 Node、worker 或命令行里不需要 DOM 也能跑。
+
+## 一个格子怎么定
+
+这个系列不自己画一张图。它用像素系列的栅格器，在更细的子格上栅格化这一帧：横跨 `cols * 2` 个子格。然后每 2×4 个子格合成一个字符格，再按这个格子的覆盖形状——八个子格里哪几个被填上——从字符集里挑一个字形。
+
+1. 身体按像素系列的画家顺序采样进子格，所以每个形状、状态、脸、部件、腰带和 HUD 都不用另外写画法就自动有了。
+2. 标记压在身体之上：脸、腰带和 HUD 图元在身体之后栅格化，所以眼睛会替换它下面的身体字符。在 `mono` 里，这些格子留空。
+3. 在边缘上的格子挑沿着轮廓走的字形；身体内部的格子从明暗阶梯里挑，左上最亮、右下最深（`fill` 决定用到多少）。
+4. 情绪特效（Zz、闪光、爱心、泪滴、感叹号、加载轮、铅笔）和彩纸都写成字面字符：`z Z * ♥ ' ! . o - | / \`。
+
+输出仍然是 SVG 根元素：每种颜色一个 `<text>`，每一行一个 `<tspan>`，每个字符都有明确的 `x`，字体是等宽字体栈，所以不管字体的字宽是多少，每个字符都落在自己的格子里。这就是 `CharacterMark`、`StagedMark`、镜像和静态渲染都不用分叉就能工作的原因。
+
+## 在引擎里
+
+```ts
+import { createCharacter, renderAsciiText, renderStaticSvg } from '@aora-bot/engine';
+
+const mark = createCharacter(host, {
+  style: 'ascii',
+  variant: 'crt',
+  styleOptions: { charset: 'braille', cols: 40 },
+});
+
+// 之后切换系列：换掉 renderer，不换模拟。
+mark.update({ style: 'vector' });
+
+const svg = renderStaticSvg({ style: 'ascii', shape: 'star', state: 'thinking' });
+const text = renderAsciiText({ shape: 'star', state: 'thinking' });
+```
+
+静态输出是确定的，不需要 DOM，服务端渲染时可以放心用。
+
+`CHARSETS` 是字符集的注册表，键就是上面的 `charset` id，可以扩展，所以宿主可以加一套自己的字符集。
+
+系列里没有的变体会回落到它的默认值，所以把 `outline` 的 `vector` 角色切到 `ascii` 会画成 `ansi`。
+
+## 在 React 里
+
+`CharacterMark`、`CharacterMarkMirror` 和 `StagedMark` 接受 `styleId`、`variant` 和 `styleOptions`，并在根元素上输出 `data-style` 和 `data-variant`。prop 叫 `styleId`，因为标记上的 `style` 已经是内联 CSS。
+
+`AppearanceProvider` 为整棵子树设置它们。标记自己的 prop 优先于它，嵌套的 Provider 逐字段合并。
+
+```tsx
+import { AppearanceProvider, CharacterMark, StagedMark } from '@aora-bot/react';
+
+<AppearanceProvider styleId="ascii" variant="mono" styleOptions={{ cols: 20 }}>
+  <CharacterMark shape="blob" />
+  <StagedMark shape="star" />
+</AppearanceProvider>;
+```
+
+`StagedMark` 让所有外观相同的标记共用一个运行中的引擎。风格、变体以及与默认值不同的参数都属于这个外观，所以字符画源绝不会被像素标记镜像，`{}` 和 `{ cols: 28 }` 共用一个源。
+
+## 限制
+
+- 字形的样子取决于宿主的等宽字体。每个字符都用明确的 `x` 放在自己的格子上，但 `/`、`(` 这类边缘字符在不同字体里长得不一样。
+- `block` 和 `braille` 需要字体里有这些字形。多数系统会回落到别的字体，但回落字体的字重和间距可能和这一行其余部分对不上。
+- HUD 表盘上印的数字不会画。用字符写它们小到读不出来；表盘本身会画。
+- 半透明和像素系列一样被量化成四分之一档，并且是替换下面的格子，而不是与之混合。
+- 静态输出和减弱动效下，动效是关掉的。

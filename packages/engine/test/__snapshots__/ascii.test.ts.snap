@@ -1,0 +1,323 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ascii style definition > declares its variants, defaults and parameter ranges 1`] = `
+{
+  "charset": {
+    "label": "Charset",
+    "options": [
+      "ascii",
+      "block",
+      "braille",
+    ],
+    "type": "enum",
+  },
+  "cols": {
+    "label": "Columns",
+    "max": 64,
+    "min": 12,
+    "step": 1,
+    "type": "number",
+  },
+  "effect": {
+    "label": "Effect",
+    "options": [
+      "none",
+      "decode",
+      "shimmer",
+      "glitch",
+    ],
+    "type": "enum",
+  },
+  "fill": {
+    "label": "Fill",
+    "options": [
+      "shade",
+      "solid",
+      "hollow",
+    ],
+    "type": "enum",
+  },
+  "fps": {
+    "label": "Motion fps",
+    "max": 60,
+    "min": 0,
+    "step": 1,
+    "type": "number",
+  },
+  "glow": {
+    "label": "Glow",
+    "type": "boolean",
+    "variants": [
+      "crt",
+    ],
+  },
+}
+`;
+
+exports[`renderAsciiText > freezes a few pictures 1`] = `
+"            __-----_
+       _--===++++++xxx.
+     -=====+=====+++xXX-
+    -=========++++++xxXX#-
+    ====.===+++++.xxxxx####-_
+   (+==OOO|++++|OOOxxXXXX%%%%-
+   (+==|OO+++xxxOO|XXXXX####@@)
+  _+x+++++xxxxxxXXXXXX######@@)
+  (x++++xxxxxxXXXXXX#####@@@@-
+  'xXXxxxxxXXXXXX######@@@@--
+   'XXX#####%%%%###@@@@@@-
+     -----%%%%%@@@@@@---"
+`;
+
+exports[`renderAsciiText > freezes a few pictures 2`] = `
+"                               Z
+                            z
+
+              _____      z
+          _-=+++++xx--
+        _-++++=++++xXXX_
+        +++=++++++xxxX###--_
+      __+_._.++_._.xxX###%%%%.
+   .++xxx'--xxx'--XXXXXX###@@@_
+  .xxx++++xxxxxXXXXXX######%%@)
+  (xx++xxxxxxXXXXX######%%%%@@'
+   -XXXX#####%%%%%@@@@@@@@@@@-
+    --####%%%%%@@@@@@@@@@@---"
+`;
+
+exports[`renderAsciiText > freezes a few pictures 3`] = `
+"            ⣀⣀⣠⣤⣤⣤⣄⣀⣀       ♥
+        ⣠⣴⣾⠅⠨⠕⠪⠕⠪⠕⠪⢕⡪⢕⣷⣦⣄
+      ⣤⣾⠅⠨⠅⠪⠅⠨⠅⠨⠅⠪⠕⠪⠕⡫⢝⡫⢝⣷⣤
+    ⢠⣾⠨⠅⠨⠅⠨⠅⠨⠅⠪⠕⠪⠕⠪⠕⡪⢕⡪⢕⡯⢽⡯⣷⡄
+   ⢠⠅⠨⠕⠨⠅⠨⠅⠨⠕⠪⠕⠪⠕⠪⢕⡪⢕⡪⢕⡫⢝⡫⢽⡿⢿⡄
+   ⣾⠪⠅⠨⢀⣤⣤⣄⠕⠪⠕⠪⢕⣠⣤⣤⡀⡪⢝⡫⢝⡫⢝⡫⢽⡿⣷
+  ⢸⠪⠕⠨⠅⠾⠋⠈⠻⠆⠕⡪⢕⠰⠟⠁⠙⠷⢝⡫⢝⡫⢽⡯⢽⡯⣿⣿⡇
+  ⢸⠕⠪⠕⠪⠕⠪⠕⡪⢕⡪⢕⡪⢕⡫⢝⡫⢝⡫⢝⡯⢽⡯⢽⡯⢽⡿⣿⡇
+  ⠈⡪⢕⠪⠕⠪⢕⡪⢕⡪⢕⠈⢝⡫⢝⡫⢝⡫⢽⡯⢽⡯⢽⡿⢿⡿⣿⣿⠁
+   ⠘⡫⢝⡫⢝⡪⢕⡪⢝⡫⢝⡫⢝⡫⢽⡯⢽⡯⢽⡯⢿⡿⣿⣿⣿⣿⠃
+    ⠈⠛⢿⡯⢽⡯⢽⡯⢿⡿⢿⡯⢽⡯⣿⣿⣿⣿⣿⣿⣿⣿⡿⠛⠁
+       ⠈⠙⠛⠻⠿⠿⢿⡿⣿⣿⣿⣿⡿⠿⠿⠟⠛⠋⠁"
+`;
+
+exports[`renderAsciiText > freezes a few pictures 4`] = `
+"              ▄▄▄▄▄           o
+        ▄█▀▀▀▀     ▀▀▀▀█▄  o
+       ▟                 .
+     ▗█                   █▖
+    ▗█   ▄▄▖       ▄▄▖     █▖
+   ▗    ████      ▐███▌      ▖
+  ▗█    ▝▜▀▘       ▀▜▀       █▖
+  ▐                           ▌
+   ▜                         ▛
+    ▜        ▝              ▛
+     ▜                     ▛
+      ▀                   ▀
+       ▝█               █▘
+         ▀▀▀▀▀█████▀▀▀▀▀"
+`;
+
+exports[`static ascii output > freezes a full ansi document 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" viewBox="-24 -24 288 288" fill="none" aria-hidden="true">
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .avfj73w-0 { fill: #999999; }
+      .avfj73w-1 { fill: #F7F7F7; }
+      .avfj73w-2 { fill: #E7E7E7; }
+      .avfj73w-3 { fill: #8F8F8F; }
+      .avfj73w-4 { fill: #858585; }
+      .avfj73w-5 { fill: #D7D7D7; }
+      .avfj73w-6 { fill: #2B2420; }
+    }
+  </style>
+  <g transform="translate(-21.429 -21.429) scale(4.286)" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="3.33" text-anchor="middle" dominant-baseline="central">
+    <text class="avfj73w-0" fill="#181818"><tspan x="25 27 29 31 33 35 37 39" y="10">__-----_</tspan><tspan x="15 17" y="14">_-</tspan><tspan x="11" y="18">-</tspan><tspan x="9" y="22">-</tspan><tspan x="9" y="26">=</tspan><tspan x="7" y="30">(</tspan><tspan x="7" y="34">(</tspan><tspan x="5" y="38">_</tspan><tspan x="5" y="42">(</tspan><tspan x="5" y="46">'</tspan></text>
+    <text class="avfj73w-1" fill="#2D2D2D"><tspan x="19 21 23 25 27 29 31 33 35 37 39 41" y="14">-===++++++xx</tspan><tspan x="13 15 17 19 21 23 25 27 29 31 33 35 37" y="18">=====+=====++</tspan><tspan x="11 13 15 17 19 21 23 25 27 29 31 33" y="22">=========+++</tspan><tspan x="11 13 15 17 19 21 23 25 27" y="26">=======++</tspan><tspan x="9 11 13 23" y="30">+==+</tspan><tspan x="9 11 17" y="34">+=+</tspan><tspan x="7 9 11" y="38">+x+</tspan><tspan x="7" y="42">x</tspan></text>
+    <text class="avfj73w-2" fill="#212121"><tspan x="43" y="14">x</tspan><tspan x="39 41 43 45" y="18">+xXX</tspan><tspan x="35 37 39 41 43 45 47 49" y="22">+++xxXX#</tspan><tspan x="29 31 33 35 37 39 41 43 45 47 49 51 53" y="26">++++xxxxx####</tspan><tspan x="25 27 29 39 41 43 45 47 49" y="30">+++xxXXXX</tspan><tspan x="23 25 27 29 35 41 43 45" y="34">++xxxXXX</tspan><tspan x="15 17 19 21 23 25 27 29 31 33 35 37" y="38">+++xxxxxxXXX</tspan><tspan x="9 11 13 15 17 19 21 23 25 29 31 33 35" y="42">++++xxxxxXXXX</tspan><tspan x="7 9 11 13 15 17 19 21 23 25 27 29" y="46">xXXxxxxxXXXX</tspan><tspan x="9 11 13 15 17 19 21 23 25" y="50">XXX#####%</tspan><tspan x="15 17 19 21" y="54">---%</tspan></text>
+    <text class="avfj73w-3" fill="#101010"><tspan x="45" y="14">.</tspan><tspan x="47" y="18">-</tspan><tspan x="51" y="22">-</tspan><tspan x="7" y="50">'</tspan><tspan x="11 13" y="54">--</tspan></text>
+    <text class="avfj73w-4" fill="#090909"><tspan x="55 57" y="26">-_</tspan><tspan x="59" y="30">-</tspan><tspan x="61" y="34">)</tspan><tspan x="61" y="38">)</tspan><tspan x="59" y="42">-</tspan><tspan x="57" y="46">-</tspan><tspan x="51" y="50">-</tspan><tspan x="45 47" y="54">--</tspan></text>
+    <text class="avfj73w-5" fill="#161616"><tspan x="51 53 55 57" y="30">%%%%</tspan><tspan x="47 49 51 53 55 57 59" y="34">X####@@</tspan><tspan x="43 45 47 49 51 53 55 57 59" y="38">X######@@</tspan><tspan x="37 39 41 43 45 47 49 51 53 55 57" y="42">XX#####@@@@</tspan><tspan x="31 33 35 37 39 41 43 45 47 49 51 53 55" y="46">XX######@@@@-</tspan><tspan x="27 29 31 33 35 37 39 41 43 45 47 49" y="50">%%%###@@@@@@</tspan><tspan x="23 25 27 29 31 33 35 37 39 41 43" y="54">%%%%@@@@@@-</tspan></text>
+    <text class="avfj73w-6" fill="#FFFFFF"><tspan x="15 17 19 21 31 33 35 37" y="30">oOO..OOo</tspan><tspan x="13 15 19 21 31 33 37 39" y="34">|O|OO|O|</tspan><tspan x="27" y="42">'</tspan></text>
+    <text fill="#FF9DBB"><tspan x="13 39 41" y="38">+XX</tspan></text>
+    <text fill="#FF6F91"><tspan x="57" y="10">♥</tspan></text>
+  </g>
+</svg>"
+`;
+
+exports[`static ascii output > freezes a full crt document 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" viewBox="-24 -24 288 288" fill="none" aria-hidden="true">
+  <g transform="translate(-21.429 -21.429) scale(4.286)" style="color-scheme:dark">
+    <defs><pattern id="a13ysfnw-scan" width="1" height="2" patternUnits="userSpaceOnUse"><rect width="1" height="1" fill="#fff" fill-opacity="0.06"/></pattern><filter id="a13ysfnw-glow" color-interpolation-filters="sRGB"><feGaussianBlur in="SourceGraphic" stdDeviation="0.4" result="glow"/><feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+    <rect x="-0.5" y="-0.5" width="67" height="67" rx="33.5" fill="#17181D"/>
+    <rect x="-0.5" y="-0.5" width="67" height="67" rx="33.5" fill="url(#a13ysfnw-scan)"/>
+    <g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="3.33" text-anchor="middle" dominant-baseline="central" filter="url(#a13ysfnw-glow)">
+      <text fill="#F7F7F7"><tspan x="25 27 29 31 33 35 37 39" y="10">__-----_</tspan><tspan x="15 17 19 21 23 25 27 29 31 33 35 37 39 41" y="14">_--===++++++xx</tspan><tspan x="11 13 15 17 19 21 23 25 27 29 31 33 35 37" y="18">-=====+=====++</tspan><tspan x="9 11 13 15 17 19 21 23 25 27 29 31 33" y="22">-=========+++</tspan><tspan x="9 11 13 15 17 19 21 23 25 27" y="26">========++</tspan><tspan x="7 9 11 13 23" y="30">(+==+</tspan><tspan x="7 9 11 17" y="34">(+=+</tspan><tspan x="5 7 9 11" y="38">_+x+</tspan><tspan x="5 7" y="42">(x</tspan><tspan x="5" y="46">'</tspan></text>
+      <text fill="#E7E7E7"><tspan x="43 45" y="14">x.</tspan><tspan x="39 41 43 45 47" y="18">+xXX-</tspan><tspan x="35 37 39 41 43 45 47 49 51" y="22">+++xxXX#-</tspan><tspan x="29 31 33 35 37 39 41 43 45 47 49 51 53" y="26">++++xxxxx####</tspan><tspan x="25 27 29 39 41 43 45 47 49" y="30">+++xxXXXX</tspan><tspan x="23 25 27 29 35 41 43 45" y="34">++xxxXXX</tspan><tspan x="15 17 19 21 23 25 27 29 31 33 35 37" y="38">+++xxxxxxXXX</tspan><tspan x="9 11 13 15 17 19 21 23 25 29 31 33 35" y="42">++++xxxxxXXXX</tspan><tspan x="7 9 11 13 15 17 19 21 23 25 27 29" y="46">xXXxxxxxXXXX</tspan><tspan x="7 9 11 13 15 17 19 21 23 25" y="50">'XXX#####%</tspan><tspan x="11 13 15 17 19 21" y="54">-----%</tspan></text>
+      <text fill="#D7D7D7"><tspan x="55 57" y="26">-_</tspan><tspan x="51 53 55 57 59" y="30">%%%%-</tspan><tspan x="47 49 51 53 55 57 59 61" y="34">X####@@)</tspan><tspan x="43 45 47 49 51 53 55 57 59 61" y="38">X######@@)</tspan><tspan x="37 39 41 43 45 47 49 51 53 55 57 59" y="42">XX#####@@@@-</tspan><tspan x="31 33 35 37 39 41 43 45 47 49 51 53 55 57" y="46">XX######@@@@--</tspan><tspan x="27 29 31 33 35 37 39 41 43 45 47 49 51" y="50">%%%###@@@@@@-</tspan><tspan x="23 25 27 29 31 33 35 37 39 41 43 45 47" y="54">%%%%@@@@@@---</tspan></text>
+      <text fill="#17181D"><tspan x="15 17 19 21 31 33 35 37" y="30">oOO..OOo</tspan><tspan x="13 15 19 21 31 33 37 39" y="34">|O|OO|O|</tspan><tspan x="27" y="42">'</tspan></text>
+      <text fill="#FF9DBB"><tspan x="13 39 41" y="38">+XX</tspan></text>
+      <text fill="#FF6F91"><tspan x="57" y="10">♥</tspan></text>
+    </g>
+  </g>
+</svg>"
+`;
+
+exports[`static ascii output > freezes a full mono document 1`] = `
+"<svg xmlns="http://www.w3.org/2000/svg" viewBox="-24 -24 288 288" fill="none" aria-hidden="true">
+  <style>
+    @media (prefers-color-scheme: dark) {
+      .avfqvks-0 { fill: #E7E7E7; }
+    }
+  </style>
+  <g transform="translate(-21.429 -21.429) scale(4.286)" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace" font-size="3.33" text-anchor="middle" dominant-baseline="central">
+    <text class="avfqvks-0" fill="#212121"><tspan x="25 27 29 31 33 35 37 39 57" y="10">__-----_♥</tspan><tspan x="15 17 19 21 23 25 27 29 31 33 35 37 39 41 43 45" y="14">_--===++++++xxx.</tspan><tspan x="11 13 15 17 19 21 23 25 27 29 31 33 35 37 39 41 43 45 47" y="18">-=====+=====+++xXX-</tspan><tspan x="9 11 13 15 17 19 21 23 25 27 29 31 33 35 37 39 41 43 45 47 49 51" y="22">-=========++++++xxXX#-</tspan><tspan x="9 11 13 15 17 19 21 23 25 27 29 31 33 35 37 39 41 43 45 47 49 51 53 55 57" y="26">========++++++xxxxx####-_</tspan><tspan x="7 9 11 13 23 25 27 29 39 41 43 45 47 49 51 53 55 57 59" y="30">(+==++++xxXXXX%%%%-</tspan><tspan x="7 9 11 17 23 25 27 29 35 41 43 45 47 49 51 53 55 57 59 61" y="34">(+=+++xxxXXXX####@@)</tspan><tspan x="5 7 9 11 13 15 17 19 21 23 25 27 29 31 33 35 37 39 41 43 45 47 49 51 53 55 57 59 61" y="38">_+x+++++xxxxxxXXXXXX######@@)</tspan><tspan x="5 7 9 11 13 15 17 19 21 23 25 29 31 33 35 37 39 41 43 45 47 49 51 53 55 57 59" y="42">(x++++xxxxxXXXXXX#####@@@@-</tspan><tspan x="5 7 9 11 13 15 17 19 21 23 25 27 29 31 33 35 37 39 41 43 45 47 49 51 53 55 57" y="46">'xXXxxxxxXXXXXX######@@@@--</tspan><tspan x="7 9 11 13 15 17 19 21 23 25 27 29 31 33 35 37 39 41 43 45 47 49 51" y="50">'XXX#####%%%%###@@@@@@-</tspan><tspan x="11 13 15 17 19 21 23 25 27 29 31 33 35 37 39 41 43 45 47" y="54">-----%%%%%@@@@@@---</tspan></text>
+  </g>
+</svg>"
+`;
+
+exports[`static ascii output > freezes every state of blob as a hash 1`] = `
+{
+  "alerting": "7f23d159",
+  "angry": "4c6f36a1",
+  "bored": "8e6e8c54",
+  "bouncing": "20ef1fb9",
+  "celebrate": "cfe17f18",
+  "composing": "d67321f6",
+  "confused": "22861251",
+  "curious": "21c6701d",
+  "dictating": "d641d0c0",
+  "dragging": "96688c8a",
+  "drowsy": "cfcad9f6",
+  "excited": "a3e1b2ef",
+  "happy": "5ab4b660",
+  "humming": "5dc6e781",
+  "idle": "e10d7af2",
+  "laughing": "87fda60a",
+  "listening": "db1a4c84",
+  "loading": "4b358b8f",
+  "messaging": "ac5e3f2a",
+  "notifying": "fa6a9827",
+  "orbit": "7e4785e3",
+  "playful": "4be5cb9c",
+  "powering-down": "a5f8b00a",
+  "progress": "e77c8ee2",
+  "proud": "d171ea20",
+  "radar": "c815aaa8",
+  "reading": "db1a4c84",
+  "receiving": "d6c521ca",
+  "refusing": "3720546d",
+  "sad": "b85dbefe",
+  "scared": "1874eaf4",
+  "searching": "d4ee388b",
+  "sending": "06f5d8c6",
+  "shy": "0d35418d",
+  "sleeping": "8f932165",
+  "spawning": "8b18e367",
+  "surprised": "86f1f450",
+  "suspicious": "7567dab4",
+  "thinking": "ab8fdfa8",
+  "uploading": "3e94c6fd",
+  "waiting": "ad9b4d3c",
+  "waking": "cc480165",
+  "working": "f442f153",
+  "writing": "5fe0c189",
+}
+`;
+
+exports[`static ascii output > freezes every state of cloud as a hash 1`] = `
+{
+  "alerting": "89b9bb21",
+  "angry": "df47037d",
+  "bored": "f7f4d92b",
+  "bouncing": "8f0afd50",
+  "celebrate": "9253b89e",
+  "composing": "5fed0d6f",
+  "confused": "629a4461",
+  "curious": "55e6daec",
+  "dictating": "be539f9c",
+  "dragging": "8fcbbe85",
+  "drowsy": "7a40ef97",
+  "excited": "61bacba6",
+  "happy": "bd8ff1d4",
+  "humming": "bea75ab9",
+  "idle": "4de734a3",
+  "laughing": "95c0a75b",
+  "listening": "3fe2e03d",
+  "loading": "d9784658",
+  "messaging": "7c1ca4df",
+  "notifying": "384d5283",
+  "orbit": "6f20089a",
+  "playful": "32a44b70",
+  "powering-down": "e9104435",
+  "progress": "a21fa48b",
+  "proud": "ddb94aff",
+  "radar": "898bc8cf",
+  "reading": "3fe2e03d",
+  "receiving": "8a09b938",
+  "refusing": "a0e13a65",
+  "sad": "c9e64e69",
+  "scared": "bd788bed",
+  "searching": "58823249",
+  "sending": "f7876bbf",
+  "shy": "0f721821",
+  "sleeping": "223a4f8b",
+  "spawning": "2b4ef600",
+  "surprised": "67d671ce",
+  "suspicious": "42509b17",
+  "thinking": "fe848a58",
+  "uploading": "58d74716",
+  "waiting": "108000ff",
+  "waking": "16e2073d",
+  "working": "fe69cfa2",
+  "writing": "f467c3f8",
+}
+`;
+
+exports[`static ascii output > freezes every state of hex as a hash 1`] = `
+{
+  "alerting": "5829405b",
+  "angry": "5a3623a8",
+  "bored": "758ce96a",
+  "bouncing": "b3d9ec28",
+  "celebrate": "6102dfc6",
+  "composing": "a193027e",
+  "confused": "f3e1359d",
+  "curious": "5428957d",
+  "dictating": "b67105de",
+  "dragging": "a6d6245f",
+  "drowsy": "6734ba3c",
+  "excited": "e61afc23",
+  "happy": "da4730fd",
+  "humming": "c5409e2d",
+  "idle": "1ed01b40",
+  "laughing": "b27044e0",
+  "listening": "e73ff2e8",
+  "loading": "ceca160b",
+  "messaging": "f872a546",
+  "notifying": "d402147b",
+  "orbit": "df6acae9",
+  "playful": "eb50064f",
+  "powering-down": "ede62a38",
+  "progress": "af751af5",
+  "proud": "0af02946",
+  "radar": "9a64f5e5",
+  "reading": "e73ff2e8",
+  "receiving": "03b6a8bc",
+  "refusing": "ed31e076",
+  "sad": "9e5261df",
+  "scared": "70eb9934",
+  "searching": "943c2675",
+  "sending": "c016cee2",
+  "shy": "ae95b8d0",
+  "sleeping": "6b8a3f2f",
+  "spawning": "6da3de2d",
+  "surprised": "c1c0813c",
+  "suspicious": "9dc9ca89",
+  "thinking": "bf4dac19",
+  "uploading": "17ccd99b",
+  "waiting": "01455d8e",
+  "waking": "c8f3e5d8",
+  "working": "cd0c112c",
+  "writing": "4fa359df",
+}
+`;

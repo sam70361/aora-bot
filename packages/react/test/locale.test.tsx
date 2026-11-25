@@ -51,13 +51,16 @@ describe('locale', () => {
     }
   });
 
-  it('names every variant and every parameter of the built-in series', () => {
+  it('names every variant, every parameter and every enum option of the built-in series', () => {
     // Series are an open registry, so these keys are not checked by the compiler.
     for (const id of STYLE_IDS) {
       const style = getStyle(id);
       const wanted = [
         ...style.variants.map((variant) => `variant.${variant}`),
         ...Object.keys(style.params).map((param) => `param.${id}.${param}`),
+        ...Object.entries(style.params).flatMap(([param, spec]) =>
+          spec.type === 'enum' ? spec.options.map((option) => `option.${id}.${param}.${option}`) : [],
+        ),
       ];
       for (const key of wanted) {
         expect(enUS[key as LocaleKey], key).toBeTruthy();
@@ -121,6 +124,29 @@ describe('useLabel', () => {
     }
     const names = [enUS['face.cute'], enUS['nose.hook'], enUS['style.pixel'], enUS['variant.riso']];
     expect(renderToString(<Open />)).toContain([...names, 'custom', 'Fallback', 'Elsewhere'].join('/'));
+  });
+
+  it('names an enum option and falls back to the option id, or the fallback, when nothing translates it', () => {
+    function Options() {
+      const label = useLabel();
+      const names = [
+        label.option('ascii', 'charset', 'braille'),
+        label.option('ascii', 'charset', 'unknown'),
+        label.option('custom', 'mode', 'fast'),
+        label.option('custom', 'mode', 'fast', 'Fast mode'),
+      ];
+      return <p>{names.join('/')}</p>;
+    }
+    expect(renderToString(<Options />)).toContain(
+      [enUS['option.ascii.charset.braille'], 'unknown', 'fast', 'Fast mode'].join('/'),
+    );
+    expect(
+      renderToString(
+        <LocaleProvider locale="zh-CN">
+          <Options />
+        </LocaleProvider>,
+      ),
+    ).toContain(zhCN['option.ascii.charset.braille']);
   });
 
   it('follows the provider', () => {

@@ -102,7 +102,7 @@ export function StyleParamsDemo({ style = 'vector', shape = 'mochi', color = 'bl
                   data-active={current(key) === option ? 'true' : undefined}
                   onClick={() => set(key, option)}
                 >
-                  {option}
+                  {label.option(style, key, option)}
                 </button>
               ))}
             </div>

@@ -56,7 +56,7 @@ export interface RasterSettings {
 }
 
 /** The cute face's cheeks. A cell holds exactly one paint, so there is no translucent pink: this is a pre-blended flat one. */
-const PIXEL_BLUSH = '#FF9DBB';
+export const PIXEL_BLUSH = '#FF9DBB';
 
 /** How far a drawn iris deepens the ink, as a shade tone. */
 const IRIS_TONE = -0.45;
@@ -134,6 +134,23 @@ function tangentAffine(t: EyeShape['transform']): Affine {
   return [a, b, c, d, t.x - a * t.pivotX - c * t.pivotY, t.y - b * t.pivotX - d * t.pivotY];
 }
 
+/**
+ * Shape space to buffer coordinates: for the whole figure, and for the body
+ * and everything that rides on it (the face, an effect in `face` space).
+ */
+export function frameTransforms(frame: FrameSnapshot, grid: PixelGrid): { root: Affine; body: Affine } {
+  const root = compose(toBuffer(grid), scaleAboutCentre(frame.shapeScale, frame.shapeScale));
+  const b = frame.body;
+  const body = compose(
+    root,
+    compose(
+      translation(b.x, b.y),
+      compose(rotateAboutCentre(b.rotation), scaleAboutCentre(b.scaleX, b.scaleY)),
+    ),
+  );
+  return { root, body };
+}
+
 export function rasterise(
   snapshot: FrameSnapshot,
   settings: RasterSettings,
@@ -158,16 +175,8 @@ export function rasterise(
     return true;
   };
 
-  const root = compose(toBuffer(grid), scaleAboutCentre(frame.shapeScale, frame.shapeScale));
+  const { root, body: bodyM } = frameTransforms(frame, grid);
   const k = meanScale(root);
-  const b = frame.body;
-  const bodyM = compose(
-    root,
-    compose(
-      translation(b.x, b.y),
-      compose(rotateAboutCentre(b.rotation), scaleAboutCentre(b.scaleX, b.scaleY)),
-    ),
-  );
 
   const bands = settings.gradient === null ? 1 : Math.max(1, Math.round(settings.shades));
   const inkTint = (band = Math.floor(bands / 2), tone = 0): Tint => ({ kind: 'ink', band, tone });

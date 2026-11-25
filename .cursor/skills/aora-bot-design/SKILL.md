@@ -16,11 +16,11 @@ The default face is `cute`: white dot eyes, a small mouth and a pink blush
 painted on the body. `eyes` and `line` are the other two plain faces, and ten
 drawn faces (`DRAWN_FACE_STYLES`: `brow`, `glossy`, `sparkle`, `button`,
 `shades`, `droopy`, `bigmouth`, `pie`, `screen`, `symbol`) complete
-`FACE_STYLES`. Three series draw the same
+`FACE_STYLES`. Four series draw the same
 snapshot: `vector` (solid, outline, glass, sticker, paper, soft, riso, and the
 drawing media pencil, marker, crayon, watercolor, neon, chalk),
-`pixel` (crisp, dot, block) and `kaomoji` (plain, bubble). Whatever you add
-must read in all three.
+`pixel` (crisp, dot, block), `kaomoji` (plain, bubble) and `ascii` (ansi, mono,
+crt). Whatever you add must read in all four.
 
 ## Characters
 
@@ -149,7 +149,7 @@ On the cute face a state throws something off beside its expression: Zz,
 sparkles, a heart, a tear, and for the busy states what the character is
 doing (rising dots, a loading wheel, a progress bar, a radar ping, a small
 orbit, a pencil). Effects are pure functions of time, carried on the snapshot
-as `fx`, so vector, pixel and kaomoji draw the same frame.
+as `fx`, so vector, pixel, kaomoji and ascii draw the same frame.
 
 Never draw an effect round the body. A ring hugging the outline reads as a
 selection frame, not as something the character is doing, and at 24 px it is
@@ -164,7 +164,8 @@ the loudest thing on the mark. Instruments sit at `CORNER_X` / `CORNER_Y`
    Honour `settled`: reduced motion and static output show every piece
    present and none mid-flight.
 3. If it needs a new primitive, extend `FxItem.shape` and teach the vector
-   and pixel renderers (and the kaomoji tail) to draw it.
+   and pixel renderers (and the kaomoji tail, and the literal characters of
+   the ascii series) to draw it.
 
 ## Belts
 

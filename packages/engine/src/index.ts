@@ -401,6 +401,13 @@ export {
 } from './render/kaomoji/table.js';
 export type { Wrapper } from './render/kaomoji/table.js';
 
+// The ascii series' plain-text form and glyph sets
+export { renderAsciiText } from './render/ascii/text.js';
+export type { AsciiTextOptions } from './render/ascii/text.js';
+export { CHARSETS } from './render/ascii/charsets.js';
+export type { Charset } from './render/ascii/charsets.js';
+export type { AsciiCharset, AsciiOptions } from './render/ascii/options.js';
+
 // Agent integration (also available from the `/agent` subpath with no runtime)
 export * from './agent.js';
 

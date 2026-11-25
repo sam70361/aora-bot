@@ -26,7 +26,7 @@ id 可以是任意不超过 128 个字符的 URL 安全字符串：用户名、�
 
 | 参数      | 取值                                                            | 默认       | 作用                                             |
 | --------- | --------------------------------------------------------------- | ---------- | ------------------------------------------------ |
-| `style`   | `vector`、`pixel`、`kaomoji`                                    | `vector`   | 角色使用的[画风系列](/design/styles/vector)      |
+| `style`   | `vector`、`pixel`、`kaomoji`、`ascii`                           | `vector`   | 角色使用的[画风系列](/design/styles/vector)      |
 | `variant` | 所选画风的变体，见下方列表                                      | 画风自带   | 画风内的上色变体                                 |
 | `state`   | 任意[状态](/design/states)，如 `happy`、`thinking`、`sleeping`  | 静息表情   | 角色的表情与姿态                                 |
 | `shape`   | 任意[形状](/design/shapes) id，如 `mochi`、`hex`                | 由 id 决定 | 替换角色的身体                                   |
@@ -43,10 +43,11 @@ id 可以是任意不超过 128 个字符的 URL 安全字符串：用户名、�
 - `vector`：`solid`（默认）、`outline`、`glass`、`sticker`、`paper`、`soft`、`riso`、`pencil`、`marker`、`crayon`、`watercolor`、`neon`、`chalk`、`origami`、`relief`、`gothic`
 - `pixel`：`crisp`（默认）、`dot`、`block`
 - `kaomoji`：`plain`（默认）、`bubble`
+- `ascii`：`ansi`（默认）、`mono`、`crt`
 
 主题带来自己的皮肤，接口按名字接受：万圣节主题为 `vector` 加了 `doodle` 和 `grainy`。配色里的 `night`（在深色页面上也不反转的近黑色）同样按名字接受，只是控制台不列出它。
 
-所选画风的每个参数也都可以作为查询参数，例如 `vector` 的 `strokeWidth` 或 `paperOffset`，`pixel` 的 `grid` 或 `outline`，`kaomoji` 的 `weight` 或 `tail`。数字直接写数字，布尔值写 `true` 或 `false`（也接受 `1` 和 `0`）。取值范围见各画风页面：[vector](/design/styles/vector)、[pixel](/design/styles/pixel)、[kaomoji](/design/styles/kaomoji)。
+所选画风的每个参数也都可以作为查询参数，例如 `vector` 的 `strokeWidth` 或 `paperOffset`，`pixel` 的 `grid` 或 `outline`，`kaomoji` 的 `weight` 或 `tail`，`ascii` 的 `cols` 或 `charset`。数字直接写数字，布尔值写 `true` 或 `false`（也接受 `1` 和 `0`）。取值范围见各画风页面：[vector](/design/styles/vector)、[pixel](/design/styles/pixel)、[kaomoji](/design/styles/kaomoji)、[ascii](/design/styles/ascii)。
 
 ```text
 https://aora-bot.vercel.app/avatar/alice.svg?style=pixel&variant=block&size=96

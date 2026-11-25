@@ -2,7 +2,7 @@
 
 React components for [Aora Bot](https://aora-bot.vercel.app), a procedural character engine
 for the web. A roster of generated characters and a named cast, ink colours, animation
-states, three faces, vector, pixel and kaomoji styles and an SVG HUD, drawn entirely by
+states, three faces, vector, pixel, kaomoji and ASCII styles and an SVG HUD, drawn entirely by
 code and animated from one shared frame loop. Try them in the
 [console](https://aora-bot.vercel.app/en/).
 

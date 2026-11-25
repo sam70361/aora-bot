@@ -2,7 +2,7 @@
 
 # Aora Bot
 
-**A procedural character engine for the web — a roster of generated characters, animated states, sixteen faces, three drawing styles, an SVG HUD, and the UI surfaces built on top of them.**
+**A procedural character engine for the web — a roster of generated characters, animated states, sixteen faces, four drawing styles, an SVG HUD, and the UI surfaces built on top of them.**
 
 [Console](https://aora-bot.vercel.app/en/) | [Documentation](https://aora-bot.vercel.app/en/guide/getting-started) | [Scenarios](https://aora-bot.vercel.app/en/scenarios/chat-stream) | [Emotion Ball](https://sam70361.github.io/aora-bot/) | [中文](./README.md)
 
@@ -36,8 +36,8 @@ Seven holiday and seasonal themes add 122 more characters: Halloween, Christmas,
 </p>
 
 Every character combines independent choices, all of which you can try in the
-[console](https://aora-bot.vercel.app/en/): the character itself, the style (`vector`, `pixel`
-or `kaomoji`) and its variant, the ink colour, the face and the animation state.
+[console](https://aora-bot.vercel.app/en/): the character itself, the style (`vector`, `pixel`,
+`kaomoji` or `ascii`) and its variant, the ink colour, the face and the animation state.
 
 <p align="center">
   <img src=".github/media/styles.gif" width="860" alt="Dot drawn in every style: the sixteen vector variants, the three pixel variants and both kaomoji variants, all moving together">

@@ -85,6 +85,11 @@ export interface Labels {
   stateGroup(id: string, fallback?: string): string;
   /** A series parameter, by series and key; the fallback is usually the parameter's own `label`. */
   param(style: string, key: string, fallback?: string): string;
+  /**
+   * One choice of an enum parameter, by series, key and option; the fallback is the option id
+   * itself, which is what a control showed before options were translated.
+   */
+  option(style: string, key: string, option: string, fallback?: string): string;
 }
 
 /**
@@ -123,6 +128,8 @@ export function useLabel(): Labels {
       variant: (id, fallback) => open('variant', id, themed('variant', id) ?? fallback),
       stateGroup: (id, fallback) => open('state.group', id, fallback),
       param: (style, key, fallback = key) => open('param', `${style}.${key}`, fallback),
+      option: (style, key, option, fallback = option) =>
+        open('option', `${style}.${key}.${option}`, fallback),
     };
   }, [localeId, t]);
 }

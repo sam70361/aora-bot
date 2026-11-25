@@ -32,7 +32,9 @@ A character is `{ shape, color, styleId, variant, face, nose, lineWeight, state 
 - `styleId` / `variant` — the series and its look: `vector` (`solid` default,
   `outline`, `glass`, `sticker`, `paper`, `soft`, `riso`, `pencil`, `marker`, `crayon`,
   `watercolor`, `neon`, `chalk`), `pixel` (`crisp`,
-  `dot`, `block`), `kaomoji` (`plain`, `bubble`). `listStyles()` is the source.
+  `dot`, `block`), `kaomoji` (`plain`, `bubble`), `ascii` (`ansi`, `mono`,
+  `crt`; `renderAsciiText()` gives the same character as plain or ANSI text for
+  terminals and logs). `listStyles()` is the source.
 - `face` — `cute` (default: eyes, mouth and blush) | `eyes` (cut-out eyes
   only) | `line` (stroked nose + mouth).
 - `nose` — `slant` | `angular` | `hook` | `long` | `curve` | `bow`. Omit for

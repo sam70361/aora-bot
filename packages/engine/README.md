@@ -2,7 +2,7 @@
 
 The character engine behind [Aora Bot](https://aora-bot.vercel.app) — pick a
 character in its [console](https://aora-bot.vercel.app/en/): shapes and a named cast, animation
-states, three faces, vector, pixel and kaomoji style series, face fitting, pose projection, a
+states, three faces, vector, pixel, kaomoji and ASCII style series, face fitting, pose projection, a
 damped-spring state machine, effects and belts, HUD dials, particles, and a numeric
 emotion protocol. No React and, on the `/static` and `/agent` entries, no DOM.
 
@@ -54,6 +54,15 @@ worker, or during static generation.
 The ink follows the operating system's light/dark setting, which is right for `<img>`, data
 URLs and files. When you inline the markup into a page that has its own theme switch, pass
 `colorScheme: 'page'` so it follows the page's `color-scheme` instead.
+
+For a terminal, a CLI or an agent log, `renderAsciiText` draws the `ascii` series as plain text rows;
+`{ ansi: true }` adds 24-bit colour:
+
+```ts
+import { renderAsciiText } from '@aora-bot/engine/static';
+
+console.log(renderAsciiText({ shape: 'mochi', state: 'happy', ansi: true }));
+```
 
 ## Simulate without drawing
 

@@ -97,6 +97,8 @@ export type {
   MouthSpec,
 } from './core/types.js';
 export { kaomoji, faceText } from './render/kaomoji/table.js';
+export { renderAsciiText } from './render/ascii/text.js';
+export type { AsciiTextOptions } from './render/ascii/text.js';
 export {
   CHARACTER_STATES,
   isCharacterState,

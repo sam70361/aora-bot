@@ -55,6 +55,19 @@ export const PLATE_COLOUR = '#17181D';
 /** The plate's corner radius as a share of its side: a half makes it a round badge. */
 const PLATE_ROUNDING = 0.5;
 
+/** The plate under an LED panel, in cell units: a round badge that fills the viewBox but for a sliver of margin. */
+export function plateRect(grid: PixelGrid): {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  rx: number;
+} {
+  const left = r3(grid.margin + VIEWBOX.minX / grid.cell + 0.1);
+  const width = r3(VIEWBOX.width / grid.cell - 0.2);
+  return { x: left, y: left, width, height: width, rx: r2(width * PLATE_ROUNDING) };
+}
+
 export function emit(paint: Uint16Array, table: PaintTable, ctx: EmitContext): Emitted {
   const { grid, variant } = ctx;
   const size = grid.size;
@@ -125,9 +138,7 @@ export function emit(paint: Uint16Array, table: PaintTable, ctx: EmitContext): E
   // a square panel is the one hard edge in a field of round characters, and on
   // a light page it reads as a black tile.
   const radius = r3(side / 2);
-  const left = r3(grid.margin + VIEWBOX.minX / grid.cell + 0.1);
-  const width = r3(VIEWBOX.width / grid.cell - 0.2);
-  const plate = { x: left, y: left, width, height: width, rx: r2(width * PLATE_ROUNDING) };
+  const plate = plateRect(grid);
   const children: SceneNode[] = [
     node('defs', undefined, [
       node('pattern', { id: ctx.ids.pattern, width: 1, height: 1, patternUnits: 'userSpaceOnUse' }, [

@@ -14,7 +14,7 @@ import {
 
 # Faces
 
-The face belongs to the character, not to a style. All sixteen faces — the three plain ones, `cute`, `eyes` and `line`, and thirteen [drawn faces](#drawn-faces) — are drawn in the vector, pixel and kaomoji series alike, on the same states, poses and blinks. The default is `cute`.
+The face belongs to the character, not to a style. All sixteen faces — the three plain ones, `cute`, `eyes` and `line`, and thirteen [drawn faces](#drawn-faces) — are drawn in the vector, pixel, kaomoji and ascii series alike, on the same states, poses and blinks. The default is `cute`.
 
 <FaceStyleDemo />
 
@@ -74,11 +74,12 @@ Layers carry a paint role, not a colour. `face` is the face colour (the whites),
 
 <DrawnFacePalette />
 
-### Three series
+### Four series
 
 - Vector: each variant says what every role is painted with. On the filled variants the whites are the face colour; on the line variants — `outline`, `glass`, `pencil`, `neon`, `chalk` — every role is the line or the page, and whites, lenses and screens get a rim; a variant that throws its effects in one colour turns the accents to the line too. Riso's misregistration, the paper shadow and the sticker's edge apply to the body as always.
 - Pixel: each layer is measured by coverage and drawn whole or not at all. Both eyes go through one mirrored projection at anchors snapped symmetric about the axis, so a symmetric expression is symmetric to the cell while a wink, a glance or a one-sided tear keep their difference; a highlight smaller than a cell is left out rather than punching a hole in the pupil.
 - Kaomoji: each face has its own eye glyphs, one per kind of eye (eleven kinds); a state's eyes are the first expression of its cycle, its mouth the state's mouth.
+- ASCII: it reads the pixel rasteriser's layers on a finer sub-grid, so a drawn face keeps its eyes and mouth, and each 2×4 block of sub-cells becomes one glyph.
 
 <DrawnFaceSeries />
 
