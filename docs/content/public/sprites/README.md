@@ -1,6 +1,6 @@
 # Sprite sets
 
-Two `sprite-mate` sheets used by the docs to demonstrate `SpriteMark`. Both are project-original and released under the Aora Bot License with the rest of Aora Bot.
+Two `sprite-mate` sheets used by the docs to demonstrate `SpriteMark`. Both are project-original and released under the MIT License with the rest of Aora Bot.
 
 | Set      | Frames                        | Origin                                                                                                                                                   |
 | -------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |

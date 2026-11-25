@@ -6,6 +6,8 @@
 
 [控制台](https://aora-bot.vercel.app) | [文档](https://aora-bot.vercel.app/guide/getting-started) | [场景](https://aora-bot.vercel.app/scenarios/chat-stream) | [表情馆](https://sam70361.github.io/aora-bot/) | [English](./README.en.md)
 
+[![npm](https://img.shields.io/npm/v/@aora-bot/react?label=%40aora-bot%2Freact)](https://www.npmjs.com/package/@aora-bot/react) [![CI](https://github.com/sam70361/aora-bot/actions/workflows/ci.yml/badge.svg)](https://github.com/sam70361/aora-bot/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+
 </div>
 
 <p align="center">
@@ -121,7 +123,7 @@ examples/            独立示例，不参与工作区构建
 - **引擎重写**：从几份原生 JavaScript 脚本，重写为 TypeScript 编写的四个 npm 包，带完整类型、测试与服务端渲染。
 - **角色原创**：首发的 46 个角色全部为原创设计，Mood Mates 的云宝和亮亮也作为原创角色加入了阵容，此后阵容扩展到 71 个。表情馆标志性的小圆球以球球（`dot`）的形象延续下来，排在阵容第一位。
 - **能力扩展**：32 种表情扩展为 44 种动画状态，新增三种脸，矢量、像素、颜文字三种画风，HUD 表盘和一整套 React 组件。情绪协议仍然接受 `{ emotionId }` 消息，AI 侧的接入方式不变。
-- **许可**：从「非商用免费、商业另行授权」改为分级授权：个人、教育、非营利、开源项目和 3 人以内的团队可以免费商用，规模更大的公司购买商业授权。
+- **许可**：从「非商用免费、商业另行授权」，到分级授权，再到现在的 MIT 开源：任何人都可以免费商用。
 
 ## 参与贡献
 
@@ -192,10 +194,9 @@ Aora Bot 面向前端、AI 与硬件开发者，也被设计师用来制作头�
 
 ## 许可证
 
-Aora Bot 源码公开，按 [Aora Bot 许可协议](./LICENSE)分级授权：
+Aora Bot 以 [MIT 许可证](./LICENSE)开源，源代码与角色设计（造型、配色、五官、动画状态及其数据）、文档和示例都在其中。个人和公司都可以免费使用、修改、分发，包括商用，只需在分发的副本里保留版权与许可声明。此前发布的所有版本同样以 MIT 提供。
 
-- **免费使用，包括商用**：个人与独立开发者、学生与教育机构、非营利组织、非营利的开源项目，以及合计不超过 3 人的团队。产品公开发布时，须在关于页面、网站页脚、产品说明或 README 等任一位置注明「Powered by Aora Bot」，并链接至本仓库。
-- **商业授权**：规模更大的公司在已上线的产品中使用，须取得商业授权，并可免于署名；评估和原型开发阶段免费。条款与问询模板见 [LICENSE-COMMERCIAL.md](./LICENSE-COMMERCIAL.md)，联系 1251579308@qq.com。
-- **所有人都不能做的事**：把引擎或角色单独打包转售，用它提供角色、头像或表情的托管服务，把角色单独做成贴纸、表情包等商品出售，或用角色设计训练生成模型。
+- **署名**：不强制。如果愿意，在关于页面或 README 里写一句「Powered by Aora Bot」并链接到本仓库，作者会很开心。
+- **名称与标志**：MIT 不包括商标。「Aora Bot」名称和标志的使用方式见[商标政策](./TRADEMARKS.md)。
 
-经典版 Emotion Ball 表情馆沿用原有授权，见 [`emotion-ball` 分支](https://github.com/sam70361/aora-bot/tree/emotion-ball)。
+经典版 Emotion Ball 表情馆不在 MIT 范围内，沿用其分支内的原有授权，见 [`emotion-ball` 分支](https://github.com/sam70361/aora-bot/tree/emotion-ball)。

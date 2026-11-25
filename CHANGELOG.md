@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### License
+
+- **Aora Bot is now MIT licensed**: the code, the character designs, the documentation, the images and the examples, for anyone, commercial use included. The only condition is to keep the copyright and license notice in copies you distribute. The commercial license (`LICENSE-COMMERCIAL.md`), the free-user tiers, the required credit and the restrictions on resale, hosting, merchandise and model training are gone. A "Powered by Aora Bot" credit is welcome but optional.
+- **Earlier releases too**: versions 0.1.1 to 0.2.0, released under the Aora Bot License 1.0 and 1.1, are offered under MIT as well.
+- The "Aora Bot" name and logo are not covered by MIT; `TRADEMARKS.md` sets out how they may be used.
+- The classic Emotion Ball in the `emotion-ball` branch keeps its own license and is not covered by MIT.
+- Contributions are MIT licensed as well, signed off under the Developer Certificate of Origin; there is no CLA.
+
 ### `@aora-bot/engine`
 
 - **Styles.** `ascii` joins `STYLE_IDS` as the fourth series: the character typed out in glyphs. It reuses the pixel series' rasteriser on a finer sub-grid (`cols * 2` sub-cells across), groups each 2×4 block of sub-cells into one character cell and picks a glyph by the cell's coverage shape, so every shape, state, face, part, belt and HUD reads without a drawing of its own. Three variants: `ansi` (the default; coloured glyphs, each cell in the colour the pixel series would paint it), `mono` (one ink, the face cut out of the body as blank cells, so the output is pure copyable text) and `crt` (a dark rounded terminal plate with glowing glyphs and faint scanlines, lit in the dark-page ink like pixel `dot`).

@@ -1,0 +1,40 @@
+name: Proposal / 功能建议
+description: A new shape, state, face, style, theme, component or API. / 新形状、状态、五官、画风、主题、组件或接口。
+labels: [proposal]
+body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind / 类型
+      options:
+        - Shape / 形状
+        - State / 状态
+        - Face / 五官
+        - Style / 画风
+        - Theme / 主题
+        - Component / 组件
+        - API
+        - Other / 其他
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What it is for / 用途
+      description: The product or case it serves, and what is missing today. / 它服务的场景，以及现在缺了什么。
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: The idea / 方案
+      description: For a shape, the generator or outline and screenshots at 16, 36 and 120 px (see CONTRIBUTING.md). / 形状请附生成函数或轮廓，以及 16、36、120 像素下的截图（见 CONTRIBUTING.md）。
+    validations:
+      required: true
+  - type: checkboxes
+    id: origin
+    attributes:
+      label: Origin / 来源
+      options:
+        - label: It is my own work, or comes from a source whose license is compatible with MIT, named above. / 这是我的原创，或来自上文注明的、与 MIT 兼容的来源。
+          required: true

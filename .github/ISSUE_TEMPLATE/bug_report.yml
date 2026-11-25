@@ -1,0 +1,45 @@
+name: Bug report / 问题反馈
+description: Something renders, moves or behaves wrongly. / 渲染、动画或行为不对。
+labels: [bug]
+body:
+  - type: dropdown
+    id: package
+    attributes:
+      label: Package / 涉及的包
+      multiple: true
+      options:
+        - '@aora-bot/engine'
+        - '@aora-bot/react'
+        - '@aora-bot/surfaces'
+        - '@aora-bot/element'
+        - Avatar endpoint / 头像接口
+        - Docs site / 文档站
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version / 版本
+      placeholder: '0.2.0'
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: How to reproduce / 复现步骤
+      description: The smallest code or the steps that show it; a share link from the console helps. / 能复现的最小代码或步骤；控制台的分享链接也很有用。
+      render: tsx
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual / 期望与实际
+      description: What you expected, what happened instead, and screenshots if it is visual. / 期望的结果、实际的结果；视觉问题请附截图。
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment / 环境
+      placeholder: Chrome 140, macOS 15, React 19, SSR on Next.js 16

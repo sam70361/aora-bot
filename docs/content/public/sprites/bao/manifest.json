@@ -6,9 +6,9 @@
   "frameSize": [240, 240],
   "fps": 2,
   "anchor": [0.5, 0.92],
-  "license": "Aora Bot License",
+  "license": "MIT",
   "provenance": {
-    "license": "Aora Bot License",
+    "license": "MIT",
     "basedOn": "The procedural bao character",
     "generator": "Rendered from the procedural bao character; two frames per state at 900 ms and 2100 ms of the breathing loop.",
     "engine": "aora@1.0.0",

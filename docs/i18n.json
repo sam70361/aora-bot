@@ -1,6 +1,6 @@
 {
   "footer.lead": { "en": "© 2026 sam70361. Licensed under the ", "zh": "© 2026 sam70361，按 " },
-  "footer.license": { "en": "Aora Bot License", "zh": "Aora Bot 许可协议" },
+  "footer.license": { "en": "MIT License", "zh": "MIT 许可证" },
   "footer.tail": { "en": ".", "zh": "授权" },
   "overview.group.core": { "en": "Core", "zh": "核心" },
   "overview.group.avatar": { "en": "Avatars", "zh": "头像" },

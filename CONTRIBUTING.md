@@ -36,9 +36,16 @@ That is the same sequence CI runs, in the same order. The libraries are built
 first because the React and surfaces packages and the docs resolve their workspace
 dependencies through `dist/`.
 
-By opening a pull request you agree that your contribution is distributed under the
-[Aora Bot License](./LICENSE) and may be included in commercially licensed copies
-(section 6.2 of the license).
+Aora Bot is [MIT](./LICENSE) licensed, and so is every contribution: by opening a
+pull request you agree that your work is released under the same license. There is
+no CLA. Instead, sign off each commit (`git commit -s`) to certify the
+[Developer Certificate of Origin](https://developercertificate.org/): that you wrote
+the change, or otherwise have the right to submit it under MIT. Do not submit
+characters, art or code copied from another project unless its license is compatible
+with MIT, and say where it came from in the pull request.
+
+The `emotion-ball` branch is the classic edition under its own license and is not
+open to contributions.
 
 ## Tests
 
@@ -165,14 +172,26 @@ its own. Do not annotate what the next line does.
 
 ## Releasing
 
-The three packages are published to npm under the `@aora-bot` scope; the docs
-and the workspace root are private. Give the three the same version, add the
-entry to `CHANGELOG.md`, then from a clean `main`:
+The four packages are published to npm under the `@aora-bot` scope; the docs
+and the workspace root are private. Give the four the same version and move the
+`Unreleased` section of `CHANGELOG.md` under it, then push a tag from a clean `main`:
 
 ```sh
-pnpm run check
-pnpm -r publish --access public
+git tag v0.3.0
+git push origin v0.3.0
 ```
 
+The `Release` workflow runs `pnpm run check`, checks that the tag matches every
+package's version, publishes with npm provenance and opens a GitHub release.
 `pnpm publish` turns the `workspace:` ranges into the released version, so the
 packages depend on each other by version once they are on the registry.
+
+The workflow publishes through npm trusted publishing, so it needs no token. Each
+package must list this repository and `release.yml` as a trusted publisher on
+npmjs.com (package settings, Trusted Publisher) once before the first tagged
+release.
+
+## Security
+
+Report vulnerabilities privately, as described in [SECURITY.md](./SECURITY.md),
+and not in a public issue.

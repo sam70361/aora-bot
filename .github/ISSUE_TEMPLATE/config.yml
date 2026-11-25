@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentation / 文档
+    url: https://aora-bot.vercel.app/guide/getting-started
+    about: Guides, components and the full API. / 指南、组件与完整接口。
+  - name: Security vulnerability / 安全漏洞
+    url: https://github.com/sam70361/aora-bot/security/advisories/new
+    about: Report it privately, not in a public issue. / 请私下报告，不要公开提 Issue。

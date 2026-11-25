@@ -6,6 +6,8 @@
 
 [Console](https://aora-bot.vercel.app/en/) | [Documentation](https://aora-bot.vercel.app/en/guide/getting-started) | [Scenarios](https://aora-bot.vercel.app/en/scenarios/chat-stream) | [Emotion Ball](https://sam70361.github.io/aora-bot/) | [中文](./README.md)
 
+[![npm](https://img.shields.io/npm/v/@aora-bot/react?label=%40aora-bot%2Freact)](https://www.npmjs.com/package/@aora-bot/react) [![CI](https://github.com/sam70361/aora-bot/actions/workflows/ci.yml/badge.svg)](https://github.com/sam70361/aora-bot/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+
 </div>
 
 <p align="center">
@@ -131,7 +133,7 @@ This repository used to hold Emotion Ball. Emotion Ball has now been upgraded to
 - **A rewritten engine**: a handful of plain JavaScript scripts became four npm packages written in TypeScript, with full types, tests and server rendering.
 - **Original characters**: all 46 launch characters are original designs, Nimbo and Twinkle from Mood Mates joined the cast as originals too, and the cast has since grown to 71. Emotion Ball's signature little ball lives on as Dot (`dot`), who leads the cast.
 - **More to work with**: 32 expressions grew into 44 animation states, with three faces, three styles (vector, pixel and kaomoji), HUD dials and a full set of React components. The emotion protocol still accepts `{ emotionId }` messages, so the AI side connects the same way.
-- **License**: from free for non-commercial use with separate commercial licensing, to tiered licensing: individuals, education, non-profits, open-source projects and teams of up to 3 people use it free, commercially too, and larger companies buy a commercial license.
+- **License**: from free for non-commercial use with separate commercial licensing, through tiered licensing, to MIT: free for anyone, commercially too.
 
 ## Contributing
 
@@ -202,10 +204,9 @@ Add me on WeChat above with the note “Aora Bot sponsorship”.
 
 ## License
 
-Aora Bot is source-available under the tiered [Aora Bot License](./LICENSE):
+Aora Bot is open source under the [MIT License](./LICENSE): the source code and the character designs (shapes, colours, faces, animation states and their data), the documentation and the examples. Anyone, individual or company, may use, modify and distribute it for free, commercially too, as long as the copyright and license notice stays in the copies they distribute. Every earlier release is offered under MIT as well.
 
-- **Free, commercial use included**: individuals and independent developers, students and educational institutions, non-profits, non-profit open-source projects, and teams of up to 3 people in total. Once the product is publicly released, it must credit "Powered by Aora Bot" with a link to this repository in any one place, such as the About page, the website footer, the product description or the README.
-- **Commercial license**: larger companies using it in a live product need a commercial license, under which the credit may be omitted; evaluation and prototyping are free. Terms and an inquiry template are in [LICENSE-COMMERCIAL.md](./LICENSE-COMMERCIAL.md); contact 1251579308@qq.com.
-- **Not allowed for anyone**: reselling the engine or characters as a package of their own, offering a hosted character, avatar or expression service built on it, selling the characters as goods such as stickers or sticker packs, or training generative models on the character designs.
+- **Credit**: not required. A "Powered by Aora Bot" line with a link to this repository, on an About page or in a README, is always appreciated.
+- **Name and logo**: MIT does not cover trademarks. How the "Aora Bot" name and logo may be used is set out in the [trademark policy](./TRADEMARKS.md).
 
-The classic Emotion Ball keeps its original license; see the [`emotion-ball` branch](https://github.com/sam70361/aora-bot/tree/emotion-ball).
+The classic Emotion Ball is not covered by MIT and keeps the license in its own branch; see the [`emotion-ball` branch](https://github.com/sam70361/aora-bot/tree/emotion-ball).

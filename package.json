@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "description": "Procedural character engine and research documentation site",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MIT",
   "packageManager": "pnpm@10.33.0",
   "engines": {
     "node": ">=22"

@@ -2,7 +2,9 @@
   "name": "@aora-bot/engine",
   "version": "0.2.0",
   "description": "Procedural character engine: shape generators, face fitting, pose projection, spring state machine, belts, particles, emotion protocol",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MIT",
+  "author": "sam70361",
+  "funding": "https://aora-bot.vercel.app/sponsor",
   "homepage": "https://aora-bot.vercel.app",
   "repository": {
     "type": "git",

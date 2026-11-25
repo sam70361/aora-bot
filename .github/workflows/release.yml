@@ -1,0 +1,70 @@
+name: Release
+
+# Pushing a tag `vX.Y.Z` publishes every package at version X.Y.Z and opens a
+# GitHub release with that version's CHANGELOG section.
+on:
+  push:
+    tags: ['v*.*.*']
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  # npm trusted publishing and provenance both authenticate with the run's OIDC token.
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          registry-url: https://registry.npmjs.org
+
+      # Trusted publishing needs npm 11.5.1 or later; Node 22 ships with npm 10.
+      - run: npm install -g npm@^11.5.1
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Tag matches every package version
+        run: |
+          node -e '
+            const tag = process.env.GITHUB_REF_NAME.replace(/^v/, "");
+            const dirs = ["engine", "react", "surfaces", "element"];
+            const off = dirs
+              .map((d) => [d, require(`./packages/${d}/package.json`).version])
+              .filter(([, v]) => v !== tag);
+            if (off.length) {
+              console.error(`Tag ${tag} does not match: ${off.map(([d, v]) => `${d}@${v}`).join(", ")}`);
+              process.exit(1);
+            }
+          '
+
+      - name: Check
+        run: pnpm run check
+
+      # Versions already on the registry are skipped, so a re-run after a partial failure is safe.
+      - name: Publish
+        run: pnpm -r publish --access public --no-git-checks
+        env:
+          NPM_CONFIG_PROVENANCE: true
+
+      - name: GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          awk -v v="$version" '$0 == "## " v { found = 1; next } /^## / && found { exit } found' CHANGELOG.md > notes.md
+          if [ -s notes.md ]; then
+            gh release create "$GITHUB_REF_NAME" --verify-tag --title "$GITHUB_REF_NAME" --notes-file notes.md
+          else
+            gh release create "$GITHUB_REF_NAME" --verify-tag --title "$GITHUB_REF_NAME" --generate-notes
+          fi

@@ -2,7 +2,9 @@
   "name": "@aora-bot/surfaces",
   "version": "0.2.0",
   "description": "Product and demo surfaces for Aora Bot: walkthrough, scenes, template publishing, occupancy and cast stages",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MIT",
+  "author": "sam70361",
+  "funding": "https://aora-bot.vercel.app/sponsor",
   "homepage": "https://aora-bot.vercel.app",
   "repository": {
     "type": "git",

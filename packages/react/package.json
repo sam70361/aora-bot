@@ -2,7 +2,9 @@
   "name": "@aora-bot/react",
   "version": "0.2.0",
   "description": "React components for the Aora Bot procedural character engine",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "MIT",
+  "author": "sam70361",
+  "funding": "https://aora-bot.vercel.app/sponsor",
   "homepage": "https://aora-bot.vercel.app",
   "repository": {
     "type": "git",

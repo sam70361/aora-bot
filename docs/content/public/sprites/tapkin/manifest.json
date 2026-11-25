@@ -6,9 +6,9 @@
   "frameSize": [320, 320],
   "fps": 1,
   "anchor": [0.5, 0.94],
-  "license": "Aora Bot License",
+  "license": "MIT",
   "provenance": {
-    "license": "Aora Bot License",
+    "license": "MIT",
     "generator": "Original character (cream mochi hamster, #916dff collar) generated from a text prompt on a solid chroma background, chroma-keyed, sliced from a 4x3 grid into 12 frames and contain-fit to 320x320.",
     "basedOn": "An original character; no third-party assets used.",
     "engine": null,
