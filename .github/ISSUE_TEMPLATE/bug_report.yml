@@ -20,7 +20,7 @@ body:
     id: version
     attributes:
       label: Version / 版本
-      placeholder: '0.2.0'
+      placeholder: '0.3.0'
     validations:
       required: true
   - type: textarea

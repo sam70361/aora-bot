@@ -1,6 +1,6 @@
 {
   "name": "@aora-bot/engine",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Procedural character engine: shape generators, face fitting, pose projection, spring state machine, belts, particles, emotion protocol",
   "license": "MIT",
   "author": "sam70361",

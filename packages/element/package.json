@@ -1,6 +1,6 @@
 {
   "name": "@aora-bot/element",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "The Aora Bot procedural character as a framework-free Web Component, with a one-line CDN build",
   "license": "MIT",
   "author": "sam70361",

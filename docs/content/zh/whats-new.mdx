@@ -8,6 +8,26 @@ sidebar: false
 
 各版本的变化，最新的在最前面。每个包、导出和参数的逐条变更见[完整变更日志](https://github.com/sam70361/aora-bot/blob/main/CHANGELOG.md)。
 
+## 0.3.0
+
+### MIT 开源
+
+- Aora Bot 改为 [MIT 许可证](/guide/license)：代码、角色设计、文档、图片和示例都在其中，任何人都可以免费使用，包括商用，只需在分发的副本里保留版权与许可声明。商业授权和分级条款已取消；注明「Powered by Aora Bot」欢迎但不强制。
+- 历史版本同样适用：0.1.1 至 0.2.0 也可以按 MIT 使用。
+- 「Aora Bot」名称和标志不在 MIT 范围内，使用方式见[商标政策](https://github.com/sam70361/aora-bot/blob/main/TRADEMARKS.md)。`emotion-ball` 分支里的经典版 Emotion Ball 沿用原有授权。
+- 欢迎贡献：贡献同样以 MIT 授权，提交时用 `git commit -s` 签署 DCO，不需要签 CLA。详见[贡献指南](https://github.com/sam70361/aora-bot/blob/main/CONTRIBUTING.md)。
+
+### ASCII 画风
+
+- 第四种画风 `ascii`：角色用字符打出来。每种角色、状态、脸、配件、腰带和 HUD 都能直接用，不需要单独绘制。三种变体：`ansi`（彩色字符，默认）、`mono`（单色，纯文本可复制）和 `crt`（深色终端屏，字符发光、带扫描线）。
+- 参数：`cols`（字符列数）、`charset`（`ascii`、`block` 方块或 `braille` 盲文点阵）、`fill`（`shade` 明暗、`solid` 实心或 `hollow` 空心）、`effect`（`decode` 解码、`shimmer` 流光或 `glitch` 故障；减少动态效果时关闭）。详见 [ASCII 风格](/design/styles/ascii)。
+- `renderAsciiText` 把角色导出成纯文本，可用于终端、命令行、Agent 日志和 README；`ansi: true` 输出 24 位彩色。
+- 控制台和文档参数面板里，枚举参数显示中文名称，不再显示原始 id。
+
+### 文档站
+
+- 首页控制台适配 13、14 寸笔记本：上方的视图切换不再被导航栏遮住，下方的状态按钮不再被角色栏遮住。
+
 ## 0.2.0
 
 这一版有不兼容变更，升级前请先看下面的「不兼容变更」。

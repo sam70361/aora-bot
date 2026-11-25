@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.0
 
 ### License
 
@@ -25,6 +25,8 @@
 ### Docs
 
 - A page for the ASCII style, with the plain-text export.
+- The home console fits 13 and 14 inch laptop screens: the view switch no longer slides under the navbar, nor the state chips under the shape strip.
+- A security policy, a code of conduct, issue and pull request templates, and a trademark policy.
 
 ## 0.2.0
 

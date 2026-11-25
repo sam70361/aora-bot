@@ -8,6 +8,26 @@ sidebar: false
 
 The changes in each release, newest first. Every package, export and parameter change is listed in full in the [changelog](https://github.com/sam70361/aora-bot/blob/main/CHANGELOG.md).
 
+## 0.3.0
+
+### Open source under MIT
+
+- Aora Bot is now [MIT licensed](/guide/license): the code, the character designs, the documentation, the images and the examples. Anyone may use it for free, commercial use included, as long as copies you distribute keep the copyright and license notice. The commercial license and the tiered terms are gone; a "Powered by Aora Bot" credit is welcome but optional.
+- Earlier releases too: 0.1.1 to 0.2.0 may be used under MIT as well.
+- The "Aora Bot" name and logo are not covered by MIT; see the [trademark policy](https://github.com/sam70361/aora-bot/blob/main/TRADEMARKS.md). The classic Emotion Ball in the `emotion-ball` branch keeps its own license.
+- Contributions are welcome: they are MIT licensed too, signed off under the DCO with `git commit -s`, and there is no CLA. See the [contributing guide](https://github.com/sam70361/aora-bot/blob/main/CONTRIBUTING.md).
+
+### ASCII style
+
+- `ascii`, the fourth style series, types the character out in glyphs. Every shape, state, face, part, belt and HUD works without a drawing of its own. Three variants: `ansi` (coloured glyphs, the default), `mono` (one ink, pure copyable text) and `crt` (a dark terminal plate with glowing glyphs and scanlines).
+- Parameters: `cols`, `charset` (`ascii`, `block` or `braille`), `fill` (`shade`, `solid` or `hollow`) and `effect` (`decode`, `shimmer` or `glitch`; off under reduced motion). See [ASCII style](/design/styles/ascii).
+- `renderAsciiText` exports the character as plain text for terminals, CLIs, agent logs and READMEs; `ansi: true` adds 24-bit colour.
+- Enum parameters are labelled in the console and the docs parameter panel, instead of showing the raw option id.
+
+### Docs site
+
+- The home console fits 13 and 14 inch laptop screens: the view switch no longer slides under the navbar, nor the state chips under the shape strip.
+
 ## 0.2.0
 
 This release has breaking changes; read "Breaking changes" below before upgrading.
