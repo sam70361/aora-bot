@@ -287,7 +287,7 @@ describe('cells from a paint buffer', () => {
     expect(solid.kind.every((k) => k === CELL.fill)).toBe(true);
     expect(solid.paint.every((p) => p === ink)).toBe(true);
 
-    const ramp = '.:-=+*#%@';
+    const ramp = ';=+xX#%@';
     const shade = buildCells(body(), table, grid, options('shade'), COLOUR_ROLES);
     // Light falls from the upper left, so the lit side is made of lighter glyphs than the shaded one.
     expect(ramp.indexOf(at(shade, 3, 2)!)).toBeLessThan(ramp.indexOf(at(shade, 10, 4)!));

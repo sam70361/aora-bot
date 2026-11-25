@@ -4,7 +4,7 @@ import { renderAsciiStatic } from '../render/ascii/static.js';
 import { defineStyle } from './registry.js';
 
 /**
- * The character drawn in text: `.:-=+*#` for its body, `O` for its eyes.
+ * The character drawn in text: `;=+xX#%@` for its body, `O` for its eyes.
  *
  * The body, face, belts, dials and confetti are rasterised onto a fine grid
  * like the pixel series', then every block of 2 x 4 sub-cells is written with
