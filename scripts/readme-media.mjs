@@ -61,6 +61,10 @@ const HERO_STEP_MS = 1600;
 /** States every style shows together, one per two seconds: the clip is one lap of them. */
 const STYLE_STATES = ['happy', 'curious', 'surprised', 'shy'];
 const STYLE_STEP_MS = 2000;
+/** Every style and variant, one cell each, five to a row. */
+const STYLE_CELLS = listStyles().flatMap((series) =>
+  series.variants.map((variant) => ({ style: series.id, variant })),
+);
 
 /** Members of each theme on its row of the themes image. */
 const THEME_PER_ROW = 6;
@@ -149,14 +153,12 @@ const SCENES = {
   styles: {
     file: 'styles.gif',
     width: 960,
-    height: 680,
+    height: Math.ceil(STYLE_CELLS.length / 5) * 144 + 40,
     frames: 160,
     delay: 50,
     css: `.grid { display: grid; grid-template-columns: repeat(5, 1fr); align-content: center; height: 100%; row-gap: 14px; }
       .cell { display: grid; justify-items: center; gap: 8px; }`,
-    body: `<div class="grid">${listStyles()
-      .flatMap((series) => series.variants.map((variant) => ({ style: series.id, variant })))
-      .map(
+    body: `<div class="grid">${STYLE_CELLS.map(
         ({ style, variant }, i) =>
           `<div class="cell">${element({
             character: LEAD.id,
